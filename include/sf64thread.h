@@ -13,7 +13,7 @@ typedef enum {
     /*   5 */ GSTATE_GAME_OVER,
     /*   6 */ GSTATE_VS_INIT,
     /*   7 */ GSTATE_PLAY,
-    /*   8 */ GSTATE_CREDITS,
+    /*   8 */ GSTATE_ENDING,
     /* 100 */ GSTATE_BOOT = 100,
     /* 101 */ GSTATE_BOOT_WAIT,
     /* 102 */ GSTATE_SHOW_LOGO,
@@ -21,6 +21,13 @@ typedef enum {
     /* 104 */ GSTATE_LOGO_WAIT,
     /* 105 */ GSTATE_START,
 } GameState;
+
+typedef enum PlayState {
+    /*   0 */ PLAY_STANDBY,
+    /*   1 */ PLAY_INIT,
+    /*   2 */ PLAY_UPDATE,
+    /* 100 */ PLAY_PAUSE=100,
+} PlayState;
 
 typedef void (*TimerAction)(s32*, s32);
 

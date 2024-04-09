@@ -146,7 +146,7 @@ void Turret_801A5AD4(Player* player) {
         if (player->unk_1BC == 0) {
             gControllerLock = 0;
             player->unk_1B0++;
-            D_ctx_80177838 = 50;
+            gLevelStatusScreenTimer = 50;
         }
     }
     sp2C = (f32) gControllerPress[player->num].stick_x;
@@ -189,16 +189,16 @@ void Turret_801A5AD4(Player* player) {
     player->flags_228 = 0;
 
     if (player->unk_008 > 20.0f) {
-        player->flags_228 |= 1;
+        player->flags_228 |= PFLAG_228_0;
     }
     if (player->unk_008 < -20.0f) {
-        player->flags_228 |= 2;
+        player->flags_228 |= PFLAG_228_1;
     }
     if (player->unk_00C > 20.0f) {
-        player->flags_228 |= 8;
+        player->flags_228 |= PFLAG_228_3;
     }
     if (player->unk_00C < -20.0f) {
-        player->flags_228 |= 4;
+        player->flags_228 |= PFLAG_228_2;
     }
     if (gControllerPress[player->num].button & B_BUTTON) {
         player->unk_008 = player->unk_00C = 0.0f;

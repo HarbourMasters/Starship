@@ -39,12 +39,12 @@ void Venom2_80196314(Actor* actor) {
 
     switch (actor->state) {
         case 0:
-            D_360_8015F928 = 0;
-            D_360_8015F908 = 0;
+            gAllRangeEventTimer = 0;
+            gStarWolfMsgTimer = 0;
 
             for (i = 0; i < 6; i++) {
-                D_ctx_80177CF0[i] = 1;
-                D_ctx_80177CD0[i] = 1;
+                gSavedStarWolfTeamAlive[i] = 1;
+                gStarWolfTeamAlive[i] = 1;
             }
 
             if (player->state_1C8 == PLAYERSTATE_1C8_3) {
@@ -53,10 +53,10 @@ void Venom2_80196314(Actor* actor) {
                 player->pos.z = 8000.0f;
                 player->pos.y = 670.0f;
                 D_360_800C9B4C = 120;
-                D_360_8015F908 = 1000;
+                gStarWolfMsgTimer = 1000;
             } else {
                 D_360_800C9B4C = 320;
-                D_360_8015F908 = 1200;
+                gStarWolfMsgTimer = 1200;
                 actor->state = 1;
                 player->pos.x = 0.0f;
                 player->pos.z = 16000.0f;
@@ -72,7 +72,7 @@ void Venom2_80196314(Actor* actor) {
                     otherActor->unk_0F4.x = 340.0f;
                 }
 
-                D_ctx_80178340 = D_ctx_80178358 = 255;
+                gFillScreenAlpha = gFillScreenAlphaTarget = 255;
             }
             func_play_800B63BC(player, 1);
             /* fallthrough */
@@ -86,16 +86,16 @@ void Venom2_80196314(Actor* actor) {
                     actor->state = 2;
                     player->state_1C8 = PLAYERSTATE_1C8_3;
                     player->unk_014 = 0.0001f;
-                    D_ctx_80177838 = 80;
+                    gLevelStatusScreenTimer = 80;
                 }
             }
-            if (D_360_8015F928 == 80) {
+            if (gAllRangeEventTimer == 80) {
                 Radio_PlayMessage(gMsg_ID_19010, RCID_FOX);
             }
             break;
         case 2:
             Venom2_801962F4(actor);
-            if (((D_360_800C9B4C + 100) < D_360_8015F928) && (gActors[4].obj.status == OBJ_FREE) &&
+            if (((D_360_800C9B4C + 100) < gAllRangeEventTimer) && (gActors[4].obj.status == OBJ_FREE) &&
                 (gActors[5].obj.status == OBJ_FREE) && (gActors[6].obj.status == OBJ_FREE) &&
                 (gActors[7].obj.status == OBJ_FREE) && (actor->timer_0BE == 0)) {
                 actor->timer_0BE = 80;
@@ -103,8 +103,8 @@ void Venom2_80196314(Actor* actor) {
             if ((actor->timer_0BE == 1) && (player->state_1C8 != PLAYERSTATE_1C8_7)) {
 
                 for (i = 1; i < ARRAY_COUNT(gTeamShields); i++) {
-                    D_ctx_80177C38[i] = gSavedTeamShields[i];
-                    D_ctx_801778F0[i] = gSavedTeamShields[i];
+                    gPrevPlanetTeamShields[i] = gSavedTeamShields[i];
+                    gPrevPlanetSavedTeamShields[i] = gSavedTeamShields[i];
                     gSavedTeamShields[i] = gTeamShields[i];
                 }
 
@@ -121,8 +121,8 @@ void Venom2_80196314(Actor* actor) {
             }
             break;
         case 3:
-            D_ctx_801779BC = 0;
-            if (D_360_8015F908 < 600) {
+            gPauseEnabled = 0;
+            if (gStarWolfMsgTimer < 600) {
                 player->camEye.x += actor4->vel.x * 0.23f;
                 player->camEye.y += actor4->vel.y * 0.23f;
                 player->camEye.z += actor4->vel.z * 0.23f;
@@ -131,7 +131,7 @@ void Venom2_80196314(Actor* actor) {
             Math_SmoothStepToF(&player->camAt.y, actor4->obj.pos.y, 1.0f, 20000.0f, 0.0f);
             Math_SmoothStepToF(&player->camAt.z, actor4->obj.pos.z, 1.0f, 20000.0f, 0.0f);
             Math_SmoothStepToF(&player->unk_034, 0, 0.1f, 0.2f, 0.0f);
-            if ((gControllerPress->button & START_BUTTON) || (D_360_8015F928 == (D_360_800C9B4C + 300))) {
+            if ((gControllerPress->button & START_BUTTON) || (gAllRangeEventTimer == (D_360_800C9B4C + 300))) {
                 actor->state = 2;
                 player->state_1C8 = PLAYERSTATE_1C8_3;
                 func_play_800B7184(player, 1);
@@ -140,10 +140,10 @@ void Venom2_80196314(Actor* actor) {
             }
             break;
     }
-    if (D_360_8015F908 != 0) {
-        D_360_8015F908--;
+    if (gStarWolfMsgTimer != 0) {
+        gStarWolfMsgTimer--;
 
-        switch (D_360_8015F908) {
+        switch (gStarWolfMsgTimer) {
             case 860:
                 Radio_PlayMessage(gMsg_ID_19200, RCID_WOLF);
                 break;
@@ -172,21 +172,21 @@ void Venom2_80196968(void) {
     Object_58* obj58;
     s32 i;
 
-    D_ctx_80178310 = LOAD_ASSET(D_enmy_800CFDA0[gCurrentLevel]);
+    gLevelObjects = LOAD_ASSET(gLevelObjectInits[gCurrentLevel]);
 
     for (obj58 = gObjects58, i = 0; i < 1000; i++) {
-        if (D_ctx_80178310[i].id < 0) {
+        if (gLevelObjects[i].id < 0) {
             break;
         }
 
-        if (D_ctx_80178310[i].id <= OBJ_80_160) {
+        if (gLevelObjects[i].id <= OBJ_80_160) {
             Object_58_Initialize(obj58);
             obj58->obj.status = OBJ_ACTIVE;
-            obj58->obj.id = D_ctx_80178310[i].id;
-            obj58->sfxSource[0] = obj58->obj.pos.x = D_ctx_80178310[i].xPos;
-            obj58->sfxSource[1] = obj58->obj.pos.y = D_ctx_80178310[i].yPos;
-            obj58->sfxSource[2] = obj58->obj.pos.z = -D_ctx_80178310[i].zPos1;
-            obj58->unk_54 = obj58->obj.rot.y = D_ctx_80178310[i].rot.y;
+            obj58->obj.id = gLevelObjects[i].id;
+            obj58->sfxSource[0] = obj58->obj.pos.x = gLevelObjects[i].xPos;
+            obj58->sfxSource[1] = obj58->obj.pos.y = gLevelObjects[i].yPos;
+            obj58->sfxSource[2] = obj58->obj.pos.z = -gLevelObjects[i].zPos1;
+            obj58->unk_54 = obj58->obj.rot.y = gLevelObjects[i].rot.y;
 
             Object_SetInfo(&obj58->info, obj58->obj.id);
 
@@ -195,18 +195,18 @@ void Venom2_80196968(void) {
     }
 
     for (actor = &gActors[30], i = 0; i < 1000; i++) {
-        if (D_ctx_80178310[i].id < 0) {
+        if (gLevelObjects[i].id < 0) {
             break;
         }
 
-        if ((D_ctx_80178310[i].id >= OBJ_ACTOR_176) && (D_ctx_80178310[i].id <= OBJ_ACTOR_SUPPLIES)) {
+        if ((gLevelObjects[i].id >= OBJ_ACTOR_176) && (gLevelObjects[i].id <= OBJ_ACTOR_SUPPLIES)) {
             Actor_Initialize(actor);
             actor->obj.status = OBJ_INIT;
-            actor->obj.id = D_ctx_80178310[i].id;
-            actor->fwork[10] = actor->obj.pos.x = D_ctx_80178310[i].xPos;
-            actor->fwork[11] = actor->obj.pos.y = D_ctx_80178310[i].yPos;
-            actor->fwork[12] = actor->obj.pos.z = -D_ctx_80178310[i].zPos1;
-            actor->fwork[13] = actor->obj.rot.y = D_ctx_80178310[i].rot.y;
+            actor->obj.id = gLevelObjects[i].id;
+            actor->fwork[10] = actor->obj.pos.x = gLevelObjects[i].xPos;
+            actor->fwork[11] = actor->obj.pos.y = gLevelObjects[i].yPos;
+            actor->fwork[12] = actor->obj.pos.z = -gLevelObjects[i].zPos1;
+            actor->fwork[13] = actor->obj.rot.y = gLevelObjects[i].rot.y;
             Object_SetInfo(&actor->info, actor->obj.id);
             actor++;
         }
@@ -224,8 +224,8 @@ void Venom2_80196BF8(Player* player) {
     f32 temp_fv0;
 
     if (gCsFrameCount > 50) {
-        D_ctx_8017835C = 3;
-        D_ctx_80178358 = 0;
+        gFillScreenAlphaStep = 3;
+        gFillScreenAlphaTarget = 0;
     }
     Matrix_RotateY(gCalcMatrix, (player->unk_114 + player->unk_0E8 + 180.0f) * M_DTOR, 0);
     Matrix_RotateX(gCalcMatrix, -((player->unk_120 + player->unk_0E4 + player->unk_4D8) * M_DTOR), 1);
@@ -316,7 +316,7 @@ void Venom2_80196D88(Player* player) {
                 D_ctx_80177A48[5] = sp58.x;
                 D_ctx_80177A48[6] = sp58.z;
             }
-            if (D_ctx_8017827C == 2) {
+            if (gLevelStage == 2) {
                 player->timer_1FC = 240;
             } else {
                 player->timer_1FC = 180;
@@ -325,10 +325,10 @@ void Venom2_80196D88(Player* player) {
             SEQCMD_STOP_SEQUENCE(SEQ_PLAYER_FANFARE, 60);
             /* fallthrough */
         case 1:
-            if (D_ctx_8017827C == 2) {
-                D_ctx_8017835C = 2;
-                D_ctx_80178358 = 0;
-                D_ctx_80178348 = D_ctx_80178350 = D_ctx_80178354 = 255;
+            if (gLevelStage == 2) {
+                gFillScreenAlphaStep = 2;
+                gFillScreenAlphaTarget = 0;
+                gFillScreenRed = gFillScreenGreen = gFillScreenBlue = 255;
             }
             Math_SmoothStepToF(&D_ctx_80177A48[1], 0.8f, 1.0f, 0.05f, 0.0f);
             Math_SmoothStepToF(&player->unk_12C, 0.0f, 0.1f, 15.0f, 0.0f);
@@ -402,21 +402,21 @@ void Venom2_80196D88(Player* player) {
                 player->unk_190 = 5.0f;
             }
             if (gCsFrameCount > 110) {
-                D_ctx_80178358 = 255;
-                D_ctx_8017835C = 8;
-                D_ctx_80178348 = D_ctx_80178350 = D_ctx_80178354 = 0;
-                if (D_ctx_80178340 == 255) {
+                gFillScreenAlphaTarget = 255;
+                gFillScreenAlphaStep = 8;
+                gFillScreenRed = gFillScreenGreen = gFillScreenBlue = 0;
+                if (gFillScreenAlpha == 255) {
 
                     for (i = 1; i < ARRAY_COUNT(gTeamShields); i++) {
-                        D_ctx_80177C38[i] = gSavedTeamShields[i];
-                        D_ctx_801778F0[i] = gSavedTeamShields[i];
+                        gPrevPlanetTeamShields[i] = gSavedTeamShields[i];
+                        gPrevPlanetSavedTeamShields[i] = gSavedTeamShields[i];
                         gSavedTeamShields[i] = gTeamShields[i];
                     }
 
                     gNextGameState = GSTATE_PLAY;
                     gNextLevel = LEVEL_VENOM_ANDROSS;
                     if (D_play_800D3180[gCurrentLevel] != 0) {
-                        D_game_80161A2E = 1;
+                        gNextLevelStage = 1;
                     }
                     func_8001CA24(0);
                     Audio_KillSfxBySource(player->sfxSource);
@@ -436,7 +436,8 @@ void Venom2_80196D88(Player* player) {
         AUDIO_PLAY_BGM(SEQ_ID_TO_ANDROSS | SEQ_FLAG);
     }
     if (player->timer_1FC == 1) {
-        if ((gTeamShields[2] > 0) || (gTeamShields[1] > 0) || (gTeamShields[3] > 0)) {
+        if ((gTeamShields[TEAM_ID_SLIPPY] > 0) || (gTeamShields[TEAM_ID_FALCO] > 0) ||
+            (gTeamShields[TEAM_ID_PEPPY] > 0)) {
             Radio_PlayMessage(gMsg_ID_8230, RCID_FALCO);
             Radio_PlayMessage(gMsg_ID_8220, RCID_PEPPY);
             Radio_PlayMessage(gMsg_ID_8240, RCID_SLIPPY);

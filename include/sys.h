@@ -25,9 +25,9 @@ typedef s32 (*CompareFunc)(void*, void*);
 s32 Lib_vsPrintf(char* dst, const char* fmt, va_list args);
 void Lib_vTable(s32 index, void (**table)(s32, s32), s32 arg0, s32 arg1);
 void Lib_QuickSort(u8* first, u32 length, u32 size, CompareFunc cFunc);
-void Lib_Perspective(Gfx** dList);
-void Lib_Ortho(Gfx** dList);
-void Lib_DmaRead(void* src, void* dst, ptrdiff_t size);
+void Lib_InitPerspective(Gfx** dList);
+void Lib_InitOrtho(Gfx** dList);
+void Lib_DmaRead(void* src, void* dst, s32 size);
 void Lib_FillScreen(u8 setFill);
 
 void Memory_FreeAll(void);
@@ -40,7 +40,7 @@ void Mio0_Decompress(void* header, u8* dst);
 void Game_Initialize(void);
 void Game_Update(void);
 
-extern s32 D_game_800D2860[];
+extern s32 gShowCrosshairs[];
 extern s32 D_game_800D2870;
 
 extern f32 D_game_80161A10;
@@ -48,7 +48,7 @@ extern f32 D_game_80161A14;
 extern s32 gPlayerInactive[4];
 extern s32 D_game_80161A28;
 extern u8 D_game_80161A2C;
-extern u16 D_game_80161A2E;
+extern u16 gNextLevelStage;
 extern u16 gNextLevel;
 extern GameState gNextGameState;
 extern GameState gGameState;

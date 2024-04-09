@@ -9,6 +9,8 @@
       - '#include "sf64object.h"'
       - '#include "structs.h"'
       - '#include "sf64level.h"'
+      - '#include "sf64event.h"'
+      - '#include "sf64player.h"'
       - '#include "sf64audio_external.h"'
       - '#include "sf64mesg.h"'
 
@@ -55,6 +57,9 @@ D_SX_60028C0:
 
 D_SX_6002AC0:
   { type: GFX, offset: 0x6002AC0, symbol: D_SX_6002AC0 }
+
+ast_sector_x_seg6_vtx_2E88:
+  { type: VTX, count: 134, offset: 0x6002E88, symbol: ast_sector_x_seg6_vtx_2E88 }
 
 D_SX_60036E8:
   { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x60036E8, symbol: D_SX_60036E8 }

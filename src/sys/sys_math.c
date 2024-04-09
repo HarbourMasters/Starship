@@ -1,4 +1,5 @@
 #include "sys.h"
+#include "prevent_bss_reordering.h"
 
 s32 sSeededRandSeed3;
 s32 sRandSeed1;

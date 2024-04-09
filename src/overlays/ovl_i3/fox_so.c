@@ -454,7 +454,7 @@ void Solar_8019F20C(Actor* actor) {
                         actor->itemDrop = DROP_SILVER_STAR;
                     }
                 }
-                func_enmy_80066254(actor);
+                Actor_Despawn(actor);
                 for (i = 0; i < 3; i++) {
                     func_effect_800794CC(actor->obj.pos.x, actor->obj.pos.y, actor->obj.pos.z, 0.3f);
                 }
@@ -468,7 +468,7 @@ void Solar_8019F20C(Actor* actor) {
     }
     actor->obj.rot.y = RAD_TO_DEG(-gPlayer[0].unk_058);
     actor->obj.rot.x = RAD_TO_DEG(gPlayer[0].unk_05C);
-    if (!(gGameFrameCount & 1)) {
+    if (((gGameFrameCount % 2) == 0)) {
         actor->unk_0B6++;
         if (actor->unk_0B6 >= 3) {
             actor->unk_0B6 = 0;
@@ -487,7 +487,7 @@ void Solar_8019F7AC(Actor* actor) {
                 gSPDisplayList(gMasterDisp++, D_SO_6017370);
                 break;
             case OBJ_ACTOR_276:
-                if (!(gGameFrameCount & 1)) {
+                if (((gGameFrameCount % 2) == 0)) {
                     RCP_SetupDL(&gMasterDisp, 0x29);
                     gDPSetPrimColor(gMasterDisp++, 0x00, 0x00, 255, 255, 0, 255);
                 }
@@ -684,7 +684,7 @@ void Solar_801A0120(Effect* effect) {
             sp3C.z = -effect->scale1;
             Matrix_MultVec3f(gCalcMatrix, &sp3C, &effect->obj.pos);
             effect->unk_60.x += 5.0f;
-            if (!(gGameFrameCount & 1)) {
+            if (((gGameFrameCount % 2) == 0)) {
                 effect->unk_4C++;
                 if (effect->unk_4C > 2) {
                     effect->unk_4C = 0;
@@ -711,7 +711,7 @@ void Solar_801A0120(Effect* effect) {
                 } else {
                     sp54 = -50.0f;
                 }
-                if (effect->index & 1) {
+                if ((effect->index % 2) != 0) {
                     sp58 = 100.0f;
                 } else {
                     sp58 = -100.0f;
@@ -777,7 +777,7 @@ void Solar_801A0120(Effect* effect) {
                 effect->unk_48 = 0;
             }
             if ((sp48 != effect->unk_48) && (effect->unk_48 != 0)) {
-                if (effect->index & 1) {
+                if ((effect->index % 2) != 0) {
                     sp58 = 100.0f;
                 } else {
                     sp58 = -100.0f;
@@ -985,8 +985,8 @@ void Solar_801A10F4(Player* player) {
             player->unk_034 = 0.0f;
             player->unk_0D0 = 0.0f;
 
-            D_ctx_80178340 = 255;
-            D_ctx_80178358 = 0;
+            gFillScreenAlpha = 255;
+            gFillScreenAlphaTarget = 0;
             Solar_801A0DF8(-750.0f, -2600.0f, 300.0f, 2, 1.0f);
             AUDIO_PLAY_SFX(0x3140807E, player->sfxSource, 0);
             break;
@@ -1008,16 +1008,16 @@ void Solar_801A10F4(Player* player) {
                 Object_Kill(&gActors[6].obj, gActors[6].sfxSource);
             }
             if (gCsFrameCount < 3) {
-                D_ctx_80178340 = 255;
+                gFillScreenAlpha = 255;
             }
             if (gCsFrameCount == 370) {
-                D_ctx_80178358 = 255;
-                D_ctx_80178348 = 255;
-                D_ctx_80178350 = 255;
-                D_ctx_80178354 = 255;
-                D_ctx_8017835C = 8;
+                gFillScreenAlphaTarget = 255;
+                gFillScreenRed = 255;
+                gFillScreenGreen = 255;
+                gFillScreenBlue = 255;
+                gFillScreenAlphaStep = 8;
             }
-            if (!(gGameFrameCount & 7)) {
+            if (((gGameFrameCount % 8) == 0)) {
                 Solar_8019E8B8(RAND_FLOAT_CENTERED(6000.0f), RAND_FLOAT_CENTERED(5.0f) - 90.0f,
                                RAND_FLOAT(2000.0f) - 6000.0f + D_ctx_80177D20, RAND_FLOAT(20.0f) + 20.0f);
             }
@@ -1057,8 +1057,8 @@ void Solar_801A10F4(Player* player) {
             break;
         case 2:
             D_ctx_80177CE8 += 60.0f;
-            D_ctx_80178358 = 0;
-            D_ctx_8017835C = 8;
+            gFillScreenAlphaTarget = 0;
+            gFillScreenAlphaStep = 8;
             Math_SmoothStepToF(D_ctx_80177A48, 0.02f, 1.0f, 0.0000003f, 0.0f);
             if (gCsFrameCount == 525) {
                 Radio_PlayMessage(gMsg_ID_10010, RCID_FOX);
@@ -1078,7 +1078,7 @@ void Solar_801A10F4(Player* player) {
             break;
         case 3:
             D_ctx_80177CE8 += 60.0f;
-            if (!(gGameFrameCount & 3)) {
+            if (((gGameFrameCount % 4) == 0)) {
                 Solar_8019E8B8(RAND_FLOAT_CENTERED(6000.0f), -400.0f - ((player->camEye.y - 1380.0f) * 0.3f),
                                RAND_FLOAT_CENTERED(2000.0f) + 500.0f + D_ctx_80177D20, RAND_FLOAT(20.0f) + 20.0f);
             }
@@ -1105,16 +1105,16 @@ void Solar_801A10F4(Player* player) {
             D_ctx_801779A8[gMainController] = 60.0f;
             player->unk_190 = 2.0f;
             if (player->timer_1F8 == 0) {
-                D_ctx_80178358 = 255;
-                D_ctx_8017835C = 24;
-                D_ctx_80178348 = D_ctx_80178350 = D_ctx_80178354 = 255;
+                gFillScreenAlphaTarget = 255;
+                gFillScreenAlphaStep = 24;
+                gFillScreenRed = gFillScreenGreen = gFillScreenBlue = 255;
             }
-            if (D_ctx_80178340 == 255) {
+            if (gFillScreenAlpha == 255) {
                 AUDIO_PLAY_BGM(SEQ_ID_SOLAR | SEQ_FLAG);
                 player->pos.z = 0.0f;
                 player->unk_0D0 = D_play_80161A54;
                 func_play_800A6148();
-                D_ctx_80177838 = 50;
+                gLevelStatusScreenTimer = 50;
                 player->state_1C8 = PLAYERSTATE_1C8_3;
                 player->unk_1D0 = 0;
                 player->pos.y = 350.0f;
@@ -1131,7 +1131,7 @@ void Solar_801A10F4(Player* player) {
                 func_8001D1C8(0xFF, 3);
                 AUDIO_PLAY_SFX(0x4100C023, gDefaultSfxSource, 4);
                 D_ctx_80178488 = 1;
-                D_ctx_80178358 = 0;
+                gFillScreenAlphaTarget = 0;
                 player->timer_1F8 = 15;
                 gPlayer[0].shields = 255;
             }
@@ -1273,7 +1273,7 @@ void Solar_801A1F80(Boss* bossSO) {
         Solar_801A239C(bossSO);
         bossSO->fwork[SO_FWK_0] = 0.01f;
     }
-    if ((gBossFrameCount == 100) && (gTeamShields[3] != 0)) {
+    if ((gBossFrameCount == 100) && (gTeamShields[TEAM_ID_PEPPY] != 0)) {
         Radio_PlayMessage(gMsg_ID_10300, RCID_PEPPY);
     }
 }
@@ -1573,13 +1573,13 @@ void Solar_801A3128(Boss* bossSO) {
             D_80137E84[gMainController] = 1;
             D_Timer_80177BD0[gMainController] = 70;
             D_i3_801C2740[2]++;
-            if (D_i3_801C2740[2] & 1) {
+            if ((D_i3_801C2740[2] % 2) != 0) {
                 if (D_i3_801C2740[2] & 2) {
-                    if (gTeamShields[3] > 0) {
+                    if (gTeamShields[TEAM_ID_PEPPY] > 0) {
                         Radio_PlayMessage(gMsg_ID_20317, RCID_PEPPY);
                     }
                 } else {
-                    if (gTeamShields[1] > 0) {
+                    if (gTeamShields[TEAM_ID_FALCO] > 0) {
                         Radio_PlayMessage(gMsg_ID_20271, RCID_FALCO);
                     }
                 }
@@ -1598,7 +1598,7 @@ void Solar_801A3128(Boss* bossSO) {
         if (bossSO->swork[SO_SWK_11] == 150) {
             Solar_801A239C(bossSO);
             bossSO->fwork[SO_FWK_0] = 0.01f;
-            if ((Rand_ZeroOne() >= 0.4f) && (gTeamShields[3] > 0) && (bossSO->swork[SO_SWK_2] != 0) &&
+            if ((Rand_ZeroOne() >= 0.4f) && (gTeamShields[TEAM_ID_PEPPY] > 0) && (bossSO->swork[SO_SWK_2] != 0) &&
                 (bossSO->swork[SO_SWK_3] != 0)) {
                 Radio_PlayMessage(gMsg_ID_10320, RCID_PEPPY);
             }
@@ -1702,7 +1702,7 @@ void Solar_801A3510(Boss* bossSO) {
             if (bossSO->timer_050 != 0) {
                 bossSO->unk_04C = 65;
             }
-            if ((bossSO->unk_04C == 65) && !(gGameFrameCount & 1)) {
+            if ((bossSO->unk_04C == 65) && ((gGameFrameCount % 2) == 0)) {
                 Solar_8019FFC0(bossSO, bossSO->fwork[SO_FWK_4], bossSO->fwork[SO_FWK_5] - 100.0f,
                                bossSO->fwork[SO_FWK_6] + 600.0f, (bossSO->timer_050 * 0.2f) + 4.0f, 0);
                 Solar_801A1EB0(bossSO, bossSO->fwork[SO_FWK_4], 25.0f, bossSO->fwork[SO_FWK_5] - 100.0f,
@@ -1725,7 +1725,7 @@ void Solar_801A3510(Boss* bossSO) {
             if (bossSO->timer_050 != 0) {
                 bossSO->unk_04C = 66;
             }
-            if ((bossSO->unk_04C == 66) && !(gGameFrameCount & 1)) {
+            if ((bossSO->unk_04C == 66) && ((gGameFrameCount % 2) == 0)) {
                 Solar_8019FFC0(bossSO, bossSO->fwork[SO_FWK_4] + 125.0f, bossSO->fwork[SO_FWK_5] - 100.0f,
                                bossSO->fwork[SO_FWK_6] + 600.0f, (bossSO->timer_050 * 0.2f) + 4.0f, 1);
                 Solar_8019FFC0(bossSO, bossSO->fwork[SO_FWK_4] - 125.0f, bossSO->fwork[SO_FWK_5] - 100.0f,
@@ -1802,12 +1802,12 @@ void Solar_801A3C4C(Boss* bossSO) {
         bossSO->state = 0;
         bossSO->swork[SO_SWK_1] = 1;
         bossSO->fwork[SO_FWK_0] = 0.01f;
-        bossSO->info.hitbox = LOAD_ASSET(D_edata_800CBF34);
+        bossSO->info.hitbox = LOAD_ASSET(gHitboxNone);
         bossSO->timer_058 = 20000;
         D_ctx_8017796C = -1;
-        D_ctx_80178348 = D_ctx_80178350 = D_ctx_80178354 = D_ctx_80178340 = 255;
-        D_ctx_80178358 = 0;
-        D_ctx_8017835C = 255;
+        gFillScreenRed = gFillScreenGreen = gFillScreenBlue = gFillScreenAlpha = 255;
+        gFillScreenAlphaTarget = 0;
+        gFillScreenAlphaStep = 255;
         gCsFrameCount = 0;
         D_80137E84[gMainController] = 1;
         D_Timer_80177BD0[gMainController] = 10;
@@ -1881,12 +1881,12 @@ void Solar_801A4214(Boss* bossSO) {
                                80.0f, 40.0f, 8);
                 D_i3_801C2768[3] = 6.0f;
                 D_i3_801C2768[2] = 100.0f;
-                D_ctx_80178340 = 255;
-                D_ctx_80178348 = 255;
-                D_ctx_80178350 = 255;
-                D_ctx_80178354 = 255;
-                D_ctx_80178358 = 0;
-                D_ctx_8017835C = 4;
+                gFillScreenAlpha = 255;
+                gFillScreenRed = 255;
+                gFillScreenGreen = 255;
+                gFillScreenBlue = 255;
+                gFillScreenAlphaTarget = 0;
+                gFillScreenAlphaStep = 4;
                 func_boss_80042EC0(bossSO);
                 bossSO->swork[SO_SWK_4]++;
                 Math_SmoothStepToF(&bossSO->obj.pos.y, 180.0f, 0.1f, 10.0f, 0.1f);
@@ -1981,14 +1981,14 @@ void Solar_801A48B8(Boss* bossSO) {
             }
         }
     }
-    D_ctx_80178348 = D_ctx_80178350 = D_ctx_80178354 = D_ctx_80178340 = 255;
-    D_ctx_80178358 = 0;
-    D_ctx_8017835C = 64;
+    gFillScreenRed = gFillScreenGreen = gFillScreenBlue = gFillScreenAlpha = 255;
+    gFillScreenAlphaTarget = 0;
+    gFillScreenAlphaStep = 64;
     bossSO->swork[SO_SWK_0] = 6;
     bossSO->swork[SO_SWK_1] = 6;
     bossSO->unk_04C = 0;
     bossSO->fwork[SO_FWK_0] = 0.01f;
-    if (((bossSO->swork[SO_SWK_2] > 0) || (bossSO->swork[SO_SWK_3] > 0)) && (gTeamShields[2] > 0)) {
+    if (((bossSO->swork[SO_SWK_2] > 0) || (bossSO->swork[SO_SWK_3] > 0)) && (gTeamShields[TEAM_ID_SLIPPY] > 0)) {
         Radio_PlayMessage(gMsg_ID_7086, RCID_SLIPPY);
     }
 }
@@ -2235,7 +2235,7 @@ void Solar_801A56B8(Boss* bossSO) {
             if (bossSO->timer_050 != 0) {
                 bossSO->unk_04C = 65;
             }
-            if ((bossSO->unk_04C == 65) && !(gGameFrameCount & 3)) {
+            if ((bossSO->unk_04C == 65) && ((gGameFrameCount % 4) == 0)) {
                 Solar_8019FFC0(bossSO, bossSO->fwork[SO_FWK_4] + 125.0f, bossSO->fwork[SO_FWK_5] - 100.0f,
                                bossSO->fwork[SO_FWK_6] + 600.0f, ((f32) bossSO->timer_050 * 0.2f) + 4.0f, 1);
                 Solar_8019FFC0(bossSO, bossSO->fwork[SO_FWK_4] - 125.0f, bossSO->fwork[SO_FWK_5] - 100.0f,
@@ -2297,13 +2297,13 @@ void Solar_801A5B3C(Boss* bossSO) {
     if (bossSO->swork[SO_SWK_10] != 0) {
         bossSO->swork[SO_SWK_10]--;
     }
-    if ((gBossFrameCount == 200) && (gTeamShields[1] != 0)) {
+    if ((gBossFrameCount == 200) && (gTeamShields[TEAM_ID_FALCO] != 0)) {
         Radio_PlayMessage(gMsg_ID_10310, RCID_FALCO);
     }
-    if ((gBossFrameCount == 300) && (gTeamShields[2] != 0)) {
+    if ((gBossFrameCount == 300) && (gTeamShields[TEAM_ID_SLIPPY] != 0)) {
         Radio_PlayMessage(gMsg_ID_4092, RCID_SLIPPY);
     }
-    if ((gBossFrameCount == 450) && (gTeamShields[3] != 0)) {
+    if ((gBossFrameCount == 450) && (gTeamShields[TEAM_ID_PEPPY] != 0)) {
         Radio_PlayMessage(gMsg_ID_10320, RCID_PEPPY);
     }
     if (bossSO->health != 0) {
@@ -2338,7 +2338,7 @@ void Solar_801A5B3C(Boss* bossSO) {
         bossSO->info.hitbox[39] = bossSO->fwork[SO_FWK_26] - bossSO->obj.pos.y;
         bossSO->info.hitbox[41] = bossSO->fwork[SO_FWK_25] - bossSO->obj.pos.x;
     }
-    if (!(gGameFrameCount & 7) && (bossSO->fwork[SO_FWK_3] < 4800.0f)) {
+    if (((gGameFrameCount % 8) == 0) && (bossSO->fwork[SO_FWK_3] < 4800.0f)) {
         if (func_play_800A73E4(&sp1C0, &sp1B8, bossSO->obj.pos.x, bossSO->obj.pos.y - 160.0f, bossSO->obj.pos.z)) {
             Solar_801A1EB0(bossSO, bossSO->obj.pos.x, 50.0f, sp1C0 - 170.0f, bossSO->obj.pos.z + 100.0f);
         }
@@ -2351,8 +2351,8 @@ void Solar_801A5B3C(Boss* bossSO) {
             Solar_801A1EB0(bossSO, bossSO->fwork[SO_FWK_13], 50.0f, sp1C0 - 150.0f, bossSO->fwork[SO_FWK_15] + 150.0f);
         }
     }
-    if ((!(gGameFrameCount & 3) || (bossSO->fwork[SO_FWK_31] != 0.0f)) &&
-        ((bossSO->swork[SO_SWK_0] != 7) || !(gGameFrameCount & 1))) {
+    if ((((gGameFrameCount % 4) == 0) || (bossSO->fwork[SO_FWK_31] != 0.0f)) &&
+        ((bossSO->swork[SO_SWK_0] != 7) || ((gGameFrameCount % 2) == 0))) {
         if ((bossSO->swork[SO_SWK_2] == 0) && ((bossSO->health > 0) || (bossSO->state < 2))) {
             Solar_8019FF44(bossSO, bossSO->fwork[SO_FWK_10], bossSO->fwork[SO_FWK_11], bossSO->fwork[SO_FWK_12],
                            bossSO->fwork[SO_FWK_31] - 20.0f, -1.0f);
@@ -2511,7 +2511,7 @@ bool Solar_801A68A8(s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3f* rot, void* th
             if (this->swork[SO_SWK_4] != 0) {
                 *dList = NULL;
             } else if (this->swork[SO_SWK_10] != 0) {
-                if (this->swork[SO_SWK_10] & 1) {
+                if ((this->swork[SO_SWK_10] % 2) != 0) {
                     gDPSetPrimColor(gMasterDisp++, 0x00, 0x00, 32, 32, 128, 255);
                     rot->z += 3.0f;
                 } else {
@@ -2525,8 +2525,8 @@ bool Solar_801A68A8(s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3f* rot, void* th
             if (this->swork[SO_SWK_2] == 0) {
                 *dList = NULL;
             }
-            if ((this->swork[SO_SWK_8] & 1) != 0) {
-                if ((this->swork[SO_SWK_8] & 1) != 0) {
+            if ((this->swork[SO_SWK_8] % 2U) != 0) {
+                if ((this->swork[SO_SWK_8] % 2U) != 0) {
                     gDPSetPrimColor(gMasterDisp++, 0x00, 0x00, 32, 32, 128, 255);
                     rot->y += 3.0f;
                 } else {
@@ -2540,8 +2540,8 @@ bool Solar_801A68A8(s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3f* rot, void* th
             if (this->swork[SO_SWK_3] == 0) {
                 *dList = NULL;
             }
-            if ((this->swork[SO_SWK_9] & 1) != 0) {
-                if ((this->swork[SO_SWK_9] & 1) != 0) {
+            if ((this->swork[SO_SWK_9] % 2U) != 0) {
+                if ((this->swork[SO_SWK_9] % 2U) != 0) {
                     gDPSetPrimColor(gMasterDisp++, 0x00, 0x00, 32, 32, 128, 255);
                     rot->y += 3.0f;
                 } else {
@@ -2776,13 +2776,13 @@ void Solar_801A7750(void) {
     Rand_SetSeed(1, 29100, 9786);
 
     for (i = 0; i < 3; i++, actor++) {
-        if ((i == 0) && (gTeamShields[3] <= 0.0f)) {
+        if ((i == 0) && (gTeamShields[TEAM_ID_PEPPY] <= 0.0f)) {
             continue;
         }
-        if ((i == 1) && (gTeamShields[2] <= 0.0f)) {
+        if ((i == 1) && (gTeamShields[TEAM_ID_SLIPPY] <= 0.0f)) {
             continue;
         }
-        if ((i == 2) && (gTeamShields[1] <= 0.0f)) {
+        if ((i == 2) && (gTeamShields[TEAM_ID_FALCO] <= 0.0f)) {
             continue;
         }
 
@@ -2866,8 +2866,8 @@ void Solar_801A7930(Player* player) {
                 player->unk_0EC += 1.0f;
             }
             if (gCsFrameCount >= 230) {
-                D_ctx_80178358 = 255;
-                D_ctx_80178348 = D_ctx_80178354 = D_ctx_80178350 = 255;
+                gFillScreenAlphaTarget = 255;
+                gFillScreenRed = gFillScreenBlue = gFillScreenGreen = 255;
             }
             if (gCsFrameCount == 230) {
                 SEQCMD_STOP_SEQUENCE(SEQ_PLAYER_BGM, 50);
@@ -2878,7 +2878,7 @@ void Solar_801A7930(Player* player) {
                 func_play_800A6148();
                 func_8001CA24(0);
                 Audio_KillSfxBySource(player->sfxSource);
-                D_ctx_80178340 = 250;
+                gFillScreenAlpha = 250;
                 player->timer_1F8 = 20;
                 player->unk_0D0 = 0.0f;
                 player->unk_0E4 = 0.0f;
@@ -2914,10 +2914,10 @@ void Solar_801A7930(Player* player) {
             break;
         case 3:
             D_ctx_80177CE8 += 60.0f;
-            D_ctx_80178358 = 0;
-            D_ctx_8017835C = 4;
+            gFillScreenAlphaTarget = 0;
+            gFillScreenAlphaStep = 4;
             if (D_ctx_801782F8) {
-                player->wings.unk_30 = (gGameFrameCount & 1) * 5.0f;
+                player->wings.unk_30 = (s32) (gGameFrameCount % 2U) * 5.0f;
             }
             switch (gCsFrameCount) {
                 case 450:
@@ -2974,8 +2974,8 @@ void Solar_801A7930(Player* player) {
             break;
         case 4:
             D_ctx_80177CE8 += 60.0f;
-            D_ctx_80178358 = 0;
-            D_ctx_8017835C = 4;
+            gFillScreenAlphaTarget = 0;
+            gFillScreenAlphaStep = 4;
             D_ctx_80177A48[1] += D_ctx_80177A48[2] * 0.8f;
             Matrix_RotateY(gCalcMatrix, D_ctx_80177A48[1] * M_DTOR, 0);
             sp60.x = 0.0f;
@@ -3012,10 +3012,10 @@ void Solar_801A7930(Player* player) {
                 func_play_800A6148();
             }
             if (gCsFrameCount > 1530) {
-                D_ctx_80178358 = 255;
-                D_ctx_80178348 = D_ctx_80178350 = D_ctx_80178354 = 0;
-                D_ctx_8017835C = 8;
-                if (D_ctx_80178340 == 255) {
+                gFillScreenAlphaTarget = 255;
+                gFillScreenRed = gFillScreenGreen = gFillScreenBlue = 0;
+                gFillScreenAlphaStep = 8;
+                if (gFillScreenAlpha == 255) {
                     func_8001CA24(0);
                     Audio_FadeOutAll(10);
                     player->state_1C8 = PLAYERSTATE_1C8_6;
@@ -3028,13 +3028,13 @@ void Solar_801A7930(Player* player) {
     }
     switch (gCsFrameCount) {
         case 440:
-            D_ctx_80177840 = 100;
+            gLevelClearScreenTimer = 100;
             break;
         case 640:
             Radio_PlayMessage(gMsg_ID_20010, RCID_FOX);
             break;
         case 728:
-            switch (gTeamShields[2]) {
+            switch (gTeamShields[TEAM_ID_SLIPPY]) {
                 case 0:
                     Radio_PlayMessage(gMsg_ID_20345, RCID_ROB64);
                     break;
@@ -3047,7 +3047,7 @@ void Solar_801A7930(Player* player) {
             }
             break;
         case 875:
-            switch (gTeamShields[3]) {
+            switch (gTeamShields[TEAM_ID_PEPPY]) {
                 case 0:
                     Radio_PlayMessage(gMsg_ID_20344, RCID_ROB64);
                     break;
@@ -3060,7 +3060,7 @@ void Solar_801A7930(Player* player) {
             }
             break;
         case 1021:
-            switch (gTeamShields[1]) {
+            switch (gTeamShields[TEAM_ID_FALCO]) {
                 case 0:
                     Radio_PlayMessage(gMsg_ID_20343, RCID_ROB64);
                     break;
@@ -3083,7 +3083,7 @@ void Solar_801A7930(Player* player) {
             player->unk_190 = player->unk_194 = 5.0f;
             break;
         case 1400:
-            if (gTeamShields[3] > 0) {
+            if (gTeamShields[TEAM_ID_PEPPY] > 0) {
                 gActors[0].state = 2;
             }
             break;
@@ -3092,12 +3092,12 @@ void Solar_801A7930(Player* player) {
             SEQCMD_STOP_SEQUENCE(SEQ_PLAYER_FANFARE, 50);
             break;
         case 1420:
-            if (gTeamShields[2] > 0) {
+            if (gTeamShields[TEAM_ID_SLIPPY] > 0) {
                 gActors[1].state = 2;
             }
             break;
         case 1440:
-            if (gTeamShields[1] > 0) {
+            if (gTeamShields[TEAM_ID_FALCO] > 0) {
                 gActors[2].state = 2;
             }
             break;
@@ -3138,7 +3138,7 @@ void Solar_801A8BE8(Actor* actor) {
         case 4:
             break;
         case 1:
-            if ((actor->unk_0B6 != 0) && ((((actor->index & 7) * 10) + 1030) < gCsFrameCount)) {
+            if ((actor->unk_0B6 != 0) && ((((s32) (actor->index % 8U) * 10) + 1030) < gCsFrameCount)) {
                 actor->state = 4;
             }
             break;

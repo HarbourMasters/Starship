@@ -136,7 +136,8 @@
     "ast_vs_menu.h": "c",
     "sf64mesg.h": "c",
     "sf64audio_external.h": "c",
-    "audioseq_cmd.h": "c"
+    "audioseq_cmd.h": "c",
+    "ultralog.h": "c"
   },
   "C_Cpp_Runner.msvcBatchPath": ""
 }

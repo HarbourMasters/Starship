@@ -9,10 +9,10 @@ s32 gOverlayStage;
 s32 D_ctx_80177824; // some sort of flag
 s32 D_ctx_8017782C; // some sort of flag. all range related?
 GameState gGameState;
-s32 D_Timer_8017783C; // next game state timer?
-s32 D_ctx_80177844;   // timer for vs item spawn
+s32 gNextGameStateTimer; // next game state timer?
+s32 D_ctx_80177844;      // timer for vs item spawn
 OptionState gOptionMenuStatus;
-s32 D_ctx_80177854; // pause-related state
+s32 gPlayState;     // pause-related state
 s32 D_ctx_80177868; // some sort of state. pause-related?
 LevelMode gLevelMode;
 DrawMode gDrawMode;
@@ -20,9 +20,9 @@ s32 gPlayerNum;
 s32 gCamCount;
 s32 gTeamShields[6];
 s32 gSavedTeamShields[6];
-s32 D_ctx_801778F0[6];
+s32 gPrevPlanetSavedTeamShields[6];
 s32 gTeamDamage[6];
-u8 D_ctx_80177930; // next planet path
+u8 gNextPlanetPath; // next planet path
 f32 gGroundLevel;
 f32 D_ctx_80177950;
 f32 D_ctx_80177968;
@@ -50,8 +50,8 @@ s32 D_ctx_80177B50[7];
 s32 D_ctx_80177B70[7];
 PlanetId D_ctx_80177B90[7];
 s32 D_ctx_80177BB0[7];
-s32 D_ctx_80177BD8[22]; // overruns D_ctx_80177C38?
-s32 D_ctx_80177C38[6];
+s32 D_ctx_80177BD8[22]; // overruns gPrevPlanetTeamShields?
+s32 gPrevPlanetTeamShields[6];
 s32 D_ctx_80177C58[6];
 u8 gSoundMode;
 s32 gVolumeSettings[3];
@@ -75,13 +75,13 @@ s32 gGameFrameCount;
 s32 D_ctx_80177DC8;
 s32 D_ctx_80177E70;
 s32 D_ctx_80177E78;
-s32 D_ctx_80177E80;
+s32 gRingPassCount;
 Vec3f D_ctx_80177E88;
 Vec3f D_ctx_80177F10;
 UNK_TYPE F_80178020;
 s32 D_ctx_8017812C;
 LevelId gCurrentLevel;
-s32 D_ctx_8017827C;
+s32 gLevelStage;
 s32 gBossActive;
 s32 D_ctx_8017828C;
 s32 D_ctx_80178294;
@@ -102,19 +102,19 @@ UNK_TYPE F_801782F0;
 s32 D_ctx_801782F8;
 s32 D_ctx_80178300;
 u16* D_ctx_80178308;
-ObjectInit* D_ctx_80178310;
+ObjectInit* gLevelObjects;
 UNK_TYPE F_80178318;
 s32 gFogRed;
 s32 gFogGreen;
 s32 gFogBlue;
 s32 gFogAlpha;
-s32 D_ctx_80178340; // alpha something
-s32 D_ctx_80178348; // red something
-s32 D_ctx_80178350; // green something
-s32 D_ctx_80178354; // blue something
-s32 D_ctx_80178358; // alpha target
-s32 D_ctx_8017835C; // alpha step
-s32 D_ctx_80178360; // 2 lights second color
+s32 gFillScreenAlpha;       // alpha something
+s32 gFillScreenRed;         // red something
+s32 gFillScreenGreen;       // green something
+s32 gFillScreenBlue;        // blue something
+s32 gFillScreenAlphaTarget; // alpha target
+s32 gFillScreenAlphaStep;   // alpha step
+s32 D_ctx_80178360;         // 2 lights second color
 s32 D_ctx_80178364;
 s32 D_ctx_80178368;
 f32 D_ctx_8017836C; // 2 lights second color brightness
@@ -122,10 +122,10 @@ f32 D_ctx_80178370; // Vec3f?
 f32 D_ctx_80178374;
 f32 D_ctx_80178378;
 s32 D_ctx_8017837C;
-u32 D_ctx_80178380[4]; // player alphas
-s32 D_ctx_80178390[4]; // player reds
-s32 D_ctx_801783A0[4]; // player greens
-s32 D_ctx_801783B0[4]; // player alphas
+u32 gPlayerFillScreenAlphas[4]; // player alphas
+s32 gPlayerFillScreenReds[4];   // player reds
+s32 gPlayerFillScreenGreens[4]; // player greens
+s32 gPlayerFillScreenBlues[4];  // player alphas
 UNK_TYPE D_ctx_801783C0[4];
 f32 D_ctx_801783D0; // something x translate
 f32 D_ctx_801783D4; // something y translate
@@ -232,8 +232,8 @@ s32 D_ctx_80161A78;
 s32 D_ctx_80161A7C;
 s32 D_ctx_80161A80;
 s32 D_ctx_80161A84;
-s32 D_ctx_80161A88;
-s32 D_ctx_80161A8C;
+s32 gGroundType;
+s32 gSavedGroundType;
 u8 gGoldRingCount[4];
 u8 D_ctx_80161A94[4];
 s32 gHitCount;
@@ -247,7 +247,7 @@ UNK_TYPE F_80161AE0[4];
 UNK_TYPE F_80161AF0[4];
 UNK_TYPE P_800D31A4 = 0;
 Object_80 gObjects80[50];
-Object_4C gObjects4C[40];
+Sprite gSprites[40];
 Actor gActors[60];
 Boss gBosses[4];
 Effect gEffects[100];
@@ -264,10 +264,10 @@ f32 D_ctx_80176EB8[2][100];
 f32 D_ctx_801771D8[2][100];
 f32 D_ctx_80177500[2][100];
 UNK_TYPE P_800D31A8 = 0;
-u16 D_ctx_80177828; // enemy shot speed?
-u8 D_ctx_80177830;  // show level complete status overlay
-s32 D_ctx_80177838; // level clear related
-s32 D_ctx_80177840; // timer for mission accomplished scrren
+u16 gEnemyShotSpeed;         // enemy shot speed?
+u8 D_ctx_80177830;           // show level complete status overlay
+s32 gLevelStatusScreenTimer; // level clear related
+s32 gLevelClearScreenTimer;  // timer for mission accomplished scrren
 s32 gBossHealthBar;
 s32 D_ctx_80177850; // bonus text related. set to 15 but never read
 s32 D_ctx_80177858[4];
@@ -289,7 +289,7 @@ OSContPad* gInputPress;
 u8* D_ctx_80177984;
 s32 D_ctx_80177990[4];
 f32 D_ctx_801779A8[4];
-u8 D_ctx_801779BC;
+u8 gPauseEnabled;
 s32 gChargeTimers[4];
 f32 D_ctx_801779E4;
 f32 D_ctx_801779F4;
@@ -320,8 +320,8 @@ s32 D_ctx_80177CAC;
 s32 D_ctx_80177CB4;
 s32 D_ctx_80177CBC;
 s32 D_ctx_80177CC4;
-s32 D_ctx_80177CD0[6];
-s32 D_ctx_80177CF0[6];
+s32 gStarWolfTeamAlive[6];
+s32 gSavedStarWolfTeamAlive[6];
 s32 gRightWingHealth[4];
 s32 gLeftWingHealth[4];
 s32 D_ctx_80177D40[4];
@@ -333,8 +333,8 @@ s32 D_ctx_80177DB8[4];
 s32 D_ctx_80177DD0[4][10];
 s32 D_ctx_80177E74;
 s32 D_ctx_80177E7C;
-s32 D_ctx_80177E84;
-Vec3f D_ctx_80177E98[10];
+s32 gChangeTo360;
+Vec3f gTeamArrowsViewPos[10];
 f32 D_ctx_80177F20[65];
 f32 D_ctx_80178028[65];
 f32 D_ctx_80178130[65];

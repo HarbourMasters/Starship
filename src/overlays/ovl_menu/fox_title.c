@@ -3,7 +3,7 @@
  * System: Title
  * Description: Starfox Title Handler
  */
-#include "prevent_bss_reordering.h"
+// #include "prevent_bss_reordering.h"
 #include "global.h"
 #include "fox_title.h"
 #include "assets/ast_title.h"
@@ -173,10 +173,10 @@ void Title_801875E0(void) {
 
     gMainController = Title_80187ABC();
 
-    D_ctx_80178348 = 0;
-    D_ctx_80178350 = 0;
-    D_ctx_80178354 = 0;
-    D_ctx_80178340 = 0;
+    gFillScreenRed = 0;
+    gFillScreenGreen = 0;
+    gFillScreenBlue = 0;
+    gFillScreenAlpha = 0;
 
     gFogRed = 0;
     gFogGreen = 0;
@@ -218,19 +218,19 @@ void Title_801875E0(void) {
 void Title_80187754(void) {
     switch (D_ctx_80177AE0) {
         case 0:
-            if (D_Timer_8017783C == 0) {
-                gDrawMode = DRAWMODE_0;
+            if (gNextGameStateTimer == 0) {
+                gDrawMode = DRAW_NONE;
                 D_ctx_80177AE0 = 1;
             }
             break;
 
         case 1:
-            gDrawMode = DRAWMODE_0;
+            gDrawMode = DRAW_NONE;
             Title_801875E0();
             break;
 
         case 2:
-            gDrawMode = DRAWMODE_1;
+            gDrawMode = DRAW_TITLE;
             Title_801877F0();
             break;
     }
@@ -334,10 +334,10 @@ void Title_801878D8(void) {
     }
 
     if (D_menu_801B8284 != 0) {
-        D_ctx_80178340 = 0;
-        D_ctx_80178348 = 0;
-        D_ctx_80178350 = 0;
-        D_ctx_80178354 = 0;
+        gFillScreenAlpha = 0;
+        gFillScreenRed = 0;
+        gFillScreenGreen = 0;
+        gFillScreenBlue = 0;
         func_fade_80084688(2, D_menu_801B8284);
     }
 }
@@ -378,7 +378,7 @@ void Title_80187B00(void) {
                 D_ctx_80178410 = 0;
                 gRadioState = 0;
                 D_menu_801B82C0 = 0;
-                gDrawMode = DRAWMODE_0;
+                gDrawMode = DRAW_NONE;
                 Audio_SetAudioSpec(0, 0x16);
                 D_menu_801B82C4 = 1;
             }
@@ -389,7 +389,7 @@ void Title_80187B00(void) {
             break;
     }
 
-    if ((D_menu_801B82A8 == 0) && ((gGameFrameCount & 7) == 7) && (D_menu_801B8288 < 10)) {
+    if ((D_menu_801B82A8 == 0) && ((gGameFrameCount % 8U) == 7) && (D_menu_801B8288 < 10)) {
         D_menu_801B8288++;
     }
 }
@@ -539,10 +539,10 @@ void Title_801881FC(void) {
     D_menu_801B9060 = 242.0f;
     D_menu_801B9064 = 100.0f;
 
-    D_ctx_80178340 = 0;
-    D_ctx_80178348 = 0;
-    D_ctx_80178350 = 0;
-    D_ctx_80178354 = 0;
+    gFillScreenAlpha = 0;
+    gFillScreenRed = 0;
+    gFillScreenGreen = 0;
+    gFillScreenBlue = 0;
 
     D_menu_801B86A8 = 0.0f;
     D_menu_801B86AC = 0.0f;
@@ -864,7 +864,7 @@ void Title_801888E8(void) {
 
     D_menu_801B82C0 = 0;
 
-    gDrawMode = DRAWMODE_0;
+    gDrawMode = DRAW_NONE;
 
     D_menu_801B82C4 = 7;
 }
@@ -926,10 +926,10 @@ void Title_801894E8(void) {
     }
 
     D_menu_801B869C = 255;
-    D_ctx_80178340 = 255;
-    D_ctx_80178348 = 0;
-    D_ctx_80178350 = 0;
-    D_ctx_80178354 = 0;
+    gFillScreenAlpha = 255;
+    gFillScreenRed = 0;
+    gFillScreenGreen = 0;
+    gFillScreenBlue = 0;
 
     D_menu_801B9070 = 110.0f;
     D_menu_801B9074 = 70.0f;
@@ -1014,8 +1014,8 @@ void Title_8018994C(void) {
             break;
 
         case 100:
-            if (D_ctx_80178340 != 0) {
-                D_ctx_80178340 -= 5;
+            if (gFillScreenAlpha != 0) {
+                gFillScreenAlpha -= 5;
             } else {
                 D_menu_801B82A8 = 19;
                 D_menu_801B82C0 = 1;
@@ -1048,7 +1048,7 @@ void Title_8018994C(void) {
                         D_menu_801B82D0 = 0.02f;
                         D_menu_801B82C0++;
                         D_menu_801B7BD8 = 1;
-                        D_ctx_80178340 = 0;
+                        gFillScreenAlpha = 0;
                     }
                 }
             }
@@ -1170,20 +1170,20 @@ void Title_8018994C(void) {
             }
 
             if (D_menu_801B82B4 == 750) {
-                D_ctx_80178340 = 0;
-                D_ctx_80178348 = 0;
-                D_ctx_80178350 = 0;
-                D_ctx_80178354 = 0;
+                gFillScreenAlpha = 0;
+                gFillScreenRed = 0;
+                gFillScreenGreen = 0;
+                gFillScreenBlue = 0;
                 D_menu_801B869C = 1;
             }
 
-            if (D_ctx_80178340 == 255) {
+            if (gFillScreenAlpha == 255) {
                 Audio_KillSfxBySourceAndId(D_menu_801B8658.unk_24, 0x11030010);
                 Audio_KillSfxBySourceAndId(D_menu_801B8658.unk_24, 0x31024059);
 
                 D_menu_801B82C0 = 0;
 
-                gDrawMode = DRAWMODE_0;
+                gDrawMode = DRAW_NONE;
 
                 D_menu_801B82C4 = 2;
             }
@@ -1214,10 +1214,10 @@ void Title_8018A338(void) {
 
     D_menu_801B869C = 255;
 
-    D_ctx_80178340 = 255;
-    D_ctx_80178348 = 0;
-    D_ctx_80178350 = 0;
-    D_ctx_80178354 = 0;
+    gFillScreenAlpha = 255;
+    gFillScreenRed = 0;
+    gFillScreenGreen = 0;
+    gFillScreenBlue = 0;
 
     D_menu_801B8344 = 0;
     D_menu_801B8334 = 0;
@@ -1382,7 +1382,7 @@ void Title_8018A644(void) {
 
                 D_menu_801B82C0 = 0;
 
-                gDrawMode = DRAWMODE_0;
+                gDrawMode = DRAW_NONE;
 
                 D_menu_801B82C4 = 3;
             }
@@ -1413,9 +1413,9 @@ void Title_8018A990(void) {
         { 255.0f, 255.0f, 155.0f },
     };
 
-    if ((gGameFrameCount & 7) == 7) {
+    if ((gGameFrameCount % 8U) == 7) {
         if (D_menu_801B8338 != 0) {
-            D_menu_801B8334 = (D_menu_801B8334 + 1) & 3;
+            D_menu_801B8334 = (D_menu_801B8334 + 1) % 4U;
             D_menu_801B8328 = D_menu_801ADF54[D_menu_801B8334].unk_0;
             D_menu_801B832C = D_menu_801ADF54[D_menu_801B8334].unk_4;
             D_menu_801B8330 = D_menu_801ADF54[D_menu_801B8334].unk_8;
@@ -1427,7 +1427,7 @@ void Title_8018A990(void) {
         D_menu_801B8338 ^= 1;
     }
 
-    if (gGameFrameCount & 1) {
+    if ((gGameFrameCount % 2) != 0) {
         D_menu_801B86CC += 30.0f;
         if (D_menu_801B86CC > 90.0f) {
             D_menu_801B86CC = -90.0f;
@@ -1458,10 +1458,10 @@ void Title_8018ABC0(void) {
 
     D_menu_801B869C = 255;
 
-    D_ctx_80178340 = 0;
-    D_ctx_80178348 = 0;
-    D_ctx_80178350 = 0;
-    D_ctx_80178354 = 0;
+    gFillScreenAlpha = 0;
+    gFillScreenRed = 0;
+    gFillScreenGreen = 0;
+    gFillScreenBlue = 0;
     gLight1R = 101;
     gLight1G = 106;
     gLight1B = 92;
@@ -1515,11 +1515,11 @@ void Title_8018ACEC(void) {
                 D_menu_801B869C = 1;
             }
 
-            if (D_ctx_80178340 == 255) {
+            if (gFillScreenAlpha == 255) {
                 Audio_KillSfxBySourceAndId(D_menu_801B8658.unk_24, 0x11030010);
                 Audio_KillSfxBySourceAndId(D_menu_801B8658.unk_24, 0x31024059);
 
-                gDrawMode = DRAWMODE_0;
+                gDrawMode = DRAW_NONE;
 
                 D_menu_801B82C0 = 0;
                 D_menu_801B82C4 = 4;
@@ -1573,10 +1573,10 @@ void Title_8018B058(void) {
 
     D_menu_801B869C = 255;
 
-    D_ctx_80178340 = 0;
-    D_ctx_80178348 = 255;
-    D_ctx_80178350 = 255;
-    D_ctx_80178354 = 255;
+    gFillScreenAlpha = 0;
+    gFillScreenRed = 255;
+    gFillScreenGreen = 255;
+    gFillScreenBlue = 255;
     D_ctx_80178410 = 0;
 
     D_menu_801B8334 = 0;
@@ -1798,15 +1798,15 @@ void Title_8018B5C4(void) {
                 gLight1B = D_menu_801B82F4;
             }
 
-            if ((D_menu_801B82B4 > 60) && (D_ctx_80178340 < 255)) {
-                D_ctx_80178340++;
+            if ((D_menu_801B82B4 > 60) && (gFillScreenAlpha < 255)) {
+                gFillScreenAlpha++;
             }
 
-            if (D_ctx_80178340 == 128) {
+            if (gFillScreenAlpha == 128) {
                 D_menu_801B82A8 = 7;
                 D_menu_801B84E8[3].unk_3C = 0;
                 D_menu_801B84E8[3].unk_40 = 0;
-                D_ctx_80178340 = 255;
+                gFillScreenAlpha = 255;
                 D_menu_801B82C0++;
             }
 
@@ -1834,7 +1834,7 @@ void Title_8018B5C4(void) {
 
                 D_menu_801B82A8 = 4;
 
-                D_ctx_80178340 = 0;
+                gFillScreenAlpha = 0;
 
                 for (i = 0; i < 4; i++) {
                     D_menu_801B84E8[i].unk_3C = 1;
@@ -1927,10 +1927,10 @@ void Title_8018C1C0(void) {
 
     D_menu_801B869C = 255;
 
-    D_ctx_80178340 = 0;
-    D_ctx_80178348 = 0;
-    D_ctx_80178350 = 0;
-    D_ctx_80178354 = 0;
+    gFillScreenAlpha = 0;
+    gFillScreenRed = 0;
+    gFillScreenGreen = 0;
+    gFillScreenBlue = 0;
 
     D_menu_801B8688.pos.x = 130.0f;
     D_menu_801B8688.pos.y = -30.0f;
@@ -2081,7 +2081,7 @@ void Title_8018C644(void) {
                 D_menu_801B869C = 1;
             }
 
-            if (D_ctx_80178340 == 255) {
+            if (gFillScreenAlpha == 255) {
                 Audio_KillSfxBySourceAndId(D_menu_801B8658.unk_24, 0x11030010);
                 Audio_KillSfxBySourceAndId(D_menu_801B8658.unk_24, 0x31024059);
                 D_menu_801B82C0++;
@@ -2091,7 +2091,7 @@ void Title_8018C644(void) {
             break;
 
         case 2:
-            D_ctx_80178340 = 0;
+            gFillScreenAlpha = 0;
             D_ctx_80178410 = 0;
             D_menu_801B86A0 = 0;
             D_menu_801B82A8 = 20;
@@ -2103,7 +2103,7 @@ void Title_8018C644(void) {
                 break;
             }
             D_menu_801B82C0 = 0;
-            gDrawMode = DRAWMODE_0;
+            gDrawMode = DRAW_NONE;
             D_menu_801B82C4 = 0;
             Audio_SetAudioSpec(0, 23);
             break;
@@ -2309,7 +2309,7 @@ void Title_8018D510(s32 arg0) {
 
     var_fv0 = D_menu_801B84E8[arg0].unk_44;
 
-    if (gGameFrameCount & 1) {
+    if ((gGameFrameCount % 2) != 0) {
         var_fv0 += var_fv1;
     }
 
@@ -2950,7 +2950,7 @@ static s32 D_menu_801AE528[] = {
 
 void Title_8018FF74(void) {
     if (D_menu_801B7BD8 != 0) {
-        if ((D_menu_801B7BB8 > -870.0f) && (D_menu_801B7BB8 < 900.0f) && (D_ctx_80178340 > 0)) {
+        if ((D_menu_801B7BB8 > -870.0f) && (D_menu_801B7BB8 < 900.0f) && (gFillScreenAlpha > 0)) {
             if ((D_menu_801B7BB8 < 0.0f) && (D_menu_801B7BD0 < 255)) {
                 D_menu_801B7BD0 += 2;
             }
@@ -2980,8 +2980,8 @@ void Title_8018FF74(void) {
 void Title_80190144(void) {
     s32 i;
 
-    if (D_ctx_80178340 > 0) {
-        D_ctx_80178340 -= 4;
+    if (gFillScreenAlpha > 0) {
+        gFillScreenAlpha -= 4;
     }
 
     D_ctx_801783D0 = D_menu_801B7BB8;
@@ -2989,17 +2989,17 @@ void Title_80190144(void) {
 
     if (D_ctx_801783D0 < 950.0f) {
         if (D_ctx_801783D0 > -900.0f) {
-            D_ctx_80178340 += 8;
-            if (D_ctx_80178340 > 60) {
-                D_ctx_80178340 = 60;
+            gFillScreenAlpha += 8;
+            if (gFillScreenAlpha > 60) {
+                gFillScreenAlpha = 60;
             }
-            D_ctx_80178348 = 208;
-            D_ctx_80178350 = 208;
-            D_ctx_80178354 = 208;
+            gFillScreenRed = 208;
+            gFillScreenGreen = 208;
+            gFillScreenBlue = 208;
         }
     }
 
-    if (D_ctx_80178340 > 0) {
+    if (gFillScreenAlpha > 0) {
         RCP_SetupDL(&gMasterDisp, 0x3E);
 
         gDPSetAlphaDither(gMasterDisp++, G_AD_NOISE);
@@ -3036,13 +3036,13 @@ void Title_801903B8(void) {
     gDPSetAlphaDither(gMasterDisp++, G_AD_NOISE);
     gDPSetColorDither(gMasterDisp++, G_CD_NOISE);
 
-    if (D_ctx_80178340 > 0) {
+    if (gFillScreenAlpha > 0) {
         temp_fs3 = D_ctx_801783D0 * -0.03f;
         temp_fs4 = D_ctx_801783D4 * 0.03f;
 
         var_fs1 = 1.0f;
-        if (D_ctx_80178340 < 10) {
-            var_fs1 = D_ctx_80178340 / 10.0f;
+        if (gFillScreenAlpha < 10) {
+            var_fs1 = gFillScreenAlpha / 10.0f;
         }
 
         var_fs1 *= 0.5f;
@@ -3192,7 +3192,7 @@ void Title_80190EA4(void) {
                 D_ctx_80178410 = 0;
                 gRadioState = 0;
                 D_menu_801B82C0 = 0;
-                gDrawMode = DRAWMODE_0;
+                gDrawMode = DRAW_NONE;
                 D_menu_801B82C4 = 0;
                 gControllerLock = 30;
                 D_menu_801B8284 = 0;
@@ -3222,9 +3222,9 @@ void Title_80190FD0(void) {
                     D_menu_801B8284 += 18;
                 } else {
                     gGameState = GSTATE_MENU;
-                    D_Timer_8017783C = 2;
+                    gNextGameStateTimer = 2;
                     gOptionMenuStatus = OPTION_WAIT;
-                    gDrawMode = DRAWMODE_0;
+                    gDrawMode = DRAW_NONE;
                     D_ctx_80178410 = 0;
                     D_menu_801B8280 = 0;
                     D_menu_801B8284 = 0;
@@ -3268,17 +3268,17 @@ void Title_8019111C(void) {
 void Title_801912A0(void) {
     switch (D_menu_801B869C) {
         case 0:
-            D_ctx_80178340 -= 4;
-            if (D_ctx_80178340 < 0) {
-                D_ctx_80178340 = 0;
+            gFillScreenAlpha -= 4;
+            if (gFillScreenAlpha < 0) {
+                gFillScreenAlpha = 0;
                 D_menu_801B869C = 255;
             }
             break;
 
         case 1:
-            D_ctx_80178340 += 15;
-            if (D_ctx_80178340 > 255) {
-                D_ctx_80178340 = 255;
+            gFillScreenAlpha += 15;
+            if (gFillScreenAlpha > 255) {
+                gFillScreenAlpha = 255;
                 D_menu_801B869C = 255;
             }
             break;

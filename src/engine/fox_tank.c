@@ -178,11 +178,11 @@ void func_tank_80043B18(Player* player) {
         if (gCurrentLevel == LEVEL_MACBETH) {
             func_tank_80043AA0(player->pos.x + sp3C.x, player->pos.y + sp3C.y, player->unk_138 + sp3C.z, 0.2f);
         } else {
-            if (!(gGameFrameCount & 1)) {
+            if (((gGameFrameCount % 2) == 0)) {
                 Titania_80189120(player->pos.x + sp3C.x, player->pos.y + sp3C.y, player->unk_138 + sp3C.z,
                                  player->unk_0E8 + sp38, 1.3f);
             }
-            if (!(gGameFrameCount & 3)) {
+            if (((gGameFrameCount % 4) == 0)) {
                 func_effect_8007A900(player->pos.x + sp3C.x, player->pos.y + sp3C.y + 20.0f, player->unk_138 + sp3C.z,
                                      2.0f, 255, 15, 0);
             }
@@ -193,15 +193,15 @@ void func_tank_80043B18(Player* player) {
             sp48.x = 36.0f;
             Matrix_MultVec3f(gCalcMatrix, &sp48, &sp3C);
             if (gCurrentLevel == LEVEL_MACBETH) {
-                if (gGameFrameCount & 1) {
+                if ((gGameFrameCount % 2) != 0) {
                     func_tank_80043AA0(player->pos.x + sp3C.x, player->pos.y + sp3C.y, player->unk_138 + sp3C.z, 0.2f);
                 }
             } else {
-                if (!(gGameFrameCount & 1)) {
+                if (((gGameFrameCount % 2) == 0)) {
                     Titania_80189120(player->pos.x + sp3C.x, player->pos.y + sp3C.y, player->unk_138 + sp3C.z,
                                      player->unk_0E8 + sp38, 1.0f);
                 }
-                if (!(gGameFrameCount & 3) && (player->unk_0D0 >= 5.0f)) {
+                if (((gGameFrameCount % 4) == 0) && (player->unk_0D0 >= 5.0f)) {
                     func_effect_8007A900(player->pos.x + sp3C.x, player->pos.y + sp3C.y + 20.0f,
                                          player->unk_138 + sp3C.z, 2.0f, 255, 15, 0);
                 }
@@ -211,15 +211,15 @@ void func_tank_80043B18(Player* player) {
             sp48.x = -36.0f;
             Matrix_MultVec3f(gCalcMatrix, &sp48, &sp3C);
             if (gCurrentLevel == LEVEL_MACBETH) {
-                if (!(gGameFrameCount & 1)) {
+                if (((gGameFrameCount % 2) == 0)) {
                     func_tank_80043AA0(player->pos.x + sp3C.x, player->pos.y + sp3C.y, player->unk_138 + sp3C.z, 0.2f);
                 }
             } else {
-                if (!(gGameFrameCount & 1)) {
+                if (((gGameFrameCount % 2) == 0)) {
                     Titania_80189120(player->pos.x + sp3C.x, player->pos.y + sp3C.y, player->unk_138 + sp3C.z,
                                      player->unk_0E8 + sp38, 1.0f);
                 }
-                if (!(gGameFrameCount & 3) && (player->unk_0D0 >= 5.0f)) {
+                if (((gGameFrameCount % 4) == 0) && (player->unk_0D0 >= 5.0f)) {
                     func_effect_8007A900(player->pos.x + sp3C.x, player->pos.y + sp3C.y + 20.0f,
                                          player->unk_138 + sp3C.z, 2.0f, 255, 15, 0);
                 }
@@ -449,10 +449,10 @@ void func_tank_80044868(Player* player) {
     }
     player->pos.x += player->vel.x;
     if ((player->unk_0AC + (player->unk_09C - 100.0f)) < player->pos.x) {
-        player->flags_228 = 1;
+        player->flags_228 = PFLAG_228_0;
     }
     if (player->pos.x < (player->unk_0AC - (player->unk_09C - 100.0f))) {
-        player->flags_228 = 2;
+        player->flags_228 = PFLAG_228_1;
     }
     if (player->unk_09C + player->unk_0AC < player->pos.x) {
         player->pos.x = player->unk_09C + player->unk_0AC;
@@ -672,13 +672,13 @@ void func_tank_80045678(Player* player) {
             player->unk_0D4 = 0.0f;
             Math_SmoothStepToF(&player->vel.y, 0.0f, 0.1f, 2.0f, 0);
         }
-        if ((gCamCount == 1) && !(gGameFrameCount & 1)) {
+        if ((gCamCount == 1) && ((gGameFrameCount % 2) == 0)) {
             func_effect_8007A900(RAND_FLOAT_CENTERED(20.0f) + player->pos.x, player->unk_068 + 10.0f,
                                  player->unk_138 - 10.0f, RAND_FLOAT(2.0f) + 3.5f, 255, 16, 1);
         }
     } else {
         D_800C9F3C = 0;
-        if ((gCamCount == 1) && !(gGameFrameCount & 3) && (player->unk_1DC == 0)) {
+        if ((gCamCount == 1) && ((gGameFrameCount % 4) == 0) && (player->unk_1DC == 0)) {
             if ((player->unk_16C > 0.2f) && (player->timer_220 == 0)) {
                 func_effect_8007A900(RAND_FLOAT_CENTERED(10.0f) + (player->pos.x - 57.0f), player->unk_068 + 10.0f,
                                      player->unk_138 - 10.0f, RAND_FLOAT(1.0f) + 1.5f, 255, 15, 0);
@@ -1328,7 +1328,7 @@ void func_tank_800481F4(Player* player) {
     s32 temp_v0;
     Actor* actor;
     Boss* boss;
-    Object_4C* obj4C;
+    Sprite* sprite;
     Object_80* obj80;
     s32 sp98;
     s32 pad2;
@@ -1472,21 +1472,22 @@ void func_tank_800481F4(Player* player) {
                 }
             }
         }
-        for (i = 0, obj4C = gObjects4C; i < ARRAY_COUNT(gObjects4C); i++, obj4C++) {
-            if (obj4C->obj.status == OBJ_ACTIVE) {
-                if ((player->unk_138 - 200.0f) < obj4C->obj.pos.z) {
-                    temp_v0 = func_play_800A7974(player, obj4C->info.hitbox, &sp98, obj4C->obj.pos.x, obj4C->obj.pos.y,
-                                                 obj4C->obj.pos.z, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+        for (i = 0, sprite = gSprites; i < ARRAY_COUNT(gSprites); i++, sprite++) {
+            if (sprite->obj.status == OBJ_ACTIVE) {
+                if ((player->unk_138 - 200.0f) < sprite->obj.pos.z) {
+                    temp_v0 =
+                        func_play_800A7974(player, sprite->info.hitbox, &sp98, sprite->obj.pos.x, sprite->obj.pos.y,
+                                           sprite->obj.pos.z, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
                     if (temp_v0 != 0) {
-                        if ((obj4C->obj.id == OBJ_4C_163) || (obj4C->obj.id == OBJ_4C_161) ||
-                            (obj4C->obj.id == OBJ_4C_162)) {
-                            obj4C->unk_46 = 1;
+                        if ((sprite->obj.id == OBJ_SPRITE_FO_POLE) || (sprite->obj.id == OBJ_SPRITE_CO_POLE) ||
+                            (sprite->obj.id == OBJ_SPRITE_CO_TREE)) {
+                            sprite->unk_46 = 1;
                             player->unk_1F4 = 6;
                             player->unk_21C = 0;
-                        } else if (obj4C->obj.id == OBJ_4C_169) {
-                            obj4C->unk_46 = 1;
+                        } else if (sprite->obj.id == OBJ_SPRITE_TI_CACTUS) {
+                            sprite->unk_46 = 1;
                         } else {
-                            Player_ApplyDamage(player, temp_v0, obj4C->info.damage);
+                            Player_ApplyDamage(player, temp_v0, sprite->info.damage);
                         }
                     }
                 }

@@ -41,22 +41,22 @@ void func_boss_80042EC0(Boss* boss) {
     D_ctx_80177850 = 15;
 }
 
-void Boss299_Init(Boss* boss) {
+void Boss299_Init(Boss299* this) {
 }
 
-void Boss299_Update(Boss* boss) {
+void Boss299_Update(Boss299* this) {
 }
 
-void Boss299_Draw(Boss* boss) {
+void Boss299_Draw(Boss299* this) {
 }
 
-void Boss300_Init(Boss* boss) {
+void Boss300_Init(Boss300* this) {
 }
 
-void Boss300_Update(Boss* boss) {
+void Boss300_Update(Boss300* this) {
 }
 
-void Boss300_Draw(Boss* boss) {
+void Boss300_Draw(Boss300* this) {
 }
 
 void func_boss_80042FF4(Actor* actor, f32 arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5, f32 arg6, f32 arg7, f32 arg8,

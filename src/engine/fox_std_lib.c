@@ -1134,40 +1134,38 @@ void Graphics_DisplaySmallText(s32 xPos, s32 yPos, f32 xScale, f32 yScale, char*
     f32 xPosCurrent = xPos;
     s32 width;
 
-    if (text != NULL) {
-        while (text[0] != 0) {
-            var_t0 = 0;
-            while ((var_t0 < ARRAY_COUNT(sSmallChars)) && sSmallChars[var_t0] != text[0]) {
-                var_t0++;
-            }
-            if (sSmallChars[var_t0] == text[0]) {
-                if (sSmallCharTex[var_t0] != NULL) {
-                    width = 8;
-                    if (var_t0 > 30) {
-                        width = 16;
-                    }
-                    TextureRect_8bIA(&gMasterDisp, sSmallCharTex[var_t0], width, 8, xPosCurrent, yPos, xScale, yScale);
-                    if (1) {}
-                }
-                switch (text[0]) {
-                    case '!':
-                    case ':':
-                    case 'I':
-                        xPosCurrent += 4.0f * xScale;
-                        break;
-                    case '-':
-                        xPosCurrent += 6.0f * xScale;
-                        break;
-                    default:
-                        if (var_t0 > 29) {
-                            xPosCurrent += 9.0f * xScale;
-                        } else {
-                            xPosCurrent += 8.0f * xScale;
-                        }
-                }
-            }
-            text++;
+    while (text[0] != 0) {
+        var_t0 = 0;
+        while ((var_t0 < ARRAY_COUNT(sSmallChars)) && sSmallChars[var_t0] != text[0]) {
+            var_t0++;
         }
+        if (sSmallChars[var_t0] == text[0]) {
+            if (sSmallCharTex[var_t0] != NULL) {
+                width = 8;
+                if (var_t0 > 30) {
+                    width = 16;
+                }
+                TextureRect_8bIA(&gMasterDisp, sSmallCharTex[var_t0], width, 8, xPosCurrent, yPos, xScale, yScale);
+                if (1) {}
+            }
+            switch (text[0]) {
+                case '!':
+                case ':':
+                case 'I':
+                    xPosCurrent += 4.0f * xScale;
+                    break;
+                case '-':
+                    xPosCurrent += 6.0f * xScale;
+                    break;
+                default:
+                    if (var_t0 >= 30) {
+                        xPosCurrent += 9.0f * xScale;
+                    } else {
+                        xPosCurrent += 8.0f * xScale;
+                    }
+            }
+        }
+        text++;
     }
 }
 
@@ -1191,7 +1189,7 @@ s32 Graphics_GetSmallTextWidth(char* text) {
                     xPos += 6.0f;
                     break;
                 default:
-                    if (charIndex > 29) {
+                    if (charIndex >= 30) {
                         xPos += 9.0f;
                     } else {
                         xPos += 8.0f;

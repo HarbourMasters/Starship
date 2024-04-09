@@ -12,8 +12,8 @@ Lib_vsPrintf = 0x80002E80;
 Lib_vTable = 0x80002EA0;
 Lib_SwapBuffers = 0x80002EE4;
 Lib_QuickSort = 0x80002F88;
-Lib_Perspective = 0x8000316C;
-Lib_Ortho = 0x800032B4;
+Lib_InitPerspective = 0x8000316C;
+Lib_InitOrtho = 0x800032B4;
 Lib_DmaRead = 0x800033E0;
 Lib_FillScreen = 0x800034E8;
 

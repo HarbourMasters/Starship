@@ -21,6 +21,9 @@
 #include "assets/ast_area_6.h"
 #include "assets/ast_zoness.h"
 
+#include "prevent_bss_reordering2.h"
+#include "prevent_bss_reordering3.h"
+
 f32 D_bg_8015F960;
 u8 D_bg_8015F964;
 f32 D_bg_8015F968;
@@ -505,8 +508,7 @@ void func_bg_8003E1E8(void) {
                     RCP_SetupDL_36();
                     sp138 = D_ctx_80178420;
                     sp134 = D_ctx_80178424;
-                    if (((gCurrentLevel == LEVEL_SECTOR_X) || (gCurrentLevel == LEVEL_METEO)) &&
-                        (D_ctx_8017827C == 1)) {
+                    if (((gCurrentLevel == LEVEL_SECTOR_X) || (gCurrentLevel == LEVEL_METEO)) && (gLevelStage == 1)) {
                         sp11C = LEVEL_WARP_ZONE;
                     }
                     if (sp11C == LEVEL_SECTOR_X) {
@@ -604,7 +606,7 @@ void func_bg_8003E1E8(void) {
                             break;
                         case LEVEL_FORTUNA:
                             sp128 = 1.5f;
-                            if ((gCsFrameCount > 400) && (D_ctx_80177930 == 0)) {
+                            if ((gCsFrameCount > 400) && (gNextPlanetPath == 0)) {
                                 sp128 = 0.75f;
                             }
                             Matrix_Translate(gGfxMatrix, sp138 - 120.0f, -(sp134 - 120.0f), -290.0f, 1);
@@ -676,23 +678,23 @@ void func_bg_80040450(void) {
     Gfx** var_s3;
     f32* var_s4;
     s32 i;
-    s32 temp = gLevelType;
+    s32 levelType = gLevelType;
 
     if ((gCurrentLevel == LEVEL_KATINA) || (gCurrentLevel == LEVEL_VENOM_2) || (gCurrentLevel == LEVEL_VENOM_ANDROSS) ||
         (gCurrentLevel == LEVEL_SOLAR) || (gCurrentLevel == LEVEL_TRAINING) || gVersusMode) {
         return;
     }
-    D_ctx_80178380[gPlayerNum] -= D_bg_800C9E4C[temp];
-    if (D_ctx_80178380[gPlayerNum] > 300) {
-        D_ctx_80178380[gPlayerNum] = 0;
+    gPlayerFillScreenAlphas[gPlayerNum] -= D_bg_800C9E4C[levelType];
+    if (gPlayerFillScreenAlphas[gPlayerNum] > 300) {
+        gPlayerFillScreenAlphas[gPlayerNum] = 0;
     }
     if (((gCurrentLevel == LEVEL_AQUAS) && (gPlayer[0].state_1C8 == PLAYERSTATE_1C8_2)) ||
         (((gPlayer[gPlayerNum].state_1C8 == PLAYERSTATE_1C8_5) || (gLevelMode == LEVELMODE_ALL_RANGE) ||
           (gPlayer[gPlayerNum].state_1C8 == PLAYERSTATE_1C8_7)) &&
          (gLevelType == LEVELTYPE_PLANET) && (gCurrentLevel != LEVEL_TITANIA) && (gCurrentLevel != LEVEL_AQUAS))) {
-        D_ctx_80178390[gPlayerNum] = 128;
-        D_ctx_801783A0[gPlayerNum] = 128;
-        D_ctx_801783B0[gPlayerNum] = 128;
+        gPlayerFillScreenReds[gPlayerNum] = 128;
+        gPlayerFillScreenGreens[gPlayerNum] = 128;
+        gPlayerFillScreenBlues[gPlayerNum] = 128;
         sp44 = Math_RadToDeg(gPlayer[gPlayerNum].unk_058);
         var_fa0 = Math_RadToDeg(gPlayer[gPlayerNum].unk_05C);
         if (var_fa0 > 180.0f) {
@@ -704,18 +706,18 @@ void func_bg_80040450(void) {
         if (gCurrentLevel == LEVEL_KATINA) {
             D_ctx_801783D4 -= 80.0f;
         }
-        if ((gCurrentLevel == LEVEL_ZONESS) && (gPlayer[0].unk_1D0 >= 2) && (D_enmy_80161684 == 0)) {
+        if ((gCurrentLevel == LEVEL_ZONESS) && (gPlayer[0].unk_1D0 >= 2) && !gMissedZoSearchlight) {
             D_ctx_801783D4 -= 60.0f;
             D_ctx_801783D0 -= 480.0f;
         }
         if ((D_ctx_801783D0 < 120.0f) && (D_ctx_801783D0 > -120.0f) && (D_ctx_801783D4 < 120.0f)) {
-            D_ctx_80178380[gPlayerNum] += D_bg_800C9E4C[temp] * 2;
-            if (D_bg_800C9E54[temp] < D_ctx_80178380[gPlayerNum]) {
-                D_ctx_80178380[gPlayerNum] = D_bg_800C9E54[temp];
+            gPlayerFillScreenAlphas[gPlayerNum] += D_bg_800C9E4C[levelType] * 2;
+            if (D_bg_800C9E54[levelType] < gPlayerFillScreenAlphas[gPlayerNum]) {
+                gPlayerFillScreenAlphas[gPlayerNum] = D_bg_800C9E54[levelType];
             }
         }
     }
-    if (D_ctx_80178380[gPlayerNum] != 0) {
+    if (gPlayerFillScreenAlphas[gPlayerNum] != 0) {
         Matrix_Push(&gGfxMatrix);
         Matrix_RotateZ(gGfxMatrix, gPlayer[gPlayerNum].unk_034 * M_DTOR, 1);
         Matrix_Translate(gGfxMatrix, D_ctx_801783D0, D_ctx_801783D4, -200.0f, 1);
@@ -755,12 +757,12 @@ void func_bg_80040954(void) {
     f32 var_fv0;
 
     if ((gCurrentLevel == LEVEL_VENOM_ANDROSS) || (gLevelType == LEVELTYPE_SPACE) ||
-        (D_ctx_80178380[gPlayerNum] == 0)) {
+        (gPlayerFillScreenAlphas[gPlayerNum] == 0)) {
         return;
     }
     var_fs2 = 1.0f;
-    if (D_ctx_80178380[gPlayerNum] < 80) {
-        var_fs2 = D_ctx_80178380[gPlayerNum] / 80.0f;
+    if (gPlayerFillScreenAlphas[gPlayerNum] < 80) {
+        var_fs2 = gPlayerFillScreenAlphas[gPlayerNum] / 80.0f;
     }
     var_fs2 *= D_bg_800C9E5C[gLevelType];
     Matrix_Push(&gGfxMatrix);
@@ -887,16 +889,16 @@ void func_bg_80040CE4(void) {
                 temp_fv0 = Math_ModF((10000.0f - gPlayer[gPlayerNum].unk_0AC) * 0.32f, 128.0f);
                 gDPSetupTile(gMasterDisp++, G_IM_FMT_RGBA, G_IM_SIZ_16b, 32, 32, temp_fv0, temp_s0,
                              G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, 5, 5, G_TX_NOLOD, G_TX_NOLOD);
-                switch (D_ctx_80161A88) {
-                    case 0:
+                switch (gGroundType) {
+                    case GROUNDTYPE_GRASS:
                         gDPLoadTileTexture(gMasterDisp++, D_CO_601B6C0, G_IM_FMT_RGBA, G_IM_SIZ_16b, 32, 32);
                         gBgColor = 0x845; // 8, 8, 32
                         break;
-                    case 1:
+                    case GROUNDTYPE_ROCK:
                         gDPLoadTileTexture(gMasterDisp++, D_CO_6028260, G_IM_FMT_RGBA, G_IM_SIZ_16b, 32, 32);
                         gBgColor = 0x845; // 8, 8, 32
                         break;
-                    case 2:
+                    case GROUNDTYPE_WATER:
                         RCP_SetupDL_45(gFogRed, gFogGreen, gFogBlue, gFogAlpha, gFogNear, gFogFar);
                         gDPSetPrimColor(gMasterDisp++, 0x00, 0x00, 255, 255, 255, 128);
                         gDPLoadTileTexture(gMasterDisp++, D_CO_6028A60, G_IM_FMT_RGBA, G_IM_SIZ_16b, 32, 32);
@@ -914,7 +916,7 @@ void func_bg_80040CE4(void) {
                 Matrix_SetGfxMtx(&gMasterDisp);
                 gSPDisplayList(gMasterDisp++, D_CO_601B640);
             } else {
-                D_ctx_80161A88 = 0;
+                gGroundType = GROUNDTYPE_GRASS;
                 gBgColor = 0x845; // 8, 8, 32
                 for (i = 0; i < 4; i++) {
                     Matrix_Push(&gGfxMatrix);
@@ -1100,7 +1102,7 @@ void func_bg_80040CE4(void) {
             Matrix_Translate(gGfxMatrix, 0.0f, 0.0f, -2000.0f, 1);
             Matrix_Scale(gGfxMatrix, 3.0f, 2.0f, 3.0f, 1);
             Matrix_SetGfxMtx(&gMasterDisp);
-            if (gGameFrameCount & 1) {
+            if ((gGameFrameCount % 2) != 0) {
                 gSPDisplayList(gMasterDisp++, D_SO_60005B0);
             } else {
                 gSPDisplayList(gMasterDisp++, D_SO_6002E60);
@@ -1111,7 +1113,7 @@ void func_bg_80040CE4(void) {
             Matrix_Translate(gGfxMatrix, 0.0f, 0.0f, -1500.0f, 1);
             Matrix_Scale(gGfxMatrix, 3.0f, 2.0f, 3.0f, 1);
             Matrix_SetGfxMtx(&gMasterDisp);
-            if (gGameFrameCount & 1) {
+            if ((gGameFrameCount % 2) != 0) {
                 gSPDisplayList(gMasterDisp++, D_ZO_6008830);
             } else {
                 gSPDisplayList(gMasterDisp++, D_ZO_600B0E0);
@@ -1137,7 +1139,7 @@ void func_bg_80042D38(void) {
     RCP_SetupDL_37(gFogRed, gFogGreen, gFogBlue, gFogAlpha, gFogNear, gFogFar);
     gDPSetPrimColor(gMasterDisp++, 0x00, 0x00, 255, 255, 255, 125);
     Matrix_SetGfxMtx(&gMasterDisp);
-    if (gGameFrameCount & 1) {
+    if ((gGameFrameCount % 2) != 0) {
         gSPDisplayList(gMasterDisp++, D_AQ_602C030);
     } else {
         gSPDisplayList(gMasterDisp++, D_AQ_602C088);

@@ -95,7 +95,7 @@ void Option_JukeboxSoundUpdate(void) {
     if (gControllerPress[gMainController].button & B_BUTTON) {
         if (!D_menu_801B9320) {
             AUDIO_PLAY_BGM(SEQ_ID_MENU);
-            gDrawMode = DRAWMODE_0;
+            gDrawMode = DRAW_NONE;
             D_menu_801B9124 = 1000;
             D_menu_801B912C = 0;
             D_menu_801B9244 = 1;

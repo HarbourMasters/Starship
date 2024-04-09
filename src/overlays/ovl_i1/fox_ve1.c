@@ -251,7 +251,7 @@ f32 Venom1_801920F0(f32* arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4, f32* arg5
     return temp;
 }
 
-void Venom1_801922DC(Object_4C* this) {
+void Venom1_BossTrigger1_Update(Ve1BossTrigger1* this) {
     Boss* boss = &gBosses[0];
     s32 i;
 
@@ -266,7 +266,7 @@ void Venom1_801922DC(Object_4C* this) {
     }
 }
 
-void Venom1_80192358(Object_4C* this) {
+void Venom1_BossTrigger2_Update(Ve1BossTrigger2* this) {
     Boss* boss = &gBosses[0];
     s32 i;
 
@@ -281,30 +281,30 @@ void Venom1_80192358(Object_4C* this) {
     }
 }
 
-void Venom1_801923C0(Object_4C* obj4C) {
+void Venom1_BossTrigger3_Update(Ve1BossTrigger3* this) {
     Boss* boss = &gBosses[0];
     s32 i;
 
     for (i = 0; i < 4; i++, boss++) {
         if ((boss->obj.status != OBJ_FREE) && (boss->obj.id == OBJ_BOSS_319)) {
-            if (boss->obj.pos.z <= obj4C->obj.pos.z) {
-                D_i1_8019C0BC = (s32) obj4C->obj.rot.x + 1;
-                obj4C->obj.status = OBJ_FREE;
+            if (boss->obj.pos.z <= this->obj.pos.z) {
+                D_i1_8019C0BC = (s32) this->obj.rot.x + 1;
+                this->obj.status = OBJ_FREE;
             }
             break;
         }
     }
 }
 
-void Venom1_8019243C(Object_4C* obj4C) {
+void Venom1_BossTrigger4_Update(Ve1BossTrigger4* this) {
     Boss* boss = &gBosses[0];
     s32 i;
 
     for (i = 0; i < 4; i++, boss++) {
         if ((boss->obj.status != OBJ_FREE) && (boss->obj.id == OBJ_BOSS_319)) {
-            if (boss->obj.pos.z <= obj4C->obj.pos.z) {
+            if (boss->obj.pos.z <= this->obj.pos.z) {
                 D_i1_8019C0C0 = 1;
-                obj4C->obj.status = OBJ_FREE;
+                this->obj.status = OBJ_FREE;
             }
             break;
         }
@@ -366,11 +366,11 @@ void Venom1_80192518(Actor* actor) {
                     if (((actor->obj.pos.z + 1100.0f - obj80->obj.pos.z) < 2200.0f) &&
                         ((actor->obj.pos.z + 1100.0f - obj80->obj.pos.z) > 0.0f)) {
                         switch (obj80->obj.id) {
-                            case 128:
-                            case 130:
+                            case OBJ_80_128:
+                            case OBJ_80_130:
                                 break;
 
-                            case 129:
+                            case OBJ_80_129:
                                 var_ft5 = 600.0f;
                                 break;
                         }
@@ -433,7 +433,7 @@ void Venom1_80192518(Actor* actor) {
                         effect->unk_60.z = -effect->unk_60.z;
                     }
 
-                    if (actor->iwork[0] & 1) {
+                    if ((actor->iwork[0] % 2) != 0) {
                         effect->vel.y = -effect->vel.y;
                     }
                 }
@@ -734,7 +734,7 @@ void Venom1_80192EB0(Actor* actor) {
                     if (Rand_ZeroOne() < 0.5f) {
                         effect->unk_60.z = -effect->unk_60.z;
                     }
-                    if (actor->iwork[0] & 1) {
+                    if ((actor->iwork[0] % 2) != 0) {
                         effect->vel.y = -effect->vel.y;
                     }
                 }
@@ -802,12 +802,12 @@ void Venom1_801934D0(Actor* actor) {
 }
 
 void Venom1_80193540(Object_80* obj80) {
-    if (((gPlayer[0].unk_138 - obj80->obj.pos.z) <= 3500.0f) && !(gGameFrameCount & 3)) {
+    if (((gPlayer[0].unk_138 - obj80->obj.pos.z) <= 3500.0f) && ((gGameFrameCount % 4) == 0)) {
         func_effect_8007C120(obj80->obj.pos.x, obj80->obj.pos.y, obj80->obj.pos.z, 0.0f, 0.0f, 0.0f, 0.2f, 10);
     }
 }
 
-void Venom1_Boss319_Init(Boss* boss) {
+void Venom1_Boss319_Init(Boss319* this) {
     s32 i;
     s32 var_v0;
     s32 j;
@@ -817,17 +817,17 @@ void Venom1_Boss319_Init(Boss* boss) {
     D_i1_8019C0BC = 0;
     D_i1_8019C0C0 = 0;
     gBossActive = 1;
-    boss->unk_05E = 1;
-    boss->fwork[2] = D_i1_8019A04C[boss->swork[13]][0];
-    boss->fwork[14] = D_i1_8019A04C[boss->swork[13]][1];
-    boss->health = 100;
-    boss->fwork[9] = 1.0f;
+    this->unk_05E = 1;
+    this->fwork[2] = D_i1_8019A04C[this->swork[13]][0];
+    this->fwork[14] = D_i1_8019A04C[this->swork[13]][1];
+    this->health = 100;
+    this->fwork[9] = 1.0f;
 
-    boss->swork[22] = boss->swork[21] = 0;
+    this->swork[22] = this->swork[21] = 0;
 
-    boss->fwork[13] = boss->fwork[12] = boss->fwork[6] = D_i1_8019AE00[boss->swork[21]].unk_0;
-    boss->fwork[17] = boss->obj.rot.y;
-    boss->obj.rot.y = 0.0f;
+    this->fwork[13] = this->fwork[12] = this->fwork[6] = D_i1_8019AE00[this->swork[21]].unk_0;
+    this->fwork[17] = this->obj.rot.y;
+    this->obj.rot.y = 0.0f;
 
     for (i = 0; i < ARRAY_COUNTU(D_i1_8019B838); i++) {
         D_i1_8019B838[i].unk_00 = D_i1_8019A820[i].unk_02;
@@ -845,7 +845,7 @@ void Venom1_Boss319_Init(Boss* boss) {
         D_i1_8019B838[i].unk_74 = D_i1_8019B838[i].unk_78 = 0.0f;
         D_i1_8019B838[i].unk_7C = 0;
     }
-    boss->fwork[11] = 1.0f;
+    this->fwork[11] = 1.0f;
     for (i = 0; i < 33U; i++) {
         D_i1_8019B7F0[i] = 0;
     }
@@ -853,8 +853,8 @@ void Venom1_Boss319_Init(Boss* boss) {
     for (i = 0; i < ARRAY_COUNTU(D_i1_8019B838); i++) {
         var_v0 += D_i1_8019A820[i].unk_02;
     }
-    boss->swork[29] = boss->swork[30] = var_v0 + 100;
-    Animation_GetFrameData(D_i1_8019ACD4[boss->swork[5]], 0, boss->vwork);
+    this->swork[29] = this->swork[30] = var_v0 + 100;
+    Animation_GetFrameData(D_i1_8019ACD4[this->swork[5]], 0, this->vwork);
     AUDIO_PLAY_BGM(SEQ_ID_VE_BOSS | SEQ_FLAG);
 }
 
@@ -1021,7 +1021,7 @@ void Venom1_80193D64(s32 limbIndex, Vec3f* rot, void* thisx) {
 
     switch (limbIndex) {
         case 7:
-            if (this->swork[11] & 1) {
+            if ((this->swork[11] % 2) != 0) {
                 Matrix_MultVec3f(gCalcMatrix, &D_i1_8019AD5C, (Vec3f*) &this->fwork[3]);
                 this->swork[11] &= ~1;
             }
@@ -1055,7 +1055,7 @@ void Venom1_80193D64(s32 limbIndex, Vec3f* rot, void* thisx) {
                 Matrix_RotateY(gGfxMatrix, var_s7->unk_30[var_s4].y * M_DTOR, 1);
                 Matrix_RotateX(gGfxMatrix, var_s7->unk_30[var_s4].x * M_DTOR, 1);
                 Matrix_RotateZ(gGfxMatrix, var_s7->unk_30[var_s4].z * M_DTOR, 1);
-                if ((s32) var_s7->unk_30[var_s4].z & 1) {
+                if (((s32) var_s7->unk_30[var_s4].z % 2) != 0) {
                     gDPSetPrimColor(gMasterDisp++, 0x00, 0x00, 255, 255, 255, 255);
                 } else {
                     gDPSetPrimColor(gMasterDisp++, 0x00, 0x00, 96, 96, 255, 255);
@@ -1111,12 +1111,12 @@ void Venom1_80194398(Boss* boss) {
     if (boss->swork[31] == 0) {
         switch (boss->swork[32]) {
             case 901:
-                if ((gTeamShields[2] > 0) && (gRadioState == 0)) {
+                if ((gTeamShields[TEAM_ID_SLIPPY] > 0) && (gRadioState == 0)) {
                     Radio_PlayMessage(gMsg_ID_4092, RCID_SLIPPY);
                 }
                 break;
             case 1001:
-                if (gTeamShields[2] > 0) {
+                if (gTeamShields[TEAM_ID_SLIPPY] > 0) {
                     gShowBossHealth = 1;
                     gBossHealthBar = 255;
                     boss->swork[32] = 0;
@@ -1594,7 +1594,7 @@ void Venom1_80194398(Boss* boss) {
         case 0:
         case 1:
             for (spF4 = 0; spF4 < 33U; spF4++) {
-                if (!(gGameFrameCount & 3) && (D_i1_8019B7F0[spF4] != 0)) {
+                if (((gGameFrameCount % 4) == 0) && (D_i1_8019B7F0[spF4] != 0)) {
                     is4 = D_i1_8019A500[spF4];
                     if ((D_i1_8019B838[is4].unk_00 > 0) && ((is4 != 14) || (boss->state != 0))) {
                         D_i1_8019B838[is4].unk_00 -= 2;
@@ -1614,7 +1614,7 @@ void Venom1_80194398(Boss* boss) {
             }
             break;
         case 2:
-            if (!(gGameFrameCount & 3) && (boss->timer_05A == 0)) {
+            if (((gGameFrameCount % 4) == 0) && (boss->timer_05A == 0)) {
                 for (spF4 = 0; spF4 < 33U; spF4++) {
                     if ((D_i1_8019A500[spF4] == 15) && (D_i1_8019B7F0[spF4] != 0)) {
                         AUDIO_PLAY_SFX(0x31034064, boss->sfxSource, 4);
@@ -1889,15 +1889,15 @@ void Venom1_80194398(Boss* boss) {
                     spF8.y = boss->obj.pos.y + boss->fwork[4];
                     spF8.z = boss->obj.pos.z + boss->fwork[5];
                     func_effect_8007BFFC(spF8.x, spF8.y, spF8.z, 0, 0, 0, 25.0f, 5);
-                    D_ctx_80178348 = D_ctx_80178350 = D_ctx_80178354 = 255;
-                    D_ctx_80178340 = D_ctx_80178358 = 255;
+                    gFillScreenRed = gFillScreenGreen = gFillScreenBlue = 255;
+                    gFillScreenAlpha = gFillScreenAlphaTarget = 255;
                     break;
                 case 59:
-                    D_ctx_80178348 = D_ctx_80178350 = D_ctx_80178354 = 255;
-                    D_ctx_80178340 = D_ctx_80178358 = 128;
+                    gFillScreenRed = gFillScreenGreen = gFillScreenBlue = 255;
+                    gFillScreenAlpha = gFillScreenAlphaTarget = 128;
                     break;
                 case 58:
-                    D_ctx_80178340 = D_ctx_80178358 = 0;
+                    gFillScreenAlpha = gFillScreenAlphaTarget = 0;
                     break;
                 case 50:
                     boss->swork[25] = 1;
@@ -1913,16 +1913,16 @@ void Venom1_80194398(Boss* boss) {
                     boss->swork[28] = 9;
                     AUDIO_PLAY_SFX(0x29405084, boss->sfxSource, 4);
                     boss->swork[26] = 1;
-                    boss->info.hitbox = D_edata_800CBF34;
+                    boss->info.hitbox = gHitboxNone;
                     boss->unk_05E = 0;
                     func_effect_8007A568(boss->obj.pos.x, boss->obj.pos.y + 10.0f, boss->obj.pos.z, 40.0f);
                     gCameraShake = 40;
                     break;
                 case 12:
-                    D_ctx_80178348 = D_ctx_80178350 = D_ctx_80178354 = 255;
-                    D_ctx_80178340 = 0;
-                    D_ctx_80178358 = 255;
-                    D_ctx_8017835C = 5;
+                    gFillScreenRed = gFillScreenGreen = gFillScreenBlue = 255;
+                    gFillScreenAlpha = 0;
+                    gFillScreenAlphaTarget = 255;
+                    gFillScreenAlphaStep = 5;
                     boss->obj.status = OBJ_DYING;
                     boss->timer_052 = 80;
                     break;
@@ -2332,15 +2332,15 @@ void Venom1_80198310(Boss* boss) {
 void Venom1_80198414(void) {
     s32 i;
 
-    for (i = 1; i < ARRAY_COUNT(gTeamShields); i++) {
-        D_ctx_80177C38[i] = gSavedTeamShields[i];
-        D_ctx_801778F0[i] = gSavedTeamShields[i];
+    for (i = TEAM_ID_FALCO; i < ARRAY_COUNT(gTeamShields); i++) {
+        gPrevPlanetTeamShields[i] = gSavedTeamShields[i];
+        gPrevPlanetSavedTeamShields[i] = gSavedTeamShields[i];
         gSavedTeamShields[i] = gTeamShields[i];
     }
     gBgColor = 0xFFFF; // 248, 248, 248
     gNextGameState = GSTATE_PLAY;
     gNextLevel = LEVEL_VENOM_2;
-    D_game_80161A2E = 2;
+    gNextLevelStage = 2;
     D_ctx_80177C94 = gGoldRingCount[0];
     D_ctx_80177C9C = gPlayer[0].shields + 1;
     D_ctx_80177CA4 = gHitCount;

@@ -14,13 +14,13 @@ void func_800A3CA0(void) {
 void func_800A3E00(void) {
     switch (D_ctx_80177868) {
         case 0:
-            if (D_Timer_8017783C == 0) {
+            if (gNextGameStateTimer == 0) {
                 D_ctx_80177868 = 1;
             }
             break;
         case 1:
             D_ctx_80177868 = 2;
-            gDrawMode = DRAWMODE_7;
+            gDrawMode = DRAW_UNK_7;
             gCsCamAtY = 0.0f;
             gCsCamAtX = gCsCamAtY;
             gCsCamEyeZ = gCsCamAtX;
@@ -32,14 +32,14 @@ void func_800A3E00(void) {
             if ((gControllerPress[0].button & START_BUTTON) || (gControllerPress[1].button & START_BUTTON)) {
                 func_8001D638(0);
                 D_ctx_80177868 = 3;
-                gDrawMode = DRAWMODE_0;
-                func_play_800A5844();
-                D_Timer_8017783C = 0;
+                gDrawMode = DRAW_NONE;
+                Play_Setup();
+                gNextGameStateTimer = 0;
             }
             break;
         case 3:
-            if (D_Timer_8017783C == 0) {
-                D_ctx_80177854 = 2;
+            if (gNextGameStateTimer == 0) {
+                gPlayState = PLAY_UPDATE;
             }
             break;
     }

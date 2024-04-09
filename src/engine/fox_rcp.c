@@ -1,5 +1,4 @@
 #include "global.h"
-
 #include "fox_rcp_setup.c"
 
 u8 D_80178580[0x190];

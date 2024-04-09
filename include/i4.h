@@ -30,7 +30,7 @@ void Katina_Boss316_Init(Boss *);
 void Katina_80198594(Actor*);
 void Katina_80198930(void);
 void SectorZ_80199900(Actor *, s32);
-void SectorZ_80199C60(Actor*);
+void SectorZ_Missile_Update(Actor*);
 void SectorZ_8019AB8C(Actor*);
 void SectorZ_8019EA68(void);
 

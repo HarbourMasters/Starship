@@ -148,7 +148,6 @@ typedef struct {
     /* 0x48 */ s32 state;
     /* 0x4C */ s32 timer_4C;
     /* 0x50 */ s8 dmgType;
-    /* 0x51 */ char pad51[3];
     /* 0x54 */ s32 dmgPart;
     /* 0x58 */ f32 unk_58;
     /* 0x5C */ f32 unk_5C;
@@ -166,7 +165,7 @@ typedef struct {
     /* 0x45 */ u8 unk_45;
     /* 0x46 */ s8 unk_46;
     /* 0x48 */ s32 unk_48;
-} Object_4C; // size = 0x4C
+} Sprite; // size = 0x4C
 
 typedef struct {
     /* 0x00 */ Object obj;
@@ -450,21 +449,21 @@ typedef enum ObjectId {
   /* 158 */  OBJ_80_158,
   /* 159 */  OBJ_80_159,
   /* 160 */  OBJ_80_160,
-  /* 161 */  OBJ_4C_161,
-  /* 162 */  OBJ_4C_162,
-  /* 163 */  OBJ_4C_163,
-  /* 164 */  OBJ_4C_164,
-  /* 165 */  OBJ_4C_165,
-  /* 166 */  OBJ_4C_166,
-  /* 167 */  OBJ_4C_167,
-  /* 168 */  OBJ_4C_168,
-  /* 169 */  OBJ_4C_169,
-  /* 170 */  OBJ_4C_170,
-  /* 171 */  OBJ_4C_171,
-  /* 172 */  OBJ_4C_172,
-  /* 173 */  OBJ_4C_173,
-  /* 174 */  OBJ_4C_174,
-  /* 175 */  OBJ_4C_175,
+  /* 161 */  OBJ_SPRITE_CO_POLE,
+  /* 162 */  OBJ_SPRITE_CO_TREE,
+  /* 163 */  OBJ_SPRITE_FO_POLE,
+  /* 164 */  OBJ_SPRITE_FOG_SHADOW,
+  /* 165 */  OBJ_SPRITE_CO_RUIN1,
+  /* 166 */  OBJ_SPRITE_CO_RUIN2,
+  /* 167 */  OBJ_SPRITE_167,
+  /* 168 */  OBJ_SPRITE_168,
+  /* 169 */  OBJ_SPRITE_TI_CACTUS,
+  /* 170 */  OBJ_SPRITE_CO_SMOKE,
+  /* 171 */  OBJ_SPRITE_VE1_BOSS_TRIGGER1,
+  /* 172 */  OBJ_SPRITE_VE1_BOSS_TRIGGER2,
+  /* 173 */  OBJ_SPRITE_VE1_BOSS_TRIGGER3,
+  /* 174 */  OBJ_SPRITE_VE1_BOSS_TRIGGER4,
+  /* 175 */  OBJ_SPRITE_GFOX_TARGET,
   /* 176 */  OBJ_ACTOR_176,
   /* 177 */  OBJ_ACTOR_177,
   /* 178 */  OBJ_ACTOR_178,
@@ -617,13 +616,13 @@ typedef enum ObjectId {
   /* 325 */  OBJ_ITEM_SILVER_STAR,
   /* 326 */  OBJ_ITEM_METEO_WARP,
   /* 327 */  OBJ_ITEM_BOMB,
-  /* 328 */  OBJ_ITEM_328,
-  /* 329 */  OBJ_ITEM_329,
-  /* 330 */  OBJ_ITEM_330,
-  /* 331 */  OBJ_ITEM_331,
-  /* 332 */  OBJ_ITEM_332,
-  /* 333 */  OBJ_ITEM_333,
-  /* 334 */  OBJ_ITEM_334,
+  /* 328 */  OBJ_ITEM_PATH_SPLIT_X,
+  /* 329 */  OBJ_ITEM_PATH_TURN_LEFT,
+  /* 330 */  OBJ_ITEM_PATH_TURN_RIGHT,
+  /* 331 */  OBJ_ITEM_PATH_SPLIT_Y,
+  /* 332 */  OBJ_ITEM_PATH_TURN_UP,
+  /* 333 */  OBJ_ITEM_PATH_TURN_DOWN,
+  /* 334 */  OBJ_ITEM_RING_CHECK,
   /* 335 */  OBJ_ITEM_1UP,
   /* 336 */  OBJ_ITEM_GOLD_RING,
   /* 337 */  OBJ_ITEM_WING_REPAIR,
@@ -700,6 +699,36 @@ typedef enum ObjectId {
 } ObjectId;
 
 #define ACTOR_EVENT_ID 1000
+
+typedef enum ItemDrop {
+    /*  0 */ DROP_NONE,
+    /*  1 */ DROP_SILVER_RING,
+    /*  2 */ DROP_SILVER_RING_50p,
+    /*  3 */ DROP_SILVER_RING_33p,
+    /*  4 */ DROP_SILVER_RING_25p,
+    /*  5 */ DROP_BOMB,
+    /*  6 */ DROP_BOMB_50p,
+    /*  7 */ DROP_BOMB_33p,
+    /*  8 */ DROP_BOMB_25p,
+    /*  9 */ DROP_LASERS,
+    /* 10 */ DROP_LASERS_50p,
+    /* 11 */ DROP_LASERS_33p,
+    /* 12 */ DROP_LASERS_25p,
+    /* 13 */ DROP_1UP,
+    /* 14 */ DROP_GOLD_RING_1,
+    /* 15 */ DROP_GOLD_RING_2,
+    /* 16 */ DROP_GOLD_RING_3,
+    /* 17 */ DROP_GOLD_RING_4,
+    /* 18 */ DROP_GOLD_RING_GROUP,
+    /* 19 */ DROP_LASERS_GROUP,
+    /* 20 */ DROP_BOMB_GROUP,
+    /* 21 */ DROP_SILVER_RING_GROUP,
+    /* 22 */ DROP_SILVER_RING_10p,
+    /* 23 */ DROP_WING_REPAIR,
+    /* 24 */ DROP_TEAM_MESG,
+    /* 25 */ DROP_SILVER_STAR,
+    /* 26 */ DROP_MAX,
+} ItemDrop;
 
 typedef enum AllRangeAi {
     /*   0 */ AI360_FOX,
@@ -873,5 +902,407 @@ typedef enum {
     /* 49 */ LN_VWK_49,
     /* 50 */ LN_VWK_MAX,
 } BossLNvwork;
+
+typedef Object_80 Object80_0;  
+typedef Object_80 Object80_1;  
+typedef Object_80 Object80_2;  
+typedef Object_80 Object80_3;  
+typedef Object_80 Object80_4;  
+typedef Object_80 Object80_5;  
+typedef Object_80 Object80_6;  
+typedef Object_80 Object80_7;  
+typedef Object_80 Object80_8;  
+typedef Object_80 Object80_9;  
+typedef Object_80 Object80_10; 
+typedef Object_80 Object80_11; 
+typedef Object_80 Object80_12; 
+typedef Object_80 Object80_13; 
+typedef Object_80 Object80_14; 
+typedef Object_80 Object80_15; 
+typedef Object_80 Object80_16; 
+typedef Object_80 Object80_17; 
+typedef Object_80 Object80_18; 
+typedef Object_80 Object80_19; 
+typedef Object_80 Object80_20; 
+typedef Object_80 Object80_21; 
+typedef Object_80 Object80_22; 
+typedef Object_80 Object80_23; 
+typedef Object_80 Object80_24; 
+typedef Object_80 Object80_25; 
+typedef Object_80 Object80_26; 
+typedef Object_80 Object80_27; 
+typedef Object_80 Object80_28; 
+typedef Object_80 Object80_29; 
+typedef Object_80 Object80_30; 
+typedef Object_80 Object80_31; 
+typedef Object_80 Object80_32; 
+typedef Object_80 Object80_33; 
+typedef Object_80 Object80_34; 
+typedef Object_80 Object80_35; 
+typedef Object_80 Object80_36; 
+typedef Object_80 Object80_37; 
+typedef Object_80 Object80_38; 
+typedef Object_80 Object80_39; 
+typedef Object_80 Object80_40; 
+typedef Object_80 Object80_41; 
+typedef Object_80 Object80_42; 
+typedef Object_80 Object80_43; 
+typedef Object_80 Object80_44; 
+typedef Object_80 Object80_45; 
+typedef Object_80 Object80_46; 
+typedef Object_80 Object80_47; 
+typedef Object_80 Object80_48; 
+typedef Object_80 Object80_49; 
+typedef Object_80 Object80_50; 
+typedef Object_80 Object80_51; 
+typedef Object_80 Object80_52; 
+typedef Object_80 Object80_53; 
+typedef Object_80 Object80_54; 
+typedef Object_80 Object80_55; 
+typedef Object_80 Object80_56; 
+typedef Object_80 Object80_57; 
+typedef Object_80 Object80_58; 
+typedef Object_80 Object80_59; 
+typedef Object_80 Object80_60; 
+typedef Object_80 Object80_61; 
+typedef Object_80 Object80_62; 
+typedef Object_80 Object80_63; 
+typedef Object_80 Object80_64; 
+typedef Object_80 Object80_65; 
+typedef Object_80 Object80_66; 
+typedef Object_80 Object80_67; 
+typedef Object_80 Object80_68; 
+typedef Object_80 Object80_69; 
+typedef Object_80 Object80_70; 
+typedef Object_80 Object80_71; 
+typedef Object_80 Object80_72; 
+typedef Object_80 Object80_73; 
+typedef Object_80 Object80_74; 
+typedef Object_80 Object80_75; 
+typedef Object_80 Object80_76; 
+typedef Object_80 Object80_77; 
+typedef Object_80 Object80_78; 
+typedef Object_80 Object80_79; 
+typedef Object_80 Object80_80; 
+typedef Object_80 Object80_81; 
+typedef Object_80 Object80_82; 
+typedef Object_80 Object80_83; 
+typedef Object_80 Object80_84; 
+typedef Object_80 Object80_85; 
+typedef Object_80 Object80_86; 
+typedef Object_80 Object80_87; 
+typedef Object_80 Object80_88; 
+typedef Object_80 Object80_89; 
+typedef Object_80 Object80_90; 
+typedef Object_80 Object80_91; 
+typedef Object_80 Object80_92; 
+typedef Object_80 Object80_93; 
+typedef Object_80 Object80_94; 
+typedef Object_80 Object80_95; 
+typedef Object_80 Object80_96; 
+typedef Object_80 Object80_97; 
+typedef Object_80 Object80_98; 
+typedef Object_80 Object80_99; 
+typedef Object_80 Object80_100;
+typedef Object_80 Object80_101;
+typedef Object_80 Object80_102;
+typedef Object_80 Object80_103;
+typedef Object_80 Object80_104;
+typedef Object_80 Object80_105;
+typedef Object_80 Object80_106;
+typedef Object_80 Object80_107;
+typedef Object_80 Object80_108;
+typedef Object_80 Object80_109;
+typedef Object_80 Object80_110;
+typedef Object_80 Object80_111;
+typedef Object_80 Object80_112;
+typedef Object_80 Object80_113;
+typedef Object_80 Object80_114;
+typedef Object_80 Object80_115;
+typedef Object_80 Object80_116;
+typedef Object_80 Object80_117;
+typedef Object_80 Object80_118;
+typedef Object_80 Object80_119;
+typedef Object_80 Object80_120;
+typedef Object_80 Object80_121;
+typedef Object_80 Object80_122;
+typedef Object_80 Object80_123;
+typedef Object_80 Object80_124;
+typedef Object_80 Object80_125;
+typedef Object_80 Object80_126;
+typedef Object_80 Object80_127;
+typedef Object_80 Object80_128;
+typedef Object_80 Object80_129;
+typedef Object_80 Object80_130;
+typedef Object_80 Object80_131;
+typedef Object_80 Object80_132;
+typedef Object_80 Object80_133;
+typedef Object_80 Object80_134;
+typedef Object_80 Object80_135;
+typedef Object_80 Object80_136;
+typedef Object_80 Object80_137;
+typedef Object_80 Object80_138;
+typedef Object_80 Object80_139;
+typedef Object_80 Object80_140;
+typedef Object_80 Object80_141;
+typedef Object_80 Object80_142;
+typedef Object_80 Object80_143;
+typedef Object_80 Object80_144;
+typedef Object_80 Object80_145;
+typedef Object_80 Object80_146;
+typedef Object_80 Object80_147;
+typedef Object_80 Object80_148;
+typedef Object_80 Object80_149;
+typedef Object_80 Object80_150;
+typedef Object_80 Object80_151;
+typedef Object_80 Object80_152;
+typedef Object_80 Object80_153;
+typedef Object_80 Object80_154;
+typedef Object_80 Object80_155;
+typedef Object_80 Object80_156;
+typedef Object_80 Object80_157;
+typedef Object_80 Object80_158;
+typedef Object_80 Object80_159;
+typedef Object_80 Object80_160;
+typedef Sprite CoPole;
+typedef Sprite CoTree;
+typedef Sprite FoPole;
+typedef Sprite FogShadow;
+typedef Sprite CoRuin1;
+typedef Sprite CoRuin2;
+typedef Sprite Sprite167;
+typedef Sprite Sprite168;
+typedef Sprite TiCactus;
+typedef Sprite CoSmoke;
+typedef Sprite Ve1BossTrigger1;
+typedef Sprite Ve1BossTrigger2;
+typedef Sprite Ve1BossTrigger3;
+typedef Sprite Ve1BossTrigger4;
+typedef Sprite GfoxTarget;
+typedef Actor Actor176;
+typedef Actor Actor177;
+typedef Actor Actor178;
+typedef Actor Actor179;
+typedef Actor Actor180;
+typedef Actor Actor181;
+typedef Actor Actor182;
+typedef Actor Actor183;
+typedef Actor Actor184;
+typedef Actor Actor185;
+typedef Actor Actor186;
+typedef Actor Actor187;
+typedef Actor Actor188;
+typedef Actor Actor189;
+typedef Actor Actor190;
+typedef Actor Actor191;
+typedef Actor Actor192;
+typedef Actor Actor193;
+typedef Actor Actor194;
+typedef Actor Actor195;
+typedef Actor Actor196;
+typedef Actor ActorAllRange;
+typedef Actor ActorTeamBoss;
+typedef Actor Actor199;
+typedef Actor ActorEvent;
+typedef Actor Actor201;
+typedef Actor Actor202;
+typedef Actor ActorSlippySX;
+typedef Actor Actor204;
+typedef Actor Actor205;
+typedef Actor Actor206;
+typedef Actor Actor207;
+typedef Actor Actor208;
+typedef Actor Actor209;
+typedef Actor Actor210;
+typedef Actor Actor211;
+typedef Actor Actor212;
+typedef Actor Actor213;
+typedef Actor Actor214;
+typedef Actor Actor215;
+typedef Actor Actor216;
+typedef Actor Actor217;
+typedef Actor Actor218;
+typedef Actor Actor219;
+typedef Actor Actor220;
+typedef Actor Actor221;
+typedef Actor Actor222;
+typedef Actor Actor223;
+typedef Actor Actor224;
+typedef Actor Actor225;
+typedef Actor Actor226;
+typedef Actor Actor227;
+typedef Actor Actor228;
+typedef Actor Actor229;
+typedef Actor Actor230;
+typedef Actor Actor231;
+typedef Actor Actor232;
+typedef Actor Actor233;
+typedef Actor Actor234;
+typedef Actor Actor235;
+typedef Actor Actor236;
+typedef Actor Actor237;
+typedef Actor Actor238;
+typedef Actor Actor239;
+typedef Actor Actor240;
+typedef Actor Actor241;
+typedef Actor Actor242;
+typedef Actor Actor243;
+typedef Actor Actor244;
+typedef Actor Actor245;
+typedef Actor Actor246;
+typedef Actor Actor247;
+typedef Actor Actor248;
+typedef Actor Actor249;
+typedef Actor Actor250;
+typedef Actor Actor251;
+typedef Actor Actor252;
+typedef Actor Actor253;
+typedef Actor Actor254;
+typedef Actor Actor255;
+typedef Actor Actor256;
+typedef Actor Actor257;
+typedef Actor Actor258;
+typedef Actor Actor259;
+typedef Actor Actor260;
+typedef Actor Actor261;
+typedef Actor Actor262;
+typedef Actor Actor263;
+typedef Actor Actor264;
+typedef Actor Actor265;
+typedef Actor Actor266;
+typedef Actor Actor267;
+typedef Actor Actor268;
+typedef Actor Actor269;
+typedef Actor Actor270;
+typedef Actor Actor271;
+typedef Actor Actor272;
+typedef Actor Actor273;
+typedef Actor Actor274;
+typedef Actor Actor275;
+typedef Actor Actor276;
+typedef Actor Actor277;
+typedef Actor Actor278;
+typedef Actor Actor279;
+typedef Actor Actor280;
+typedef Actor Actor281;
+typedef Actor Actor282;
+typedef Actor Actor283;
+typedef Actor Actor284;
+typedef Actor Actor285;
+typedef Actor Actor286;
+typedef Actor Actor287;
+typedef Actor Actor288;
+typedef Actor Actor289;
+typedef Actor Actor290;
+typedef Actor ActorSupplies;
+typedef Boss Boss292;
+typedef Boss Boss293;
+typedef Boss Boss294;
+typedef Boss Boss295;
+typedef Boss Boss296;
+typedef Boss Boss297;
+typedef Boss Boss298;
+typedef Boss Boss299;
+typedef Boss Boss300;
+typedef Boss Boss301;
+typedef Boss BossA6;
+typedef Boss Boss303;
+typedef Boss Boss304;
+typedef Boss Boss305;
+typedef Boss Boss306;
+typedef Boss BossZO;
+typedef Boss Boss308;
+typedef Boss Boss309;
+typedef Boss Boss310;
+typedef Boss Boss311;
+typedef Boss Boss312;
+typedef Boss Boss313;
+typedef Boss Boss314;
+typedef Boss BossSO;
+typedef Boss Boss316;
+typedef Boss Boss317;
+typedef Boss BossAQ;
+typedef Boss Boss319;
+typedef Boss Boss320;
+typedef Boss Boss321;
+typedef Item ItemLasers;
+typedef Item ItemCheckpoint;
+typedef Item ItemSilverStar;
+typedef Item ItemSilverRing;
+typedef Item ItemMeteoWarp;
+typedef Item ItemBomb;
+typedef Item ItemPathSplitX;
+typedef Item ItemPathTurnLeft;
+typedef Item ItemPathTurnRight;
+typedef Item ItemPathSplitY;
+typedef Item ItemPathTurnUp;
+typedef Item ItemPathTurnDown;
+typedef Item ItemRingCheck;
+typedef Item Item1UP;
+typedef Item ItemGoldRing;
+typedef Item ItemWingRepair;
+typedef Item ItemTrainingRing;
+typedef Effect Effect339;
+typedef Effect Effect340;
+typedef Effect Effect341;
+typedef Effect Effect342;
+typedef Effect Effect343;
+typedef Effect Effect344;
+typedef Effect Effect345;
+typedef Effect Effect346;
+typedef Effect Effect347;
+typedef Effect Effect348;
+typedef Effect Effect349;
+typedef Effect Effect350;
+typedef Effect Effect351;
+typedef Effect Effect352;
+typedef Effect Effect353;
+typedef Effect Effect354;
+typedef Effect Effect355;
+typedef Effect Effect356;
+typedef Effect Effect357;
+typedef Effect Effect358;
+typedef Effect Effect359;
+typedef Effect Effect360;
+typedef Effect Effect361;
+typedef Effect Effect362;
+typedef Effect Effect363;
+typedef Effect Effect364;
+typedef Effect Effect365;
+typedef Effect Effect366;
+typedef Effect Effect367;
+typedef Effect Effect368;
+typedef Effect Effect369;
+typedef Effect Effect370;
+typedef Effect Effect371;
+typedef Effect Effect372;
+typedef Effect Effect373;
+typedef Effect Effect374;
+typedef Effect Effect375;
+typedef Effect Effect376;
+typedef Effect Effect377;
+typedef Effect Effect378;
+typedef Effect Effect379;
+typedef Effect Effect380;
+typedef Effect Effect381;
+typedef Effect Effect382;
+typedef Effect Effect383;
+typedef Effect Effect384;
+typedef Effect Effect385;
+typedef Effect Effect386;
+typedef Effect Effect387;
+typedef Effect Effect388;
+typedef Effect Effect389;
+typedef Effect Effect390;
+typedef Effect Effect391;
+typedef Effect Effect392;
+typedef Effect Effect393;
+typedef Effect Effect394;
+typedef Effect Effect395;
+typedef Effect Effect396;
+typedef Effect Effect397;
+typedef Effect Effect398;
+typedef Effect Effect399;
+
 
 #endif

@@ -81,7 +81,7 @@ void Lib_QuickSort(u8* first, u32 length, u32 size, CompareFunc cFunc) {
     }
 }
 
-void Lib_Perspective(Gfx** dList) {
+void Lib_InitPerspective(Gfx** dList) {
     u16 norm;
 
     guPerspective(gGfxMtx, &norm, D_game_80161A3C, (f32) SCREEN_WIDTH / SCREEN_HEIGHT, D_game_80161A40, D_game_80161A44,
@@ -93,7 +93,7 @@ void Lib_Perspective(Gfx** dList) {
     Matrix_Copy(gGfxMatrix, &gIdentityMatrix);
 }
 
-void Lib_Ortho(Gfx** dList) {
+void Lib_InitOrtho(Gfx** dList) {
     guOrtho(gGfxMtx, -160.0f, 160.0f, -120.0f, 120.0f, D_game_80161A40, D_game_80161A44, 1.0f);
     gSPMatrix((*dList)++, gGfxMtx++, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
     guLookAt(gGfxMtx, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, -12800.0f, 0.0f, 1.0f, 0.0f);

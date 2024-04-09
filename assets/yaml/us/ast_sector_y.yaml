@@ -9,6 +9,8 @@
       - '#include "sf64object.h"'
       - '#include "structs.h"'
       - '#include "sf64level.h"'
+      - '#include "sf64event.h"'
+      - '#include "sf64player.h"'
       - '#include "sf64audio_external.h"'
       - '#include "sf64mesg.h"'
       - '#include "sf64mesg.h"'

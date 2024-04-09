@@ -91,12 +91,12 @@ void Ending_8018D2C8(u32 arg0, AssetInfo* asset) {
         alpha = (asset->unk_0C + asset->unk_10 - arg0 - 1) * 255 / asset->fogFar;
     }
 
-    D_ctx_80178348 = asset->primRed;
-    D_ctx_80178350 = asset->primGreen;
-    D_ctx_80178354 = asset->primBlue;
+    gFillScreenRed = asset->primRed;
+    gFillScreenGreen = asset->primGreen;
+    gFillScreenBlue = asset->primBlue;
 
-    D_ctx_80178340 = D_ctx_80178358 = alpha;
-    D_ctx_8017835C = 0;
+    gFillScreenAlpha = gFillScreenAlphaTarget = alpha;
+    gFillScreenAlphaStep = 0;
 }
 
 void Ending_8018D398(u32 arg0, AssetInfo* asset) {
@@ -110,7 +110,8 @@ void Ending_8018D398(u32 arg0, AssetInfo* asset) {
         alpha = (asset->unk_0C + asset->unk_10 - arg0) * 255 / asset->fogFar;
     }
 
-    D_ctx_80178348 = D_ctx_80178350 = D_ctx_80178354 = D_ctx_80178340 = D_ctx_80178358 = D_ctx_8017835C = 0;
+    gFillScreenRed = gFillScreenGreen = gFillScreenBlue = gFillScreenAlpha = gFillScreenAlphaTarget =
+        gFillScreenAlphaStep = 0;
 
     Graphics_FillRectangle(&gMasterDisp, 8, 8, SCREEN_WIDTH - 8, SCREEN_HEIGHT - 8, asset->primRed, asset->primGreen,
                            asset->primBlue, alpha);
@@ -142,12 +143,12 @@ void Ending_8018D638(u32 arg0, AssetInfo* asset) {
         alpha = (asset->unk_0C + asset->fogFar - arg0) * 255 / asset->fogFar;
     }
 
-    D_ctx_80178348 = asset->primRed;
-    D_ctx_80178350 = asset->primGreen;
-    D_ctx_80178354 = asset->primBlue;
+    gFillScreenRed = asset->primRed;
+    gFillScreenGreen = asset->primGreen;
+    gFillScreenBlue = asset->primBlue;
 
-    D_ctx_80178340 = D_ctx_80178358 = alpha;
-    D_ctx_8017835C = 0;
+    gFillScreenAlpha = gFillScreenAlphaTarget = alpha;
+    gFillScreenAlphaStep = 0;
 
     RCP_SetupDL(&gMasterDisp, 0x53);
 
@@ -775,9 +776,9 @@ void Ending_80190CF0(u32 arg0, AssetInfo* asset) {
 void Ending_80191234(s32 arg0, s32 arg1) {
     D_game_80161A34 = 8;
     gGameState = GSTATE_MENU;
-    D_Timer_8017783C = 2;
+    gNextGameStateTimer = 2;
     gOptionMenuStatus = OPTION_WAIT;
-    gDrawMode = DRAWMODE_0;
+    gDrawMode = DRAW_NONE;
     gBgColor = 0;
     D_ctx_80178410 = 0;
     gControllerLock = 10;

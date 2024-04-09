@@ -159,6 +159,7 @@ void func_80008364(f32* buffer0, f32* buffer1, s32 length, f32* buffer2) {
     }
 }
 
+// https://decomp.me/scratch/8eyVg
 #ifdef NON_MATCHING
 void func_80008780(f32* arg0, s32 arg1, f32* arg2) {
     s32 length;
@@ -364,6 +365,7 @@ void func_80008780(f32* arg0, s32 arg1, f32* arg2) {
 #pragma GLOBAL_ASM("asm/us/nonmatchings/audio/audio_synthesis/func_80008780.s")
 #endif
 
+// https://decomp.me/scratch/mYlns
 #ifdef NON_MATCHING
 void func_80009124(s16** arg0) {
     s16* var_a1;
@@ -787,6 +789,7 @@ Acmd* func_8000A25C(s16* aiBuf, s32 aiBufLen, Acmd* aList, s32 updateIndex) {
     return aList;
 }
 
+// https://decomp.me/scratch/RgX4r
 #ifdef NON_MATCHING
 Acmd* func_8000A700(s32 noteIndex, NoteSubEu* noteSub, NoteSynthesisState* synthState, s16* aiBuf, s32 aiBufLen,
                     Acmd* aList, s32 updateIndex) {

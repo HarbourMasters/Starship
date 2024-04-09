@@ -156,7 +156,7 @@ D_i3_801C27A0 = 0x801C27A0; //segment:ovl_i3 size:0x20
 
 Katina_80198594 = 0x80198594;//segment:ovl_i4
 Katina_Boss316_Init = 0x80193CA4;//segment:ovl_i4
-SectorZ_80199C60 = 0x80199C60;//segment:ovl_i4
+SectorZ_Missile_Update = 0x80199C60;//segment:ovl_i4
 SectorZ_80199900 = 0x80199900;//segment:ovl_i4
 D_i4_801A03C0 = 0x801A03C0;//segment:ovl_i4
 D_BO_8019EE80 = 0x8019EE80;//segment:ovl_i4

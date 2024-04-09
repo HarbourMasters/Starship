@@ -11,10 +11,10 @@ extern s32 gOverlayStage;
 extern s32 D_ctx_80177824; // some sort of flag
 extern s32 D_ctx_8017782C; // some sort of flag. all range related?
 extern GameState gGameState;
-extern s32 D_Timer_8017783C; // next game state timer?
+extern s32 gNextGameStateTimer; // next game state timer?
 extern s32 D_ctx_80177844; // timer for vs item spawn
 extern OptionState gOptionMenuStatus;
-extern s32 D_ctx_80177854; // pause-related state
+extern s32 gPlayState; // pause-related state
 extern s32 D_ctx_80177868; // some sort of state. pause-related?
 extern LevelMode gLevelMode;
 extern DrawMode gDrawMode;
@@ -22,9 +22,9 @@ extern s32 gPlayerNum;
 extern s32 gCamCount;
 extern s32 gTeamShields[6];
 extern s32 gSavedTeamShields[6];
-extern UNK_TYPE D_ctx_801778F0[6];
+extern UNK_TYPE gPrevPlanetSavedTeamShields[6];
 extern s32 gTeamDamage[6];
-extern u8 D_ctx_80177930; // next planet path
+extern u8 gNextPlanetPath; // next planet path
 extern f32 gGroundLevel;
 extern f32 D_ctx_80177950;
 extern f32 D_ctx_80177968;
@@ -53,7 +53,7 @@ extern s32 D_ctx_80177B70[7];
 extern PlanetId D_ctx_80177B90[7];
 extern s32 D_ctx_80177BB0[7];
 extern s32 D_ctx_80177BD8[22]; // overruns D_ctx_80177C30?
-extern s32 D_ctx_80177C38[6];
+extern s32 gPrevPlanetTeamShields[6];
 extern s32 D_ctx_80177C58[6];
 extern u8  gSoundMode;
 extern s32 gVolumeSettings[3];
@@ -77,13 +77,13 @@ extern s32 gGameFrameCount;
 extern s32 D_ctx_80177DC8;
 extern s32 D_ctx_80177E70;
 extern s32 D_ctx_80177E78;
-extern s32 D_ctx_80177E80;
+extern s32 gRingPassCount;
 extern Vec3f D_ctx_80177E88;
 extern Vec3f D_ctx_80177F10;
 extern UNK_TYPE F_80178020;
 extern s32 D_ctx_8017812C;
 extern LevelId gCurrentLevel;
-extern s32 D_ctx_8017827C;
+extern s32 gLevelStage;
 extern s32 gBossActive;
 extern s32 D_ctx_8017828C;
 extern s32 D_ctx_80178294;
@@ -101,17 +101,17 @@ extern UNK_TYPE F_801782F0;
 extern s32 D_ctx_801782F8;
 extern s32 D_ctx_80178300;
 extern u16* D_ctx_80178308;
-extern ObjectInit* D_ctx_80178310;
+extern ObjectInit* gLevelObjects;
 extern s32 gFogRed;
 extern s32 gFogGreen;
 extern s32 gFogBlue;
 extern s32 gFogAlpha;
-extern s32 D_ctx_80178340; // alpha something
-extern s32 D_ctx_80178348; // red something
-extern s32 D_ctx_80178350; // green something
-extern s32 D_ctx_80178354; // blue something
-extern s32 D_ctx_80178358; // alpha target
-extern s32 D_ctx_8017835C; // alpha step
+extern s32 gFillScreenAlpha; // alpha something
+extern s32 gFillScreenRed; // red something
+extern s32 gFillScreenGreen; // green something
+extern s32 gFillScreenBlue; // blue something
+extern s32 gFillScreenAlphaTarget; // alpha target
+extern s32 gFillScreenAlphaStep; // alpha step
 extern s32 D_ctx_80178360; // 2 lights second color
 extern s32 D_ctx_80178364;
 extern s32 D_ctx_80178368;
@@ -120,10 +120,10 @@ extern f32 D_ctx_80178370; // Vec3f?
 extern f32 D_ctx_80178374;
 extern f32 D_ctx_80178378;
 extern s32 D_ctx_8017837C;
-extern u32 D_ctx_80178380[4]; // player alphas
-extern s32 D_ctx_80178390[4]; // player reds
-extern s32 D_ctx_801783A0[4]; // player greens
-extern s32 D_ctx_801783B0[4]; // player blues
+extern u32 gPlayerFillScreenAlphas[4]; // player alphas
+extern s32 gPlayerFillScreenReds[4]; // player reds
+extern s32 gPlayerFillScreenGreens[4]; // player greens
+extern s32 gPlayerFillScreenBlues[4]; // player blues
 extern s32 D_ctx_801783C0[4];
 extern f32 D_ctx_801783D0; // something x translate
 extern f32 D_ctx_801783D4; // something y translate
@@ -218,8 +218,8 @@ extern s32 D_ctx_80161A78;
 extern s32 D_ctx_80161A7C;
 extern s32 D_ctx_80161A80;
 extern s32 D_ctx_80161A84;
-extern s32 D_ctx_80161A88;
-extern s32 D_ctx_80161A8C;
+extern s32 gGroundType;
+extern s32 gSavedGroundType;
 extern u8 gGoldRingCount[4];
 extern u8 D_ctx_80161A94[4];
 extern s32 gHitCount;
@@ -229,7 +229,7 @@ extern LaserStrength gLaserStrength[4];
 extern s32 D_ctx_80161AB8;
 extern UNK_TYPE F_80161AC0[16];
 extern Object_80 gObjects80[50];
-extern Object_4C gObjects4C[40];
+extern Sprite gSprites[40];
 extern Actor gActors[60];
 extern Boss gBosses[4];
 extern Effect gEffects[100];
@@ -245,10 +245,10 @@ extern f32 D_ctx_80176B98[2][100];
 extern f32 D_ctx_80176EB8[2][100];
 extern f32 D_ctx_801771D8[2][100];
 extern f32 D_ctx_80177500[2][100];
-extern u16 D_ctx_80177828; // enemy shot speed?
+extern u16 gEnemyShotSpeed; // enemy shot speed?
 extern u8 D_ctx_80177830; // show level complete status overlay
-extern s32 D_ctx_80177838; // level clear related
-extern s32 D_ctx_80177840; // timer for mission accomplished scrren
+extern s32 gLevelStatusScreenTimer; // level clear related
+extern s32 gLevelClearScreenTimer; // timer for mission accomplished scrren
 extern s32 gBossHealthBar;
 extern s32 D_ctx_80177850; // bonus text related. set to 15 but never read
 extern s32 D_ctx_80177858[4];
@@ -270,7 +270,7 @@ extern OSContPad* gInputPress;
 extern u8* D_ctx_80177984;
 extern s32 D_ctx_80177990[4];
 extern f32 D_ctx_801779A8[4];
-extern u8 D_ctx_801779BC;
+extern u8 gPauseEnabled;
 extern s32 gChargeTimers[4];
 extern f32 D_ctx_801779E4;
 extern f32 D_ctx_801779F4;
@@ -301,8 +301,8 @@ extern s32 D_ctx_80177CAC;
 extern s32 D_ctx_80177CB4;
 extern s32 D_ctx_80177CBC;
 extern s32 D_ctx_80177CC4;
-extern s32 D_ctx_80177CD0[6];
-extern s32 D_ctx_80177CF0[6];
+extern s32 gStarWolfTeamAlive[6];
+extern s32 gSavedStarWolfTeamAlive[6];
 extern s32 gRightWingHealth[4];
 extern s32 gLeftWingHealth[4];
 extern s32 D_ctx_80177D40[4];
@@ -314,8 +314,8 @@ extern s32 D_ctx_80177DB8[4];
 extern s32 D_ctx_80177DD0[4][10];
 extern s32 D_ctx_80177E74;
 extern s32 D_ctx_80177E7C;
-extern s32 D_ctx_80177E84;
-extern Vec3f D_ctx_80177E98[10];
+extern s32 gChangeTo360;
+extern Vec3f gTeamArrowsViewPos[10];
 extern f32 D_ctx_80177F20[65];
 extern f32 D_ctx_80178028[65];
 extern f32 D_ctx_80178130[65];

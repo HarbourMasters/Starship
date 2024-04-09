@@ -4,6 +4,25 @@
 #include "sf64math.h"
 #include "sf64object.h"
 
+#define PFLAG_228_0 (1 << 0)
+#define PFLAG_228_1 (1 << 1)
+#define PFLAG_228_2 (1 << 2)
+#define PFLAG_228_3 (1 << 3)
+#define PFLAG_228_4 (1 << 4)
+#define PFLAG_228_5 (1 << 5)
+#define PFLAG_228_6 (1 << 6)
+#define PFLAG_228_7 (1 << 7)
+
+typedef enum TeamId {
+    /* 0 */ TEAM_ID_FOX,
+    /* 1 */ TEAM_ID_FALCO,
+    /* 2 */ TEAM_ID_SLIPPY,
+    /* 3 */ TEAM_ID_PEPPY,
+    /* 4 */ TEAM_ID_KATT,
+    /* 5 */ TEAM_ID_BILL,
+    /* 6 */ TEAM_ID_MAX,
+} TeamId;
+
 typedef enum WingState {
     /* 0 */ WINGSTATE_NONE,
     /* 1 */ WINGSTATE_BROKEN,
@@ -20,15 +39,15 @@ typedef enum PlayerForm {
 } PlayerForm;
 
 typedef enum DrawMode {
-    /* 0 */ DRAWMODE_0,
-    /* 1 */ DRAWMODE_1,
-    /* 2 */ DRAWMODE_2,
+    /* 0 */ DRAW_NONE,
+    /* 1 */ DRAW_TITLE,
+    /* 2 */ DRAW_OPTION,
     /* 3 */ DRAW_MAP,
-    /* 4 */ DRAWMODE_4,
-    /* 5 */ DRAWMODE_5,
-    /* 6 */ DRAWMODE_6,
-    /* 7 */ DRAWMODE_7,
-    /* 8 */ DRAWMODE_8,
+    /* 4 */ DRAW_PLAY,
+    /* 5 */ DRAW_UNK_MAP,
+    /* 6 */ DRAW_UNK_VS,
+    /* 7 */ DRAW_UNK_7,
+    /* 8 */ DRAW_ENDING,
 } DrawMode;
 
 typedef enum LevelMode {
@@ -216,7 +235,7 @@ typedef struct Player {
     /* 0x18C */ f32 unk_18C;
     /* 0x190 */ f32 unk_190;
     /* 0x194 */ f32 unk_194;
-    /* 0x198 */ s32 unk_198;
+    /* 0x198 */ s32 savedCockpitView;
     /* 0x19C */ s32 unk_19C;
     /* 0x1A0 */ s32 unk_1A0;
     /* 0x1A4 */ s32 unk_1A4;
@@ -255,7 +274,7 @@ typedef struct Player {
     /* 0x22C */ s32 unk_22C;
     /* 0x230 */ s32 unk_230;
     /* 0x234 */ s32 unk_234;
-    /* 0x238 */ s32 unk_238;
+    /* 0x238 */ s32 cockpitView;
     /* 0x23C */ s32 unk_23C;
     /* 0x240 */ s32 unk_240;
     /* 0x244 */ s32 timer_244;

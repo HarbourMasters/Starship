@@ -59,7 +59,7 @@ void SectorZ_80199900(Actor* actor, s32 arg1) {
         }
 
         if ((D_i4_801A0560 == 3) && (D_play_800D3180[LEVEL_ZONESS] != 0)) {
-            D_360_800C9B4C = D_360_8015F928 + 110;
+            D_360_800C9B4C = gAllRangeEventTimer + 110;
         }
     }
 }
@@ -107,7 +107,7 @@ typedef enum {
 
 // https://decomp.me/scratch/7td7r
 #ifdef NON_MATCHING
-void SectorZ_80199C60(Actor* missile) {
+void SectorZ_Missile_Update(Actor* this) {
     f32 xDist;
     f32 yDist;
     f32 zDist;
@@ -115,7 +115,7 @@ void SectorZ_80199C60(Actor* missile) {
     f32 y;
     s32 pad;
 
-    switch (++missile->iwork[9]) {
+    switch (++this->iwork[9]) {
         case 600:
             Radio_PlayMessage(gMsg_ID_16080, RCID_ROB64);
             break;
@@ -130,31 +130,31 @@ void SectorZ_80199C60(Actor* missile) {
     }
 
     /* Distance between the Great Fox and the missile */
-    xDist = gBosses[0].obj.pos.x - missile->obj.pos.x;
-    zDist = gBosses[0].obj.pos.z - missile->obj.pos.z;
+    xDist = gBosses[0].obj.pos.x - this->obj.pos.x;
+    zDist = gBosses[0].obj.pos.z - this->obj.pos.z;
 
     SIN_DEG(gGameFrameCount); // WTF
 
     if (xDist) {}
     if (zDist) {}
 
-    if (missile->aiType < AI360_GREAT_FOX) {
-        xDist = SIN_DEG((missile->index * 45) + gGameFrameCount) * 5000.0f;
-        zDist = COS_DEG((missile->index * 45) + (gGameFrameCount * 2)) * 5000.0f;
+    if (this->aiType < AI360_GREAT_FOX) {
+        xDist = SIN_DEG((this->index * 45) + gGameFrameCount) * 5000.0f;
+        zDist = COS_DEG((this->index * 45) + (gGameFrameCount * 2)) * 5000.0f;
     } else {
         zDist = 0.0f;
         xDist = 0.0f;
     }
 
-    missile->fwork[MISSILE_TARGET_X] = (gBosses[0].obj.pos.x + xDist) + 400.0f;
-    missile->fwork[MISSILE_TARGET_Y] = (gBosses[0].obj.pos.y + zDist) + 100.0f;
-    missile->fwork[MISSILE_TARGET_Z] = gBosses[0].obj.pos.z;
-    missile->fwork[3] = 1.4f;
+    this->fwork[MISSILE_TARGET_X] = (gBosses[0].obj.pos.x + xDist) + 400.0f;
+    this->fwork[MISSILE_TARGET_Y] = (gBosses[0].obj.pos.y + zDist) + 100.0f;
+    this->fwork[MISSILE_TARGET_Z] = gBosses[0].obj.pos.z;
+    this->fwork[3] = 1.4f;
 
-    if (((fabsf(missile->fwork[MISSILE_TARGET_X] - missile->obj.pos.x) < 800.0f) &&
-         (fabsf(missile->fwork[MISSILE_TARGET_Y] - missile->obj.pos.y) < 800.0f)) &&
-        (fabsf(missile->fwork[MISSILE_TARGET_Z] - missile->obj.pos.z) < 800.0f)) {
-        SectorZ_80199900(missile, 0);
+    if (((fabsf(this->fwork[MISSILE_TARGET_X] - this->obj.pos.x) < 800.0f) &&
+         (fabsf(this->fwork[MISSILE_TARGET_Y] - this->obj.pos.y) < 800.0f)) &&
+        (fabsf(this->fwork[MISSILE_TARGET_Z] - this->obj.pos.z) < 800.0f)) {
+        SectorZ_80199900(this, 0);
         gCameraShake = 25;
         gBosses[0].dmgType = DMG_UNK_100;
         if ((gPlayer[0].state_1C8 == PLAYERSTATE_1C8_3) || (gPlayer[0].state_1C8 == PLAYERSTATE_1C8_5)) {
@@ -164,7 +164,8 @@ void SectorZ_80199C60(Actor* missile) {
             return;
         }
     }
-    if (((fabsf(missile->fwork[MISSILE_TARGET_Z] - missile->obj.pos.z) < 2000.0f) &&
+
+    if (((fabsf(this->fwork[MISSILE_TARGET_Z] - this->obj.pos.z) < 2000.0f) &&
          (((gPlayer[0].camEye.z < 0.0f) || (D_edisplay_801615D0.y < 0.0f)) ||
           (gPlayer[0].state_1C8 == PLAYERSTATE_1C8_10))) &&
         (((gPlayer[0].state_1C8 == PLAYERSTATE_1C8_3) || (gPlayer[0].state_1C8 == PLAYERSTATE_1C8_10)) ||
@@ -175,7 +176,7 @@ void SectorZ_80199C60(Actor* missile) {
     }
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/overlays/ovl_i4/fox_sz/SectorZ_80199C60.s")
+#pragma GLOBAL_ASM("asm/us/nonmatchings/overlays/ovl_i4/fox_sz/SectorZ_Missile_Update.s")
 #endif
 
 void SectorZ_80199FCC(Actor* actor, s32 arg1) {
@@ -250,7 +251,7 @@ void SectorZ_8019A1D0(void) {
 }
 
 void SectorZ_8019A2F4(Actor* actor) {
-    if (D_360_8015F928 == D_360_800C9B4C) {
+    if (gAllRangeEventTimer == D_360_800C9B4C) {
         SectorZ_8019A1D0();
         gCsFrameCount = 0;
         actor->timer_0BC = 400;
@@ -277,7 +278,7 @@ void SectorZ_8019A3E8(Actor* actor) {
     Vec3f sp34;
     Actor* actorPtr;
 
-    if (D_360_8015F928 >= 0) {
+    if (gAllRangeEventTimer >= 0) {
         if (gTeamShields[AI360_FALCO] > 0) {
             if (gActors[AI360_FALCO].iwork[2] == AI360_FOX) {
                 if (gActors[AI360_10].obj.status == 2) {
@@ -333,12 +334,12 @@ void SectorZ_8019A3E8(Actor* actor) {
         }
     }
 
-    if (D_360_8015F928 == 100) {
+    if (gAllRangeEventTimer == 100) {
         Radio_PlayMessage(gMsg_ID_16030, RCID_FALCO);
     }
 
     if (((actor->timer_0C0 == 0) && (gPlayer[0].state_1C8 != PLAYERSTATE_1C8_0)) &&
-        ((D_360_8015F928 < 200) || ((D_360_8015F928 > 4000) && (D_360_8015F928 < 4200)))) {
+        ((gAllRangeEventTimer < 200) || ((gAllRangeEventTimer > 4000) && (gAllRangeEventTimer < 4200)))) {
         actor->timer_0C0 = 5;
         actorPtr = &gActors[13];
         sp40.x = 0.0f;
@@ -362,7 +363,7 @@ void SectorZ_8019A3E8(Actor* actor) {
                 actorPtr->aiType = i + AI360_10 + 3;
                 actorPtr->aiIndex = -1;
 
-                if (D_360_8015F928 >= 0) {
+                if (gAllRangeEventTimer >= 0) {
                     if (((i + 13) == 23) || ((i + 13) == 24)) {
                         actorPtr->aiIndex = AI360_SLIPPY;
                         actorPtr->state = 2;
@@ -392,7 +393,7 @@ void SectorZ_8019A3E8(Actor* actor) {
         }
     }
 
-    switch (D_360_8015F928) {
+    switch (gAllRangeEventTimer) {
         case 5850:
             Radio_PlayMessage(gMsg_ID_16110, RCID_ROB64);
             break;
@@ -440,8 +441,8 @@ void SectorZ_8019A3E8(Actor* actor) {
             gPlayer[0].camAt.z = gActors[10].obj.pos.z;
 
             actor->timer_0BC = 10000;
-            D_ctx_80178340 = D_ctx_80178358 = 255;
-            D_ctx_80178348 = D_ctx_80178350 = D_ctx_80178354 = 0;
+            gFillScreenAlpha = gFillScreenAlphaTarget = 255;
+            gFillScreenRed = gFillScreenGreen = gFillScreenBlue = 0;
             AUDIO_PLAY_BGM(SEQ_ID_SZ_BOSS | SEQ_FLAG);
             break;
     }
@@ -457,7 +458,7 @@ bool SectorZ_8019AA9C(Player* player) {
             player->state_1C8 = PLAYERSTATE_1C8_10;
             player->unk_1D0 = 0;
             gActors[0].state = 20;
-            D_360_8015F928--;
+            gAllRangeEventTimer--;
             return true;
         }
     }
@@ -476,13 +477,13 @@ void SectorZ_8019AB8C(Actor* actor) {
     switch ((s32) actor->state) {
         case 0:
             D_i4_801A0564 = D_i4_801A0560 = 0;
-            D_360_8015F914 = 63.0f;
-            D_360_8015F918 = 255.0f;
-            D_360_8015F91C = 158.0f;
+            gSzMissileR = 63.0f;
+            gSzMissileG = 255.0f;
+            gSzMissileB = 158.0f;
             D_game_80161A44 = 30000.0f;
-            D_360_8015F928 = 0;
+            gAllRangeEventTimer = 0;
             actor->state = 2;
-            if (D_360_8015F924 != 0) {
+            if (gAllRangeCheckpoint != 0) {
                 gHitCount = gSavedHitCount;
             }
             D_360_800C9B4C = 1000000;
@@ -510,7 +511,7 @@ void SectorZ_8019AB8C(Actor* actor) {
             break;
 
         case 20:
-            D_360_8015F928--;
+            gAllRangeEventTimer--;
             break;
 
         case 3:
@@ -576,7 +577,7 @@ void SectorZ_8019AB8C(Actor* actor) {
             break;
 
         case 10:
-            D_ctx_80178340 = D_ctx_80178358 = 0;
+            gFillScreenAlpha = gFillScreenAlphaTarget = 0;
             switch (actor->timer_0BC) {
                 case 9800:
                     AUDIO_PLAY_SFX(0x09000002U, gActors[10].sfxSource, 0U);
@@ -637,14 +638,14 @@ void SectorZ_8019AB8C(Actor* actor) {
             break;
     }
 
-    if (!(gGameFrameCount & 24)) {
-        Math_SmoothStepToF(&D_360_8015F914, 63.0f, 1.0f, 9.450001f, 0);
-        Math_SmoothStepToF(&D_360_8015F918, 255.0f, 1.0f, 35.25f, 0);
-        Math_SmoothStepToF(&D_360_8015F91C, 158.0f, 1.0f, 21.6f, 0);
+    if (!(gGameFrameCount & 0x18)) {
+        Math_SmoothStepToF(&gSzMissileR, 63.0f, 1.0f, 9.450001f, 0);
+        Math_SmoothStepToF(&gSzMissileG, 255.0f, 1.0f, 35.25f, 0);
+        Math_SmoothStepToF(&gSzMissileB, 158.0f, 1.0f, 21.6f, 0);
     } else {
-        Math_SmoothStepToF(&D_360_8015F914, 0.0f, 1.0f, 3.15f, 0);
-        Math_SmoothStepToF(&D_360_8015F918, 20.0f, 1.0f, 11.75f, 0);
-        Math_SmoothStepToF(&D_360_8015F91C, 14.0f, 1.0f, 7.2000003f, 0);
+        Math_SmoothStepToF(&gSzMissileR, 0.0f, 1.0f, 3.15f, 0);
+        Math_SmoothStepToF(&gSzMissileG, 20.0f, 1.0f, 11.75f, 0);
+        Math_SmoothStepToF(&gSzMissileB, 14.0f, 1.0f, 7.2000003f, 0);
     }
 }
 
@@ -750,7 +751,7 @@ void SectorZ_8019B888(void) {
     s32 i;
     Actor* actor;
 
-    for (i = 0, actor = &gActors[0]; i < 4; i++, actor++) {
+    for (i = 0, actor = &gActors[0]; i <= TEAM_ID_PEPPY; i++, actor++) {
         if ((i <= 0) || (gTeamShields[i] > 0)) {
             Actor_Initialize(actor);
             actor->obj.status = OBJ_ACTIVE;
@@ -768,7 +769,7 @@ void SectorZ_8019B888(void) {
                 actor->health = 255;
                 actor->iwork[11] = 1;
                 AUDIO_PLAY_SFX(0x3100000CU, actor->sfxSource, 4U);
-                actor->info.hitbox = LOAD_ASSET(D_edata_800CC01C);
+                actor->info.hitbox = LOAD_ASSET(gTeamHitbox);
                 actor->info.unk_16 = 0;
                 actor->info.unk_1C = 0.0f;
             }
@@ -783,7 +784,7 @@ void SectorZ_8019BA64(Player* player) {
     Vec3f sp68;
     Actor* actor = gActors;
 
-    D_360_8015F928 = 0;
+    gAllRangeEventTimer = 0;
 
     switch (player->unk_1D0) {
         case 0:
@@ -810,7 +811,7 @@ void SectorZ_8019BA64(Player* player) {
 
         case 1:
             if (gCsFrameCount < 7) {
-                D_ctx_80178340 = 255;
+                gFillScreenAlpha = 255;
             }
 
             gCsCamAtX -= 10.0f;
@@ -827,12 +828,12 @@ void SectorZ_8019BA64(Player* player) {
                 gCsCamAtX = 0.0f;
                 gCsCamAtY = 0.0f;
                 gCsCamAtZ = 0.0f;
-                D_ctx_80178340 = 255;
+                gFillScreenAlpha = 255;
             }
             break;
 
         case 2:
-            D_ctx_80178340 = 0;
+            gFillScreenAlpha = 0;
             player->unk_034 += 0.05f;
 
             for (i = 30; i < 34; i++) {
@@ -864,7 +865,7 @@ void SectorZ_8019BA64(Player* player) {
                 player->camAt.z = gCsCamAtZ = actor->obj.pos.z;
 
                 D_ctx_80177A48[0] = 0.0f;
-                D_ctx_80178340 = 255;
+                gFillScreenAlpha = 255;
 
                 for (i = 0; i < 4; i++) {
                     Object_Kill(&gActors[i + 30].obj, gActors[i + 30].sfxSource);
@@ -879,7 +880,7 @@ void SectorZ_8019BA64(Player* player) {
             break;
 
         case 3:
-            D_ctx_80178340 = 0;
+            gFillScreenAlpha = 0;
             gCsCamEyeX = -1250.0f;
             gCsCamEyeY = -395.0f;
 
@@ -932,7 +933,7 @@ void SectorZ_8019BA64(Player* player) {
                 player->state_1C8 = PLAYERSTATE_1C8_3;
                 player->unk_01C = player->unk_018 = player->unk_014 = 0.f;
                 AUDIO_PLAY_BGM(gBgmSeqId);
-                D_ctx_80177838 = 50;
+                gLevelStatusScreenTimer = 50;
             }
             break;
     }
@@ -970,19 +971,19 @@ void SectorZ_8019BA64(Player* player) {
             break;
 
         case 700:
-            if (gTeamShields[2] > 0) {
+            if (gTeamShields[TEAM_ID_SLIPPY] > 0) {
                 SectorZ_8019B75C(&gActors[30], 0);
             }
             break;
 
         case 720:
-            if (gTeamShields[1] > 0) {
+            if (gTeamShields[TEAM_ID_FALCO] > 0) {
                 SectorZ_8019B75C(&gActors[31], 1);
             }
             break;
 
         case 740:
-            if (gTeamShields[3] > 0) {
+            if (gTeamShields[TEAM_ID_PEPPY] > 0) {
                 SectorZ_8019B75C(&gActors[32], 2);
             }
             break;
@@ -1181,8 +1182,8 @@ void SectorZ_8019C85C(Player* player) {
             player->unk_0D0 = 0.0f;
             player->unk_034 = 0.0f;
 
-            D_ctx_80178358 = 255;
-            D_ctx_80178340 = D_ctx_80178358;
+            gFillScreenAlphaTarget = 255;
+            gFillScreenAlpha = gFillScreenAlphaTarget;
 
             for (i = 0; i < ARRAY_COUNT(gActors); i++) {
                 Object_Kill(&gActors[i].obj, gActors[i].sfxSource);
@@ -1191,8 +1192,8 @@ void SectorZ_8019C85C(Player* player) {
             break;
 
         case 1:
-            D_ctx_80178358 = 0;
-            D_ctx_80178340 = 0;
+            gFillScreenAlphaTarget = 0;
+            gFillScreenAlpha = 0;
 
             Math_SmoothStepToAngle(&boss0->unk_078.x, 20.0f, 0.03f, boss0->fwork[1], 0.0f);
             Math_SmoothStepToAngle(&boss0->unk_078.y, 180.0f, 0.03f, boss0->fwork[2], 0.0f);
@@ -1207,8 +1208,8 @@ void SectorZ_8019C85C(Player* player) {
             }
 
             if ((gCsFrameCount == 210) && gGreatFoxIntact) {
-                D_ctx_80177840 = 100;
-                D_ctx_80177930 = 1;
+                gLevelClearScreenTimer = 100;
+                gNextPlanetPath = 1;
             }
 
             if ((gCsFrameCount == 230) && (D_i4_801A0564 != 0)) {
@@ -1225,8 +1226,8 @@ void SectorZ_8019C85C(Player* player) {
             break;
 
         case 2:
-            D_ctx_80178358 = 0;
-            D_ctx_80178340 = 0;
+            gFillScreenAlphaTarget = 0;
+            gFillScreenAlpha = 0;
 
             if (player->timer_1F8 == 0) {
                 if (!gGreatFoxIntact) {
@@ -1262,22 +1263,22 @@ void SectorZ_8019C85C(Player* player) {
                 gCsCamAtY = player->pos.y;
                 gCsCamAtZ = player->pos.z;
 
-                if (gTeamShields[1] > 0) {
+                if (gTeamShields[TEAM_ID_FALCO] > 0) {
                     SectorZ_8019C574(actor1, 0);
                 }
-                if (gTeamShields[2] > 0) {
+                if (gTeamShields[TEAM_ID_SLIPPY] > 0) {
                     SectorZ_8019C574(actor3, 1);
                 }
-                if (gTeamShields[3] > 0) {
+                if (gTeamShields[TEAM_ID_PEPPY] > 0) {
                     SectorZ_8019C574(actor2, 2);
                 }
                 SectorZ_8019C574(actor0, 3);
-                D_ctx_80178340 = D_ctx_80178358 = 255;
+                gFillScreenAlpha = gFillScreenAlphaTarget = 255;
             }
             break;
 
         case 10:
-            D_ctx_80178340 = D_ctx_80178358 = 0;
+            gFillScreenAlpha = gFillScreenAlphaTarget = 0;
             gCsCamAtX = player->pos.x;
             gCsCamAtY = player->pos.y;
             gCsCamAtZ = player->pos.z;
@@ -1345,10 +1346,10 @@ void SectorZ_8019C85C(Player* player) {
             }
 
             if (gCsFrameCount > 2710) {
-                D_ctx_80178358 = 255;
-                D_ctx_80178348 = D_ctx_80178350 = D_ctx_80178354 = 0;
-                D_ctx_8017835C = 8;
-                if (D_ctx_80178340 == 255) {
+                gFillScreenAlphaTarget = 255;
+                gFillScreenRed = gFillScreenGreen = gFillScreenBlue = 0;
+                gFillScreenAlphaStep = 8;
+                if (gFillScreenAlpha == 255) {
                     player->state_1C8 = PLAYERSTATE_1C8_6;
                     player->timer_1F8 = 0;
                     D_ctx_8017837C = 4;
@@ -1365,7 +1366,7 @@ void SectorZ_8019C85C(Player* player) {
                 break;
 
             case 1847:
-                switch (gTeamShields[1]) {
+                switch (gTeamShields[TEAM_ID_FALCO]) {
                     case -1:
                         Radio_PlayMessage(gMsg_ID_20337, RCID_ROB64);
                         break;
@@ -1381,7 +1382,7 @@ void SectorZ_8019C85C(Player* player) {
                 break;
 
             case 1984:
-                switch (gTeamShields[3]) {
+                switch (gTeamShields[TEAM_ID_PEPPY]) {
                     case -1:
                         Radio_PlayMessage(gMsg_ID_20338, RCID_ROB64);
                         break;
@@ -1397,7 +1398,7 @@ void SectorZ_8019C85C(Player* player) {
                 break;
 
             case 2130:
-                switch (gTeamShields[2]) {
+                switch (gTeamShields[TEAM_ID_SLIPPY]) {
                     case -1:
                         Radio_PlayMessage(gMsg_ID_20339, RCID_ROB64);
                         break;
@@ -1421,7 +1422,7 @@ void SectorZ_8019C85C(Player* player) {
                 break;
 
             case 1847:
-                switch (gTeamShields[1]) {
+                switch (gTeamShields[TEAM_ID_FALCO]) {
                     case -1:
                         Radio_PlayMessage(gMsg_ID_20337, RCID_ROB64);
                         break;
@@ -1437,7 +1438,7 @@ void SectorZ_8019C85C(Player* player) {
                 break;
 
             case 1984:
-                switch (gTeamShields[3]) {
+                switch (gTeamShields[TEAM_ID_PEPPY]) {
                     case -1:
                         Radio_PlayMessage(gMsg_ID_20338, RCID_ROB64);
                         break;
@@ -1453,7 +1454,7 @@ void SectorZ_8019C85C(Player* player) {
                 break;
 
             case 2130:
-                switch (gTeamShields[2]) {
+                switch (gTeamShields[TEAM_ID_SLIPPY]) {
                     case -1:
                         Radio_PlayMessage(gMsg_ID_20339, RCID_ROB64);
                         break;
@@ -1484,16 +1485,16 @@ void SectorZ_8019C85C(Player* player) {
 
         case 1370:
             if (gGreatFoxIntact) {
-                D_ctx_80177930 = 1;
+                gNextPlanetPath = 1;
             } else {
                 AUDIO_PLAY_BGM(SEQ_ID_BAD_END);
-                D_ctx_80177930 = 0;
+                gNextPlanetPath = 0;
             }
             break;
 
         case 1560:
             if (!gGreatFoxIntact) {
-                D_ctx_80177840 = 100;
+                gLevelClearScreenTimer = 100;
             }
             break;
 
@@ -1614,7 +1615,7 @@ void SectorZ_8019DD20(Actor* actor) {
     if (actor->unk_0B6 == 24) {
         switch (gCsFrameCount) {
             case 290:
-                if (gTeamShields[1] > 0) {
+                if (gTeamShields[TEAM_ID_FALCO] > 0) {
                     Radio_PlayMessage(gMsg_ID_16150, RCID_KATT);
                 }
                 break;
@@ -1638,7 +1639,7 @@ void SectorZ_8019DD20(Actor* actor) {
             Math_SmoothStepToF(&actor->unk_0F4.z, 500.0f, 0.1f, 20.0f, 0.0f);
             Math_SmoothStepToF(&actor->fwork[0], 40.0f, 0.1f, 3.0f, 0.0f);
 
-            if ((gCsFrameCount < 460) && !(gCsFrameCount & 3)) {
+            if ((gCsFrameCount < 460) && ((gCsFrameCount & 3) == 0)) {
                 Matrix_RotateY(gCalcMatrix, actor->obj.rot.y * M_DTOR, 0);
                 Matrix_RotateX(gCalcMatrix, actor->obj.rot.x * M_DTOR, 1);
                 Matrix_RotateZ(gCalcMatrix, actor->obj.rot.z * M_DTOR, 1);
@@ -1683,7 +1684,7 @@ void SectorZ_8019E234(Actor* actor) {
         AUDIO_PLAY_SFX(0x2903300EU, actor->sfxSource, 4U);
         if (actor->health <= 0) {
             func_effect_8007BFFC(actor->obj.pos.x, actor->obj.pos.y, actor->obj.pos.z, 0.0f, 0.0f, 0.0f, 5.0f, 10);
-            func_enmy_80066254(actor);
+            Actor_Despawn(actor);
             BonusText_Display(actor->obj.pos.x, actor->obj.pos.y, actor->obj.pos.z, 2);
             gHitCount += 3;
             D_ctx_80177850 = 15;
@@ -1794,40 +1795,40 @@ void SectorZ_8019EA68(void) {
     Object_58* obj58;
     Boss* boss = &gBosses[0];
 
-    D_ctx_80178310 = LOAD_ASSET(D_enmy_800CFDA0[gCurrentLevel]);
+    gLevelObjects = LOAD_ASSET(gLevelObjectInits[gCurrentLevel]);
 
     Rand_SetSeed(1, 29000, 9876);
 
     for (obj58 = gObjects58, i = 0; i < 1000; i++) {
-        if (D_ctx_80178310[i].id < 0) {
+        if (gLevelObjects[i].id < 0) {
             break;
         }
 
-        if (D_ctx_80178310[i].id < 161) {
+        if (gLevelObjects[i].id < 161) {
             Object_58_Initialize(obj58);
             obj58->obj.status = OBJ_ACTIVE;
-            obj58->obj.id = D_ctx_80178310[i].id;
-            obj58->obj.pos.x = D_ctx_80178310[i].xPos;
-            obj58->obj.pos.y = D_ctx_80178310[i].yPos;
-            obj58->obj.pos.z = -D_ctx_80178310[i].zPos1;
-            obj58->obj.rot.y = D_ctx_80178310[i].rot.y;
+            obj58->obj.id = gLevelObjects[i].id;
+            obj58->obj.pos.x = gLevelObjects[i].xPos;
+            obj58->obj.pos.y = gLevelObjects[i].yPos;
+            obj58->obj.pos.z = -gLevelObjects[i].zPos1;
+            obj58->obj.rot.y = gLevelObjects[i].rot.y;
             Object_SetInfo(&obj58->info, obj58->obj.id);
             obj58++;
         }
     }
 
     for (j = 50, actor = &gActors[j], i = 0; i < 1000; i++) {
-        if (D_ctx_80178310[i].id < 0) {
+        if (gLevelObjects[i].id < 0) {
             break;
         }
 
-        if ((D_ctx_80178310[i].id >= 176) && (D_ctx_80178310[i].id < 292)) {
+        if ((gLevelObjects[i].id >= OBJ_ACTOR_176) && (gLevelObjects[i].id < OBJ_BOSS_292)) {
             Actor_Initialize(actor);
             actor->obj.status = OBJ_INIT;
-            actor->obj.id = D_ctx_80178310[i].id;
-            actor->obj.pos.x = D_ctx_80178310[i].xPos;
-            actor->obj.pos.y = D_ctx_80178310[i].yPos;
-            actor->obj.pos.z = -D_ctx_80178310[i].zPos1;
+            actor->obj.id = gLevelObjects[i].id;
+            actor->obj.pos.x = gLevelObjects[i].xPos;
+            actor->obj.pos.y = gLevelObjects[i].yPos;
+            actor->obj.pos.z = -gLevelObjects[i].zPos1;
             actor->health = 24;
             actor->unk_0F4.x = RAND_FLOAT_CENTERED(4.0f);
             actor->unk_0F4.y = RAND_FLOAT_CENTERED(4.0f);

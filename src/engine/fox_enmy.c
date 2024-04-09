@@ -20,10 +20,10 @@
 #include "assets/ast_zoness.h"
 
 s32 D_enmy_Timer_80161670[4];
-s32 D_enmy_80161680;
-u8 D_enmy_80161684;
+s32 gLastPathChange;
+u8 gMissedZoSearchlight;
 
-ObjectInit* D_enmy_800CFDA0[] = {
+ObjectInit* gLevelObjectInits[] = {
     D_CO_60371A4, D_ME_6026CC4, D_SX_602A164,      D_A6_6023F64, D_A6_60287A4, D_SY_602E4F4,  D_VE1_6007E74,
     D_SO_601F234, D_ZO_6026714, D_ANDROSS_C035154, D_TR_6006AA4, D_MA_6031000, D_TI_6006C60,  D_AQ_602E5C8,
     D_FO_600EAD4, NULL,         D_KA_6011044,      D_BO_600FF74, D_SZ_6006EB4, D_VE2_6014D94, D_versus_302DE3C,
@@ -144,8 +144,8 @@ void Object_80_Initialize(Object_80* obj80) {
     memset(obj80, 0, sizeof(Object_80));
 }
 
-void Object_4C_Initialize(Object_4C* obj4C) {
-    memset(obj4C, 0, sizeof(Object_4C));
+void Sprite_Initialize(Sprite* sprite) {
+    memset(sprite, 0, sizeof(Sprite));
 }
 
 void Actor_Initialize(Actor* actor) {
@@ -191,18 +191,18 @@ void Object_80_Load(Object_80* obj80, ObjectInit* objInit) {
     Object_SetInfo(&obj80->info, obj80->obj.id);
 }
 
-void Object_4C_Load(Object_4C* obj4C, ObjectInit* objInit) {
-    Object_4C_Initialize(obj4C);
-    obj4C->obj.status = OBJ_INIT;
-    obj4C->obj.pos.z = -objInit->zPos1;
-    obj4C->obj.pos.z += -3000.0f + objInit->zPos2;
-    obj4C->obj.pos.x = objInit->xPos;
-    obj4C->obj.pos.y = objInit->yPos;
-    obj4C->obj.rot.y = objInit->rot.y;
-    obj4C->obj.rot.x = objInit->rot.x;
-    obj4C->obj.rot.z = objInit->rot.z;
-    obj4C->obj.id = objInit->id;
-    Object_SetInfo(&obj4C->info, obj4C->obj.id);
+void Sprite_Load(Sprite* sprite, ObjectInit* objInit) {
+    Sprite_Initialize(sprite);
+    sprite->obj.status = OBJ_INIT;
+    sprite->obj.pos.z = -objInit->zPos1;
+    sprite->obj.pos.z += -3000.0f + objInit->zPos2;
+    sprite->obj.pos.x = objInit->xPos;
+    sprite->obj.pos.y = objInit->yPos;
+    sprite->obj.rot.y = objInit->rot.y;
+    sprite->obj.rot.x = objInit->rot.x;
+    sprite->obj.rot.z = objInit->rot.z;
+    sprite->obj.id = objInit->id;
+    Object_SetInfo(&sprite->info, sprite->obj.id);
 }
 
 void Actor_Load(Actor* actor, ObjectInit* objInit) {
@@ -350,12 +350,12 @@ void func_enmy_80061E48(Actor* actor, f32 xPos, f32 yPos, f32 zPos) {
     Object_SetInfo(&actor->info, actor->obj.id);
 }
 
-void func_enmy_80061F0C(Actor* actor, ObjectInit* objInit, s32 arg2) {
+void func_enmy_80061F0C(Actor* actor, ObjectInit* objInit, s32 index) {
     Vec3f sp24;
 
     Actor_Initialize(actor);
     actor->obj.status = OBJ_ACTIVE;
-    actor->index = arg2;
+    actor->index = index;
     actor->obj.pos.z = -objInit->zPos1;
     actor->obj.pos.z += -3000.0f + objInit->zPos2;
     actor->obj.pos.x = objInit->xPos;
@@ -382,16 +382,16 @@ void func_enmy_80061F0C(Actor* actor, ObjectInit* objInit, s32 arg2) {
     sp24.z = actor->obj.pos.z - D_ctx_80177F10.z;
     Matrix_MultVec3fNoTranslate(gCalcMatrix, &sp24, &actor->vwork[28]);
     actor->iwork[9] = D_ctx_80177E78;
-    D_ctx_80177E70 = arg2;
+    D_ctx_80177E70 = index;
     Actor_Update(actor);
 }
 
-void Object_Load(ObjectInit* objInit, f32 arg1, f32 arg2, f32 arg3, f32 arg4) {
+void Object_Load(ObjectInit* objInit, f32 xMax, f32 xMin, f32 yMax, f32 yMin) {
     s32 i;
 
-    if ((arg1 > objInit->xPos - gPlayer[0].unk_0AC) && (objInit->xPos - gPlayer[0].unk_0AC > arg2) &&
-        (arg3 > objInit->yPos - gPlayer[0].unk_0B0) && (objInit->yPos - gPlayer[0].unk_0B0 > arg4)) {
-        if (objInit->id < OBJ_4C_161) {
+    if ((xMax > objInit->xPos - gPlayer[0].unk_0AC) && (objInit->xPos - gPlayer[0].unk_0AC > xMin) &&
+        (yMax > objInit->yPos - gPlayer[0].unk_0B0) && (objInit->yPos - gPlayer[0].unk_0B0 > yMin)) {
+        if (objInit->id < OBJ_SPRITE_CO_POLE) {
             for (i = 0; i < ARRAY_COUNT(gObjects80); i++) {
                 if (gObjects80[i].obj.status == OBJ_FREE) {
                     Object_80_Load(&gObjects80[i], objInit);
@@ -399,10 +399,10 @@ void Object_Load(ObjectInit* objInit, f32 arg1, f32 arg2, f32 arg3, f32 arg4) {
                 }
             }
         }
-        if ((objInit->id >= OBJ_4C_161) && (objInit->id < OBJ_ACTOR_176)) {
-            for (i = 0; i < ARRAY_COUNT(gObjects4C); i++) {
-                if (gObjects4C[i].obj.status == OBJ_FREE) {
-                    Object_4C_Load(&gObjects4C[i], objInit);
+        if ((objInit->id >= OBJ_SPRITE_CO_POLE) && (objInit->id < OBJ_ACTOR_176)) {
+            for (i = 0; i < ARRAY_COUNT(gSprites); i++) {
+                if (gSprites[i].obj.status == OBJ_FREE) {
+                    Sprite_Load(&gSprites[i], objInit);
                     break;
                 }
             }
@@ -485,38 +485,38 @@ void Object_Load(ObjectInit* objInit, f32 arg1, f32 arg2, f32 arg3, f32 arg4) {
 }
 
 void func_enmy_80062568(void) {
-    ObjectInit* var_s1;
+    ObjectInit* objInit;
     s32 var_s0;
     s32 temp = gCurrentLevel; // seems fake
     if (1) {}
-    D_ctx_80178310 = LOAD_ASSET(D_enmy_800CFDA0[temp]);
+    gLevelObjects = LOAD_ASSET(gLevelObjectInits[temp]);
     var_s0 = D_ctx_80177CA0 - 40;
-    var_s1 = &D_ctx_80178310[var_s0];
+    objInit = &gLevelObjects[var_s0];
 
-    for (; var_s0 < D_ctx_80177CA0; var_s0++, var_s1++) {
-        Object_Load(var_s1, 4000.0f, -4000.0f, 4000.0f, -4000.0f);
+    for (; var_s0 < D_ctx_80177CA0; var_s0++, objInit++) {
+        Object_Load(objInit, 4000.0f, -4000.0f, 4000.0f, -4000.0f);
     }
 }
 
 void func_enmy_80062664(void) {
     ObjectInit* objInit;
-    f32 var_fs1;
-    f32 var_fs2;
-    f32 var_fs3;
-    f32 var_fs4;
+    f32 xMax;
+    f32 xMin;
+    f32 yMax;
+    f32 yMin;
     s32 i;
     s32 j;
 
-    if ((gCurrentLevel == LEVEL_METEO) && (D_ctx_8017827C == 1)) {
-        D_ctx_80178310 = LOAD_ASSET(D_ME_602B148);
-    } else if ((gCurrentLevel == LEVEL_SECTOR_X) && (D_ctx_8017827C == 1)) {
-        D_ctx_80178310 = LOAD_ASSET(D_SX_602F18C);
-    } else if ((gCurrentLevel == LEVEL_VENOM_ANDROSS) && (D_ctx_8017827C == 1)) {
-        D_ctx_80178310 = LOAD_ASSET(D_ANDROSS_C0356A4);
-    } else if ((gCurrentLevel == LEVEL_VENOM_1) && (D_ctx_8017827C == 1)) {
-        D_ctx_80178310 = LOAD_ASSET(D_VE1_6010088);
+    if ((gCurrentLevel == LEVEL_METEO) && (gLevelStage == 1)) {
+        gLevelObjects = LOAD_ASSET(D_ME_602B148);
+    } else if ((gCurrentLevel == LEVEL_SECTOR_X) && (gLevelStage == 1)) {
+        gLevelObjects = LOAD_ASSET(D_SX_602F18C);
+    } else if ((gCurrentLevel == LEVEL_VENOM_ANDROSS) && (gLevelStage == 1)) {
+        gLevelObjects = LOAD_ASSET(D_ANDROSS_C0356A4);
+    } else if ((gCurrentLevel == LEVEL_VENOM_1) && (gLevelStage == 1)) {
+        gLevelObjects = LOAD_ASSET(D_VE1_6010088);
     } else {
-        D_ctx_80178310 = LOAD_ASSET(D_enmy_800CFDA0[gCurrentLevel]);
+        gLevelObjects = LOAD_ASSET(gLevelObjectInits[gCurrentLevel]);
     }
     if (D_ctx_8017812C == 0) {
         for (j = 0; j < D_ctx_801782B8; j++) {
@@ -528,37 +528,37 @@ void func_enmy_80062664(void) {
         }
     }
     if (gCurrentLevel == LEVEL_METEO) {
-        var_fs3 = var_fs1 = 10000.0f;
-        var_fs4 = var_fs2 = -10000.0f;
+        yMax = xMax = 10000.0f;
+        yMin = xMin = -10000.0f;
     } else if (gCurrentLevel == LEVEL_SECTOR_Y) {
-        var_fs3 = var_fs1 = 6000.0f;
-        var_fs4 = var_fs2 = -6000.0f;
+        yMax = xMax = 6000.0f;
+        yMin = xMin = -6000.0f;
     } else if (gCurrentLevel == LEVEL_VENOM_1) {
-        var_fs3 = var_fs1 = 3500.0f;
-        var_fs4 = var_fs2 = -3500.0f;
+        yMax = xMax = 3500.0f;
+        yMin = xMin = -3500.0f;
     } else {
-        var_fs3 = var_fs1 = 4000.0f;
-        var_fs4 = var_fs2 = -4000.0f;
+        yMax = xMax = 4000.0f;
+        yMin = xMin = -4000.0f;
     }
 
     if ((gPlayer[0].timer_210 != 0) && (gPlayer[0].unk_118 < 0.0f)) {
-        var_fs1 = 10000.0f;
+        xMax = 10000.0f;
     }
     if ((gPlayer[0].timer_210 != 0) && (gPlayer[0].unk_118 > 0.0f)) {
-        var_fs2 = -10000.0f;
+        xMin = -10000.0f;
     }
-    D_enmy_80161680 = 0;
+    gLastPathChange = 0;
 
-    for (i = 0, objInit = &D_ctx_80178310[D_ctx_80177DC8]; i < 10000; i++, D_ctx_80177DC8++, objInit++) {
+    for (i = 0, objInit = &gLevelObjects[D_ctx_80177DC8]; i < 10000; i++, D_ctx_80177DC8++, objInit++) {
         if ((objInit->id > OBJ_INVALID) && D_ctx_80177D20 <= objInit->zPos1 &&
             objInit->zPos1 <= D_ctx_80177D20 + 200.0f) {
             if ((gCurrentLevel == LEVEL_VENOM_1) && (objInit->id >= ACTOR_EVENT_ID)) {
                 if (((objInit->rot.y < 180.0f) && (objInit->xPos < gPlayer[0].unk_0AC)) ||
                     ((objInit->rot.y > 180.0f) && (gPlayer[0].unk_0AC < objInit->xPos))) {
-                    Object_Load(objInit, var_fs1, var_fs2, var_fs3, var_fs4);
+                    Object_Load(objInit, xMax, xMin, yMax, yMin);
                 }
             } else {
-                Object_Load(objInit, var_fs1, var_fs2, var_fs3, var_fs4);
+                Object_Load(objInit, xMax, xMin, yMax, yMin);
             }
         } else {
             break;
@@ -778,7 +778,7 @@ bool func_enmy_8006326C(Vec3f* arg0, Vec3f* arg1, ObjectId objId, Object* obj) {
 s32 func_enmy_8006351C(s32 index, Vec3f* pos, Vec3f* arg2, s32 arg3) {
     Object_58* obj58;
     Object_80* obj80;
-    Object_4C* obj4C;
+    Sprite* sprite;
     Boss* boss;
     Actor* actor;
     Vec3f temp;
@@ -818,13 +818,14 @@ s32 func_enmy_8006351C(s32 index, Vec3f* pos, Vec3f* arg2, s32 arg3) {
             }
         }
     }
-    obj4C = gObjects4C;
-    for (i = 0; i < ARRAY_COUNT(gObjects4C); i++, obj4C++) {
-        if ((obj4C->obj.status == OBJ_ACTIVE) && (fabsf(pos->x - obj4C->obj.pos.x) < 500.0f) &&
-            (fabsf(pos->z - obj4C->obj.pos.z) < 500.0f) &&
-            func_enmy_800631A8(pos, obj4C->info.hitbox, &obj4C->obj.pos)) {
-            if ((obj4C->obj.id == OBJ_4C_163) || (obj4C->obj.id == OBJ_4C_162) || (obj4C->obj.id == OBJ_4C_162)) {
-                obj4C->unk_46 = 1;
+    sprite = gSprites;
+    for (i = 0; i < ARRAY_COUNT(gSprites); i++, sprite++) {
+        if ((sprite->obj.status == OBJ_ACTIVE) && (fabsf(pos->x - sprite->obj.pos.x) < 500.0f) &&
+            (fabsf(pos->z - sprite->obj.pos.z) < 500.0f) &&
+            func_enmy_800631A8(pos, sprite->info.hitbox, &sprite->obj.pos)) {
+            if ((sprite->obj.id == OBJ_SPRITE_FO_POLE) || (sprite->obj.id == OBJ_SPRITE_CO_TREE) ||
+                (sprite->obj.id == OBJ_SPRITE_CO_TREE)) {
+                sprite->unk_46 = 1;
             }
             return 0;
         }
@@ -930,23 +931,23 @@ void func_enmy_80063D58(Object_80* obj80) {
     s32 i;
 
     obj80->obj.pos.y = gGroundLevel;
-    for (i = 0; i < ARRAY_COUNT(gObjects4C); i++) {
-        if (gObjects4C[i].obj.status == OBJ_FREE) {
-            Object_4C_Initialize(&gObjects4C[i]);
-            gObjects4C[i].obj.status = OBJ_INIT;
-            gObjects4C[i].obj.id = OBJ_4C_164;
-            gObjects4C[i].unk_45 = obj80->obj.id;
-            gObjects4C[i].obj.pos.x = obj80->obj.pos.x;
-            gObjects4C[i].obj.pos.y = 5.0f;
-            gObjects4C[i].obj.pos.z = obj80->obj.pos.z;
+    for (i = 0; i < ARRAY_COUNT(gSprites); i++) {
+        if (gSprites[i].obj.status == OBJ_FREE) {
+            Sprite_Initialize(&gSprites[i]);
+            gSprites[i].obj.status = OBJ_INIT;
+            gSprites[i].obj.id = OBJ_SPRITE_FOG_SHADOW;
+            gSprites[i].unk_45 = obj80->obj.id;
+            gSprites[i].obj.pos.x = obj80->obj.pos.x;
+            gSprites[i].obj.pos.y = 5.0f;
+            gSprites[i].obj.pos.z = obj80->obj.pos.z;
             if ((obj80->obj.id == OBJ_80_0) || (obj80->obj.id == OBJ_80_6) || (obj80->obj.id == OBJ_80_7) ||
                 (obj80->obj.id == OBJ_80_56) || (obj80->obj.id == OBJ_80_20) || (obj80->obj.id == OBJ_80_21) ||
                 (obj80->obj.id == OBJ_80_22)) {
-                gObjects4C[i].obj.rot.y = obj80->obj.rot.y;
+                gSprites[i].obj.rot.y = obj80->obj.rot.y;
             } else {
-                gObjects4C[i].obj.rot.y = 44.9f;
+                gSprites[i].obj.rot.y = 44.9f;
             }
-            Object_SetInfo(&gObjects4C[i].info, gObjects4C[i].obj.id);
+            Object_SetInfo(&gSprites[i].info, gSprites[i].obj.id);
             break;
         }
     }
@@ -960,7 +961,7 @@ void func_enmy_80063E5C(Object_80* obj80, f32* hitboxData) {
         if (item->obj.status == OBJ_FREE) {
             Item_Initialize(&gItems[i]);
             item->obj.status = OBJ_INIT;
-            item->obj.id = OBJ_ITEM_334;
+            item->obj.id = OBJ_ITEM_RING_CHECK;
             item->obj.pos.x = obj80->obj.pos.x;
             item->obj.pos.y = obj80->obj.pos.y;
             item->obj.pos.z = obj80->obj.pos.z;
@@ -992,8 +993,8 @@ void Object_Init(s32 index, ObjectId objId) {
     PosRot* var_v0;
 
     switch (objId) {
-        case OBJ_4C_170:
-            func_effect_8007A6F0(&gObjects4C[index].obj.pos, 0x11000055);
+        case OBJ_SPRITE_CO_SMOKE:
+            func_effect_8007A6F0(&gSprites[index].obj.pos, 0x11000055);
             break;
         case OBJ_ACTOR_234:
             AUDIO_PLAY_SFX(0x11030010, gActors[index].sfxSource, 0);
@@ -1057,21 +1058,21 @@ void Object_Init(s32 index, ObjectId objId) {
             }
             break;
         case OBJ_ITEM_METEO_WARP:
-            if (D_ctx_80177E80 < 0) {
+            if (gRingPassCount < 0) {
                 gItems[index].obj.status = OBJ_FREE;
             }
             break;
-        case OBJ_ITEM_331:
-        case OBJ_ITEM_332:
-        case OBJ_ITEM_333:
+        case OBJ_ITEM_PATH_SPLIT_Y:
+        case OBJ_ITEM_PATH_TURN_UP:
+        case OBJ_ITEM_PATH_TURN_DOWN:
             func_enmy_80063F74(&gItems[index]);
             break;
-        case OBJ_ITEM_328:
-        case OBJ_ITEM_329:
+        case OBJ_ITEM_PATH_SPLIT_X:
+        case OBJ_ITEM_PATH_TURN_LEFT:
             func_enmy_80063F58(&gItems[index]);
             break;
-        case OBJ_ITEM_330:
-            if (((D_ctx_80177E80 >= 7) && (gCurrentLevel == LEVEL_CORNERIA) && (gTeamShields[1] > 0)) ||
+        case OBJ_ITEM_PATH_TURN_RIGHT:
+            if (((gRingPassCount >= 7) && (gCurrentLevel == LEVEL_CORNERIA) && (gTeamShields[TEAM_ID_FALCO] > 0)) ||
                 (gCurrentLevel != LEVEL_CORNERIA)) {
                 func_enmy_80063F58(&gItems[index]);
             } else {
@@ -1079,7 +1080,7 @@ void Object_Init(s32 index, ObjectId objId) {
             }
             break;
         case OBJ_80_0:
-            func_enmy_80063E5C(&gObjects80[index], D_edata_800CBF18);
+            func_enmy_80063E5C(&gObjects80[index], gItemRingCheckHitbox);
             /* fallthrough */
         case OBJ_80_6:
         case OBJ_80_7:
@@ -1244,8 +1245,8 @@ void Object_Init(s32 index, ObjectId objId) {
         case OBJ_ACTOR_228:
             Titania_8018E5E8(&gActors[index]);
             break;
-        case OBJ_4C_169:
-            Titania_8018EFF0(&gObjects4C[index]);
+        case OBJ_SPRITE_TI_CACTUS:
+            Titania_8018EFF0(&gSprites[index]);
             break;
         case OBJ_BOSS_306:
             Titania_Boss306_Init(&gBosses[index]);
@@ -1541,9 +1542,9 @@ void func_enmy_800656D4(Actor* actor) {
         if (actor->timer_0BE == 0) {
             actor->timer_0BE = 30;
             Math_Vec3fFromAngles(&sp98, actor->obj.rot.x, actor->obj.rot.y, 120.0f);
-            func_effect_8007F04C(0x161, actor->obj.pos.x + sp98.x, actor->obj.pos.y + sp98.y, actor->obj.pos.z + sp98.z,
-                                 actor->obj.rot.x, actor->obj.rot.y, actor->obj.rot.z, 0.0f, 0.0f, 0.0f, sp98.x, sp98.y,
-                                 sp98.z, 1.0f);
+            func_effect_8007F04C(OBJ_EFFECT_353, actor->obj.pos.x + sp98.x, actor->obj.pos.y + sp98.y,
+                                 actor->obj.pos.z + sp98.z, actor->obj.rot.x, actor->obj.rot.y, actor->obj.rot.z, 0.0f,
+                                 0.0f, 0.0f, sp98.x, sp98.y, sp98.z, 1.0f);
         }
         var_fv0 = 330.0f;
         if (sp84 < 0.0f) {
@@ -1575,7 +1576,7 @@ void func_enmy_800656D4(Actor* actor) {
             if (gCurrentLevel == LEVEL_AREA_6) {
                 actor->itemDrop = DROP_SILVER_RING_10p;
             }
-            func_enmy_80066254(actor);
+            Actor_Despawn(actor);
         }
         func_effect_8007A6F0(&actor->obj.pos, 0x2903A008);
     }
@@ -1620,7 +1621,7 @@ void func_enmy_800660F0(Actor* actor) {
     }
 }
 
-void func_enmy_80066254(Actor* actor) {
+void Actor_Despawn(Actor* actor) {
     Actor* otherActor;
     s32 i;
 
@@ -1669,11 +1670,11 @@ void func_enmy_80066254(Actor* actor) {
                 func_enmy_800660F0(actor);
                 AUDIO_PLAY_SFX(0x4900000C, gDefaultSfxSource, 4);
             } else if (actor->itemDrop == DROP_TEAM_MESG) {
-                if (gTeamShields[3] > 0) {
+                if (gTeamShields[TEAM_ID_PEPPY] > 0) {
                     Radio_PlayMessage(gMsg_ID_20261, RCID_PEPPY);
-                } else if (gTeamShields[2] > 0) {
+                } else if (gTeamShields[TEAM_ID_SLIPPY] > 0) {
                     Radio_PlayMessage(gMsg_ID_20263, RCID_SLIPPY);
-                } else if (gTeamShields[1] > 0) {
+                } else if (gTeamShields[TEAM_ID_FALCO] > 0) {
                     Radio_PlayMessage(gMsg_ID_20262, RCID_FALCO);
                 }
             } else if (Rand_ZeroOne() <= D_enmy_800CFE5C[actor->itemDrop]) {
@@ -1750,7 +1751,7 @@ void func_enmy_8006684C(Actor* actor) {
         if (actor->timer_0BE == 1) {
             Object_Kill(&actor->obj, actor->sfxSource);
             actor->itemDrop = DROP_SILVER_RING;
-            func_enmy_80066254(actor);
+            Actor_Despawn(actor);
             AUDIO_PLAY_SFX(0x2903B009, actor->sfxSource, 4);
             BonusText_Display(actor->obj.pos.x, actor->obj.pos.y + 250.0f, actor->obj.pos.z, 3);
             gHitCount += 3;
@@ -1853,8 +1854,8 @@ void func_enmy_80066D5C(Object_80* obj80) {
 void func_enmy_80066E80(Object_80* obj80) {
 }
 
-void func_enmy_80066E8C(Object_4C* obj4C) {
-    obj4C->obj.rot.y += 0.2f;
+void Sprite167_Update(Sprite167* this) {
+    this->obj.rot.y += 0.2f;
 }
 
 void func_enmy_80066EA8(Object_80* obj80) {
@@ -1864,7 +1865,7 @@ void func_enmy_80066EA8(Object_80* obj80) {
     }
 }
 
-void func_enmy_80066EE4(Object_4C* obj4C) {
+void func_enmy_80066EE4(Sprite* sprite) {
 }
 
 void func_enmy_80066EF0(Item* item) {
@@ -1873,7 +1874,7 @@ void func_enmy_80066EF0(Item* item) {
     if ((gPlayer[0].state_1C8 == PLAYERSTATE_1C8_7) || (gPlayer[0].state_1C8 == PLAYERSTATE_1C8_0)) {
         Object_Kill(&item->obj, item->sfxSource);
     }
-    if ((gLevelMode == LEVELMODE_ON_RAILS) && (D_enmy_80161680 == 0)) {
+    if ((gLevelMode == LEVELMODE_ON_RAILS) && (gLastPathChange == 0)) {
         var_fa1 = 900.0f;
         if (gPlayer[0].form != FORM_ARWING) {
             var_fa1 = 600.0f;
@@ -1964,52 +1965,52 @@ void func_enmy_800674B4(f32 xPos, f32 yPos, f32 zPos, f32 xRot, f32 yRot, f32 ar
     }
 }
 
-void ActorSupplies_Update(Actor* actor) {
+void ActorSupplies_Update(ActorSupplies* this) {
     Player* player = &gPlayer[0];
     s32 i;
 
-    actor->obj.rot.y += 1.0f;
+    this->obj.rot.y += 1.0f;
     if (gLevelMode == LEVELMODE_ALL_RANGE) {
         if (gCurrentLevel == LEVEL_SECTOR_Z) {
-            Math_SmoothStepToF(&actor->obj.pos.x, -2000.0f, 0.05f, 60.0f, 0.01f);
-            Math_SmoothStepToF(&actor->obj.pos.y, -200.0f, 0.05f, 3.0f, 0.01f);
-            Math_SmoothStepToF(&actor->obj.pos.z, 0.0f, 0.05f, 0.f, 0.01f);
+            Math_SmoothStepToF(&this->obj.pos.x, -2000.0f, 0.05f, 60.0f, 0.01f);
+            Math_SmoothStepToF(&this->obj.pos.y, -200.0f, 0.05f, 3.0f, 0.01f);
+            Math_SmoothStepToF(&this->obj.pos.z, 0.0f, 0.05f, 0.f, 0.01f);
         } else {
-            Math_SmoothStepToF(&actor->obj.pos.y, 300.0f, 0.05f, 50.0f, 0.01f);
+            Math_SmoothStepToF(&this->obj.pos.y, 300.0f, 0.05f, 50.0f, 0.01f);
         }
     }
-    if (actor->unk_0D0 != 0) {
-        actor->unk_0D0 = 0;
-        actor->health -= actor->damage;
-        if (actor->health <= 0) {
-            func_effect_8007A6F0(&actor->obj.pos, 0x2903A008);
-            func_effect_8007D2C8(actor->obj.pos.x, actor->obj.pos.y, actor->obj.pos.z, 5.0f);
+    if (this->unk_0D0 != 0) {
+        this->unk_0D0 = 0;
+        this->health -= this->damage;
+        if (this->health <= 0) {
+            func_effect_8007A6F0(&this->obj.pos, 0x2903A008);
+            func_effect_8007D2C8(this->obj.pos.x, this->obj.pos.y, this->obj.pos.z, 5.0f);
             if (((player[0].wings.rightState <= WINGSTATE_BROKEN) || (player[0].wings.leftState <= WINGSTATE_BROKEN)) &&
                 (player[0].form != FORM_LANDMASTER)) {
-                actor->itemDrop = DROP_WING_REPAIR;
+                this->itemDrop = DROP_WING_REPAIR;
             } else if (gPlayer[0].shields < 128) {
-                actor->itemDrop = DROP_SILVER_STAR;
+                this->itemDrop = DROP_SILVER_STAR;
             } else if ((gLaserStrength[0] == LASERS_SINGLE) && (player[0].form != FORM_LANDMASTER)) {
-                actor->itemDrop = DROP_LASERS;
+                this->itemDrop = DROP_LASERS;
             } else {
-                actor->itemDrop = DROP_BOMB;
+                this->itemDrop = DROP_BOMB;
             }
-            func_enmy_80066254(actor);
+            Actor_Despawn(this);
             for (i = 0; i < 6; i++) {
-                func_enmy_800674B4(D_enmy_800CFEC4[i].x + actor->obj.pos.x, D_enmy_800CFEC4[i].y + actor->obj.pos.y,
-                                   D_enmy_800CFEC4[i].z + actor->obj.pos.z, D_enmy_800CFF0C[i].y + actor->obj.rot.y,
-                                   D_enmy_800CFF0C[i].x + actor->obj.rot.x, RAND_FLOAT_CENTERED(40.0f),
+                func_enmy_800674B4(D_enmy_800CFEC4[i].x + this->obj.pos.x, D_enmy_800CFEC4[i].y + this->obj.pos.y,
+                                   D_enmy_800CFEC4[i].z + this->obj.pos.z, D_enmy_800CFF0C[i].y + this->obj.rot.y,
+                                   D_enmy_800CFF0C[i].x + this->obj.rot.x, RAND_FLOAT_CENTERED(40.0f),
                                    RAND_FLOAT(10.0f) + 10.0f, RAND_FLOAT_CENTERED(40.0f));
-                func_effect_800794CC(actor->obj.pos.x, actor->obj.pos.y, actor->obj.pos.z, 0.6f);
+                func_effect_800794CC(this->obj.pos.x, this->obj.pos.y, this->obj.pos.z, 0.6f);
             }
-            Object_Kill(&actor->obj, actor->sfxSource);
+            Object_Kill(&this->obj, this->sfxSource);
         }
     }
     gRadarMarks[63].unk_00 = 1;
     gRadarMarks[63].unk_02 = 103;
-    gRadarMarks[63].pos.x = actor->obj.pos.x;
-    gRadarMarks[63].pos.y = actor->obj.pos.y;
-    gRadarMarks[63].pos.z = actor->obj.pos.z;
+    gRadarMarks[63].pos.x = this->obj.pos.x;
+    gRadarMarks[63].pos.y = this->obj.pos.y;
+    gRadarMarks[63].pos.z = this->obj.pos.z;
     gRadarMarks[63].unk_10 = 0.0f;
 }
 
@@ -2047,268 +2048,268 @@ void func_enmy_80067A40(void) {
     }
 }
 
-void Item1up_Update(Item* item) {
-    func_enmy_80066EF0(item);
-    func_enmy_800671D0(item);
-    if (item->collected) {
-        Object_Kill(&item->obj, item->sfxSource);
-        func_enmy_80060F30(gPlayer[item->playerNum].sfxSource, 0x4900C024, item->playerNum);
+void Item1up_Update(Item1UP* this) {
+    func_enmy_80066EF0(this);
+    func_enmy_800671D0(this);
+    if (this->collected) {
+        Object_Kill(&this->obj, this->sfxSource);
+        func_enmy_80060F30(gPlayer[this->playerNum].sfxSource, 0x4900C024, this->playerNum);
         if (gCurrentLevel != LEVEL_TRAINING) {
-            gLifeCount[item->playerNum]++;
+            gLifeCount[this->playerNum]++;
         }
     }
-    if (item->timer_48 == 1) {
-        Object_Kill(&item->obj, item->sfxSource);
+    if (this->timer_48 == 1) {
+        Object_Kill(&this->obj, this->sfxSource);
     }
 }
 
-void ItemPickup_Update(Item* item) {
-    func_enmy_80066EF0(item);
-    func_enmy_800671D0(item);
-    if (item->state == 0) {
-        switch (item->obj.id) {
+void ItemPickup_Update(Item* this) {
+    func_enmy_80066EF0(this);
+    func_enmy_800671D0(this);
+    if (this->state == 0) {
+        switch (this->obj.id) {
             case OBJ_ITEM_BOMB:
-                item->scale = 18.0f;
-                if (item->collected) {
-                    item->timer_4A = 50;
-                    item->state = 1;
-                    item->timer_48 = 20;
-                    item->unk_50 = 60.0f;
-                    gBombCount[item->playerNum]++;
-                    func_enmy_80060F30(gPlayer[item->playerNum].sfxSource, 0x49002005, item->playerNum);
-                    func_enmy_80060F30(gPlayer[item->playerNum].sfxSource, 0x49002006, item->playerNum);
+                this->scale = 18.0f;
+                if (this->collected) {
+                    this->timer_4A = 50;
+                    this->state = 1;
+                    this->timer_48 = 20;
+                    this->unk_50 = 60.0f;
+                    gBombCount[this->playerNum]++;
+                    func_enmy_80060F30(gPlayer[this->playerNum].sfxSource, 0x49002005, this->playerNum);
+                    func_enmy_80060F30(gPlayer[this->playerNum].sfxSource, 0x49002006, this->playerNum);
                 }
                 break;
             case OBJ_ITEM_LASERS:
-                item->scale = 18.0f;
-                if (item->collected) {
-                    item->timer_4A = 50;
-                    item->state = 1;
-                    item->timer_48 = 20;
-                    item->unk_50 = 60.0f;
-                    gLaserStrength[item->playerNum]++;
-                    if (gLaserStrength[item->playerNum] > LASERS_HYPER) {
-                        gLaserStrength[item->playerNum] = LASERS_HYPER;
+                this->scale = 18.0f;
+                if (this->collected) {
+                    this->timer_4A = 50;
+                    this->state = 1;
+                    this->timer_48 = 20;
+                    this->unk_50 = 60.0f;
+                    gLaserStrength[this->playerNum]++;
+                    if (gLaserStrength[this->playerNum] > LASERS_HYPER) {
+                        gLaserStrength[this->playerNum] = LASERS_HYPER;
                     }
-                    func_enmy_80060F30(gPlayer[item->playerNum].sfxSource, 0x49002004, item->playerNum);
+                    func_enmy_80060F30(gPlayer[this->playerNum].sfxSource, 0x49002004, this->playerNum);
                     if (gExpertMode) {
-                        gRightWingHealth[item->playerNum] = gLeftWingHealth[item->playerNum] = 10;
+                        gRightWingHealth[this->playerNum] = gLeftWingHealth[this->playerNum] = 10;
                     } else {
-                        gRightWingHealth[item->playerNum] = gLeftWingHealth[item->playerNum] = 60;
+                        gRightWingHealth[this->playerNum] = gLeftWingHealth[this->playerNum] = 60;
                     }
-                    D_ctx_80177D40[item->playerNum] = 1030;
-                    D_ctx_80177D58[item->playerNum] = 1030;
+                    D_ctx_80177D40[this->playerNum] = 1030;
+                    D_ctx_80177D58[this->playerNum] = 1030;
                 }
                 break;
         }
     } else {
-        Math_SmoothStepToF(&item->scale, 2.5f, 1.0f, 0.5f, 0.0f);
-        item->obj.pos.x += (gPlayer[item->playerNum].pos.x - item->obj.pos.x) * 0.5f;
-        if (gPlayer[item->playerNum].form == FORM_LANDMASTER) {
-            item->obj.pos.y += ((gPlayer[item->playerNum].pos.y + 50.0f) - item->obj.pos.y) * 0.5f;
+        Math_SmoothStepToF(&this->scale, 2.5f, 1.0f, 0.5f, 0.0f);
+        this->obj.pos.x += (gPlayer[this->playerNum].pos.x - this->obj.pos.x) * 0.5f;
+        if (gPlayer[this->playerNum].form == FORM_LANDMASTER) {
+            this->obj.pos.y += ((gPlayer[this->playerNum].pos.y + 50.0f) - this->obj.pos.y) * 0.5f;
         } else {
-            item->obj.pos.y += (gPlayer[item->playerNum].pos.y - item->obj.pos.y) * 0.5f;
+            this->obj.pos.y += (gPlayer[this->playerNum].pos.y - this->obj.pos.y) * 0.5f;
         }
-        item->obj.pos.z += (gPlayer[item->playerNum].unk_138 - item->obj.pos.z) * 0.5f;
-        if (item->timer_48 == 0) {
-            Object_Kill(&item->obj, item->sfxSource);
+        this->obj.pos.z += (gPlayer[this->playerNum].unk_138 - this->obj.pos.z) * 0.5f;
+        if (this->timer_48 == 0) {
+            Object_Kill(&this->obj, this->sfxSource);
         }
     }
 }
 
-void ItemLasers_Update(Item* item) {
+void ItemLasers_Update(ItemLasers* this) {
     if (!gVersusMode &&
         ((gPlayer[0].wings.leftState <= WINGSTATE_BROKEN) || (gPlayer[0].wings.rightState <= WINGSTATE_BROKEN))) {
-        item->obj.id = OBJ_ITEM_WING_REPAIR;
-        Object_SetInfo(&item->info, item->obj.id);
-        item->timer_48 = 2000;
-        AUDIO_PLAY_SFX(0x1900302B, item->sfxSource, 0);
+        this->obj.id = OBJ_ITEM_WING_REPAIR;
+        Object_SetInfo(&this->info, this->obj.id);
+        this->timer_48 = 2000;
+        AUDIO_PLAY_SFX(0x1900302B, this->sfxSource, 0);
     } else {
-        ItemPickup_Update(item);
+        ItemPickup_Update(this);
     }
 }
 
-void ItemSupplyRing_Update(Item* item) {
+void ItemSupplyRing_Update(Item* this) {
     Vec3f sp4C;
     Vec3f sp40;
 
-    switch (item->state) {
+    switch (this->state) {
         case 0:
-            Math_SmoothStepToF(&item->scale, 0.4f, 1.0f, 0.05f, 0.0f);
-            func_enmy_80066EF0(item);
-            func_enmy_800671D0(item);
-            if (item->collected) {
-                item->state = 1;
-                item->timer_48 = 50;
-                if (item->obj.id == OBJ_ITEM_SILVER_RING) {
-                    gPlayer[item->playerNum].heal += 32;
-                    func_enmy_80060F30(gPlayer[item->playerNum].sfxSource, 0x4900200E, item->playerNum);
-                } else if (item->obj.id == OBJ_ITEM_GOLD_RING) {
+            Math_SmoothStepToF(&this->scale, 0.4f, 1.0f, 0.05f, 0.0f);
+            func_enmy_80066EF0(this);
+            func_enmy_800671D0(this);
+            if (this->collected) {
+                this->state = 1;
+                this->timer_48 = 50;
+                if (this->obj.id == OBJ_ITEM_SILVER_RING) {
+                    gPlayer[this->playerNum].heal += 32;
+                    func_enmy_80060F30(gPlayer[this->playerNum].sfxSource, 0x4900200E, this->playerNum);
+                } else if (this->obj.id == OBJ_ITEM_GOLD_RING) {
                     gGoldRingCount[0]++;
                     if (gGoldRingCount[0] == 3) {
-                        func_enmy_80060F30(gPlayer[item->playerNum].sfxSource, 0x49008015, item->playerNum);
+                        func_enmy_80060F30(gPlayer[this->playerNum].sfxSource, 0x49008015, this->playerNum);
                     } else if (gGoldRingCount[0] == 6) {
-                        func_enmy_80060F30(gPlayer[item->playerNum].sfxSource, 0x4900C024, item->playerNum);
+                        func_enmy_80060F30(gPlayer[this->playerNum].sfxSource, 0x4900C024, this->playerNum);
                         if (gCurrentLevel != LEVEL_TRAINING) {
-                            gLifeCount[item->playerNum]++;
+                            gLifeCount[this->playerNum]++;
                         }
-                        gPlayer[item->playerNum].heal += 32;
-                        BonusText_Display(gPlayer[item->playerNum].pos.x, gPlayer[item->playerNum].pos.y,
-                                          gPlayer[item->playerNum].unk_138, BONUS_TEXT_1UP);
+                        gPlayer[this->playerNum].heal += 32;
+                        BonusText_Display(gPlayer[this->playerNum].pos.x, gPlayer[this->playerNum].pos.y,
+                                          gPlayer[this->playerNum].unk_138, BONUS_TEXT_1UP);
                     } else {
-                        gPlayer[item->playerNum].heal += 32;
-                        func_enmy_80060F30(gPlayer[item->playerNum].sfxSource, 0x49003013, item->playerNum);
+                        gPlayer[this->playerNum].heal += 32;
+                        func_enmy_80060F30(gPlayer[this->playerNum].sfxSource, 0x49003013, this->playerNum);
                     }
                 } else {
-                    gPlayer[item->playerNum].heal += 128;
-                    func_enmy_80060F30(gPlayer[item->playerNum].sfxSource, 0x4900200D, item->playerNum);
+                    gPlayer[this->playerNum].heal += 128;
+                    func_enmy_80060F30(gPlayer[this->playerNum].sfxSource, 0x4900200D, this->playerNum);
                 }
             }
-            if ((item->obj.id == OBJ_ITEM_GOLD_RING) && (item->timer_48 == 1)) {
-                Object_Kill(&item->obj, item->sfxSource);
+            if ((this->obj.id == OBJ_ITEM_GOLD_RING) && (this->timer_48 == 1)) {
+                Object_Kill(&this->obj, this->sfxSource);
             }
             break;
         case 1:
-            if (item->timer_48 > 30) {
-                Math_SmoothStepToF(&item->scale, 1.0f, 1.0f, 0.06f, 0.0f);
+            if (this->timer_48 > 30) {
+                Math_SmoothStepToF(&this->scale, 1.0f, 1.0f, 0.06f, 0.0f);
             } else {
-                Math_SmoothStepToF(&item->scale, 0.0f, 1.0f, 0.06f, 0.0f);
+                Math_SmoothStepToF(&this->scale, 0.0f, 1.0f, 0.06f, 0.0f);
             }
-            item->obj.pos.x += (gPlayer[item->playerNum].pos.x - item->obj.pos.x) * 0.5f;
-            if (gPlayer[item->playerNum].form == FORM_LANDMASTER) {
-                item->obj.pos.y += (gPlayer[item->playerNum].pos.y + 50.0f - item->obj.pos.y) * 0.5f;
+            this->obj.pos.x += (gPlayer[this->playerNum].pos.x - this->obj.pos.x) * 0.5f;
+            if (gPlayer[this->playerNum].form == FORM_LANDMASTER) {
+                this->obj.pos.y += (gPlayer[this->playerNum].pos.y + 50.0f - this->obj.pos.y) * 0.5f;
             } else {
-                item->obj.pos.y += (gPlayer[item->playerNum].pos.y - item->obj.pos.y) * 0.5f;
+                this->obj.pos.y += (gPlayer[this->playerNum].pos.y - this->obj.pos.y) * 0.5f;
             }
-            if ((gPlayer[0].unk_238 != 0) && (gLevelMode == LEVELMODE_ON_RAILS)) {
-                item->obj.pos.z += (gPlayer[item->playerNum].unk_138 - 300.0f - item->obj.pos.z) * 0.3f;
+            if ((gPlayer[0].cockpitView != 0) && (gLevelMode == LEVELMODE_ON_RAILS)) {
+                this->obj.pos.z += (gPlayer[this->playerNum].unk_138 - 300.0f - this->obj.pos.z) * 0.3f;
             } else {
-                item->obj.pos.z += (gPlayer[item->playerNum].unk_138 - item->obj.pos.z) * 0.5f;
+                this->obj.pos.z += (gPlayer[this->playerNum].unk_138 - this->obj.pos.z) * 0.5f;
             }
-            item->obj.rot.z += 22.0f;
-            Math_SmoothStepToAngle(&item->obj.rot.y, Math_RadToDeg(-gPlayer[item->playerNum].unk_058), 0.2f, 10.0f,
+            this->obj.rot.z += 22.0f;
+            Math_SmoothStepToAngle(&this->obj.rot.y, Math_RadToDeg(-gPlayer[this->playerNum].unk_058), 0.2f, 10.0f,
                                    0.0f);
-            if (item->timer_48 == 0) {
-                Object_Kill(&item->obj, item->sfxSource);
+            if (this->timer_48 == 0) {
+                Object_Kill(&this->obj, this->sfxSource);
             }
-            if (item->scale > 0.3f) {
-                Matrix_RotateY(gCalcMatrix, item->obj.rot.y * M_DTOR, 0);
+            if (this->scale > 0.3f) {
+                Matrix_RotateY(gCalcMatrix, this->obj.rot.y * M_DTOR, 0);
                 Matrix_RotateZ(gCalcMatrix, gGameFrameCount * 37.0f * M_DTOR, 1);
                 sp4C.x = 0.0f;
-                sp4C.y = item->scale * 100.0f;
+                sp4C.y = this->scale * 100.0f;
                 sp4C.z = 0.0f;
                 Matrix_MultVec3fNoTranslate(gCalcMatrix, &sp4C, &sp40);
-                func_effect_80078E50(item->obj.pos.x + sp40.x, item->obj.pos.y + sp40.y, item->obj.pos.z + sp40.z,
+                func_effect_80078E50(this->obj.pos.x + sp40.x, this->obj.pos.y + sp40.y, this->obj.pos.z + sp40.z,
                                      3.5f);
             }
             break;
     }
 }
 
-void ItemSilverStar_Update(Item* item) {
-    ItemSupplyRing_Update(item);
+void ItemSilverStar_Update(ItemSilverStar* this) {
+    ItemSupplyRing_Update(this);
 }
 
-void ItemGoldRing_Update(Item* item) {
-    ItemSupplyRing_Update(item);
+void ItemGoldRing_Update(ItemGoldRing* this) {
+    ItemSupplyRing_Update(this);
 }
 
-void ItemWingRepair_Update(Item* item) {
-    func_enmy_80066EF0(item);
-    func_enmy_800671D0(item);
-    if (item->collected) {
+void ItemWingRepair_Update(ItemWingRepair* this) {
+    func_enmy_80066EF0(this);
+    func_enmy_800671D0(this);
+    if (this->collected) {
         func_enmy_80067A40();
-        Object_Kill(&item->obj, item->sfxSource);
+        Object_Kill(&this->obj, this->sfxSource);
     }
-    if (item->timer_48 == 1) {
-        Object_Kill(&item->obj, item->sfxSource);
+    if (this->timer_48 == 1) {
+        Object_Kill(&this->obj, this->sfxSource);
     }
 }
 
-void ItemMeteoWarp_Update(Item* item) {
-    func_enmy_80066EF0(item);
-    if (item->state > 0) {
-        if (item->state == 1) {
-            item->obj.rot.z -= 10.0f;
-            item->obj.pos.x += (gPlayer[item->playerNum].pos.x - item->obj.pos.x) * 0.3f;
-            item->obj.pos.y += (gPlayer[item->playerNum].pos.y - item->obj.pos.y) * 0.3f;
-            item->obj.pos.z += (gPlayer[item->playerNum].unk_138 - item->obj.pos.z) * 0.3f;
-            item->scale -= 5.0f;
-            if (item->scale < 0.0f) {
-                item->scale = 0.0f;
+void ItemMeteoWarp_Update(ItemMeteoWarp* this) {
+    func_enmy_80066EF0(this);
+    if (this->state > 0) {
+        if (this->state == 1) {
+            this->obj.rot.z -= 10.0f;
+            this->obj.pos.x += (gPlayer[this->playerNum].pos.x - this->obj.pos.x) * 0.3f;
+            this->obj.pos.y += (gPlayer[this->playerNum].pos.y - this->obj.pos.y) * 0.3f;
+            this->obj.pos.z += (gPlayer[this->playerNum].unk_138 - this->obj.pos.z) * 0.3f;
+            this->scale -= 5.0f;
+            if (this->scale < 0.0f) {
+                this->scale = 0.0f;
             }
         }
-        item->unk_44 -= 10;
-        if (item->unk_44 < 0) {
-            Object_Kill(&item->obj, item->sfxSource);
+        this->unk_44 -= 10;
+        if (this->unk_44 < 0) {
+            Object_Kill(&this->obj, this->sfxSource);
         }
     } else {
-        item->scale = 100.0f;
-        if (D_ctx_80177E80 < 0) {
-            item->state = 2;
-            item->unk_44 = 255;
-        } else if (item->collected) {
-            item->state = 1;
-            item->unk_44 = 255;
-            gPlayer[item->playerNum].timer_27C = 100;
-            AUDIO_PLAY_SFX(D_enmy_800CFF54[D_ctx_80177E80], gPlayer[0].sfxSource, 0);
-            if (D_ctx_80177E80 == 0) {
+        this->scale = 100.0f;
+        if (gRingPassCount < 0) {
+            this->state = 2;
+            this->unk_44 = 255;
+        } else if (this->collected) {
+            this->state = 1;
+            this->unk_44 = 255;
+            gPlayer[this->playerNum].timer_27C = 100;
+            AUDIO_PLAY_SFX(D_enmy_800CFF54[gRingPassCount], gPlayer[0].sfxSource, 0);
+            if (gRingPassCount == 0) {
                 gPlayer[0].unk_110 = 0.0f;
             }
-            D_ctx_80177E80++;
-            if (D_ctx_80177E80 >= 7) {
+            gRingPassCount++;
+            if (gRingPassCount >= 7) {
                 gPlayer[0].state_1C8 = PLAYERSTATE_1C8_8;
                 gPlayer[0].unk_1D0 = 0;
                 AUDIO_PLAY_SFX(0x1900602A, gDefaultSfxSource, 0);
-                D_ctx_80177930 = 2;
+                gNextPlanetPath = 2;
                 D_play_800D3180[gCurrentLevel] = 1;
             }
         }
     }
 }
 
-void ItemCheckpoint_Update(Item* item) {
+void ItemCheckpoint_Update(ItemCheckpoint* this) {
     s32 i;
 
-    func_enmy_80066EF0(item);
-    item->unk_58 -= item->unk_44;
-    if (item->state > 0) {
-        item->unk_44++;
-        item->obj.pos.x += (gPlayer[item->playerNum].pos.x - item->obj.pos.x) * 0.3f;
-        if (gPlayer[item->playerNum].form == FORM_LANDMASTER) {
-            item->obj.pos.y += (gPlayer[item->playerNum].pos.y + 50.0f - item->obj.pos.y) * 0.3f;
+    func_enmy_80066EF0(this);
+    this->unk_58 -= this->unk_44;
+    if (this->state > 0) {
+        this->unk_44++;
+        this->obj.pos.x += (gPlayer[this->playerNum].pos.x - this->obj.pos.x) * 0.3f;
+        if (gPlayer[this->playerNum].form == FORM_LANDMASTER) {
+            this->obj.pos.y += (gPlayer[this->playerNum].pos.y + 50.0f - this->obj.pos.y) * 0.3f;
         } else {
-            item->obj.pos.y += (gPlayer[item->playerNum].pos.y - item->obj.pos.y) * 0.3f;
+            this->obj.pos.y += (gPlayer[this->playerNum].pos.y - this->obj.pos.y) * 0.3f;
         }
-        if (gPlayer[0].unk_238 != 0) {
-            item->obj.pos.z += (gPlayer[item->playerNum].unk_138 - 200.0f - item->obj.pos.z) * 0.3f;
+        if (gPlayer[0].cockpitView != 0) {
+            this->obj.pos.z += (gPlayer[this->playerNum].unk_138 - 200.0f - this->obj.pos.z) * 0.3f;
         } else {
-            item->obj.pos.z += (gPlayer[item->playerNum].unk_138 - 100.0f - item->obj.pos.z) * 0.3f;
+            this->obj.pos.z += (gPlayer[this->playerNum].unk_138 - 100.0f - this->obj.pos.z) * 0.3f;
         }
-        if (item->timer_48 == 0) {
-            Math_SmoothStepToF(&item->scale, 5.0f, 0.2f, 15.0f, 0.01f);
-            Math_SmoothStepToF(&item->unk_50, 0.0f, 0.1f, 0.03f, 0.0f);
-            Math_SmoothStepToF(&item->unk_54, 4.0f, 0.1f, 0.2f, 0.01f);
+        if (this->timer_48 == 0) {
+            Math_SmoothStepToF(&this->scale, 5.0f, 0.2f, 15.0f, 0.01f);
+            Math_SmoothStepToF(&this->unk_50, 0.0f, 0.1f, 0.03f, 0.0f);
+            Math_SmoothStepToF(&this->unk_54, 4.0f, 0.1f, 0.2f, 0.01f);
         }
-        if (item->scale <= 6.5f) {
-            Object_Kill(&item->obj, item->sfxSource);
+        if (this->scale <= 6.5f) {
+            Object_Kill(&this->obj, this->sfxSource);
         }
     } else {
-        item->unk_44 = 2;
-        item->unk_50 = 1.0f;
-        item->unk_54 = 1.0f;
-        item->scale = 100.0f;
-        if (item->collected) {
-            gPlayer[item->playerNum].heal = 128;
-            item->state++;
-            item->timer_48 = 15;
-            D_ctx_80161A8C = D_ctx_80161A88;
-            D_ctx_80177CB0 = -item->obj.pos.z;
+        this->unk_44 = 2;
+        this->unk_50 = 1.0f;
+        this->unk_54 = 1.0f;
+        this->scale = 100.0f;
+        if (this->collected) {
+            gPlayer[this->playerNum].heal = 128;
+            this->state++;
+            this->timer_48 = 15;
+            gSavedGroundType = gGroundType;
+            D_ctx_80177CB0 = -this->obj.pos.z;
             D_ctx_80177CB0 -= 250.0f;
             D_ctx_80177CA0 = D_ctx_80177DC8;
-            D_play_80161A50 = D_enmy_80161684;
+            gSavedZoSearchlightStatus = gMissedZoSearchlight;
             gSavedHitCount = gHitCount;
-            for (i = 1; i < 4; i++) {
+            for (i = TEAM_ID_FALCO; i <= TEAM_ID_PEPPY; i++) {
                 gSavedTeamShields[i] = gTeamShields[i];
             }
             AUDIO_PLAY_SFX(0x4900400F, gDefaultSfxSource, 4);
@@ -2316,102 +2317,102 @@ void ItemCheckpoint_Update(Item* item) {
     }
 }
 
-void func_enmy_80068C48(Item* item) {
+void ItemRingCheck_Update(Item* item) {
     if (item->collected) {
         Object_Kill(&item->obj, item->sfxSource);
-        D_ctx_80177E80++;
+        gRingPassCount++;
     }
 }
 
-void func_enmy_80068C88(Item* item) {
-    D_enmy_80161680 = item->obj.id;
+void ItemPathChange_Update(Item* this) {
+    gLastPathChange = this->obj.id;
     if (gPlayer[0].state_1C8 != PLAYERSTATE_1C8_3) {
-        Object_Kill(&item->obj, item->sfxSource);
-    } else if (((gCurrentLevel == LEVEL_METEO) || (gCurrentLevel == LEVEL_SECTOR_X)) && (D_ctx_8017827C == 1)) {
+        Object_Kill(&this->obj, this->sfxSource);
+    } else if (((gCurrentLevel == LEVEL_METEO) || (gCurrentLevel == LEVEL_SECTOR_X)) && (gLevelStage == 1)) {
         gPlayer[0].state_1C8 = PLAYERSTATE_1C8_7;
         gPlayer[0].unk_1D0 = 0;
-        Object_Kill(&item->obj, item->sfxSource);
+        Object_Kill(&this->obj, this->sfxSource);
     } else if (gCurrentLevel == LEVEL_TRAINING) {
         gPlayer[0].state_1C8 = PLAYERSTATE_1C8_9;
         gPlayer[0].unk_1D0 = 0;
-        Object_Kill(&item->obj, item->sfxSource);
-    } else if (item->state == 0) {
-        if (((item->obj.pos.z + D_ctx_80177D20) > -2700.0f) && (fabsf(item->obj.pos.x - gPlayer[0].pos.x) < 1000.0f)) {
-            switch (item->obj.id) {
-                case OBJ_ITEM_331:
-                case OBJ_ITEM_332:
-                case OBJ_ITEM_333:
+        Object_Kill(&this->obj, this->sfxSource);
+    } else if (this->state == 0) {
+        if (((this->obj.pos.z + D_ctx_80177D20) > -2700.0f) && (fabsf(this->obj.pos.x - gPlayer[0].pos.x) < 1000.0f)) {
+            switch (this->obj.id) {
+                case OBJ_ITEM_PATH_SPLIT_Y:
+                case OBJ_ITEM_PATH_TURN_UP:
+                case OBJ_ITEM_PATH_TURN_DOWN:
                     break;
-                case OBJ_ITEM_328:
-                    gPlayer[0].flags_228 = 0x30;
+                case OBJ_ITEM_PATH_SPLIT_X:
+                    gPlayer[0].flags_228 = PFLAG_228_4 | PFLAG_228_5;
                     break;
-                case OBJ_ITEM_329:
-                    gPlayer[0].flags_228 = 0x20;
+                case OBJ_ITEM_PATH_TURN_LEFT:
+                    gPlayer[0].flags_228 = PFLAG_228_5;
                     break;
-                case OBJ_ITEM_330:
-                    gPlayer[0].flags_228 = 0x10;
+                case OBJ_ITEM_PATH_TURN_RIGHT:
+                    gPlayer[0].flags_228 = PFLAG_228_4;
                     break;
             }
         }
-        if (item->collected) {
-            Object_Kill(&item->obj, item->sfxSource);
+        if (this->collected) {
+            Object_Kill(&this->obj, this->sfxSource);
             gPlayer[0].unk_0B4 = 0.0f;
-            gPlayer[0].timer_210 = item->scale * 0.05f;
-            switch (item->obj.id) {
-                case OBJ_ITEM_328:
-                    if (item->obj.pos.x < gPlayer[0].pos.x) {
+            gPlayer[0].timer_210 = this->scale * 0.05f;
+            switch (this->obj.id) {
+                case OBJ_ITEM_PATH_SPLIT_X:
+                    if (this->obj.pos.x < gPlayer[0].pos.x) {
                         gPlayer[0].unk_118 = -30.0f;
-                        gPlayer[0].unk_0B8 = gPlayer[0].unk_0AC + item->scale;
+                        gPlayer[0].unk_0B8 = gPlayer[0].unk_0AC + this->scale;
                     } else {
                         gPlayer[0].unk_118 = 30.0f;
-                        gPlayer[0].unk_0B8 = gPlayer[0].unk_0AC - item->scale;
+                        gPlayer[0].unk_0B8 = gPlayer[0].unk_0AC - this->scale;
                     }
                     break;
-                case OBJ_ITEM_329:
+                case OBJ_ITEM_PATH_TURN_LEFT:
                     gPlayer[0].unk_118 = 30.0f;
-                    gPlayer[0].unk_0B8 = gPlayer[0].unk_0AC - item->scale;
+                    gPlayer[0].unk_0B8 = gPlayer[0].unk_0AC - this->scale;
                     break;
-                case OBJ_ITEM_330:
+                case OBJ_ITEM_PATH_TURN_RIGHT:
                     gPlayer[0].unk_118 = -30.0f;
-                    gPlayer[0].unk_0B8 = gPlayer[0].unk_0AC + item->scale;
+                    gPlayer[0].unk_0B8 = gPlayer[0].unk_0AC + this->scale;
                     break;
-                case OBJ_ITEM_331:
-                    if (item->obj.pos.y < gPlayer[0].pos.y) {
+                case OBJ_ITEM_PATH_SPLIT_Y:
+                    if (this->obj.pos.y < gPlayer[0].pos.y) {
                         gPlayer[0].unk_124 = 30.0f;
-                        gPlayer[0].unk_0BC = gPlayer[0].unk_0B0 + item->scale;
+                        gPlayer[0].unk_0BC = gPlayer[0].unk_0B0 + this->scale;
                     } else {
                         gPlayer[0].unk_124 = -30.0f;
-                        gPlayer[0].unk_0BC = gPlayer[0].unk_0B0 - item->scale;
+                        gPlayer[0].unk_0BC = gPlayer[0].unk_0B0 - this->scale;
                     }
                     break;
-                case OBJ_ITEM_332:
+                case OBJ_ITEM_PATH_TURN_UP:
                     gPlayer[0].unk_124 = 30.0f;
-                    gPlayer[0].unk_0BC = gPlayer[0].unk_0B0 + item->scale;
+                    gPlayer[0].unk_0BC = gPlayer[0].unk_0B0 + this->scale;
                     break;
-                case OBJ_ITEM_333:
+                case OBJ_ITEM_PATH_TURN_DOWN:
                     gPlayer[0].unk_124 = -30.0f;
-                    gPlayer[0].unk_0BC = gPlayer[0].unk_0B0 - item->scale;
+                    gPlayer[0].unk_0BC = gPlayer[0].unk_0B0 - this->scale;
                     break;
             }
         }
     }
 }
 
-void func_enmy_80068FE0(Object_4C* obj4C) {
-    obj4C->obj.rot.y = (Math_Atan2F(gPlayer[0].camEye.x - obj4C->obj.pos.x,
-                                    gPlayer[0].camEye.z - (obj4C->obj.pos.z + D_ctx_80177D20)) *
-                        180.0f) /
-                       M_PI;
-    if (obj4C->unk_46 != 0) {
-        obj4C->obj.status = OBJ_FREE;
-        func_effect_8007A6F0(&obj4C->obj.pos, 0x1903400F);
-        switch (obj4C->obj.id) {
-            case OBJ_4C_161:
-                func_effect_8007D074(obj4C->obj.pos.x, obj4C->obj.pos.y + 160.0f, obj4C->obj.pos.z, 4.0f);
+void Sprite_UpdateDoodad(Sprite* this) {
+    this->obj.rot.y =
+        (Math_Atan2F(gPlayer[0].camEye.x - this->obj.pos.x, gPlayer[0].camEye.z - (this->obj.pos.z + D_ctx_80177D20)) *
+         180.0f) /
+        M_PI;
+    if (this->unk_46 != 0) {
+        this->obj.status = OBJ_FREE;
+        func_effect_8007A6F0(&this->obj.pos, 0x1903400F);
+        switch (this->obj.id) {
+            case OBJ_SPRITE_CO_POLE:
+                func_effect_8007D074(this->obj.pos.x, this->obj.pos.y + 160.0f, this->obj.pos.z, 4.0f);
                 break;
             default:
-            case OBJ_4C_169:
-                func_effect_8007D074(obj4C->obj.pos.x, obj4C->obj.pos.y + 96.0f, obj4C->obj.pos.z, 5.0f);
+            case OBJ_SPRITE_TI_CACTUS:
+                func_effect_8007D074(this->obj.pos.x, this->obj.pos.y + 96.0f, this->obj.pos.z, 5.0f);
                 break;
         }
     }
@@ -2445,7 +2446,7 @@ void Object_Dying(s32 index, ObjectId objId) {
         case OBJ_ACTOR_182:
             Object_Kill(&gActors[index].obj, gActors[index].sfxSource);
             func_effect_8007D2C8(gActors[index].obj.pos.x, gActors[index].obj.pos.y, gActors[index].obj.pos.z, 10.0f);
-            func_enmy_80066254(&gActors[index]);
+            Actor_Despawn(&gActors[index]);
             break;
         case OBJ_ACTOR_192:
             func_enmy_8006684C(&gActors[index]);
@@ -2462,7 +2463,7 @@ void Object_Dying(s32 index, ObjectId objId) {
     }
 }
 
-void func_enmy_800693E8(Actor* actor) {
+void Actor_Move(Actor* actor) {
     actor->obj.pos.x += actor->vel.x;
     actor->obj.pos.z += actor->vel.z;
     actor->obj.pos.y += actor->vel.y;
@@ -2497,19 +2498,19 @@ void func_enmy_800693E8(Actor* actor) {
                 case OBJ_ACTOR_EVENT:
                     if ((actor->unk_0B4 >= 200) && (actor->unk_0B4 < 300)) {
                         D_ctx_80176550[actor->unk_046] = 0;
-                    } else if ((actor->unk_0B4 == 38) && (actor->unk_046 != 2)) {
-                        D_ctx_80177E80 = -1;
+                    } else if ((actor->unk_0B4 == EINFO_38) && (actor->unk_046 != 2)) {
+                        gRingPassCount = -1;
                     }
                     break;
                 case OBJ_ACTOR_252:
-                    D_enmy_80161684 = 1;
+                    gMissedZoSearchlight = true;
                     break;
             }
         }
     }
 }
 
-void func_enmy_80069658(Boss* boss) {
+void Boss_Move(Boss* boss) {
     boss->obj.pos.x += boss->vel.x;
     boss->obj.pos.y += boss->vel.y;
     boss->obj.pos.z += boss->vel.z;
@@ -2520,7 +2521,7 @@ void func_enmy_80069658(Boss* boss) {
     }
 }
 
-void func_enmy_800696F8(Object_80* obj80) {
+void Object80_Move(Object_80* obj80) {
     if (gPlayer[0].state_1C8 == PLAYERSTATE_1C8_2) {
         obj80->obj.pos.z += obj80->unk_60;
         if (obj80->info.unk_10 < obj80->obj.pos.z) {
@@ -2544,24 +2545,25 @@ void func_enmy_800696F8(Object_80* obj80) {
     }
 }
 
-void func_enmy_80069858(Object_4C* obj4C) {
+void Sprite_Move(Sprite* sprite) {
     if (D_ctx_80161AB8 != 0) {
-        f32 temp_fv0 = fabsf(obj4C->obj.pos.x - gPlayer[0].camEye.x);
+        f32 temp_fv0 = fabsf(sprite->obj.pos.x - gPlayer[0].camEye.x);
         f32 var_fa0 = 500.0f;
 
-        if (((obj4C->obj.id == OBJ_4C_164) && ((obj4C->unk_45 == 6) || (obj4C->unk_45 == 7))) ||
-            (obj4C->obj.id == OBJ_80_8)) {
+        if (((sprite->obj.id == OBJ_SPRITE_FOG_SHADOW) &&
+             ((sprite->unk_45 == OBJ_80_6) || (sprite->unk_45 == OBJ_80_7))) ||
+            (sprite->obj.id == OBJ_80_8)) {
             var_fa0 = 1000.0f;
         }
         temp_fv0 = ((temp_fv0 - var_fa0) < 0.0f) ? 0.0f * 1.7f : (temp_fv0 - var_fa0) * 1.7f;
         temp_fv0 -= gPlayer[0].camEye.z;
-        if ((obj4C->info.unk_10 - temp_fv0) < (obj4C->obj.pos.z + D_ctx_80177D20)) {
-            obj4C->obj.status = OBJ_FREE;
+        if ((sprite->info.unk_10 - temp_fv0) < (sprite->obj.pos.z + D_ctx_80177D20)) {
+            sprite->obj.status = OBJ_FREE;
         }
     }
 }
 
-void func_enmy_80069924(Effect* effect) {
+void Effect_Move(Effect* effect) {
     effect->obj.pos.x += effect->vel.x;
     effect->obj.pos.y += effect->vel.y;
     effect->obj.pos.z += effect->vel.z;
@@ -2575,247 +2577,248 @@ void func_enmy_80069924(Effect* effect) {
     }
 }
 
-void func_enmy_80069A10(Item* item) {
+void Item_Move(Item* item) {
     if (D_ctx_80161AB8 != 0) {
         f32 temp = (0.0f - gPlayer[0].camEye.z);
 
         if ((item->info.unk_10 - temp) < (item->obj.pos.z + D_ctx_80177D20)) {
             Object_Kill(&item->obj, item->sfxSource);
             if ((item->obj.id == OBJ_ITEM_METEO_WARP) && (item->state == 0)) {
-                D_ctx_80177E80 = -1;
+                gRingPassCount = -1;
             }
         }
     }
 }
 
-void Actor_Update(Actor* actor) {
+void Actor_Update(Actor* this) {
     s32 i;
 
-    if (actor->timer_0BC != 0) {
-        actor->timer_0BC--;
+    if (this->timer_0BC != 0) {
+        this->timer_0BC--;
     }
-    if (actor->timer_0BE != 0) {
-        actor->timer_0BE--;
+    if (this->timer_0BE != 0) {
+        this->timer_0BE--;
     }
-    if (actor->timer_0C0 != 0) {
-        actor->timer_0C0--;
+    if (this->timer_0C0 != 0) {
+        this->timer_0C0--;
     }
-    if (actor->timer_0C2 != 0) {
-        actor->timer_0C2--;
+    if (this->timer_0C2 != 0) {
+        this->timer_0C2--;
     }
-    if (actor->timer_0C6 != 0) {
-        actor->timer_0C6--;
+    if (this->timer_0C6 != 0) {
+        this->timer_0C6--;
     }
     if (gVersusMode) {
         for (i = 0; i < gCamCount; i++) {
-            if (actor->timer_0CA[i] != 0) {
+            if (this->timer_0CA[i] != 0) {
                 if (!(gControllerHold[i].button & A_BUTTON)) {
-                    actor->timer_0CA[i]--;
+                    this->timer_0CA[i]--;
                 }
                 gChargeTimers[i] = 0;
             }
         }
-    } else if (actor->timer_0CA[0] != 0) {
+    } else if (this->timer_0CA[0] != 0) {
         if (!(gControllerHold[gMainController].button & A_BUTTON)) {
-            actor->timer_0CA[0]--;
+            this->timer_0CA[0]--;
         }
         gChargeTimers[0] = 0;
     }
-    if (actor->timer_0C4 != 0) {
-        actor->timer_0C4--;
+    if (this->timer_0C4 != 0) {
+        this->timer_0C4--;
     }
-    switch (actor->obj.status) {
+    switch (this->obj.status) {
         case OBJ_INIT:
-            actor->obj.status = OBJ_ACTIVE;
-            Object_Init(actor->index, actor->obj.id);
-            if (actor->obj.id != OBJ_ACTOR_252) {
-                func_enmy_800693E8(actor);
+            this->obj.status = OBJ_ACTIVE;
+            Object_Init(this->index, this->obj.id);
+            if (this->obj.id != OBJ_ACTOR_252) {
+                Actor_Move(this);
             }
             break;
         case OBJ_ACTIVE:
-            func_enmy_800693E8(actor);
-            if ((actor->obj.status != OBJ_FREE) && (actor->info.action != NULL)) {
-                actor->info.action(&actor->obj);
+            Actor_Move(this);
+            if ((this->obj.status != OBJ_FREE) && (this->info.action != NULL)) {
+                this->info.action(&this->obj);
             }
             break;
         case OBJ_DYING:
-            func_enmy_800693E8(actor);
-            if (actor->obj.status != OBJ_FREE) {
-                Object_Dying(actor->index, actor->obj.id);
+            Actor_Move(this);
+            if (this->obj.status != OBJ_FREE) {
+                Object_Dying(this->index, this->obj.id);
             }
             break;
     }
 }
 
-void Boss_Update(Boss* boss) {
-    if (boss->timer_050 != 0) {
-        boss->timer_050--;
+void Boss_Update(Boss* this) {
+    if (this->timer_050 != 0) {
+        this->timer_050--;
     }
-    if (boss->timer_052 != 0) {
-        boss->timer_052--;
+    if (this->timer_052 != 0) {
+        this->timer_052--;
     }
-    if (boss->timer_054 != 0) {
-        boss->timer_054--;
+    if (this->timer_054 != 0) {
+        this->timer_054--;
     }
-    if (boss->timer_056 != 0) {
-        boss->timer_056--;
+    if (this->timer_056 != 0) {
+        this->timer_056--;
     }
-    if (boss->timer_058 != 0) {
-        boss->timer_058--;
+    if (this->timer_058 != 0) {
+        this->timer_058--;
     }
-    if (boss->timer_05A != 0) {
-        boss->timer_05A--;
+    if (this->timer_05A != 0) {
+        this->timer_05A--;
     }
-    if (boss->timer_05C != 0) {
-        boss->timer_05C--;
+    if (this->timer_05C != 0) {
+        this->timer_05C--;
     }
-    switch (boss->obj.status) {
+    switch (this->obj.status) {
         case OBJ_INIT:
-            boss->obj.status = OBJ_ACTIVE;
-            Object_Init(boss->index, boss->obj.id);
-            func_enmy_80069658(boss);
+            this->obj.status = OBJ_ACTIVE;
+            Object_Init(this->index, this->obj.id);
+            Boss_Move(this);
             break;
         case OBJ_ACTIVE:
-            func_enmy_80069658(boss);
-            if ((boss->obj.status != OBJ_FREE) && (boss->info.action != NULL)) {
-                boss->info.action(&boss->obj);
+            Boss_Move(this);
+            if ((this->obj.status != OBJ_FREE) && (this->info.action != NULL)) {
+                this->info.action(&this->obj);
             }
             break;
         case OBJ_DYING:
-            func_enmy_80069658(boss);
-            if (boss->obj.status != OBJ_FREE) {
-                Object_Dying(boss->index, boss->obj.id);
+            Boss_Move(this);
+            if (this->obj.status != OBJ_FREE) {
+                Object_Dying(this->index, this->obj.id);
             }
             break;
     }
 }
 
-void Object_80_Update(Object_80* obj80) {
-    if (obj80->timer_4C != 0) {
-        obj80->timer_4C--;
+void Object_80_Update(Object_80* this) {
+    if (this->timer_4C != 0) {
+        this->timer_4C--;
     }
-    switch (obj80->obj.status) {
+    switch (this->obj.status) {
         case OBJ_INIT:
-            obj80->obj.status = OBJ_ACTIVE;
-            Object_Init(obj80->index, obj80->obj.id);
-            func_enmy_800696F8(obj80);
+            this->obj.status = OBJ_ACTIVE;
+            Object_Init(this->index, this->obj.id);
+            Object80_Move(this);
             break;
         case OBJ_ACTIVE:
-            func_enmy_800696F8(obj80);
-            if (obj80->info.action != NULL) {
-                obj80->info.action(&obj80->obj);
+            Object80_Move(this);
+            if (this->info.action != NULL) {
+                this->info.action(&this->obj);
             }
             break;
     }
 }
 
-void Object_4C_Update(Object_4C* obj4C) {
-    switch (obj4C->obj.status) {
+void Sprite_Update(Sprite* this) {
+    switch (this->obj.status) {
         case OBJ_INIT:
-            obj4C->obj.status = OBJ_ACTIVE;
-            Object_Init(obj4C->index, obj4C->obj.id);
-            func_enmy_80069858(obj4C);
+            this->obj.status = OBJ_ACTIVE;
+            Object_Init(this->index, this->obj.id);
+            Sprite_Move(this);
             break;
         case OBJ_ACTIVE:
-            func_enmy_80069858(obj4C);
-            if (obj4C->info.action != NULL) {
-                obj4C->info.action(&obj4C->obj);
+            Sprite_Move(this);
+            if (this->info.action != NULL) {
+                this->info.action(&this->obj);
             }
             break;
         case OBJ_DYING:
-            func_enmy_80069858(obj4C);
-            Object_Dying(obj4C->index, obj4C->obj.id);
+            Sprite_Move(this);
+            Object_Dying(this->index, this->obj.id);
             break;
     }
 }
 
-void Item_Update(Item* item) {
-    if (item->timer_48 != 0) {
-        item->timer_48--;
+void Item_Update(Item* this) {
+    if (this->timer_48 != 0) {
+        this->timer_48--;
     }
-    if (item->timer_4A != 0) {
-        item->timer_4A--;
+    if (this->timer_4A != 0) {
+        this->timer_4A--;
     }
-    switch (item->obj.status) {
+    switch (this->obj.status) {
         case OBJ_INIT:
-            item->obj.status = OBJ_ACTIVE;
-            Object_Init(item->index, item->obj.id);
-            func_enmy_80069A10(item);
+            this->obj.status = OBJ_ACTIVE;
+            Object_Init(this->index, this->obj.id);
+            Item_Move(this);
             break;
         case OBJ_ACTIVE:
-            func_enmy_80069A10(item);
-            if (item->info.action != NULL) {
-                item->info.action(&item->obj);
+            Item_Move(this);
+            if (this->info.action != NULL) {
+                this->info.action(&this->obj);
             }
             break;
     }
 }
 
-void Effect_Update(Effect* effect) {
-    if (effect->timer_50 != 0) {
-        effect->timer_50--;
+void Effect_Update(Effect* this) {
+    if (this->timer_50 != 0) {
+        this->timer_50--;
     }
-    switch (effect->obj.status) {
+    switch (this->obj.status) {
         case OBJ_INIT:
-            effect->obj.status = OBJ_ACTIVE;
-            Object_Init(effect->index, effect->obj.id);
+            this->obj.status = OBJ_ACTIVE;
+            Object_Init(this->index, this->obj.id);
             /* fallthrough */
         case OBJ_ACTIVE:
-            func_enmy_80069924(effect);
-            if ((effect->obj.status != OBJ_FREE) && (effect->info.action != NULL)) {
-                effect->info.action(&effect->obj);
+            Effect_Move(this);
+            if ((this->obj.status != OBJ_FREE) && (this->info.action != NULL)) {
+                this->info.action(&this->obj);
             }
             break;
     }
 }
 
-void TexturedLine_Update(TexturedLine* texLine) {
+void TexturedLine_Update(TexturedLine* this) {
     Vec3f sp44;
     Vec3f sp38;
     f32 sp34;
     f32 sp30;
     f32 sp2C;
 
-    if (texLine->timer != 0) {
-        texLine->timer--;
+    if (this->timer != 0) {
+        this->timer--;
     }
-    sp34 = texLine->unk_04.x - texLine->unk_10.x;
-    sp30 = texLine->unk_04.y - texLine->unk_10.y;
-    sp2C = texLine->unk_04.z - texLine->unk_10.z;
-    texLine->unk_20 = Math_Atan2F(sp34, sp2C);
-    texLine->unk_1C = -Math_Atan2F(sp30, sqrtf(SQ(sp34) + SQ(sp2C)));
-    if (texLine->mode != 4) {
-        texLine->unk_24 = sqrtf(SQ(sp34) + SQ(sp30) + SQ(sp2C));
+    sp34 = this->unk_04.x - this->unk_10.x;
+    sp30 = this->unk_04.y - this->unk_10.y;
+    sp2C = this->unk_04.z - this->unk_10.z;
+    this->unk_20 = Math_Atan2F(sp34, sp2C);
+    this->unk_1C = -Math_Atan2F(sp30, sqrtf(SQ(sp34) + SQ(sp2C)));
+    if (this->mode != 4) {
+        this->unk_24 = sqrtf(SQ(sp34) + SQ(sp30) + SQ(sp2C));
     }
+
     if (gGameState == GSTATE_PLAY) {
-        if (((texLine->mode == 1) || (texLine->mode == 101) || (texLine->mode == 50)) &&
+        if (((this->mode == 1) || (this->mode == 101) || (this->mode == 50)) &&
             (gPlayer[0].state_1C8 == PLAYERSTATE_1C8_3) && (gPlayer[0].unk_1F4 == 0)) {
-            Matrix_RotateX(gCalcMatrix, -texLine->unk_1C, 0);
-            Matrix_RotateY(gCalcMatrix, -texLine->unk_20, 1);
-            sp44.x = gPlayer[gPlayerNum].pos.x - texLine->unk_04.x;
-            sp44.y = gPlayer[gPlayerNum].pos.y - texLine->unk_04.y;
-            sp44.z = gPlayer[gPlayerNum].unk_138 - texLine->unk_04.z;
+            Matrix_RotateX(gCalcMatrix, -this->unk_1C, 0);
+            Matrix_RotateY(gCalcMatrix, -this->unk_20, 1);
+            sp44.x = gPlayer[gPlayerNum].pos.x - this->unk_04.x;
+            sp44.y = gPlayer[gPlayerNum].pos.y - this->unk_04.y;
+            sp44.z = gPlayer[gPlayerNum].unk_138 - this->unk_04.z;
             Matrix_MultVec3fNoTranslate(gCalcMatrix, &sp44, &sp38);
-            sp38.x += texLine->unk_04.x;
-            sp38.y += texLine->unk_04.y;
-            sp38.z += texLine->unk_04.z;
-            if ((fabsf(sp38.x - texLine->unk_04.x) < 30.0f) && (fabsf(sp38.y - texLine->unk_04.y) < 30.0f) &&
-                (sp38.z < texLine->unk_04.z) && ((texLine->unk_04.z - texLine->unk_24) < sp38.z)) {
+            sp38.x += this->unk_04.x;
+            sp38.y += this->unk_04.y;
+            sp38.z += this->unk_04.z;
+            if ((fabsf(sp38.x - this->unk_04.x) < 30.0f) && (fabsf(sp38.y - this->unk_04.y) < 30.0f) &&
+                (sp38.z < this->unk_04.z) && ((this->unk_04.z - this->unk_24) < sp38.z)) {
                 if (gCurrentLevel == LEVEL_AQUAS) {
                     Player_ApplyDamage(&gPlayer[0], 0, 30);
                 } else {
                     Player_ApplyDamage(&gPlayer[0], 0, 20);
                 }
-                if (texLine->mode < 100) {
-                    texLine->mode = 0;
+                if (this->mode < 100) {
+                    this->mode = 0;
                 }
             }
         }
-        if (((texLine->unk_04.z + D_ctx_80177D20) > 1000.0f) && (gLevelMode != LEVELMODE_ALL_RANGE)) {
-            texLine->mode = 0;
+        if (((this->unk_04.z + D_ctx_80177D20) > 1000.0f) && (gLevelMode != LEVELMODE_ALL_RANGE)) {
+            this->mode = 0;
         }
-        if (((texLine->mode == 3) || (texLine->mode == 50)) && (texLine->timer == 0)) {
-            texLine->mode = 0;
+        if (((this->mode == 3) || (this->mode == 50)) && (this->timer == 0)) {
+            this->mode = 0;
         }
     }
 }
@@ -2831,13 +2834,13 @@ void TexturedLine_UpdateAll(void) {
     }
 }
 
-void Object_UpdateAll(void) {
+void Object_Update(void) {
     s32 i;
     s32 pad;
     Object_58* obj58;
     Actor* actor;
     Boss* boss;
-    Object_4C* obj4C;
+    Sprite* sprite;
     Object_80* obj80;
     Item* item;
     Effect* effect;
@@ -2862,7 +2865,7 @@ void Object_UpdateAll(void) {
     } else if (gVersusMode) {
         for (i = 0, obj58 = gObjects58; i < 200; i++, obj58++) {
             if ((obj58->obj.status != OBJ_FREE) && (obj58->obj.id == OBJ_80_146)) {
-                if (i & 1) {
+                if ((i % 2) != 0) {
                     obj58->obj.rot.y += 0.5f;
                 } else {
                     obj58->obj.rot.y -= 0.5f;
@@ -2870,10 +2873,10 @@ void Object_UpdateAll(void) {
             }
         }
     }
-    for (i = 0, obj4C = gObjects4C; i < ARRAY_COUNT(gObjects4C); i++, obj4C++) {
-        if (obj4C->obj.status != OBJ_FREE) {
-            obj4C->index = i;
-            Object_4C_Update(obj4C);
+    for (i = 0, sprite = gSprites; i < ARRAY_COUNT(gSprites); i++, sprite++) {
+        if (sprite->obj.status != OBJ_FREE) {
+            sprite->index = i;
+            Sprite_Update(sprite);
         }
     }
     for (i = 0, boss = gBosses; i < ARRAY_COUNT(gBosses); i++, boss++) {

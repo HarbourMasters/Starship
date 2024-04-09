@@ -26,28 +26,28 @@ extern Actor* D_display_800CA234;
 extern s32 D_display_Timer_800CA238;
 
 // fox_edata
-extern f32 D_edata_800CBE70[];
-extern f32 D_edata_800CBE8C[];
-extern f32 D_edata_800CBEA8[];
-extern f32 D_edata_800CBEC4[];
-extern f32 D_edata_800CBEE0[];
-extern f32 D_edata_800CBEFC[];
-extern f32 D_edata_800CBF18[];
-extern f32 D_edata_800CBF34[];
-extern f32 D_edata_800CBF38[];
-extern f32 D_edata_800CBF54[];
-extern f32 D_edata_800CBF70[];
+extern f32 gActor241Hitbox[];
+extern f32 gDefaultCubeHitbox100[];
+extern f32 gDefaultCubeHitbox150[];
+extern f32 gDefaultCubeHitbox200[];
+extern f32 gDefaultCubeHitbox300[];
+extern f32 gDefaultCubeHitbox400[];
+extern f32 gItemRingCheckHitbox[];
+extern f32 gHitboxNone[];
+extern f32 gItemCheckpointHitbox[];
+extern f32 gItemSupplyRingHitbox[];
+extern f32 gMeteoWarpHitbox[];
 extern f32 D_edata_800CBF8C[];
-extern f32 D_edata_800CBFA8[];
-extern f32 D_edata_800CBFC8[];
-extern f32 D_edata_800CBFE4[];
-extern f32 D_edata_800CC000[];
-extern f32 D_edata_800CC01C[];
-extern f32 D_edata_800CC038[];
-extern f32 D_edata_800CC054[];
-extern f32 D_edata_800CC070[];
-extern f32 D_edata_800CC0D4[];
-extern f32 D_edata_800CC0F0[];
+extern f32 gItemLasersHitbox[];
+extern f32 gItemBombHitbox[];
+extern f32 gActor190_191Hitbox[];
+extern f32 gActor194HItbox[];
+extern f32 gTeamHitbox[];
+extern f32 gActorAllRangeHItbox[];
+extern f32 gWarpZoneEvent94Hitbox[];
+extern f32 gWarpZoneEvent96Hitbox[];
+extern f32 gWarpZoneEvent92Hitbox[];
+extern f32 gWarpZoneEvent93Hitbox[];
 extern ObjectInfo D_edata_800CC124[];
 extern f32* D_edata_800CF964[];
 
@@ -74,12 +74,12 @@ extern f32 D_edisplay_800CFCCC[];
 extern Gfx D_edisplay_800CFD80[];
 
 // fox_enmy
-extern ObjectInit* D_enmy_800CFDA0[];
+extern ObjectInit* gLevelObjectInits[];
 extern u32 D_enmy_800CFF54[9];
 
 // fox_enmy2
 extern s32 D_enmy2_800CFF80[4];
-extern s32 D_enmy2_800CFF90;
+extern s32 gCallVoiceParam;
 
 // fox_hud
 extern s16 D_hud_800D1970;
@@ -96,22 +96,22 @@ extern u8 D_play_800D3180[30];
 extern s32 gCurrentMsgPri;
 
 // fox_360
-extern s32 D_360_8015F900;
-extern s32 D_360_8015F904;
-extern s16 D_360_8015F908;
-extern s32 D_360_8015F90C;
-extern s32 D_360_8015F910;
-extern f32 D_360_8015F914;
-extern f32 D_360_8015F918;
-extern f32 D_360_8015F91C;
-extern u8 D_360_8015F920;
-extern u8 D_360_8015F921;
-extern s32 D_360_8015F924;
-extern s32 D_360_8015F928;
-extern s32 D_360_8015F930[3];
-extern s32 D_360_8015F93C;
-extern s32 D_360_8015F940;
-extern f32 D_360_8015F944;
+extern s32 gAllRangeSupplyTimer;
+extern s32 sStarWolfKillTimer;
+extern s16 gStarWolfMsgTimer;
+extern s32 gAllRangeWingRepairTimer;
+extern s32 gAllRangeWingRepairSent;
+extern f32 gSzMissileR;
+extern f32 gSzMissileG;
+extern f32 gSzMissileB;
+extern u8 gKaKilledAlly;
+extern u8 gKaAllyKillCount;
+extern s32 gAllRangeCheckpoint;
+extern s32 gAllRangeEventTimer;
+extern s32 gAllRangeCountdown[3];
+extern s32 gShowAllRangeCountdown;
+extern s32 gAllRangeFrameCount;
+extern f32 gAllRangeCountdownScale;
 
 // fox_bg
 extern f32 D_bg_800C9C30;
@@ -133,7 +133,7 @@ extern s32 gBossFrameCount;
 // fox_display
 extern Vec3f D_display_801613B0[]; // static, here for reordering
 extern Vec3f D_display_801613E0[]; // static, here for reordering
-extern s16 D_display_80161410;
+extern s16 gReflectY;
 extern Matrix D_display_80161418[]; // static, here for reordering
 extern Vec3f D_display_80161518[]; // static, here for reordering
 extern Vec3f D_display_80161548[]; // static, here for reordering
@@ -146,11 +146,11 @@ extern Vec3f D_edisplay_801615D0;
 
 // fox_enmy
 extern s32 D_enmy_Timer_80161670[4];
-extern s32 D_enmy_80161680;
-extern u8 D_enmy_80161684;
+extern s32 gLastPathChange;
+extern u8 gMissedZoSearchlight;
 
 // fox_enmy2
-extern s32 D_enmy2_80161690;
+extern s32 gCallTimer;
 
 // fox_hud
 extern s32 D_hud_80161704;
@@ -164,7 +164,7 @@ extern s32 D_hud_80161730;
 extern s32 gShowBossHealth; // 0x80161734
 
 // fox_play
-extern u8 D_play_80161A50;
+extern u8 gSavedZoSearchlightStatus;
 extern f32 D_play_80161A54;
 extern s32 D_play_80161A58;
 extern s32 D_play_80161A5C;

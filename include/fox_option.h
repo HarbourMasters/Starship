@@ -77,7 +77,7 @@ typedef enum OptionId {
 
 #define OPTION_COUNT ARRAY_COUNT(sOptionCardList)
 
-extern void* D_menu_801B68B0[];
+extern u8* D_menu_801B68B0[];
 extern u8* D_menu_801B68D4[];
 
 extern s32 D_menu_801B8220[]; // total hits ranking? see Option_80197DE4

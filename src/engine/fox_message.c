@@ -56,8 +56,7 @@ s32 Message_GetCharCount(u16* msgPtr) {
 }
 
 void Message_DisplayChar(Gfx** gfxPtr, u16 msgChar, s32 xpos, s32 ypos) {
-    const char* mChar = gTextCharTextures[msgChar >> 2];
-    gDPLoadTextureBlock_4b((*gfxPtr)++, mChar, G_IM_FMT_CI, 16, 13, msgChar & 3,
+    gDPLoadTextureBlock_4b((*gfxPtr)++, gTextCharTextures[msgChar >> 2], G_IM_FMT_CI, 16, 13, msgChar % 4U,
                            G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD,
                            G_TX_NOLOD);
     gSPTextureRectangle((*gfxPtr)++, xpos << 2, ypos << 2, (xpos + 13) << 2, (ypos + 13) << 2, G_TX_RENDERTILE, 64, 0,

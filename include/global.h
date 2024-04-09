@@ -12,6 +12,7 @@
 #include "assets/ast_radio.h"
 #include "sf64object.h"
 #include "sf64level.h"
+#include "sf64event.h"
 #include "sf64player.h"
 #include "i1.h"
 #include "i2.h"
