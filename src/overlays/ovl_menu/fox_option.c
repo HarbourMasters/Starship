@@ -385,7 +385,7 @@ void Option_Setup(void) {
             continue;
         }
         if (!(gSaveFile.save.data.planet[i].normalMedal & 1)) {
-            if(CVarGetInteger("gLevelSelector", 0) || CVarGetInteger("gSfxJukebox", 0)) {
+            if (CVarGetInteger("gLevelSelector", 0) || CVarGetInteger("gSfxJukebox", 0)) {
                 enableExpertModes = true;
             } else {
                 enableExpertModes = false;
@@ -1649,7 +1649,7 @@ void Option_ExpertSoundUpdate(void) {
     s32 pad;
     f32 sp28 = D_menu_801B931C;
 
-    if(CVarGetInteger("gSfxJukebox", 0) == 1) {
+    if (CVarGetInteger("gSfxJukebox", 0) == 1) {
         Option_JukeboxSoundUpdate();
         return;
     }
@@ -2786,13 +2786,8 @@ void Option_80199820(s32 arg0) {
 
     gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, 255);
 
-    for (i = 0; i < 4; i++) {
-        TextureRect_4bCI(&gMasterDisp, D_VS_MENU_70118E0 + (80 * 16 * i) / 2, D_VS_MENU_70123F8, 80, 16,
-                         D_menu_801AF148[arg0], D_menu_801AF158[arg0] + (16.0f * i), 1.0f, 1.0f);
-    }
-
-    TextureRect_4bCI(&gMasterDisp, D_VS_MENU_70118E0 + (80 * 16 * 4) / 2, D_VS_MENU_70123F8, 80, 7,
-                     D_menu_801AF148[arg0], D_menu_801AF158[arg0] + (16.0f * 4), 1.0f, 1.0f);
+    TextureRect_4bCI(&gMasterDisp, D_VS_MENU_70118E0, D_VS_MENU_70123F8, 80, 71, D_menu_801AF148[arg0],
+                     D_menu_801AF158[arg0], 1.0f, 1.0f);
 
     gDPSetPrimColor(gMasterDisp++, 0, 0, D_menu_801AF22C[arg0], D_menu_801AF23C[arg0], D_menu_801AF24C[arg0], 255);
 
@@ -2835,14 +2830,8 @@ void Option_80199820(s32 arg0) {
 
     gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, 255);
 
-    for (i = 0; i < 2; i++) {
-        TextureRect_16bRGBA(&gMasterDisp, D_menu_801AF20C[arg0] + (44 * i * 20), 44, 20,
-                            D_menu_801AF148[arg0] + D_menu_801AF1B4,
-                            D_menu_801AF158[arg0] + D_menu_801AF1B8 + (i * 20.0f * 0.7f), 0.7f, 0.7f);
-    }
-
-    TextureRect_16bRGBA(&gMasterDisp, D_menu_801AF20C[arg0] + 1760, 44, 4, D_menu_801AF148[arg0] + D_menu_801AF1B4,
-                        D_menu_801AF158[arg0] + D_menu_801AF1B8 + 28.0f, 0.7f, 0.7f);
+    TextureRect_16bRGBA(&gMasterDisp, D_menu_801AF20C[arg0], 44, 44, D_menu_801AF148[arg0] + D_menu_801AF1B4,
+                        D_menu_801AF158[arg0] + D_menu_801AF1B8, 0.7f, 0.7f);
 
     var_a2 = 24;
     if (arg0 == 0) {
@@ -2861,11 +2850,7 @@ void Option_80199EA8(void) {
     RCP_SetupDL_76();
 
     gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, 255);
-
-    for (i = 0; i < 3; i++) {
-        TextureRect_16bRGBA(&gMasterDisp, D_VS_MENU_700E9A0 + (144 * 14 * i), 144, 14, 87.0f, 84 + (i * 14.0f), 1.0f,
-                            1.0f);
-    }
+    TextureRect_16bRGBA(&gMasterDisp, D_VS_MENU_700E9A0, 144, 42, 87.0f, 84, 1.0f, 1.0f);
 }
 
 void Option_VersusStageInit(void) {
