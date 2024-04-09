@@ -101,7 +101,7 @@ void Lib_InitOrtho(Gfx** dList) {
     Matrix_Copy(gGfxMatrix, &gIdentityMatrix);
 }
 
-void Lib_DmaRead(void* src, void* dst, ptrdiff_t size) {
+void Lib_DmaRead(void* src, void* dst, s32 size) {
     osInvalICache(dst, size);
     osInvalDCache(dst, size);
     while (size > 0x100) {
