@@ -104,9 +104,6 @@ ast_allies_seg13_vtx_BB70:
 D_D00B880:
   { type: GFX, offset: 0xD00B880, symbol: D_D00B880 }
 
-ast_allies_seg13_vtx_BB70:
-  { type: VTX, count: 144, offset: 0xD00BB70, symbol: ast_allies_seg13_vtx_BB70 }
-
 D_D00C470:
   { type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0xD00C470, symbol: D_D00C470 }
 
