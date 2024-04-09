@@ -244,7 +244,7 @@ void Graphics_ThreadEntry(void* arg0) {
     // }
 }
 
-void Graphics_ThreadUpdate(){
+void Graphics_ThreadUpdate() {
 
     if (GfxDebuggerIsDebugging()) {
         Graphics_PushFrame(gGfxPool->masterDL);
@@ -276,7 +276,7 @@ void Graphics_ThreadUpdate(){
     osRecvMesg(&gGfxTaskMsgQueue, NULL, OS_MESG_BLOCK);
     Graphics_SetTask();
 
-    if(GfxDebuggerIsDebuggingRequested()) {
+    if (GfxDebuggerIsDebuggingRequested()) {
         GfxDebuggerDebugDisplayList(gGfxPool->masterDL);
     }
 
@@ -285,7 +285,6 @@ void Graphics_ThreadUpdate(){
     if (gFillScreen == 0) {
         osViSwapBuffer(&gFrameBuffers[(gSysFrameCount - 1) % 3]);
     }
-
 
     // LTODO: FAULT_CRASH
     // func_80007FE4(&gFrameBuffers[(gSysFrameCount - 1) % 3], SCREEN_WIDTH, 16);
@@ -446,7 +445,6 @@ void Main_ThreadEntry(void* arg0) {
     // LTODO: Implement timers
     // Timer_ThreadEntry(NULL);
 
-
     // N64 Stuff should not be needed
     // Main_InitMesgQueues();
     // while (true) {
@@ -481,20 +479,22 @@ void Idle_ThreadEntry(void* arg0) {
     // Main_SetVIMode();
     // Lib_FillScreen(1);
     // osCreatePiManager(OS_PRIORITY_PIMGR, &gPiMgrCmdQueue, sPiMgrCmdBuff, ARRAY_COUNT(sPiMgrCmdBuff));
-    // osCreateThread(&gMainThread, THREAD_ID_MAIN, &Main_ThreadEntry, arg0, sMainThreadStack + sizeof(sMainThreadStack),
+    // osCreateThread(&gMainThread, THREAD_ID_MAIN, &Main_ThreadEntry, arg0, sMainThreadStack +
+    // sizeof(sMainThreadStack),
     //                100);
     // osStartThread(&gMainThread);
     // Fault_Init();
     // osSetThreadPri(NULL, OS_PRIORITY_IDLE);
-// loop_1:
-//     goto loop_1;
+    // loop_1:
+    //     goto loop_1;
 }
 
 void bootproc(void) {
     // RdRam_CheckIPL3();
     // osInitialize();
     Main_Initialize();
-    // osCreateThread(&sIdleThread, THREAD_ID_IDLE, &Idle_ThreadEntry, NULL, sIdleThreadStack + sizeof(sIdleThreadStack),
+    // osCreateThread(&sIdleThread, THREAD_ID_IDLE, &Idle_ThreadEntry, NULL, sIdleThreadStack +
+    // sizeof(sIdleThreadStack),
     //                255);
     // osStartThread(&sIdleThread);
 }

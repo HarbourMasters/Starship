@@ -427,12 +427,10 @@ void func_radio_800BAAE8(void) {
 
         if (mirror) {
             TextureRect_16bRGBA_MirX(&gMasterDisp, sp44, 44, 44, D_radio_8017873C,
-                                         D_radio_80178740 + 20.0f + sp38 + D_ctx_80177D38, 1.0f,
-                                         D_ctx_80177D38);
+                                     D_radio_80178740 + 20.0f + sp38 + D_ctx_80177D38, 1.0f, D_ctx_80177D38);
         } else {
             TextureRect_16bRGBA(&gMasterDisp, sp44, 44, 44, D_radio_8017873C,
-                                         D_radio_80178740 + 20.0f + sp38 + D_ctx_80177D38, 1.0f,
-                                         D_ctx_80177D38);
+                                D_radio_80178740 + 20.0f + sp38 + D_ctx_80177D38, 1.0f, D_ctx_80177D38);
         }
     }
 }
