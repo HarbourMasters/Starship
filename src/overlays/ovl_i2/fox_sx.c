@@ -196,7 +196,7 @@ void SectorX_8018FA04(f32 x, f32 y, f32 z) {
             actor->obj.pos.y = y;
             actor->obj.pos.z = z;
             Object_SetInfo(&actor->info, actor->obj.id);
-            actor->info.hitbox = (f32*)LOAD_ASSET(D_SX_60328CC);
+            actor->info.hitbox = (f32*) LOAD_ASSET(D_SX_60328CC);
             xRot = Math_Atan2F(gPlayer[0].pos.x - x, gPlayer[0].unk_138 - z);
             pad = sqrtf(SQ(gPlayer[0].pos.x - x) + SQ(gPlayer[0].unk_138 - z));
             yRot = -Math_Atan2F(gPlayer[0].pos.y - y, pad);

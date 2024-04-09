@@ -1872,7 +1872,7 @@ void Map_8019FF48(void) {
                            D_menu_801CDA08);
     }
     gGameFrameCount++;
-    if(CVarGetInteger("gLevelSelector", 0)){
+    if (CVarGetInteger("gLevelSelector", 0)) {
         Map_LevelSelect();
     }
 }
@@ -5297,8 +5297,8 @@ void Map_801A9910(void) {
 
     gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, (s32) D_menu_801CEA6C);
 
-    TextureRect_8bIA(&gMasterDisp, D_menu_801AF834[var_s0].texture,
-        D_menu_801AF834[var_s0].width, D_menu_801AF834[var_s0].height, D_menu_801AF834[var_s0].xPos, 20.0f, 1.0f, 1.0f);
+    TextureRect_8bIA(&gMasterDisp, D_menu_801AF834[var_s0].texture, D_menu_801AF834[var_s0].width,
+                     D_menu_801AF834[var_s0].height, D_menu_801AF834[var_s0].xPos, 20.0f, 1.0f, 1.0f);
 
     Math_SmoothStepToF(&D_menu_801CEA6C, 255.0f, D_menu_801CEA70, 10.0f, 1.0f);
 
@@ -5394,15 +5394,13 @@ void Map_801A9A8C(void) {
     TextureRect_8bIA(&gMasterDisp, D_5000500, 112, 19, D_menu_801B6AC0[0], D_menu_801B6AC8[0], 1.0f, 1.0f);
     TextureRect_8bIA(&gMasterDisp, sp54, 16, 15, D_menu_801B6AC0[1], D_menu_801B6AC8[1], 1.0f, 1.0f);
 
-    for (i = 0; i < D_menu_801AF834[sp58].height; i++) {
+    for (i = 0; i < D_menu_801AF834[sp58].height; i++) {}
 
-    }
+    TextureRect_8bIA(&gMasterDisp, D_menu_801AF834[sp58].texture, D_menu_801AF834[sp58].width,
+                     D_menu_801AF834[sp58].height, D_menu_801AF834[sp58].xPos, 94.0f, 1.0f, 1.0f);
 
-    TextureRect_8bIA(&gMasterDisp, D_menu_801AF834[sp58].texture, D_menu_801AF834[sp58].width, D_menu_801AF834[sp58].height,
-        D_menu_801AF834[sp58].xPos, 94.0f, 1.0f, 1.0f);
-
-    TextureRect_8bIA(&gMasterDisp, D_menu_801AF914[sp58].texture, D_menu_801AF914[sp58].width, D_menu_801AF914[sp58].height,
-        D_menu_801AF914[sp58].xPos, 140.0f, 1.0f, 1.0f);
+    TextureRect_8bIA(&gMasterDisp, D_menu_801AF914[sp58].texture, D_menu_801AF914[sp58].width,
+                     D_menu_801AF914[sp58].height, D_menu_801AF914[sp58].xPos, 140.0f, 1.0f, 1.0f);
 }
 
 void Map_801A9DE8(void) {

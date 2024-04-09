@@ -1160,8 +1160,8 @@ void Corneria_8018AED0(Actor* actor) {
     f32 temp_cos;
 
     Corneria_8018ACE0(actor);
-    Math_SmoothStepToVec3fArray(sp40, actor->vwork, 0, Animation_GetFrameData(D_CO_602991C, actor->unk_0B6, sp40),
-                                1.0f, 1.0f, 1.0f);
+    Math_SmoothStepToVec3fArray(sp40, actor->vwork, 0, Animation_GetFrameData(D_CO_602991C, actor->unk_0B6, sp40), 1.0f,
+                                1.0f, 1.0f);
     temp_sin = SIN_DEG(actor->obj.rot.y);
     actor->vel.x = actor->fwork[0] * temp_sin;
     temp_cos = COS_DEG(actor->obj.rot.y);
@@ -1287,8 +1287,8 @@ void Corneria_8018B15C(Actor* actor) {
         obj80->vel.y = 0.0f;
     }
 
-    Math_SmoothStepToVec3fArray(sp60, actor->vwork, 0, Animation_GetFrameData(D_CO_602AA04, actor->unk_0B6, sp60),
-                                1.0f, 1.0f, 1.0f);
+    Math_SmoothStepToVec3fArray(sp60, actor->vwork, 0, Animation_GetFrameData(D_CO_602AA04, actor->unk_0B6, sp60), 1.0f,
+                                1.0f, 1.0f);
 }
 
 void Corneria_8018B418(Actor* actor) {
@@ -1331,8 +1331,8 @@ void Corneria_8018B418(Actor* actor) {
         temp_v0_2->vel.y = 0.0f;
     }
 
-    Math_SmoothStepToVec3fArray(sp54, actor->vwork, 0, Animation_GetFrameData(D_CO_602A520, actor->unk_0B6, sp54),
-                                1.0f, 1.0f, 1.0f);
+    Math_SmoothStepToVec3fArray(sp54, actor->vwork, 0, Animation_GetFrameData(D_CO_602A520, actor->unk_0B6, sp54), 1.0f,
+                                1.0f, 1.0f);
 }
 
 void Corneria_8018B58C(Actor* actor) {

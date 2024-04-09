@@ -40,5 +40,3 @@ void Timer_CompleteTask(TimerTask* task) {
     }
     task->active = false;
 }
-
-void
