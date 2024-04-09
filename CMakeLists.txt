@@ -250,6 +250,74 @@ add_subdirectory(libultraship ${CMAKE_CURRENT_SOURCE_DIR}/libultraship)
 
 add_dependencies(${PROJECT_NAME} libultraship)
 target_link_libraries(${PROJECT_NAME} PRIVATE libultraship)
+if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    find_package(glfw3 REQUIRED)
+	if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
+		set(ADDITIONAL_LIBRARY_DEPENDENCIES
+			"libultraship;"
+			"ZAPDUtils;"
+			"ZAPDLib;"
+			"glu32;"
+			"SDL2::SDL2;"
+			"SDL2::SDL2main;"
+            "$<$<BOOL:${BUILD_REMOTE_CONTROL}>:SDL2_net::SDL2_net-static>"
+			"glfw;"
+			"winmm;"
+			"imm32;"
+			"version;"
+			"setupapi"
+		)
+	elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
+		set(ADDITIONAL_LIBRARY_DEPENDENCIES
+			"libultraship;"
+			"ZAPDUtils;"
+			"ZAPDLib;"
+			"glu32;"
+			"SDL2::SDL2;"
+			"SDL2::SDL2main;"
+			"glfw;"
+			"winmm;"
+			"imm32;"
+			"version;"
+			"setupapi"
+		)
+	endif()
+elseif(CMAKE_SYSTEM_NAME STREQUAL "NintendoSwitch")
+    find_package(SDL2)
+    set(THREADS_PREFER_PTHREAD_FLAG ON)
+    find_package(Threads REQUIRED)
+    set(ADDITIONAL_LIBRARY_DEPENDENCIES
+        "libultraship;"
+        "ZAPDUtils;"
+        SDL2::SDL2
+        -lglad
+        Threads::Threads
+    )
+elseif(CMAKE_SYSTEM_NAME STREQUAL "CafeOS")
+    find_package(SDL2 REQUIRED)
+    set(ADDITIONAL_LIBRARY_DEPENDENCIES
+        "libultraship;"
+        SDL2::SDL2-static
+
+        "$<$<CONFIG:Debug>:-Wl,--wrap=abort>"
+    )
+    target_include_directories(${PROJECT_NAME} PRIVATE
+        ${DEVKITPRO}/portlibs/wiiu/include/
+    )
+else()
+    find_package(SDL2)
+    set(THREADS_PREFER_PTHREAD_FLAG ON)
+    find_package(Threads REQUIRED)
+ 	set(ADDITIONAL_LIBRARY_DEPENDENCIES
+        "libultraship;"
+        "ZAPDUtils;"
+		"ZAPDLib;"
+		SDL2::SDL2
+        "$<$<BOOL:${BUILD_REMOTE_CONTROL}>:SDL2_net::SDL2_net>"
+		${CMAKE_DL_LIBS}
+		Threads::Threads
+	)
+endif()
 
 if(USE_NETWORKING)
     if(MSVC)
@@ -259,6 +327,23 @@ if(USE_NETWORKING)
     include_directories(${SDL2_NET_INCLUDE_DIRS})
     target_link_libraries(${PROJECT_NAME} PRIVATE SDL2_net::SDL2_net)
     target_compile_definitions(${PROJECT_NAME} PRIVATE USE_NETWORKING)
+endif()
+
+target_link_libraries(${PROJECT_NAME} PRIVATE "${ADDITIONAL_LIBRARY_DEPENDENCIES}")
+
+if(CMAKE_SYSTEM_NAME MATCHES "NintendoSwitch")
+
+nx_generate_nacp(Lylat.nacp
+   NAME "Lylat64"
+   AUTHOR "${PROJECT_TEAM}"
+   VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}"
+)
+
+nx_create_nro(${PROJECT_NAME}
+    NACP Lylat.nacp
+)
+
+INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/lylat64.nro DESTINATION . COMPONENT ${PROJECT_NAME})
 endif()
 
 ################################################################################

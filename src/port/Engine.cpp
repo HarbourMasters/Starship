@@ -154,11 +154,11 @@ extern "C" uint8_t GameEngine_OTRSigCheck(const char* data) {
 }
 
 extern "C" float __cosf(float angle) {
-    return std::cosf(angle);
+    return cosf(angle);
 }
 
 extern "C" float __sinf(float angle) {
-    return std::sinf(angle);
+    return sinf(angle);
 }
 
 extern "C" float SIN_DEG(float angle) {
@@ -183,7 +183,7 @@ uint64_t Timer_GetCurrentMillis() {
     return SDL_GetTicks();
 }
 
-extern "C" int32_t Timer_CreateTask(uint64_t time, TimerAction action, int32_t* address, int32_t value) {
+extern "C" s32 Timer_CreateTask(u64 time, TimerAction action, s32* address, s32 value) {
     const auto millis = Timer_GetCurrentMillis();
     TimedEntry entry = {
         .duration = millis + CYCLES_TO_MSEC_PC(time),

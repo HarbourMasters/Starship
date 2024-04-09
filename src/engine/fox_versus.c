@@ -115,8 +115,6 @@ void func_versus_800BCE24(f32 xPos, f32 yPos, f32 xScale, f32 yScale) {
 }
 
 void func_versus_800BCEF8(f32 xPos, f32 yPos, f32 scale) {
-    s32 i;
-
     TextureRect_8bCI(&gMasterDisp, D_versus_3004010, D_versus_3004D58, 136, 25, xPos, yPos, scale, scale);
 }
 
