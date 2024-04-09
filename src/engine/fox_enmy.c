@@ -1416,7 +1416,11 @@ void func_enmy_800656D4(Actor* actor) {
     Vec3f sp98;
     Vec3f sp8C;
     f32 sp88;
+#ifdef AVOID_UB
+    f32 sp84 = 0;
+#else
     f32 sp84;
+#endif
     f32 sp80;
     f32 sp7C;
     f32 sp78;
