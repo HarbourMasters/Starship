@@ -238,6 +238,10 @@ void Title_80187754(void) {
 }
 
 void Title_801877F0(void) {
+
+    // LTODO: Verify this is correct
+    gMainController = Title_80187ABC();
+
     if (D_menu_801B82A8 > 0) {
         D_menu_801B82A8 -= 1;
     }

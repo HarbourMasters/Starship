@@ -72,6 +72,9 @@ GameEngine::GameEngine() {
 void GameEngine::Create(){
     const auto instance = Instance = new GameEngine();
     GameUI::SetupGuiElements();
+#if defined(__SWITCH__) || defined(__WIIU__)
+    CVarRegisterInteger("gControlNav", 1); // always enable controller nav on switch/wii u
+#endif
 }
 
 void GameEngine::Destroy(){
