@@ -196,6 +196,7 @@ if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
 			"_UNICODE"
 			STORMLIB_NO_AUTO_LINK
 			"_CRT_SECURE_NO_WARNINGS;"
+            "_SILENCE_ALL_MS_EXT_DEPRECATION_WARNINGS;"
 		)
 	elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
 		target_compile_definitions(${PROJECT_NAME} PRIVATE
@@ -213,6 +214,7 @@ if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
 			"UNICODE;"
 			"_UNICODE"
 			STORMLIB_NO_AUTO_LINK
+            "_SILENCE_ALL_MS_EXT_DEPRECATION_WARNINGS;"
 		)
 	endif()
 elseif (CMAKE_SYSTEM_NAME STREQUAL "CafeOS")
@@ -255,39 +257,19 @@ if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
         "$<$<BOOL:${USE_NETWORKING}>:SDL2_net::SDL2_net-static>"
     )
 elseif(CMAKE_SYSTEM_NAME STREQUAL "NintendoSwitch")
-    find_package(SDL2)
-    set(THREADS_PREFER_PTHREAD_FLAG ON)
-    find_package(Threads REQUIRED)
     set(ADDITIONAL_LIBRARY_DEPENDENCIES
-        "libultraship;"
-        "ZAPDUtils;"
-        SDL2::SDL2
         -lglad
-        Threads::Threads
     )
 elseif(CMAKE_SYSTEM_NAME STREQUAL "CafeOS")
-    find_package(SDL2 REQUIRED)
     set(ADDITIONAL_LIBRARY_DEPENDENCIES
-        "libultraship;"
-        SDL2::SDL2-static
-
         "$<$<CONFIG:Debug>:-Wl,--wrap=abort>"
     )
     target_include_directories(${PROJECT_NAME} PRIVATE
         ${DEVKITPRO}/portlibs/wiiu/include/
     )
 else()
-    find_package(SDL2)
-    set(THREADS_PREFER_PTHREAD_FLAG ON)
-    find_package(Threads REQUIRED)
  	set(ADDITIONAL_LIBRARY_DEPENDENCIES
-        "libultraship;"
-        "ZAPDUtils;"
-		"ZAPDLib;"
-		SDL2::SDL2
-        "$<$<BOOL:${BUILD_REMOTE_CONTROL}>:SDL2_net::SDL2_net>"
-		${CMAKE_DL_LIBS}
-		Threads::Threads
+        "$<$<BOOL:${USE_NETWORKING}>:SDL2_net::SDL2_net>"
 	)
 endif()
 
