@@ -251,37 +251,9 @@ add_subdirectory(libultraship ${CMAKE_CURRENT_SOURCE_DIR}/libultraship)
 add_dependencies(${PROJECT_NAME} libultraship)
 target_link_libraries(${PROJECT_NAME} PRIVATE libultraship)
 if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
-    find_package(glfw3 REQUIRED)
-	if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
-		set(ADDITIONAL_LIBRARY_DEPENDENCIES
-			"libultraship;"
-			"ZAPDUtils;"
-			"ZAPDLib;"
-			"glu32;"
-			"SDL2::SDL2;"
-			"SDL2::SDL2main;"
-            "$<$<BOOL:${BUILD_REMOTE_CONTROL}>:SDL2_net::SDL2_net-static>"
-			"glfw;"
-			"winmm;"
-			"imm32;"
-			"version;"
-			"setupapi"
-		)
-	elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
-		set(ADDITIONAL_LIBRARY_DEPENDENCIES
-			"libultraship;"
-			"ZAPDUtils;"
-			"ZAPDLib;"
-			"glu32;"
-			"SDL2::SDL2;"
-			"SDL2::SDL2main;"
-			"glfw;"
-			"winmm;"
-			"imm32;"
-			"version;"
-			"setupapi"
-		)
-	endif()
+	set(ADDITIONAL_LIBRARY_DEPENDENCIES
+        "$<$<BOOL:${USE_NETWORKING}>:SDL2_net::SDL2_net-static>"
+    )
 elseif(CMAKE_SYSTEM_NAME STREQUAL "NintendoSwitch")
     find_package(SDL2)
     set(THREADS_PREFER_PTHREAD_FLAG ON)
