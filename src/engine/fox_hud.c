@@ -3081,7 +3081,7 @@ void func_hud_8008DE68(void) {
         }
 
         if (D_801616C4 >= 0.88f) {
-            temp6 = sp3C + 8.0f;
+            temp6 = sp3C + 9.0f;
             temp7 = 101.0f - (31.884058f * D_801616C8) + temp1;
             if (D_801616C8 > 0.0f) {
                 TextureRect_16bRGBA(&gMasterDisp, D_Tex_800D99F8, 32, 32, temp6, temp7, 0.2f, D_801616C8);
