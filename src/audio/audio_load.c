@@ -214,11 +214,11 @@ void AudioLoad_InitTable(AudioTable* table, u8* romAddr, u16 unkMediumParam) {
     s32 i;
 
     table->unkMediumParam = unkMediumParam;
-    table->romAddr = romAddr;
+    table->romAddr = (uintptr_t) romAddr;
 
     for (i = 0; i < table->numEntries; i++) {
         if ((table->entries[i].size != 0) && (table->entries[i].medium == MEDIUM_CART)) {
-            table->entries[i].romAddr += (u32) romAddr;
+            table->entries[i].romAddr += (uintptr_t) romAddr;
         }
     }
 }
@@ -254,14 +254,14 @@ s32 AudioLoad_SyncLoadSample(Sample* sample, s32 fontId) {
     u8* sampleAddr;
 
     if ((sample->isRelocated == 1) && (sample->medium != 0)) {
-        sampleAddr = AudioHeap_AllocPersistentSampleCache(sample->size, fontId, sample->sampleAddr, sample->medium);
+        sampleAddr = AudioHeap_AllocPersistentSampleCache(sample->size, fontId, (uintptr_t) sample->sampleAddr, sample->medium);
         if (sampleAddr == NULL) {
             return -1;
         }
         if (sample->medium == MEDIUM_UNK) {
-            AudioLoad_SyncDmaUnkMedium(sample->sampleAddr, sampleAddr, sample->size, gSampleBankTable->unkMediumParam);
+            AudioLoad_SyncDmaUnkMedium((uintptr_t) sample->sampleAddr, sampleAddr, sample->size, gSampleBankTable->unkMediumParam);
         } else {
-            AudioLoad_SyncDma(sample->sampleAddr, sampleAddr, sample->size, sample->medium);
+            AudioLoad_SyncDma((uintptr_t) sample->sampleAddr, sampleAddr, sample->size, sample->medium);
         }
         sample->medium = MEDIUM_RAM;
         sample->sampleAddr = sampleAddr;

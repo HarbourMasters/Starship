@@ -661,7 +661,7 @@ typedef struct {
     /* 0x02 */ s8 sampleBankId;
     /* 0x03 */ char unk_03[0x5];
     /* 0x08 */ u8* allocatedAddr;
-    /* 0x0C */ void* sampleAddr;
+    /* 0x0C */ uintptr_t sampleAddr;
     /* 0x10 */ u32 size;
 } SampleCacheEntry; // size = 0x14
 
@@ -791,14 +791,14 @@ typedef struct {
 typedef struct {
     /* 0x00 */ s16 numEntries;
     /* 0x02 */ s16 unkMediumParam;
-    /* 0x04 */ u32 romAddr;
+    /* 0x04 */ uintptr_t romAddr;
     /* 0x08 */ char pad[0x8];
     /* 0x10 */ AudioTableEntry entries[1]; // (dynamic size)
 } AudioTable;                              // size >= 0x20
 
 typedef struct SampleDma {
     /* 0x00 */ u8* ramAddr;
-    /* 0x04 */ u32 devAddr;
+    /* 0x04 */ uintptr_t devAddr;
     /* 0x08 */ u16 sizeUnused;
     /* 0x0A */ u16 size;
     /* 0x0C */ u8 unused;
@@ -1027,12 +1027,12 @@ void* AudioHeap_Alloc(AudioAllocPool* pool, u32 size);
 void AudioHeap_InitPool(AudioAllocPool* pool, void* ramAddr, u32 size);
 void AudioHeap_InitMainPools(s32 initPoolSize);
 void* AudioHeap_AllocCached(s32 tableType, s32 size, s32 cache, s32 id);
-s32 AudioHeap_SearchCaches(s32 tableType, s32 cache, s32 id);
+uintptr_t AudioHeap_SearchCaches(s32 tableType, s32 cache, s32 id);
 s32 AudioHeap_ResetStep(void);
 void* AudioHeap_SearchPermanentCache(s32 tableType, s32 id);
 u8* AudioHeap_AllocPermanent(s32 tableType, s32 id, u32 size);
-void* AudioHeap_AllocTemporarySampleCache(s32 size, s32 fontId, s32 sampleAddr, s8 medium);
-void* AudioHeap_AllocPersistentSampleCache(s32 size, s32 fontId, s32 sampleAddr, s8 medium);
+void* AudioHeap_AllocTemporarySampleCache(s32 size, s32 fontId, uintptr_t sampleAddr, s8 medium);
+void* AudioHeap_AllocPersistentSampleCache(s32 size, s32 fontId, uintptr_t sampleAddr, s8 medium);
 
 // audio_load
 void AudioLoad_DecreaseSampleDmaTtls(void);

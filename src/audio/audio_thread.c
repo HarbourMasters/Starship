@@ -160,7 +160,7 @@ void AudioThread_ProcessGlobalCmd(AudioCmd* cmd) {
         case AUDIOCMD_OP_GLOBAL_INIT_SEQPLAYER:
         case 0x88:
             AudioLoad_SyncInitSeqPlayer(cmd->arg0, cmd->arg1, cmd->arg2);
-            AudioThread_SetFadeInTimer(cmd->arg0, cmd->data);
+            AudioThread_SetFadeInTimer(cmd->arg0, (s32) cmd->data);
             break;
         case AUDIOCMD_OP_GLOBAL_DISABLE_SEQPLAYER:
             if (gSeqPlayers[cmd->arg0].enabled) {

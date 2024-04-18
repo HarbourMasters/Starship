@@ -142,25 +142,25 @@ D_MAP_6016760:
 
 # Zones
 # Toxic Waste Area
-D_MAP_6017640: 
+D_MAP_6017640:
   { type: TEXTURE, format: IA8, offset: 0x6017640, width: 112, height: 28, ctype: u8, symbol: D_MAP_6017640 }
 
 # Invasion Aftermath
-D_MAP_6018280: 
+D_MAP_6018280:
   { type: TEXTURE, format: IA8, offset: 0x6018280, width: 184, height: 19, ctype: u8, symbol: D_MAP_6018280 }
 
-D_MAP_6019030: 
+D_MAP_6019030:
   { type: TEXTURE, format: IA8, offset: 0x6019030, width: 8, height: 16, ctype: u8, symbol: D_MAP_6019030 }
 
 # Clouds ?
-D_MAP_60190B0: 
+D_MAP_60190B0:
   { type: TEXTURE, format: IA8, offset: 0x60190B0, width: 96, height: 96, ctype: u8, symbol: D_MAP_60190B0 }
 
-D_MAP_601B4B0: 
+D_MAP_601B4B0:
   { type: TEXTURE, format: IA8, offset: 0x601B4B0, width: 32, height: 32, ctype: u8, symbol: D_MAP_601B4B0 }
 
 # Some text in japanese
-D_MAP_601B8B0: 
+D_MAP_601B8B0:
   { type: TEXTURE, format: IA8, offset: 0x601B8B0, width: 80, height: 26, ctype: u8, symbol: D_MAP_1B8B0 }
 
 D_MAP_601C0D0:
@@ -368,10 +368,7 @@ D_MAP_6047E70:
   { type: GFX, offset: 0x6047E70, symbol: D_MAP_6047E70 }
 
 D_MAP_6047F80:
-  { type: TEXTURE, format: IA8, offset: 0x06047F80, width: 64, height: 32, ctype: u8, symbol: D_MAP_6047F80 }
-
-D_MAP_6048780:
-  { type: TEXTURE, format: IA8, offset: 0x06048780, width: 64, height: 32, ctype: u8, symbol: D_MAP_6048780 }
+  { type: TEXTURE, format: IA8, offset: 0x06047F80, width: 64, height: 64, ctype: u8, symbol: D_MAP_6047F80 }
 
 D_MAP_6048F80:
   { type: TEXTURE, format: IA8, offset: 0x06048F80, width: 64, height: 64, ctype: u8, symbol: D_MAP_6048F80 }
@@ -422,7 +419,7 @@ ast_map_seg6_vtx_4AD50:
 D_MAP_604B510:
   { type: TEXTURE, ctype: u8, format: CI4, width: 16, height: 16, offset: 0x0604B510, symbol: D_MAP_604B510, tlut: 0x0604B590 }
 
-D_MAP_604B590: 
+D_MAP_604B590:
   { type: TEXTURE, ctype: u16, format: TLUT, colors: 16, offset: 0x0604B590, symbol: D_MAP_604B590 }
 
 D_MAP_604B5B0:
@@ -441,25 +438,25 @@ D_MAP_604B750:
 D_MAP_604BC48:
   { type: TEXTURE, ctype: u8, format: CI4, width: 32, height: 32, offset: 0x0604BC48, symbol: D_MAP_604BC48, tlut: 0x0604BC48 }
 
-D_MAP_604BE48: 
+D_MAP_604BE48:
   { type: TEXTURE, ctype: u16, format: TLUT, colors: 16, offset: 0x0604BE48, symbol: D_MAP_604BE48 }
 
 D_MAP_604BE68:
   { type: TEXTURE, ctype: u8, format: CI4, width: 32, height: 32, offset: 0x0604BE68, symbol: D_MAP_604BE68, tlut: 0x0604C068 }
 
-D_MAP_604C068: 
+D_MAP_604C068:
   { type: TEXTURE, ctype: u16, format: TLUT, colors: 16, offset: 0x0604C068, symbol: D_MAP_604C068 }
 
 D_MAP_604C088:
   { type: TEXTURE, ctype: u8, format: CI4, width: 32, height: 32, offset: 0x0604C088, symbol: D_MAP_604C088, tlut: 0x0604C288 }
 
-D_MAP_604C288: 
+D_MAP_604C288:
   { type: TEXTURE, ctype: u16, format: TLUT, colors: 16, offset: 0x0604C288, symbol: D_MAP_604C288 }
 
 D_MAP_604C2A8:
   { type: TEXTURE, ctype: u8, format: CI4, width: 16, height: 16, offset: 0x0604C2A8, symbol: D_MAP_604C2A8, tlut: 0x0604C328 }
 
-D_MAP_604C328: 
+D_MAP_604C328:
   { type: TEXTURE, ctype: u16, format: TLUT, colors: 16, offset: 0x0604C328, symbol: D_MAP_604C328 }
 
 # Television outcoming light Model, used during briefing.

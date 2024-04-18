@@ -573,7 +573,7 @@ u8* func_800097A8(Sample* sample, s32 length, u32 flags, UnkStruct_800097A8* arg
     }
     if (1) {}
     sp1C->ttl = 2;
-    sp1C->devAddr = sample->sampleAddr;
+    sp1C->devAddr = (uintptr_t) sample->sampleAddr;
     sp1C->sizeUnused = length * 2;
     pad2 = arg3->unk_14;
     pad2->ttl = 2;

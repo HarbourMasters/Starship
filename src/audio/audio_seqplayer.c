@@ -268,7 +268,7 @@ void* func_800145FC(AudioListItem* list) {
     list->prev = item->prev;
     item->prev = NULL;
     list->u.count--;
-    return item->u.count;
+    return (void*) item->u.count;
 }
 
 void func_8001463C(void) {
