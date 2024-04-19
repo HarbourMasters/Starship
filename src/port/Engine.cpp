@@ -50,7 +50,7 @@ GameEngine::GameEngine() {
         }
     }
 
-    this->context = LUS::Context::CreateInstance("Lylat64", "sf64", "lylat.cfg.json", OTRFiles, {}, 3);
+    this->context = LUS::Context::CreateInstance("Starship", "ship", "starship.cfg.json", OTRFiles, {}, 3);
 
     auto loader = context->GetResourceManager()->GetResourceLoader();
     loader->RegisterResourceFactory(std::make_shared<SF64::ResourceFactoryBinaryAnimV0>(), RESOURCE_FORMAT_BINARY, "Animation", static_cast<uint32_t>(SF64::ResourceType::AnimData), 0);

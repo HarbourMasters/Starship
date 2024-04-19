@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16.0 FATAL_ERROR)
 
 # Set the project version and language
-project(Lylat64 VERSION 0.1.0 LANGUAGES C CXX ASM)
+project(Starship VERSION 0.1.0 LANGUAGES C CXX ASM)
 
 if(APPLE)
   enable_language(OBJCXX)
@@ -41,6 +41,16 @@ if (MSVC)
 set(CPP "${CMAKE_C_COMPILER}" "/EP")
 else()
 set(CPP "${CMAKE_C_COMPILER}" "-E" "-P" "-Wno-trigraphs" "-x" "c")
+endif()
+
+if(IOS)
+set(PLATFORM "OS64")
+include(cmake/ios.toolchain.cmake)
+add_compile_definitions(
+    PLATFORM_IOS=1
+)
+set(CMAKE_XCODE_ATTRIBUTE_DEVELOPMENT_TEAM "YOUR_TEAM_ID")
+set(PROJECT_ID "dev.net64.game")
 endif()
 
 # Set game compilation version
@@ -109,8 +119,26 @@ list(FILTER ALL_FILES EXCLUDE REGEX "src/overlays/ovl_ending/fox_end2_data.c")
 list(FILTER ALL_FILES EXCLUDE REGEX "src/sys/sys_timer.c")
 list(FILTER ALL_FILES EXCLUDE REGEX "src/sys/sys_fault.c")
 
-add_executable(${PROJECT_NAME} ${ALL_FILES} ${GENERATED_SOURCES}
-		src/port/resource/importers/ResourceUtil.h)
+if (CMAKE_SYSTEM_NAME STREQUAL "iOS")
+    set(IOS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/libultraship/ios)
+
+    set(STORYBOARD_FILE ${IOS_DIR}/Launch.storyboard)
+    set(IMAGE_FILES ${IOS_DIR}/PoweredBy.png)
+    set(ICON_FILES ${IOS_DIR}/Icon.png)
+
+    list(APPEND ALL_FILES ${STORYBOARD_FILE} ${IMAGE_FILES} ${ICON_FILES})
+
+    set_xcode_property(${PROJECT_NAME} PRODUCT_BUNDLE_IDENTIFIER ${PROJECT_ID} All)
+    set_target_properties(
+        ${PROJECT_NAME}
+        PROPERTIES
+        MACOSX_BUNDLE TRUE
+        MACOSX_BUNDLE_INFO_PLIST ${IOS_DIR}/plist.in
+        RESOURCE "${IMAGE_FILES};${STORYBOARD_FILE};${ICON_FILES}"
+    )
+endif()
+
+add_executable(${PROJECT_NAME} ${ALL_FILES} ${GENERATED_SOURCES})
 
 ################################################################################
 # MSVC runtime library
@@ -243,7 +271,6 @@ elseif ("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU|Clang|AppleClang")
 		"SPDLOG_ACTIVE_LEVEL=0;"
 		"_CONSOLE;"
 		"_CRT_SECURE_NO_WARNINGS;"
-		"ENABLE_OPENGL;"
 		"UNICODE;"
 		"_UNICODE"
 	)
@@ -289,7 +316,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE "${ADDITIONAL_LIBRARY_DEPENDENCIES
 if(CMAKE_SYSTEM_NAME MATCHES "NintendoSwitch")
 
 nx_generate_nacp(Lylat.nacp
-   NAME "Lylat64"
+   NAME "${PROJECT_NAME}"
    AUTHOR "${PROJECT_TEAM}"
    VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}"
 )
@@ -298,7 +325,7 @@ nx_create_nro(${PROJECT_NAME}
     NACP Lylat.nacp
 )
 
-INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/lylat64.nro DESTINATION . COMPONENT ${PROJECT_NAME})
+INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.nro DESTINATION . COMPONENT ${PROJECT_NAME})
 endif()
 
 ################################################################################
@@ -384,35 +411,35 @@ if(MSVC)
 endif()
 
 if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang|AppleClang")
-  if (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-      target_compile_options(${PROJECT_NAME} PRIVATE
-          -Wall -Wextra -Wno-error
-          -Wno-return-type
-          -Wno-unused-parameter
-          -Wno-unused-function
-          -Wno-unused-variable
-          -Wno-missing-field-initializers
-          -Wno-parentheses
-          -Wno-narrowing
-          -Wno-missing-braces
-          -Wno-int-conversion
-          $<$<COMPILE_LANGUAGE:C>:
-              -Werror-implicit-function-declaration
-              -Wno-incompatible-pointer-types
-              -fpermissive
-          >
-          $<$<COMPILE_LANGUAGE:CXX>:-fpermissive>
-          $<$<COMPILE_LANGUAGE:CXX>:
-              -Wno-c++11-narrowing
-              -Wno-deprecated-enum-enum-conversion
-          >
-          -pthread
-      )
+    if (CMAKE_SYSTEM_NAME STREQUAL "Darwin" OR CMAKE_SYSTEM_NAME STREQUAL "iOS")
+        target_compile_options(${PROJECT_NAME} PRIVATE
+            -Wall -Wextra -Wno-error
+            -Wno-return-type
+            -Wno-unused-parameter
+            -Wno-unused-function
+            -Wno-unused-variable
+            -Wno-missing-field-initializers
+            -Wno-parentheses
+            -Wno-narrowing
+            -Wno-missing-braces
+            -Wno-int-conversion
+            $<$<COMPILE_LANGUAGE:C>:
+                -Werror-implicit-function-declaration
+                -Wno-incompatible-pointer-types
+                -fpermissive
+            >
+            $<$<COMPILE_LANGUAGE:CXX>:-fpermissive>
+            $<$<COMPILE_LANGUAGE:CXX>:
+                -Wno-c++11-narrowing
+                -Wno-deprecated-enum-enum-conversion
+            >
+            -pthread
+        )
 
-      target_link_options(${PROJECT_NAME} PRIVATE
-          -pthread
-      )
-  elseif (CMAKE_SYSTEM_NAME STREQUAL "NintendoSwitch")
+        target_link_options(${PROJECT_NAME} PRIVATE
+            -pthread
+        )
+    elseif (CMAKE_SYSTEM_NAME STREQUAL "NintendoSwitch")
       target_compile_options(${PROJECT_NAME} PRIVATE
           -Wall -Wextra -Wno-error
           -Wno-return-type
@@ -462,7 +489,7 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang|AppleClang")
       )
   else()
       if(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64")
-  set(CPU_OPTION -msse2 -mfpmath=sse)
+        set(CPU_OPTION -msse2 -mfpmath=sse)
       endif()
 
       target_compile_options(${PROJECT_NAME} PRIVATE
