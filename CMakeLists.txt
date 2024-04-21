@@ -128,6 +128,7 @@ if (CMAKE_SYSTEM_NAME STREQUAL "iOS")
 
     list(APPEND ALL_FILES ${STORYBOARD_FILE} ${IMAGE_FILES} ${ICON_FILES})
 
+    add_executable(${PROJECT_NAME} ${ALL_FILES})
     set_xcode_property(${PROJECT_NAME} PRODUCT_BUNDLE_IDENTIFIER ${PROJECT_ID} All)
     set_target_properties(
         ${PROJECT_NAME}
@@ -136,9 +137,9 @@ if (CMAKE_SYSTEM_NAME STREQUAL "iOS")
         MACOSX_BUNDLE_INFO_PLIST ${IOS_DIR}/plist.in
         RESOURCE "${IMAGE_FILES};${STORYBOARD_FILE};${ICON_FILES}"
     )
+else()
+    add_executable(${PROJECT_NAME} ${ALL_FILES})
 endif()
-
-add_executable(${PROJECT_NAME} ${ALL_FILES} ${GENERATED_SOURCES})
 
 ################################################################################
 # MSVC runtime library
