@@ -1,0 +1,112 @@
+:config:
+  segments:
+    - [0x04, 0x918430]
+  header:
+    code:
+      - '#include "assets/ast_enmy_planet.h"'
+    header:
+      - '#include "gfx.h"'
+      - '#include "sf64object.h"'
+
+# Seems unused
+D_ENMY_PLANET_4000290:
+  { type: GFX, offset: 0x4000290, symbol: D_ENMY_PLANET_4000290 }
+
+ast_enmy_planet_seg4_vtx_8F8:
+  { type: VTX, count: 90, offset: 0x40008F8, symbol: ast_enmy_planet_seg4_vtx_8F8 }
+
+D_ENMY_PLANET_40001A4:
+  { type: SF64:ANIM, offset: 0x40001A4, symbol: D_ENMY_PLANET_40001A4 }
+
+D_ENMY_PLANET_4000270: 
+  { type: SF64:SKELETON, offset: 0x4000270, symbol: D_ENMY_PLANET_4000270 }
+
+D_ENMY_PLANET_4000710:
+  { type: GFX, offset: 0x4000710, symbol: D_ENMY_PLANET_4000710 }
+
+D_ENMY_PLANET_4001298:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x04001298, symbol: D_ENMY_PLANET_4001298 }
+
+D_ENMY_PLANET_4001698:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x04001698, symbol: D_ENMY_PLANET_4001698 }
+
+D_ENMY_PLANET_4000E98:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x04000E98, symbol: D_ENMY_PLANET_4000E98 }
+
+D_ENMY_PLANET_4001098:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x04001098, symbol: D_ENMY_PLANET_4001098 }
+
+D_ENMY_PLANET_4001498:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x04001498, symbol: D_ENMY_PLANET_4001498 }
+
+D_ENMY_PLANET_40018A0:
+  { type: GFX, offset: 0x40018A0, symbol: D_ENMY_PLANET_40018A0 }
+
+D_ENMY_PLANET_40024B8:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 8, height: 8, offset: 0x040024B8, symbol: D_ENMY_PLANET_40024B8 }
+
+D_ENMY_PLANET_4002538:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x04002538, symbol: D_ENMY_PLANET_4002538 }
+
+D_ENMY_PLANET_4002D38:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 64, height: 32, offset: 0x04002D38, symbol: D_ENMY_PLANET_4002D38 }
+
+D_ENMY_PLANET_4003D38:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x04003D38, symbol: D_ENMY_PLANET_4003D38 }
+
+D_ENMY_PLANET_4004538:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x04004538, symbol: D_ENMY_PLANET_4004538 }
+
+D_ENMY_PLANET_4004D38:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x04004D38, symbol: D_ENMY_PLANET_4004D38 }
+
+D_ENMY_PLANET_40057AC:
+  { type: SF64:ANIM, offset: 0x40057AC, symbol: D_ENMY_PLANET_40057AC }
+
+D_ENMY_PLANET_40058B8: 
+  { type: SF64:SKELETON, offset: 0x40058B8, symbol: D_ENMY_PLANET_40058B8 }
+
+D_ENMY_PLANET_4005E78:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x04005E78, symbol: D_ENMY_PLANET_4005E78 }
+
+D_ENMY_PLANET_4006078:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x04006078, symbol: D_ENMY_PLANET_4006078 }
+
+D_ENMY_PLANET_4006280:
+  { type: GFX, offset: 0x4006280, symbol: D_ENMY_PLANET_4006280 }
+
+D_ENMY_PLANET_40064E8:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x040064E8, symbol: D_ENMY_PLANET_40064E8 }
+
+D_ENMY_PLANET_40066E8:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x040066E8, symbol: D_ENMY_PLANET_40066E8 }
+
+D_ENMY_PLANET_40068F0:
+  { type: GFX, offset: 0x40068F0, symbol: D_ENMY_PLANET_40068F0 }
+
+D_ENMY_PLANET_4006E90:
+  { type: GFX, offset: 0x4006E90, symbol: D_ENMY_PLANET_4006E90 }
+
+D_ENMY_PLANET_40073C0:
+  { type: GFX, offset: 0x40073C0, symbol: D_ENMY_PLANET_40073C0 }
+
+D_ENMY_PLANET_4007AF0:
+  { type: GFX, offset: 0x4007AF0, symbol: D_ENMY_PLANET_4007AF0 }
+
+D_ENMY_PLANET_4008100:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x04008100, symbol: D_ENMY_PLANET_4008100 }
+
+D_ENMY_PLANET_4008CE0:
+  { type: GFX, offset: 0x4008CE0, symbol: D_ENMY_PLANET_4008CE0 }
+
+D_ENMY_PLANET_4008D68:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x04008D68, symbol: D_ENMY_PLANET_4008D68 }
+
+D_ENMY_PLANET_4008FF8:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x04008FF8, symbol: D_ENMY_PLANET_4008FF8 }
+
+D_ENMY_PLANET_4008F70:
+  { type: GFX, offset: 0x4008F70, symbol: D_ENMY_PLANET_4008F70 }
+
+D_ENMY_PLANET_4009800:
+  { type: GFX, offset: 0x4009800, symbol: D_ENMY_PLANET_4009800 }

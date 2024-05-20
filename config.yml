@@ -1,14 +1,33 @@
-# Supported Star Fox 64 Versions: US
+# Supported Star Fox 64 Versions: US, JP
 
 f7475fb11e7e6830f82883412638e8390791ab87:
   name: Star Fox 64 (U) (V1.1)
-  path: assets/yaml/us
+  path: assets/yaml/us/rev1
   config:
     gbi: F3DEX
     sort: OFFSET
     # logging: ERROR
     output:
-      binary: lylat.otr
+      binary: starship.otr
+      code: src/assets
+      headers: include/assets
+      modding: src/assets
+    enums:
+      - include/sf64object.h
+      - include/sf64level.h
+      - include/sf64mesg.h
+      - include/sf64audio_external.h
+      - include/sf64event.h
+      - include/sf64player.h
+
+d064229a32cc05ab85e2381ce07744eb3ffaf530:
+  name: Star Fox 64 (JP) (V1.0)
+  path: assets/yaml/jp/rev0
+  config:
+    gbi: F3DEX
+    sort: OFFSET
+    output:
+      binary: starship.otr
       code: src/assets
       headers: include/assets
       modding: src/assets

@@ -16,8 +16,8 @@ s32 osContStartReadData(OSMesgQueue* mq) {
         osRecvMesg(mq, NULL, OS_MESG_BLOCK);
     }
 
-    for (i = 0; i <= ARRLEN(__osContPifRam.ramarray); i++) {
-        __osContPifRam.ramarray[i] = 0xFF;
+    for (i = 0; i < ARRLEN(__osPfsPifRam.raw); i++) {
+        __osContPifRam.raw[i] = CONT_CMD_NOP;
     }
     __osContPifRam.pifstatus = 0;
 
@@ -52,8 +52,8 @@ static void __osPackReadData(void) {
     __OSContReadFormat readformat;
     int i;
 
-    for (i = 0; i <= ARRLEN(__osContPifRam.ramarray); i++) {
-        __osContPifRam.ramarray[i] = 0;
+    for (i = 0; i < ARRLEN(__osPfsPifRam.raw); i++) {
+        __osContPifRam.raw[i] = 0;
     }
 
     __osContPifRam.pifstatus = CONT_CMD_EXE;

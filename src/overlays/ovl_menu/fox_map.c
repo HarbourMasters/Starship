@@ -10,7 +10,7 @@
 #include "fox_map.h"
 #include "fox_option.h"
 #include "assets/ast_map.h"
-#include "assets/ast_font.h"
+#include "assets/ast_text.h"
 #include "assets/ast_font_3d.h"
 
 // BSS STARTS HERE
@@ -30,12 +30,12 @@ s32 D_menu_801CD840[24];
 s32 D_menu_801CD8A0[15];
 s32 D_menu_801CD8E0[7];
 s32 D_menu_801CD900[15];
-s32 D_menu_801CD93C;
+MissionStatus sPrevMissionStatus;
 s32 D_menu_801CD940;
 s32 D_menu_801CD944; // mapState
 s32 D_menu_801CD948;
 s32 D_menu_801CD94C;
-s32 D_menu_801CD950;
+PlanetId sPrevPlanetId;
 PlanetId sCurrentPlanetId; // sCurrentPlanetId
 PlanetId sNextPlanetId;
 s32 D_menu_801CD95C;
@@ -1154,7 +1154,7 @@ void Map_801A5E80(void);
 void Map_801A6368(void);
 void Map_801A61B4(LevelId level);
 bool Map_801A62FC(PlanetId planet);
-s32 Map_801A655C(PlanetId start, PlanetId end);
+s32 Map_GetPathId(PlanetId start, PlanetId end);
 void Map_801A6628(void);
 void Map_801A6694(void);
 void Map_801A68E4(void);
@@ -1204,10 +1204,10 @@ void Map_801AD048(void);
 
 void Map_8019E800(void) {
     Memory_FreeAll();
-    func_play_800A5D6C();
-    D_ctx_80178410 = 0;
+    Play_GenerateStarfield();
+    gStarCount = 0;
     gNextGameState = GSTATE_MAP;
-    D_game_80161A34 = 5;
+    gLastGameState = GSTATE_GAME_OVER;
     D_ctx_80177868 = 2;
     gDrawMode = DRAW_NONE;
 }
@@ -1232,7 +1232,7 @@ void Map_8019E85C(void) {
 void Map_8019E8C8(void) {
 }
 
-void Map_8019E8D0(void) {
+void Map_Main(void) {
     if (D_menu_801CD9B8 > 0) {
         D_menu_801CD9B8--;
     }
@@ -1243,10 +1243,10 @@ void Map_8019E8D0(void) {
         D_menu_801CD9C0--;
     }
 
-    switch (D_ctx_80177B40) {
+    switch (gMapState) {
         case 0:
             if (gNextGameStateTimer == 0) {
-                D_ctx_80177B40 = 1;
+                gMapState = 1;
             }
             break;
 
@@ -1266,9 +1266,9 @@ void Map_8019E99C(void) {
     s32 i;
     s32 j;
 
-    Audio_SetAudioSpec(0, 0x118);
+    AUDIO_SET_SPEC(SFXCHAN_1, AUDIOSPEC_24);
 
-    D_80137E78 = 2;
+    gVIsPerFrame = 2;
     gGameFrameCount = 0;
 
     Title_80188010();
@@ -1322,7 +1322,7 @@ void Map_8019E99C(void) {
     D_menu_801CDA08 = 0.0f;
     D_menu_801CDA0C = -42.750008f;
     D_menu_801CDA10 = -9.849999f;
-    D_menu_801CDA14 = 3375.000000f;
+    D_menu_801CDA14 = 3375.0f; // 15^3
     D_menu_801CDA18 = 0.0f;
     D_menu_801CDA1C = 0.0f;
 
@@ -1340,7 +1340,7 @@ void Map_8019E99C(void) {
     gFillScreenRed = 0;
     gFillScreenGreen = 0;
     gFillScreenBlue = 0;
-    D_ctx_80177D20 = 0.0f;
+    gPathProgress = 0.0f;
 
     D_menu_801CF018 = 0;
 
@@ -1363,7 +1363,7 @@ void Map_8019E99C(void) {
     D_menu_801CEA6C = 0.0f;
     D_menu_801CEA70 = 0.002f;
 
-    AUDIO_PLAY_BGM(SEQ_ID_WORLD_MAP);
+    AUDIO_PLAY_BGM(NA_BGM_MAP);
 
     D_menu_801CEFC4 = 0;
     D_menu_801CEFC8 = 0;
@@ -1377,7 +1377,7 @@ void Map_8019E99C(void) {
 
     Map_801A6694();
 
-    switch (D_game_80161A34) {
+    switch (gLastGameState) {
         default:
         case 0:
             Map_8019F600();
@@ -1413,7 +1413,7 @@ void Map_8019E99C(void) {
 
     D_menu_801CD810 = 0;
 
-    D_ctx_80177B40 = 2;
+    gMapState = 2;
 
     D_menu_801CD948 = 0;
     D_menu_801CEEC4 = 0;
@@ -1450,19 +1450,19 @@ void Map_8019F164(void) {
         }
     }
 
-    D_menu_801CD93C = gNextPlanetPath;
+    sPrevMissionStatus = gMissionStatus;
 
     sCurrentPlanetId = Map_GetPlanetId(gCurrentLevel);
 
-    D_menu_801CD950 = sCurrentPlanetId;
+    sPrevPlanetId = sCurrentPlanetId;
 
     D_menu_801CD980 = Map_8019FD1C(gCurrentLevel, 0);
 
     Map_8019FD1C(gCurrentLevel, 2);
 
-    if (D_play_800D3180[gCurrentLevel] == 2) {
+    if (gLeveLClearStatus[gCurrentLevel] == 2) {
         D_menu_801CD98C = 1;
-        D_ctx_80177BB0[gCurrentPlanet] = 1;
+        gMissionMedal[gMissionNumber] = 1;
         Map_8019FD1C(gCurrentLevel, 1);
     }
 
@@ -1474,21 +1474,21 @@ void Map_8019F164(void) {
 
     Map_8019FA1C();
 
-    switch (D_menu_801CD93C) {
-        case 0:
+    switch (sPrevMissionStatus) {
+        case MISSION_COMPLETE:
             sNextPlanetId = sPlanets[sCurrentPlanetId].dest1;
             break;
 
-        case 1:
+        case MISSION_ACCOMPLISHED:
             sNextPlanetId = sPlanets[sCurrentPlanetId].dest2;
             break;
 
-        case 2:
+        case MISSION_WARP:
             sNextPlanetId = sPlanets[sCurrentPlanetId].warp;
             break;
     }
 
-    gCurrentPlanet++;
+    gMissionNumber++;
 
     Map_8019FC04();
 
@@ -1502,7 +1502,7 @@ void Map_8019F164(void) {
 
     D_menu_801CEFD8 = 0;
 
-    if (D_menu_801CD93C != 0) {
+    if (sPrevMissionStatus != MISSION_COMPLETE) {
         D_menu_801CEFD8 = 1;
     }
 
@@ -1521,7 +1521,7 @@ void Map_8019F42C(void) {
     D_menu_801CD974 = 1;
     sCurrentPlanetId = Map_GetPlanetId(gCurrentLevel);
 
-    D_ctx_80177B70[gCurrentPlanet] = gHitCount;
+    gMissionHitCount[gMissionNumber] = gHitCount;
 
     Map_8019F910();
     Map_8019FD1C(gCurrentLevel, 0);
@@ -1532,14 +1532,14 @@ void Map_8019F42C(void) {
         D_menu_801CD8E0[i] = 0;
     }
 
-    if (gCurrentPlanet != 0) {
-        for (i = 0; i < gCurrentPlanet; i++) {
-            D_menu_801CD8E0[i] = Map_801A655C(D_ctx_80177B90[i], D_ctx_80177B90[i + 1]);
+    if (gMissionNumber != 0) {
+        for (i = 0; i < gMissionNumber; i++) {
+            D_menu_801CD8E0[i] = Map_GetPathId(gMissionPlanet[i], gMissionPlanet[i + 1]);
         }
     }
 
     for (i = 0; i < 24; i++) {
-        D_ctx_80177BD8[i] = 0;
+        gPlanetPathStatus[i] = 0;
     }
 
     for (i = 0; i < 15; i++) {
@@ -1550,7 +1550,7 @@ void Map_8019F42C(void) {
 
     D_menu_801CD9AC = 0;
 
-    Audio_SetAudioSpec(0, 0x19);
+    AUDIO_SET_SPEC(SFXCHAN_0, AUDIOSPEC_25);
 
     D_menu_801CD948 = 0;
     D_menu_801CD94C = 0;
@@ -1559,8 +1559,8 @@ void Map_8019F42C(void) {
 
 void Map_8019F600(void) {
     s32 i;
-    s32 sp18;
-    s32 temp_t4;
+    s32 path1;
+    s32 path2;
 
     gTotalHits = 0;
     gHitCount = 0;
@@ -1568,58 +1568,59 @@ void Map_8019F600(void) {
     gTeamShields[TEAM_ID_FALCO] = 255;
     gTeamShields[TEAM_ID_SLIPPY] = 255;
     gTeamShields[TEAM_ID_PEPPY] = 255;
-    gSavedTeamShields[1] = 255;
-    gSavedTeamShields[2] = 255;
-    gSavedTeamShields[3] = 255;
-    gPrevPlanetTeamShields[1] = 255;
-    gPrevPlanetTeamShields[2] = 255;
-    gPrevPlanetTeamShields[3] = 255;
-    D_ctx_80177C58[1] = 255;
-    D_ctx_80177C58[2] = 255;
-    D_ctx_80177C58[3] = 255;
+    gSavedTeamShields[TEAM_ID_FALCO] = 255;
+    gSavedTeamShields[TEAM_ID_SLIPPY] = 255;
+    gSavedTeamShields[TEAM_ID_PEPPY] = 255;
+    gPrevPlanetTeamShields[TEAM_ID_FALCO] = 255;
+    gPrevPlanetTeamShields[TEAM_ID_SLIPPY] = 255;
+    gPrevPlanetTeamShields[TEAM_ID_PEPPY] = 255;
+    D_ctx_80177C58[TEAM_ID_FALCO] = 255;
+    D_ctx_80177C58[TEAM_ID_SLIPPY] = 255;
+    D_ctx_80177C58[TEAM_ID_PEPPY] = 255;
 
-    D_menu_801CD950 = -1;
+    sPrevPlanetId = PLANET_NONE;
 
-    for (i = 0; i < 15; i++) {
+    for (i = 0; i < ARRAY_COUNT(sPlanets); i++) {
         sPlanets[i].alpha = 0;
     }
 
     D_menu_801CD970 = 0;
-    for (i = 0; i < 24; i++) {
-        D_ctx_80177BD8[i] = 0;
-        gTexturedLines[i].unk_24 = 0.0f;
+    //! @bug gPlanetPathStatus is 2 shorter than sPaths
+    for (i = 0; i < ARRAY_COUNT(sPaths); i++) {
+        gPlanetPathStatus[i] = 0;
+        gTexturedLines[i].zScale = 0.0f;
     }
 
-    for (i = 0; i < 7; i++) {
-        D_ctx_80177BB0[i] = 0;
-        D_ctx_80177B70[i] = 0;
-        D_ctx_80177B50[i] = 0x00FFFFFF;
+    for (i = 0; i < ARRAY_COUNT(gMissionMedal); i++) {
+        gMissionMedal[i] = 0;
+        gMissionHitCount[i] = 0;
+        gMissionTeamStatus[i] = 0x00FFFFFF;
     }
-    D_ctx_80177B90[0] = PLANET_CORNERIA;
-    D_ctx_80177B90[1] = PLANET_NONE;
-    D_ctx_80177B90[2] = PLANET_NONE;
-    D_ctx_80177B90[3] = PLANET_NONE;
-    D_ctx_80177B90[4] = PLANET_NONE;
-    D_ctx_80177B90[5] = PLANET_NONE;
-    D_ctx_80177B90[6] = PLANET_VENOM;
+    gMissionPlanet[0] = PLANET_CORNERIA;
+    gMissionPlanet[1] = PLANET_NONE;
+    gMissionPlanet[2] = PLANET_NONE;
+    gMissionPlanet[3] = PLANET_NONE;
+    gMissionPlanet[4] = PLANET_NONE;
+    gMissionPlanet[5] = PLANET_NONE;
+    gMissionPlanet[6] = PLANET_VENOM;
 
-    for (i = 0; i < 24; i++) {
+    for (i = 0; i < ARRAY_COUNT(sPaths); i++) {
         sPaths[i].alpha = 255;
     }
 
-    gCurrentPlanet = 0;
-    gCurrentLevel = 0;
+    gMissionNumber = 0;
+    gCurrentLevel = LEVEL_CORNERIA;
 
-    sCurrentPlanetId = 9;
+    sCurrentPlanetId = PLANET_CORNERIA;
     D_menu_801CEA9C = 0.0f;
     D_menu_801CD9B0 = 0.002f;
     D_menu_801CD9B4 = 0.01f;
     D_menu_801CD944 = 0;
 
-    sp18 = Map_801A655C(sCurrentPlanetId, sPlanets[sCurrentPlanetId].dest1);
-    temp_t4 = Map_801A655C(sCurrentPlanetId, sPlanets[sCurrentPlanetId].dest2);
-    D_ctx_80177BD8[sp18] = 1;
-    D_ctx_80177BD8[temp_t4] = 1;
+    path1 = Map_GetPathId(sCurrentPlanetId, sPlanets[sCurrentPlanetId].dest1);
+    path2 = Map_GetPathId(sCurrentPlanetId, sPlanets[sCurrentPlanetId].dest2);
+    gPlanetPathStatus[path1] = 1;
+    gPlanetPathStatus[path2] = 1;
 }
 
 void Map_8019F83C(void) {
@@ -1628,17 +1629,17 @@ void Map_8019F83C(void) {
     D_menu_801CD970 = 0;
 
     for (i = 0; i < 24; i++) {
-        if ((D_ctx_80177BD8[i] == 4) || (D_ctx_80177BD8[i] == 5) || (D_ctx_80177BD8[i] == 1) ||
-            (D_ctx_80177BD8[i] == 11)) {
-            D_ctx_80177BD8[i] = 0;
+        if ((gPlanetPathStatus[i] == 4) || (gPlanetPathStatus[i] == 5) || (gPlanetPathStatus[i] == 1) ||
+            (gPlanetPathStatus[i] == 11)) {
+            gPlanetPathStatus[i] = 0;
         }
 
-        if (D_ctx_80177BD8[i] == 6) {
+        if (gPlanetPathStatus[i] == 6) {
             sPaths[i].unk_14 = 5;
         }
 
         sPaths[i].alpha = 0;
-        gTexturedLines[i].unk_24 = 0.0f;
+        gTexturedLines[i].zScale = 0.0f;
     }
 }
 
@@ -1648,9 +1649,9 @@ void Map_8019F910(void) {
 
     for (i = 0; i < 3; i++) {
         if (gTeamShields[3 - i] <= 0) {
-            D_ctx_80177B50[gCurrentPlanet] ^= mask;
+            gMissionTeamStatus[gMissionNumber] ^= mask;
         } else {
-            D_ctx_80177B50[gCurrentPlanet] |= mask;
+            gMissionTeamStatus[gMissionNumber] |= mask;
         }
         mask >>= 8;
     }
@@ -1684,16 +1685,16 @@ void Map_8019FA1C(void) {
 void Map_8019FC04(void) {
     s32 i;
 
-    if (gCurrentPlanet != PLANET_METEO) {
+    if (gMissionNumber != PLANET_METEO) {
         D_menu_801CEB48[1] = true;
         D_menu_801CEB48[2] = true;
     }
 
     for (i = 0; i < 7; i++) {
-        if (D_ctx_80177B90[i] == PLANET_KATINA) {
+        if (gMissionPlanet[i] == PLANET_KATINA) {
             D_menu_801CEB48[1] = false;
         }
-        if (D_ctx_80177B90[i] == PLANET_SECTOR_Y) {
+        if (gMissionPlanet[i] == PLANET_SECTOR_Y) {
             D_menu_801CEB48[2] = false;
         }
     }
@@ -1769,7 +1770,7 @@ bool Map_8019FD1C(LevelId levelId, s32 arg1) {
             break;
 
         case LEVEL_VENOM_ANDROSS:
-            if (gLevelStage == 0) {
+            if (gLevelPhase == 0) {
                 planetSaveSlot = SAVE_SLOT_VENOM_1;
             } else {
                 planetSaveSlot = SAVE_SLOT_VENOM_2;
@@ -1827,7 +1828,7 @@ void Map_8019FF48(void) {
     switch (D_menu_801CD944) {
         case 0:
             Map_801A0954();
-            D_ctx_8017842C += 0.09f;
+            gStarfieldScrollX += 0.09f;
             break;
 
         case 1:
@@ -1868,8 +1869,8 @@ void Map_8019FF48(void) {
         Map_801AD718(D_menu_801CDA00, D_menu_801CDA04, D_menu_801CDA08, &D_menu_801CD9F4, &D_menu_801CD9F8,
                      &D_menu_801CD9FC, D_menu_801CDA14, D_menu_801CDA0C + D_menu_801CDA18,
                      D_menu_801CDA10 + D_menu_801CDA1C);
-        func_play_800B6F50(D_menu_801CD9F4, D_menu_801CD9F8, D_menu_801CD9FC, D_menu_801CDA00, D_menu_801CDA04,
-                           D_menu_801CDA08);
+        Camera_SetStarfieldPos(D_menu_801CD9F4, D_menu_801CD9F8, D_menu_801CD9FC, D_menu_801CDA00, D_menu_801CDA04,
+                               D_menu_801CDA08);
     }
     gGameFrameCount++;
     if (CVarGetInteger("gLevelSelector", 0)) {
@@ -1877,19 +1878,19 @@ void Map_8019FF48(void) {
     }
 }
 
-void Map_801A01A8(void) {
+void Map_Draw(void) {
     s32 i;
     s32* ptr;
 
     Matrix_Push(&gGfxMatrix);
     Matrix_LookAt(gGfxMatrix, D_menu_801CD9F4, D_menu_801CD9F8, D_menu_801CD9FC, D_menu_801CDA00, D_menu_801CDA04,
-                  D_menu_801CDA08, D_menu_801CDA20, D_menu_801CDA24, D_menu_801CDA28, 1);
-    Matrix_Translate(gGfxMatrix, D_menu_801CEA58, D_menu_801CEA5C, D_menu_801CEA60, 1);
+                  D_menu_801CDA08, D_menu_801CDA20, D_menu_801CDA24, D_menu_801CDA28, MTXF_APPLY);
+    Matrix_Translate(gGfxMatrix, D_menu_801CEA58, D_menu_801CEA5C, D_menu_801CEA60, MTXF_APPLY);
     Matrix_SetGfxMtx(&gMasterDisp);
 
     if (D_menu_801CD974 && D_menu_801CD944 != 0) {
         for (i = 0; i < 24; i++) {
-            if (D_ctx_80177BD8[i] == 0) {
+            if (gPlanetPathStatus[i] == 0) {
                 continue;
             }
             if (sPaths[i].alpha == 0) {
@@ -1898,7 +1899,7 @@ void Map_801A01A8(void) {
 
             Map_801AC9A0(i);
 
-            if (sPaths[i].unk_14) {
+            if (sPaths[i].unk_14 != 0) {
                 Map_801AC200(i);
             }
 
@@ -2009,15 +2010,15 @@ s32 Map_801A05B4(void) {
 }
 
 void Map_801A0788(void) {
-    D_ctx_80178410 = 800;
+    gStarCount = 800;
 
     Memory_FreeAll();
-    func_play_800A5D6C();
+    Play_GenerateStarfield();
 
-    D_ctx_80178420 = 320.0f;
-    D_ctx_80178424 = 240.0f;
-    D_ctx_8017842C = 0.0f;
-    D_ctx_80178430 = 0.0f;
+    gStarfieldX = SCREEN_WIDTH;
+    gStarfieldY = SCREEN_HEIGHT;
+    gStarfieldScrollX = 0.0f;
+    gStarfieldScrollY = 0.0f;
 }
 
 void Map_801A07E8(u8* arg0, u8* arg1, f32* arg2) {
@@ -2073,44 +2074,45 @@ void Map_801A0954(void) {
             D_menu_801CD9E8 = 0;
             D_menu_801CD9E4 = 0;
             D_menu_801CD9EC = 0.29f;
-            D_ctx_80178410 = 800;
+            gStarCount = 800;
             D_menu_801CD9C0 = 5;
             D_menu_801CD948++;
             break;
 
         case 1:
-            if (D_menu_801CD9C0 != 0) {
-                break;
-            }
+            if ((D_menu_801CD9C0 == 0) && (gFillScreenAlpha == 0)) {
+                //     break;
+                // }
 
-            if (gFillScreenAlpha != 0) {
-                break;
-            }
+                // if (gFillScreenAlpha != 0) {
+                //     break;
+                // }
 
-            if ((s32) D_menu_801CD9E0 == 205) {
-                Audio_PlayVoiceWithoutBGM(1000);
-            }
-
-            if (D_menu_801CD9E0 > -355.0f) {
-                D_menu_801CD9E0 -= D_menu_801CD9EC;
-            }
-
-            if ((D_menu_801CD9E0 < 200.0f) && (D_menu_801CD9E8 != 255)) {
-                D_menu_801CD9E8 += 8;
-                if (D_menu_801CD9E8 > 255) {
-                    D_menu_801CD9E8 = 255;
+                if ((s32) D_menu_801CD9E0 == 205) {
+                    Audio_PlayVoiceWithoutBGM(1000);
                 }
-            }
 
-            if (D_menu_801CD9E0 < D_menu_801B6934[D_menu_801CD9F0]) {
-                D_menu_801CD9E4 += 8;
-                if (D_menu_801CD9E4 > 255) {
-                    D_menu_801CD9E4 = 255;
+                if (D_menu_801CD9E0 > -355.0f) {
+                    D_menu_801CD9E0 -= D_menu_801CD9EC;
                 }
-            }
 
-            if (D_menu_801CD9E0 <= -355.0f) {
-                D_menu_801CD948++;
+                if ((D_menu_801CD9E0 < 200.0f) && (D_menu_801CD9E8 != 255)) {
+                    D_menu_801CD9E8 += 8;
+                    if (D_menu_801CD9E8 > 255) {
+                        D_menu_801CD9E8 = 255;
+                    }
+                }
+
+                if (D_menu_801CD9E0 < D_menu_801B6934[D_menu_801CD9F0]) {
+                    D_menu_801CD9E4 += 8;
+                    if (D_menu_801CD9E4 > 255) {
+                        D_menu_801CD9E4 = 255;
+                    }
+                }
+
+                if (D_menu_801CD9E0 <= -355.0f) {
+                    D_menu_801CD948++;
+                }
             }
             break;
 
@@ -2124,18 +2126,17 @@ void Map_801A0954(void) {
             break;
 
         case 3:
-            if (D_menu_801CD9C0 != 0) {
-                break;
+            if (D_menu_801CD9C0 == 0) {
+                D_menu_801CD948 = 0;
+                D_menu_801CD944 = 1;
             }
-            D_menu_801CD948 = 0;
-            D_menu_801CD944 = 1;
             break;
     }
 
     if (gControllerPress[gMainController].button & START_BUTTON) {
-        AUDIO_PLAY_BGM(SEQ_ID_WORLD_MAP);
+        AUDIO_PLAY_BGM(NA_BGM_MAP);
 
-        AUDIO_PLAY_SFX(0x4900001FU, gDefaultSfxSource, 4U);
+        AUDIO_PLAY_SFX(NA_SE_MAP_MOVE_STOP, gDefaultSfxSource, 4);
 
         for (planetId = 0; planetId < PLANET_MAX; planetId++) {
             if ((planetId == PLANET_SECTOR_Z) || (planetId == PLANET_SECTOR_X) || (planetId == PLANET_SECTOR_Y)) {
@@ -2168,24 +2169,24 @@ void Map_801A0D14(void) {
 
     Map_801A116C();
 
-    RCP_SetupDL(&gMasterDisp, 0x51);
+    RCP_SetupDL(&gMasterDisp, SETUPDL_81);
 
     gDPSetPrimColor(gMasterDisp++, 0, 0, 180, 180, 180, 255);
 
     Message_DisplayScrollingText(&gMasterDisp, gMsg_ID_1, D_menu_801CD9DC, D_menu_801CD9E0, 218, 70,
                                  Message_GetCharCount(gMsg_ID_1));
 
-    RCP_SetupDL(&gMasterDisp, 0x4C);
+    RCP_SetupDL(&gMasterDisp, SETUPDL_76);
 
     gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, 255);
 
-    TextureRect_8bIA(&gMasterDisp, D_MAP_6019030, 8, 16, 0.0f, D_menu_801B694C, 40.0f, 1.66f);
-    TextureRect_8bIA_MirY(&gMasterDisp, D_MAP_6019030, 8, 16, 0.0f, D_menu_801B6950, 40.0f, 1.68f);
+    TextureRect_IA8(&gMasterDisp, D_MAP_6019030, 8, 16, 0.0f, D_menu_801B694C, 40.0f, 1.66f);
+    TextureRect_IA8_MirY(&gMasterDisp, D_MAP_6019030, 8, 16, 0.0f, D_menu_801B6950, 40.0f, 1.68f);
 
-    func_bg_8003DE68(71, 118);
-    func_bg_8003DE68(205, 239);
+    Background_DrawPartialStarfield(71, 118);
+    Background_DrawPartialStarfield(205, 239);
 
-    RCP_SetupDL(&gMasterDisp, 0x4C);
+    RCP_SetupDL(&gMasterDisp, SETUPDL_76);
 
     gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, D_menu_801CD9E8);
 
@@ -2215,8 +2216,8 @@ void Map_801A116C(void) {
     src.y = 0.0f;
     src.z = 100.0f;
 
-    Matrix_RotateY(gCalcMatrix, M_DTOR * 22.0f, 0);
-    Matrix_RotateX(gCalcMatrix, M_DTOR * -70.0f, 1);
+    Matrix_RotateY(gCalcMatrix, M_DTOR * 22.0f, MTXF_NEW);
+    Matrix_RotateX(gCalcMatrix, M_DTOR * -70.0f, MTXF_APPLY);
     Matrix_MultVec3f(gCalcMatrix, &src, &dest);
 
     if (D_menu_801CD948 >= 2) {
@@ -2235,38 +2236,38 @@ void Map_801A116C(void) {
             colB = 0;
         }
 
-        RCP_SetupDL(&gMasterDisp, 0x2E);
+        RCP_SetupDL(&gMasterDisp, SETUPDL_46);
         gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, D_menu_801CD9E8);
     } else {
-        RCP_SetupDL(&gMasterDisp, 0x17);
+        RCP_SetupDL(&gMasterDisp, SETUPDL_23);
     }
 
     if ((D_menu_801CD948 < 2) || (D_menu_801CD9E8 != 0)) {
         Matrix_Push(&gGfxMatrix);
-        Matrix_LookAt(gGfxMatrix, 0.0f, 0.0f, 430.0f, 0.0f, 180.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1);
+        Matrix_LookAt(gGfxMatrix, 0.0f, 0.0f, 430.0f, 0.0f, 180.0f, 0.0f, 0.0f, 1.0f, 0.0f, MTXF_APPLY);
         Matrix_SetGfxMtx(&gMasterDisp);
 
         Lights_SetOneLight(&gMasterDisp, dest.x, dest.y, dest.z, colR, colG, colB, 0, 0, 0);
 
         Matrix_Push(&gGfxMatrix);
 
-        Matrix_Translate(gGfxMatrix, -60.0f, 293.0f, -360.0f, 1);
-        Matrix_Scale(gGfxMatrix, 3.0f, 3.0f, 3.0f, 1);
+        Matrix_Translate(gGfxMatrix, -60.0f, 293.0f, -360.0f, MTXF_APPLY);
+        Matrix_Scale(gGfxMatrix, 3.0f, 3.0f, 3.0f, MTXF_APPLY);
 
-        Matrix_RotateZ(gGfxMatrix, M_DTOR * -15.0f, 1);
-        Matrix_RotateX(gGfxMatrix, M_DTOR * D_menu_801B6970, 1);
-        Matrix_RotateY(gGfxMatrix, M_DTOR * -90.0f, 1);
+        Matrix_RotateZ(gGfxMatrix, M_DTOR * -15.0f, MTXF_APPLY);
+        Matrix_RotateX(gGfxMatrix, M_DTOR * D_menu_801B6970, MTXF_APPLY);
+        Matrix_RotateY(gGfxMatrix, M_DTOR * -90.0f, MTXF_APPLY);
 
         Matrix_SetGfxMtx(&gMasterDisp);
 
-        wings.rightState = wings.leftState = 2;
+        wings.rightState = wings.leftState = WINGSTATE_INTACT;
         // clang-format off
         wings.unk_18 = wings.unk_1C = wings.unk_20 = wings.unk_24 = wings.unk_04 =
         wings.unk_08 = wings.unk_0C = wings.unk_10 = wings.unk_28 = 0.0f;
         // clang-format on
 
         wings.unk_14 = 0.0f;
-        wings.unk_2C = 1;
+        wings.modelId = 1;
         wings.unk_30 = 0.0f;
         wings.unk_34 = 0.0f;
         wings.unk_38 = 0.0f;
@@ -2342,7 +2343,7 @@ void Map_801A1528(void) {
             }
 
             if (temp == 0.0f) {
-                AUDIO_PLAY_SFX(0x4900001FU, gDefaultSfxSource, 4U);
+                AUDIO_PLAY_SFX(NA_SE_MAP_MOVE_STOP, gDefaultSfxSource, 4);
                 D_menu_801CD948 = 0;
                 D_menu_801CD97C = 1;
                 D_menu_801CD944 = 3;
@@ -2351,7 +2352,7 @@ void Map_801A1528(void) {
     }
 
     if (gControllerPress[gMainController].button & START_BUTTON) {
-        AUDIO_PLAY_SFX(0x4900001FU, gDefaultSfxSource, 4U);
+        AUDIO_PLAY_SFX(NA_SE_MAP_MOVE_STOP, gDefaultSfxSource, 4);
 
         for (planetId = 0; planetId < PLANET_MAX; planetId++) {
             if ((planetId == PLANET_SECTOR_Z) || (planetId == PLANET_SECTOR_X) || (planetId == PLANET_SECTOR_Y)) {
@@ -2370,7 +2371,7 @@ void Map_801A1528(void) {
 void Map_801A19A8(void) {
     s32 i;
 
-    RCP_SetupDL(&gMasterDisp, 0x53);
+    RCP_SetupDL(&gMasterDisp, SETUPDL_83);
 
     gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, (s32) D_menu_801CEA9C);
 
@@ -2438,7 +2439,7 @@ void Map_801A1C14(void) {
             for (i = 0; i < 24; i++) {
                 sPaths[i].alpha = 0;
             }
-            D_ctx_80178410 = 0;
+            gStarCount = 0;
 
             gFillScreenRed = 255;
             gFillScreenGreen = 255;
@@ -2456,9 +2457,9 @@ void Map_801A1C14(void) {
                 if (sCurrentPlanetId == PLANET_CORNERIA) {
                     gFillScreenAlpha = 0;
                     D_menu_801CD948 = 10;
-                    AUDIO_PLAY_SFX(0x0940A00BU, gDefaultSfxSource, 4U);
+                    AUDIO_PLAY_SFX(NA_SE_BACKUP_CLEAR, gDefaultSfxSource, 4);
                 } else {
-                    AUDIO_PLAY_SFX(0x19003012U, gDefaultSfxSource, 4U);
+                    AUDIO_PLAY_SFX(NA_SE_MAP_ZOOM_START, gDefaultSfxSource, 4);
                     D_menu_801CD948++;
                 }
             } else {
@@ -2474,7 +2475,7 @@ void Map_801A1C14(void) {
 
         case 10:
             if (D_menu_801CEB34 == 4) {
-                AUDIO_PLAY_SFX(0x19003012U, gDefaultSfxSource, 4U);
+                AUDIO_PLAY_SFX(NA_SE_MAP_ZOOM_START, gDefaultSfxSource, 4);
                 D_menu_801CD948 = 2;
             }
             break;
@@ -2482,7 +2483,7 @@ void Map_801A1C14(void) {
         case 2:
             Map_801A2674();
             if ((D_menu_801CD9FC == D_menu_801CDA50.z) && (D_menu_801CD9D8 == 0)) {
-                AUDIO_PLAY_SFX(0x19004013U, gDefaultSfxSource, 4U);
+                AUDIO_PLAY_SFX(NA_SE_MAP_ZOOM_END, gDefaultSfxSource, 4);
                 D_menu_801CD9D8 = 1;
                 if (sCurrentPlanetId == PLANET_CORNERIA) {
                     D_menu_801CEB48[0] = true;
@@ -2533,7 +2534,7 @@ void Map_801A1C14(void) {
             D_menu_801CD964 = 1;
             D_menu_801CD96C = 1;
             // clang-format off
-            for (i = 0; i < 15; i++) {D_menu_801CD900[i] = 0;}
+            for (i = 0; i < 15; i++) { D_menu_801CD900[i] = 0; }
             // clang-format on
             D_menu_801CD970 = 0;
 
@@ -2551,7 +2552,7 @@ void Map_801A1C14(void) {
 }
 
 bool Map_801A2304(void) {
-    s32 ret = false;
+    bool ret = false;
     f32 sp28;
     f32 sp24;
     f32 sp20;
@@ -2565,7 +2566,7 @@ bool Map_801A2304(void) {
             if (D_menu_801CEA78 > 5.5f) {
                 D_menu_801CEA78 = 5.5f;
                 D_menu_801CEA80 = 4.6f;
-                D_menu_801CD94C += 1;
+                D_menu_801CD94C++;
                 D_menu_801CD9B8 = 13;
             }
             break;
@@ -2692,7 +2693,7 @@ void Map_801A2674(void) {
     }
 
     for (i = 0; i < 24; i++) {
-        if (D_ctx_80177BD8[i] == 0) {
+        if (gPlanetPathStatus[i] == 0) {
             continue;
         }
 
@@ -2763,7 +2764,7 @@ void Map_801A281C(void) {
 
     D_menu_801CDA0C = -42.750008f;
     D_menu_801CDA10 = -9.849999f;
-    D_menu_801CDA14 = 3375.000000f;
+    D_menu_801CDA14 = 3375.0f; // 15^3
 
     Map_801AD718(D_menu_801CEF58[6].x, D_menu_801CEF58[6].y, D_menu_801CEF58[6].z, &D_menu_801CEEE8[6].x,
                  &D_menu_801CEEE8[6].y, &D_menu_801CEEE8[6].z, D_menu_801CDA14, D_menu_801CDA0C, D_menu_801CDA10);
@@ -2772,13 +2773,13 @@ void Map_801A281C(void) {
     D_menu_801CEEE8[7].y = D_menu_801CEEE8[6].y;
     D_menu_801CEEE8[7].z = D_menu_801CEEE8[6].z;
 
-    D_menu_801CEECC = Map_801A655C(sCurrentPlanetId, sNextPlanetId);
+    D_menu_801CEECC = Map_GetPathId(sCurrentPlanetId, sNextPlanetId);
 
-    if (D_menu_801CD93C == 2) {
-        D_ctx_80177BD8[D_menu_801CEECC] = 5;
+    if (sPrevMissionStatus == MISSION_WARP) {
+        gPlanetPathStatus[D_menu_801CEECC] = 5;
         sPaths[D_menu_801CEECC].unk_14 = 5;
     } else {
-        D_ctx_80177BD8[D_menu_801CEECC] = 2;
+        gPlanetPathStatus[D_menu_801CEECC] = 2;
         sPaths[D_menu_801CEECC].unk_14 = 1;
     }
 }
@@ -2889,8 +2890,8 @@ void Map_801A2B8C(void) {
             break;
     }
 
-    func_play_800B6F50(D_menu_801CD9F4, D_menu_801CD9F8, D_menu_801CD9FC, D_menu_801CDA00, D_menu_801CDA04,
-                       D_menu_801CDA08);
+    Camera_SetStarfieldPos(D_menu_801CD9F4, D_menu_801CD9F8, D_menu_801CD9FC, D_menu_801CDA00, D_menu_801CDA04,
+                           D_menu_801CDA08);
 
     D_menu_801CD9C4++;
 }
@@ -2901,10 +2902,10 @@ void Map_801A2EB8(void) {
     s32 temp2;
 
     if (D_menu_801CD9C4 == 30) {
-        if (D_menu_801CD93C == 2) {
-            AUDIO_PLAY_SFX(0x0900802AU, gDefaultSfxSource, 4U);
+        if (sPrevMissionStatus == MISSION_WARP) {
+            AUDIO_PLAY_SFX(NA_SE_MAP_ARWING_WARP_DASH, gDefaultSfxSource, 4);
         } else {
-            AUDIO_PLAY_SFX(0x09000032U, gDefaultSfxSource, 4U);
+            AUDIO_PLAY_SFX(NA_SE_MAP_ARWING_DASH, gDefaultSfxSource, 4);
         }
     }
 
@@ -2912,7 +2913,7 @@ void Map_801A2EB8(void) {
 
     if (D_menu_801CD9C4 == 80) {
         sCurrentPlanetId = sNextPlanetId;
-        D_ctx_80177B90[gCurrentPlanet] = sCurrentPlanetId;
+        gMissionPlanet[gMissionNumber] = sCurrentPlanetId;
         Map_801A6368();
     }
 
@@ -2939,7 +2940,7 @@ void Map_801A2EB8(void) {
         }
 
         for (i = 0; i < 24; i++) {
-            if (D_ctx_80177BD8[i] == 0) {
+            if (gPlanetPathStatus[i] == 0) {
                 continue;
             }
             sPaths[i].alpha += 16;
@@ -2972,11 +2973,11 @@ void Map_801A2EB8(void) {
     }
 
     if ((D_menu_801CEED8 == 4) && (D_menu_801CEEDC == 0.0f)) {
-        AUDIO_PLAY_SFX(0x19000026U, gDefaultSfxSource, 4U);
+        AUDIO_PLAY_SFX(NA_SE_MAP_ZOOM_OUT, gDefaultSfxSource, 4);
     }
 
     if ((D_menu_801CEED8 == 5) && (D_menu_801CEEDC == 0.0f)) {
-        if (D_menu_801CD93C != 2) {
+        if (sPrevMissionStatus != MISSION_WARP) {
             sPaths[D_menu_801CEECC].unk_14 = 2;
             D_menu_801CEEA0 = 0;
             D_menu_801CEEA4 = 100;
@@ -2989,16 +2990,16 @@ void Map_801A2EB8(void) {
 
         D_menu_801CEED4 = -1;
         if (sPlanets[sNextPlanetId].dest1 != PLANET_NONE) {
-            temp1 = Map_801A655C(sNextPlanetId, sPlanets[sNextPlanetId].dest1);
-            D_ctx_80177BD8[temp1] = 1;
+            temp1 = Map_GetPathId(sNextPlanetId, sPlanets[sNextPlanetId].dest1);
+            gPlanetPathStatus[temp1] = 1;
             sPaths[temp1].alpha = 255;
             D_menu_801CEED4 = temp1;
         }
 
         D_menu_801CEED0 = -1;
         if (sPlanets[sNextPlanetId].dest2 != PLANET_NONE) {
-            temp2 = Map_801A655C(sNextPlanetId, sPlanets[sNextPlanetId].dest2);
-            D_ctx_80177BD8[temp2] = 1;
+            temp2 = Map_GetPathId(sNextPlanetId, sPlanets[sNextPlanetId].dest2);
+            gPlanetPathStatus[temp2] = 1;
             sPaths[temp2].alpha = 255;
             D_menu_801CEED0 = temp2;
         }
@@ -3074,7 +3075,7 @@ void Map_801A36A8(void) {
             D_menu_801CF080 = 1.0f;
             D_menu_801CD948 = 10;
 
-            AUDIO_PLAY_BGM(SEQ_ID_GAME_OVER);
+            AUDIO_PLAY_BGM(NA_BGM_GAME_OVER);
             break;
 
         case 10:
@@ -3091,7 +3092,7 @@ void Map_801A36A8(void) {
 
         case 20:
             if (D_menu_801CD9C0 != 0) {
-                break;
+                break; // investigate
             }
             D_menu_801CD94C = 0;
             D_menu_801CD9C0 = 0;
@@ -3102,10 +3103,10 @@ void Map_801A36A8(void) {
             if (D_menu_801CF120) {
                 D_menu_801CDA1C += 0.03f;
             }
-            if (D_menu_801CD9C0) {
-                break;
+            if (D_menu_801CD9C0 == 0) {
+                Map_801A3A00();
             }
-            Map_801A3A00();
+
             break;
 
         case 2:
@@ -3124,13 +3125,13 @@ void Map_801A36A8(void) {
             gGameState = GSTATE_MENU;
             gNextGameStateTimer = 2;
             gOptionMenuStatus = OPTION_WAIT;
-            gDrawMode = 0;
-            D_ctx_80178410 = 0;
+            gDrawMode = DRAW_NONE;
+            gStarCount = 0;
             break;
     }
 
     if (gControllerPress[gMainController].button & (A_BUTTON | START_BUTTON)) {
-        AUDIO_PLAY_SFX(0x49000003U, gDefaultSfxSource, 4U);
+        AUDIO_PLAY_SFX(NA_SE_DECIDE, gDefaultSfxSource, 4);
         D_menu_801CD948 = 3;
     }
 }
@@ -3200,17 +3201,16 @@ void Map_801A3A00(void) {
             break;
 
         case 11:
-            if (D_menu_801CD9C0) {
-                break;
-            }
+            if (D_menu_801CD9C0 == 0) {
 
-            if (D_menu_801CD9BC) {
-                for (i = 0; i < 8; i++) {
-                    Math_SmoothStepToF(&D_menu_801CF088[i], 360.0f, 0.3f, 100.0f, 1.0f);
-                    Math_SmoothStepToF(&D_menu_801CF0A8[i], 360.0f, 0.3f, 100.0f, 1.0f);
+                if (D_menu_801CD9BC) {
+                    for (i = 0; i < 8; i++) {
+                        Math_SmoothStepToF(&D_menu_801CF088[i], 360.0f, 0.3f, 100.0f, 1.0f);
+                        Math_SmoothStepToF(&D_menu_801CF0A8[i], 360.0f, 0.3f, 100.0f, 1.0f);
+                    }
+                } else {
+                    D_menu_801CD94C = 10;
                 }
-            } else {
-                D_menu_801CD94C = 10;
             }
             break;
 
@@ -3234,7 +3234,7 @@ void Map_801A3A00(void) {
             break;
 
         case 2:
-            if (D_menu_801CF0D8[0]) {
+            if (D_menu_801CF0D8[0] != 0) {
                 D_menu_801CF0D8[0]--;
             } else {
                 D_menu_801CEFCC++;
@@ -3329,7 +3329,7 @@ void Map_801A4394(void) {
 
     switch (D_menu_801CD94C) {
         case 0:
-            if (gCurrentPlanet == 0) {
+            if (gMissionNumber == 0) {
                 D_menu_801CD9C0 = 45;
                 D_menu_801CD94C = 3;
             } else {
@@ -3338,7 +3338,7 @@ void Map_801A4394(void) {
             break;
 
         case 1:
-            if (gCurrentPlanet == D_menu_801CD9AC) {
+            if (gMissionNumber == D_menu_801CD9AC) {
                 D_menu_801CD94C = 3;
                 D_menu_801CD9C0 = 45;
                 break;
@@ -3346,10 +3346,10 @@ void Map_801A4394(void) {
 
             if ((sPaths[D_menu_801CD8E0[D_menu_801CD9AC]].type == 3) ||
                 (sPaths[D_menu_801CD8E0[D_menu_801CD9AC]].type == 4)) {
-                D_ctx_80177BD8[D_menu_801CD8E0[D_menu_801CD9AC]] = 5;
+                gPlanetPathStatus[D_menu_801CD8E0[D_menu_801CD9AC]] = 5;
                 sPaths[D_menu_801CD8E0[D_menu_801CD9AC]].unk_14 = 5;
             } else {
-                D_ctx_80177BD8[D_menu_801CD8E0[D_menu_801CD9AC]] = 2;
+                gPlanetPathStatus[D_menu_801CD8E0[D_menu_801CD9AC]] = 2;
                 sPaths[D_menu_801CD8E0[D_menu_801CD9AC]].unk_14 = 0;
             }
 
@@ -3360,8 +3360,8 @@ void Map_801A4394(void) {
             break;
 
         case 2:
-            if ((D_ctx_80177BD8[D_menu_801CD8E0[D_menu_801CD9AC]] == 3) ||
-                (D_ctx_80177BD8[D_menu_801CD8E0[D_menu_801CD9AC]] == 6)) {
+            if ((gPlanetPathStatus[D_menu_801CD8E0[D_menu_801CD9AC]] == 3) ||
+                (gPlanetPathStatus[D_menu_801CD8E0[D_menu_801CD9AC]] == 6)) {
                 D_menu_801CD9AC++;
                 D_menu_801CD94C = 1;
             }
@@ -3403,24 +3403,24 @@ void Map_801A4650(void) {
 
     Lights_SetOneLight(&gMasterDisp, 0, 0, 127, 28, 58, 105, 65, 70, 48);
 
-    RCP_SetupDL(&gMasterDisp, 0x17);
+    RCP_SetupDL(&gMasterDisp, SETUPDL_23);
 
     gSPTexture(gMasterDisp++, 2500, 200, 0, G_TX_RENDERTILE, G_ON);
     gSPSetGeometryMode(gMasterDisp++, G_TEXTURE_GEN);
 
     Matrix_Push(&gGfxMatrix);
 
-    Matrix_LookAt(gGfxMatrix, 0.0f, 0.0f, 500.0f, 0.0f, 0.0f, -500.0f, 0.0f, 1.0f, 0.0f, 1);
+    Matrix_LookAt(gGfxMatrix, 0.0f, 0.0f, 500.0f, 0.0f, 0.0f, -500.0f, 0.0f, 1.0f, 0.0f, MTXF_APPLY);
 
     Matrix_SetGfxMtx(&gMasterDisp);
 
     for (i = 0; i < 8; i++) {
         Matrix_Push(&gGfxMatrix);
 
-        Matrix_Translate(gGfxMatrix, D_menu_801CF020[i], D_menu_801CF040[i], D_menu_801CF060[i], 1);
-        Matrix_RotateY(gGfxMatrix, M_DTOR * D_menu_801CF0A8[i], 1);
-        Matrix_RotateX(gGfxMatrix, M_DTOR * D_menu_801CF088[i], 1);
-        Matrix_Scale(gGfxMatrix, D_menu_801CF080, D_menu_801CF080, D_menu_801CF080, 1);
+        Matrix_Translate(gGfxMatrix, D_menu_801CF020[i], D_menu_801CF040[i], D_menu_801CF060[i], MTXF_APPLY);
+        Matrix_RotateY(gGfxMatrix, M_DTOR * D_menu_801CF0A8[i], MTXF_APPLY);
+        Matrix_RotateX(gGfxMatrix, M_DTOR * D_menu_801CF088[i], MTXF_APPLY);
+        Matrix_Scale(gGfxMatrix, D_menu_801CF080, D_menu_801CF080, D_menu_801CF080, MTXF_APPLY);
 
         Matrix_SetGfxMtx(&gMasterDisp);
 
@@ -3476,7 +3476,7 @@ void Map_801A4AE8(void) {
             if (D_menu_801CF000[D_menu_801CEFDC] == 0) {
                 if (D_menu_801CEFD0 != 0) {
                     if (gLifeCount[gPlayerNum] != 0) {
-                        func_8001D520();
+                        Audio_PlayDeathSequence();
                         D_menu_801CD9CC = 1;
                         D_menu_801CD9D0 = 0;
                         D_menu_801CD9B8 = 120;
@@ -3502,7 +3502,7 @@ void Map_801A4AE8(void) {
                 D_menu_801CD9CC = 0;
 
                 var_a0 = D_menu_801CEFDC;
-                if (D_menu_801CD93C != 0) {
+                if (sPrevMissionStatus != MISSION_COMPLETE) {
                     var_a0 += 2;
                 }
 
@@ -3549,7 +3549,7 @@ void Map_801A4D7C(void) {
 
     if (Map_801A5770() != 0) {
         D_menu_801CEFE8[D_menu_801CEFDC] = 255.0f;
-        if (D_menu_801CD93C != 0) {
+        if (sPrevMissionStatus != MISSION_COMPLETE) {
             if (D_menu_801CEFD4 < 0) {
                 D_menu_801CEFDC++;
                 if (D_menu_801CEFDC >= 3) {
@@ -3577,18 +3577,16 @@ void Map_801A4D7C(void) {
     }
 
     if (gControllerPress[gMainController].button & (B_BUTTON | START_BUTTON)) {
-        func_8001D6DC(0);
+        Audio_PlayMapMenuSfx(0);
         D_menu_801CEFC4 = 0;
         D_menu_801CD944 = 3;
-        return;
-    }
-
-    if (gControllerPress[gMainController].button & A_BUTTON) {
-        func_8001D6DC(0);
-        AUDIO_PLAY_SFX(0x49000003U, gDefaultSfxSource, 4U);
+    } else if (gControllerPress[gMainController].button & A_BUTTON) {
+        Audio_PlayMapMenuSfx(0);
+        AUDIO_PLAY_SFX(NA_SE_DECIDE, gDefaultSfxSource, 4);
         D_menu_801CF000[D_menu_801CEFDC] = 10;
 
-        if (((D_menu_801CD93C != 0) && (D_menu_801CEFDC == 2)) || ((D_menu_801CD93C == 0) && (D_menu_801CEFDC == 1))) {
+        if (((sPrevMissionStatus != MISSION_COMPLETE) && (D_menu_801CEFDC == 2)) ||
+            ((sPrevMissionStatus == MISSION_COMPLETE) && (D_menu_801CEFDC == 1))) {
             D_menu_801CEFD0 = 1;
             D_menu_801CF00C = 10;
         }
@@ -3597,7 +3595,7 @@ void Map_801A4D7C(void) {
 }
 
 void Map_801A4F8C(void) {
-    D_ctx_80178410 = 0;
+    gStarCount = 0;
     gGameState = GSTATE_GAME_OVER;
     D_ctx_80177868 = 0;
     gNextGameStateTimer = 2;
@@ -3611,7 +3609,7 @@ void Map_801A4FC4(void) {
 
     gPlayerNum = 0;
 
-    for (i = 0; i < 6; i++) {
+    for (i = 0; i < TEAM_ID_MAX; i++) {
         gSavedTeamShields[i] = D_ctx_80177C58[i];
         gTeamShields[i] = D_ctx_80177C58[i];
         gPrevPlanetTeamShields[i] = D_ctx_80177C58[i];
@@ -3627,20 +3625,20 @@ void Map_801A4FC4(void) {
     gBombCount[gPlayerNum] = 3;
 
     if (sPlanets[sCurrentPlanetId].dest1 != PLANET_NONE) {
-        temp2 = Map_801A655C(sCurrentPlanetId, sPlanets[sCurrentPlanetId].dest1);
-        D_ctx_80177BD8[temp2] = 0;
+        temp2 = Map_GetPathId(sCurrentPlanetId, sPlanets[sCurrentPlanetId].dest1);
+        gPlanetPathStatus[temp2] = 0;
         sPaths[temp2].alpha = 0;
     }
 
     if (sPlanets[sCurrentPlanetId].dest2 != PLANET_NONE) {
-        temp = Map_801A655C(sCurrentPlanetId, sPlanets[sCurrentPlanetId].dest2);
-        D_ctx_80177BD8[temp] = 0;
+        temp = Map_GetPathId(sCurrentPlanetId, sPlanets[sCurrentPlanetId].dest2);
+        gPlanetPathStatus[temp] = 0;
         sPaths[temp].alpha = 0;
     }
 
     if (sPlanets[sCurrentPlanetId].warp != PLANET_NONE) {
-        temp = Map_801A655C(sCurrentPlanetId, sPlanets[sCurrentPlanetId].warp);
-        D_ctx_80177BD8[temp] = 0;
+        temp = Map_GetPathId(sCurrentPlanetId, sPlanets[sCurrentPlanetId].warp);
+        gPlanetPathStatus[temp] = 0;
         sPaths[temp].alpha = 0;
     }
 
@@ -3650,33 +3648,33 @@ void Map_801A4FC4(void) {
     D_menu_801CEEA8 = 255;
     D_menu_801CEEAC = 255;
 
-    gTotalHits -= D_ctx_80177B70[gCurrentPlanet - 1];
-    D_ctx_80177B90[gCurrentPlanet] = PLANET_NONE;
-    D_ctx_80177B70[gCurrentPlanet - 1] = 0;
-    D_ctx_80177BB0[gCurrentPlanet - 1] = 0;
-    D_ctx_80177B50[gCurrentPlanet - 1] = 0x00FFFFFF;
+    gTotalHits -= gMissionHitCount[gMissionNumber - 1];
+    gMissionPlanet[gMissionNumber] = PLANET_NONE;
+    gMissionHitCount[gMissionNumber - 1] = 0;
+    gMissionMedal[gMissionNumber - 1] = 0;
+    gMissionTeamStatus[gMissionNumber - 1] = 0x00FFFFFF;
     gHitCount = 0;
-    gCurrentPlanet--;
+    gMissionNumber--;
 
     D_menu_801CD83C = Map_801A05B4();
 
-    sCurrentPlanetId = D_menu_801CD950;
+    sCurrentPlanetId = sPrevPlanetId;
 
     if (sPlanets[sCurrentPlanetId].dest1 != PLANET_NONE) {
-        temp2 = Map_801A655C(sCurrentPlanetId, sPlanets[sCurrentPlanetId].dest1);
-        D_ctx_80177BD8[temp2] = 1;
+        temp2 = Map_GetPathId(sCurrentPlanetId, sPlanets[sCurrentPlanetId].dest1);
+        gPlanetPathStatus[temp2] = 1;
         sPaths[temp2].alpha = 255;
     }
 
     if (sPlanets[sCurrentPlanetId].dest2 != PLANET_NONE) {
-        temp = Map_801A655C(sCurrentPlanetId, sPlanets[sCurrentPlanetId].dest2);
-        D_ctx_80177BD8[temp] = 1;
+        temp = Map_GetPathId(sCurrentPlanetId, sPlanets[sCurrentPlanetId].dest2);
+        gPlanetPathStatus[temp] = 1;
         sPaths[temp].alpha = 255;
     }
 
     if (sPlanets[sCurrentPlanetId].warp != PLANET_NONE) {
-        temp = Map_801A655C(sCurrentPlanetId, sPlanets[sCurrentPlanetId].warp);
-        D_ctx_80177BD8[temp] = 0;
+        temp = Map_GetPathId(sCurrentPlanetId, sPlanets[sCurrentPlanetId].warp);
+        gPlanetPathStatus[temp] = 0;
         sPaths[temp].alpha = 0;
     }
 
@@ -3690,27 +3688,27 @@ void Map_801A53C8(void) {
     D_menu_801CEFD8 ^= 1;
 
     if (sPlanets[sCurrentPlanetId].dest1 != PLANET_NONE) {
-        temp2 = Map_801A655C(sCurrentPlanetId, sPlanets[sCurrentPlanetId].dest1);
-        D_ctx_80177BD8[temp2] = 0;
+        temp2 = Map_GetPathId(sCurrentPlanetId, sPlanets[sCurrentPlanetId].dest1);
+        gPlanetPathStatus[temp2] = 0;
         sPaths[temp2].alpha = 0;
     }
 
     if (sPlanets[sCurrentPlanetId].dest2 != PLANET_NONE) {
-        temp = Map_801A655C(sCurrentPlanetId, sPlanets[sCurrentPlanetId].dest2);
-        D_ctx_80177BD8[temp] = 0;
+        temp = Map_GetPathId(sCurrentPlanetId, sPlanets[sCurrentPlanetId].dest2);
+        gPlanetPathStatus[temp] = 0;
         sPaths[temp].alpha = 0;
     }
 
-    D_ctx_80177BD8[D_menu_801CEECC] = 0;
+    gPlanetPathStatus[D_menu_801CEECC] = 0;
 
     sPaths[D_menu_801CEECC].alpha = 0;
     sPaths[D_menu_801CEECC].unk_14 = 0;
 
-    sCurrentPlanetId = D_menu_801CD950;
+    sCurrentPlanetId = sPrevPlanetId;
 
     if (!D_menu_801CEFD8) {
         sNextPlanetId = sPlanets[sCurrentPlanetId].dest1;
-    } else if (D_menu_801CD93C != 2) {
+    } else if (sPrevMissionStatus != MISSION_WARP) {
         if (sPlanets[sCurrentPlanetId].dest2 != PLANET_NONE) {
             sNextPlanetId = sPlanets[sCurrentPlanetId].dest2;
         } else {
@@ -3722,16 +3720,16 @@ void Map_801A53C8(void) {
         sNextPlanetId = sPlanets[sCurrentPlanetId].dest1;
     }
 
-    D_menu_801CEECC = Map_801A655C(sCurrentPlanetId, sNextPlanetId);
+    D_menu_801CEECC = Map_GetPathId(sCurrentPlanetId, sNextPlanetId);
 
     sPaths[D_menu_801CEECC].alpha = 255;
 
-    D_ctx_80177BD8[D_menu_801CEECC] = 3;
+    gPlanetPathStatus[D_menu_801CEECC] = 3;
 
     sPaths[D_menu_801CEECC].unk_14 = 2;
 
     if ((sPaths[D_menu_801CEECC].type == PL_WARP_YLW) || (sPaths[D_menu_801CEECC].type == PL_WARP_RED)) {
-        D_ctx_80177BD8[D_menu_801CEECC] = 5;
+        gPlanetPathStatus[D_menu_801CEECC] = 5;
         sPaths[D_menu_801CEECC].unk_14 = 5;
     }
 
@@ -3741,19 +3739,19 @@ void Map_801A53C8(void) {
     D_menu_801CEEAC = 255;
 
     sCurrentPlanetId = sNextPlanetId;
-    D_ctx_80177B90[gCurrentPlanet] = sCurrentPlanetId;
+    gMissionPlanet[gMissionNumber] = sCurrentPlanetId;
 
     Map_801A6368();
 
     if (sPlanets[sNextPlanetId].dest1 != PLANET_NONE) {
-        temp2 = Map_801A655C(sNextPlanetId, sPlanets[sNextPlanetId].dest1);
-        D_ctx_80177BD8[temp2] = 1;
+        temp2 = Map_GetPathId(sNextPlanetId, sPlanets[sNextPlanetId].dest1);
+        gPlanetPathStatus[temp2] = 1;
         sPaths[temp2].alpha = 255;
     }
 
     if (sPlanets[sNextPlanetId].dest2 != PLANET_NONE) {
-        temp = Map_801A655C(sNextPlanetId, sPlanets[sNextPlanetId].dest2);
-        D_ctx_80177BD8[temp] = 1;
+        temp = Map_GetPathId(sNextPlanetId, sPlanets[sNextPlanetId].dest2);
+        gPlanetPathStatus[temp] = 1;
         sPaths[temp].alpha = 255;
     }
 }
@@ -3776,7 +3774,7 @@ bool Map_801A5770(void) {
     }
 
     if (ret) {
-        AUDIO_PLAY_SFX(0x49000002, gDefaultSfxSource, 4);
+        AUDIO_PLAY_SFX(NA_SE_CURSOR, gDefaultSfxSource, 4);
     }
 
     return ret;
@@ -3814,21 +3812,21 @@ void Map_801A5834(void) {
     }
 
     var_t0 = 1;
-    if (D_menu_801CD93C == 0) {
+    if (sPrevMissionStatus == MISSION_COMPLETE) {
         var_t0 = 0;
     }
 
-    if (gLifeCount[gPlayerNum]) {
+    if (gLifeCount[gPlayerNum] != 0) {
         texture = D_MAP_6001080;
     } else {
         texture = D_MAP_6000000;
     }
 
-    RCP_SetupDL(&gMasterDisp, 0x4C);
+    RCP_SetupDL(&gMasterDisp, SETUPDL_76);
 
     gDPSetPrimColor(gMasterDisp++, 0, 0, 60, 60, 255, 170);
 
-    TextureRect_8bIA(&gMasterDisp, D_MAP_601B4B0, 24, 17, x, y, 4.6f, D_menu_801B6A6C[var_t0]);
+    TextureRect_IA8(&gMasterDisp, D_MAP_601B4B0, 24, 17, x, y, 4.6f, D_menu_801B6A6C[var_t0]);
 
     mask = 0xFFFFFFFF;
     if (D_menu_801CF000[colorIndex] != 0) {
@@ -3836,24 +3834,24 @@ void Map_801A5834(void) {
         D_menu_801CF000[colorIndex]--;
     }
 
-    if (gGameFrameCount & mask) {
-        RCP_SetupDL(&gMasterDisp, 0x53);
+    if (gGameFrameCount & mask) { // can't be != 0?
+        RCP_SetupDL(&gMasterDisp, SETUPDL_83);
         gDPSetPrimColor(gMasterDisp++, 0, 0, r[colorIndex], g[colorIndex], b[colorIndex], 255);
-        TextureRect_8bIA(&gMasterDisp, D_MAP_6000840, 96, 22, x + 11.0f, y + 3.0f, 1.0f, 1.0f);
+        TextureRect_IA8(&gMasterDisp, D_MAP_6000840, 96, 22, x + 11.0f, y + 3.0f, 1.0f, 1.0f);
     }
     z = 24.0f;
     colorIndex++;
 
-    if (D_menu_801CD93C != 0) {
+    if (sPrevMissionStatus != MISSION_COMPLETE) {
         mask = 0xFFFFFFFF;
         if (D_menu_801CF000[colorIndex] != 0) {
             mask = 0x00000001;
             D_menu_801CF000[colorIndex]--;
         }
 
-        if (gGameFrameCount & mask) {
+        if (gGameFrameCount & mask) { // can't be != 0?
             gDPSetPrimColor(gMasterDisp++, 0, 0, r[colorIndex], g[colorIndex], b[colorIndex], 255);
-            TextureRect_8bIA(&gMasterDisp, D_MAP_60018C0, 96, 10, x + 10.0f, y + z + 8.0f, 1.0f, 1.0f);
+            TextureRect_IA8(&gMasterDisp, D_MAP_60018C0, 96, 10, x + 10.0f, y + z + 8.0f, 1.0f, 1.0f);
         }
         z += 18.0f;
         colorIndex++;
@@ -3865,9 +3863,9 @@ void Map_801A5834(void) {
         D_menu_801CF000[colorIndex]--;
     }
 
-    if (gGameFrameCount & mask) {
+    if ((gGameFrameCount & mask) != 0) {
         gDPSetPrimColor(gMasterDisp++, 0, 0, r[colorIndex], g[colorIndex], b[colorIndex], 255);
-        TextureRect_8bIA(&gMasterDisp, texture, 96, 22, x + 9.0f, y + z + 5.0f, 1.0f, 1.0f);
+        TextureRect_IA8(&gMasterDisp, texture, 96, 22, x + 9.0f, y + z + 5.0f, 1.0f, 1.0f);
     }
 }
 
@@ -3905,16 +3903,16 @@ void Map_801A5C90(void) {
 
         Matrix_Push(&gGfxMatrix);
 
-        Matrix_LookAt(gGfxMatrix, 0.0f, 0.0f, 100.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1);
+        Matrix_LookAt(gGfxMatrix, 0.0f, 0.0f, 100.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, MTXF_APPLY);
 
         Matrix_SetGfxMtx(&gMasterDisp);
 
-        RCP_SetupDL(&gMasterDisp, 0x35);
+        RCP_SetupDL(&gMasterDisp, SETUPDL_53);
 
         Matrix_Push(&gGfxMatrix);
 
-        Matrix_Translate(gGfxMatrix, 45.0f, 32.0f, 0.01f, 1);
-        Matrix_Scale(gGfxMatrix, scale, scale, scale, 1);
+        Matrix_Translate(gGfxMatrix, 45.0f, 32.0f, 0.01f, MTXF_APPLY);
+        Matrix_Scale(gGfxMatrix, scale, scale, scale, MTXF_APPLY);
 
         Matrix_SetGfxMtx(&gMasterDisp);
 
@@ -3937,7 +3935,7 @@ void Map_801A5E80(void) {
 
         case 1:
             if ((gControllerPress[gMainController].button & START_BUTTON) && !(D_menu_801CD9A8)) {
-                Audio_KillSfxById(0x4100001EU);
+                Audio_KillSfxById(NA_SE_COMPUTER_NOISE);
                 Audio_ClearVoice();
                 D_menu_801CF018 = 0;
                 D_menu_801B8280 = 2;
@@ -3946,7 +3944,7 @@ void Map_801A5E80(void) {
 
             if ((gControllerPress[gMainController].button & A_BUTTON) && (D_menu_801CD9A0 == 0) && !(D_menu_801CD9A8)) {
                 Audio_ClearVoice();
-                D_Timer_801782AC = 0;
+                gRadioStateTimer = 0;
             }
 
             if ((gControllerPress[gMainController].button & A_BUTTON) && (D_menu_801CD9A0 == 1) && !(D_menu_801CD9A8)) {
@@ -3986,7 +3984,7 @@ void Map_801A5E80(void) {
 
         case 4:
             if (D_menu_801CD9B8 == 0) {
-                AUDIO_PLAY_SFX(0x49002016U, gDefaultSfxSource, 4U);
+                AUDIO_PLAY_SFX(NA_SE_GOOD_LUCK, gDefaultSfxSource, 4);
                 D_menu_801CD9B8 = 75;
                 D_menu_801B8280++;
             }
@@ -4006,59 +4004,59 @@ void Map_801A5E80(void) {
 void Map_801A61B4(LevelId level) {
     switch (level) {
         case LEVEL_CORNERIA:
-            Audio_SetAudioSpec(0, 0);
+            AUDIO_SET_SPEC(SFXCHAN_0, AUDIOSPEC_0);
             break;
 
         case LEVEL_METEO:
-            Audio_SetAudioSpec(0, 1);
+            AUDIO_SET_SPEC(SFXCHAN_0, AUDIOSPEC_1);
             break;
 
         case LEVEL_TITANIA:
-            Audio_SetAudioSpec(0, 2);
+            AUDIO_SET_SPEC(SFXCHAN_0, AUDIOSPEC_2);
             break;
 
         case LEVEL_AQUAS:
-            Audio_SetAudioSpec(0, 12);
+            AUDIO_SET_SPEC(SFXCHAN_0, AUDIOSPEC_12);
             break;
 
         case LEVEL_BOLSE:
-            Audio_SetAudioSpec(0, 10);
+            AUDIO_SET_SPEC(SFXCHAN_0, AUDIOSPEC_10);
             break;
 
         case LEVEL_KATINA:
-            Audio_SetAudioSpec(0, 11);
+            AUDIO_SET_SPEC(SFXCHAN_0, AUDIOSPEC_11);
             break;
 
         case LEVEL_AREA_6:
-            Audio_SetAudioSpec(0, 5);
+            AUDIO_SET_SPEC(SFXCHAN_0, AUDIOSPEC_5);
             break;
 
         case LEVEL_SECTOR_Z:
-            Audio_SetAudioSpec(0, 13);
+            AUDIO_SET_SPEC(SFXCHAN_0, AUDIOSPEC_13);
             break;
 
         case LEVEL_FORTUNA:
-            Audio_SetAudioSpec(0, 8);
+            AUDIO_SET_SPEC(SFXCHAN_0, AUDIOSPEC_8);
             break;
 
         case LEVEL_SECTOR_X:
-            Audio_SetAudioSpec(0, 3);
+            AUDIO_SET_SPEC(SFXCHAN_0, AUDIOSPEC_3);
             break;
 
         case LEVEL_MACBETH:
-            Audio_SetAudioSpec(0, 14);
+            AUDIO_SET_SPEC(SFXCHAN_0, AUDIOSPEC_14);
             break;
 
         case LEVEL_ZONESS:
-            Audio_SetAudioSpec(0, 4);
+            AUDIO_SET_SPEC(SFXCHAN_0, AUDIOSPEC_4);
             break;
 
         case LEVEL_SECTOR_Y:
-            Audio_SetAudioSpec(0, 7);
+            AUDIO_SET_SPEC(SFXCHAN_0, AUDIOSPEC_7);
             break;
 
         case LEVEL_SOLAR:
-            Audio_SetAudioSpec(0, 0x209);
+            AUDIO_SET_SPEC(SFXCHAN_2, AUDIOSPEC_9);
 
         default:
             break;
@@ -4091,7 +4089,7 @@ bool Map_801A62FC(PlanetId planet) {
             break;
     }
 
-    if (CVarGetInteger("gLevelSelector", 0) && gCurrentPlanet == 6) {
+    if (CVarGetInteger("gLevelSelector", 0) && gMissionNumber == 6) {
         return false;
     }
 
@@ -4237,7 +4235,7 @@ PlanetId Map_GetPlanetId(LevelId level) {
     return planet;
 }
 
-s32 Map_801A655C(PlanetId start, PlanetId end) {
+s32 Map_GetPathId(PlanetId start, PlanetId end) {
     s32 i;
 
     for (i = 0; i < 24; i++) {
@@ -4250,11 +4248,11 @@ s32 Map_801A655C(PlanetId start, PlanetId end) {
 }
 
 void Map_801A659C(void) {
-    Audio_KillSfxById(0x1100004C);
-    Audio_KillSfxById(0x1100204C);
+    Audio_KillSfxById(NA_SE_MAP_MOVE);
+    Audio_KillSfxById(NA_SE_MAP_ROLL);
 
-    if (sCurrentPlanetId != 9) {
-        AUDIO_PLAY_SFX(0x49000003, gDefaultSfxSource, 4);
+    if (sCurrentPlanetId != PLANET_CORNERIA) {
+        AUDIO_PLAY_SFX(NA_SE_DECIDE, gDefaultSfxSource, 4);
     }
 
     D_menu_801CEFC8 = 0;
@@ -4271,8 +4269,8 @@ void Map_801A6628(void) {
 
     Play_Setup();
 
-    D_ctx_80177CA0 = 0;
-    D_ctx_80177CB0 = 0.0f;
+    gSavedObjectLoadIndex = 0;
+    gSavedPathProgress = 0.0f;
     D_ctx_8017782C = 1;
 }
 
@@ -4288,10 +4286,10 @@ void Map_801A6694(void) {
     for (planetId = 0; planetId < PLANET_MAX; planetId++) {
         Matrix_Push(&gGfxMatrix);
 
-        Matrix_RotateY(gGfxMatrix, M_DTOR * sPlanets[planetId].longitude, 1);
-        Matrix_Translate(gGfxMatrix, sPlanets[planetId].orbit.radius, sPlanets[planetId].orbit.incl, 0.0f, 1);
+        Matrix_RotateY(gGfxMatrix, M_DTOR * sPlanets[planetId].longitude, MTXF_APPLY);
+        Matrix_Translate(gGfxMatrix, sPlanets[planetId].orbit.radius, sPlanets[planetId].orbit.incl, 0.0f, MTXF_APPLY);
 
-        Matrix_RotateY(gGfxMatrix, M_DTOR * -sPlanets[planetId].longitude, 1);
+        Matrix_RotateY(gGfxMatrix, M_DTOR * -sPlanets[planetId].longitude, MTXF_APPLY);
 
         Map_801AD048();
 
@@ -4310,9 +4308,9 @@ void Map_801A6694(void) {
         Matrix_Push(&gGfxMatrix);
 
         Matrix_LookAt(gGfxMatrix, D_menu_801CD9F4, D_menu_801CD9F8, D_menu_801CD9FC, D_menu_801CDA00, D_menu_801CDA04,
-                      D_menu_801CDA08, D_menu_801CDA20, D_menu_801CDA24, D_menu_801CDA28, 1);
-        Matrix_Translate(gGfxMatrix, D_menu_801CEA58, D_menu_801CEA5C, D_menu_801CEA60, 1);
-        Matrix_Mult(gGfxMatrix, &D_menu_801CDA60[planetId], 1);
+                      D_menu_801CDA08, D_menu_801CDA20, D_menu_801CDA24, D_menu_801CDA28, MTXF_APPLY);
+        Matrix_Translate(gGfxMatrix, D_menu_801CEA58, D_menu_801CEA5C, D_menu_801CEA60, MTXF_APPLY);
+        Matrix_Mult(gGfxMatrix, &D_menu_801CDA60[planetId], MTXF_APPLY);
 
         Matrix_SetGfxMtx(&gMasterDisp);
 
@@ -4378,7 +4376,7 @@ void Map_801A6A98(PlanetId planetId) {
     Map_801A7D3C(planetId);
     Matrix_Push(&gGfxMatrix);
 
-    if (gGameFrameCount & mask) {
+    if ((gGameFrameCount & mask) != 0) {
         if (planetId == PLANET_TITANIA) {
             Map_801A791C(planetId);
         }
@@ -4505,21 +4503,21 @@ void Map_801A6EC0(PlanetId planetId) {
 
     Matrix_Push(&gGfxMatrix);
 
-    Matrix_Mult(gGfxMatrix, &D_menu_801CDA60[planetId], 1);
+    Matrix_Mult(gGfxMatrix, &D_menu_801CDA60[planetId], MTXF_APPLY);
 
     if (sPlanets[planetId].anim == PL_ANIM_ROTATE_Y) {
         if (planetId == PLANET_BOLSE) {
-            Matrix_RotateX(gGfxMatrix, M_DTOR * D_menu_801AFFF8, 1);
-            Matrix_RotateY(gGfxMatrix, M_DTOR * D_menu_801AFFF4, 1);
+            Matrix_RotateX(gGfxMatrix, M_DTOR * D_menu_801AFFF8, MTXF_APPLY);
+            Matrix_RotateY(gGfxMatrix, M_DTOR * D_menu_801AFFF4, MTXF_APPLY);
         } else {
-            Matrix_RotateX(gGfxMatrix, M_DTOR * D_menu_801B0000, 1);
-            Matrix_RotateY(gGfxMatrix, M_DTOR * D_menu_801AFFFC, 1);
+            Matrix_RotateX(gGfxMatrix, M_DTOR * D_menu_801B0000, MTXF_APPLY);
+            Matrix_RotateY(gGfxMatrix, M_DTOR * D_menu_801AFFFC, MTXF_APPLY);
         }
     }
 
-    Matrix_RotateZ(gGfxMatrix, M_DTOR * (sPlanets[planetId].orbit.tilt), 1);
+    Matrix_RotateZ(gGfxMatrix, M_DTOR * (sPlanets[planetId].orbit.tilt), MTXF_APPLY);
 
-    Matrix_Scale(gGfxMatrix, sPlanets[planetId].scale, sPlanets[planetId].scale, sPlanets[planetId].scale, 1);
+    Matrix_Scale(gGfxMatrix, sPlanets[planetId].scale, sPlanets[planetId].scale, sPlanets[planetId].scale, MTXF_APPLY);
 
     Matrix_SetGfxMtx(&gMasterDisp);
 
@@ -4535,8 +4533,8 @@ void Map_801A6EC0(PlanetId planetId) {
         src.y = 0.0f;
         src.z = 100.0f;
 
-        Matrix_RotateY(gCalcMatrix, M_DTOR * (-D_menu_801CDA10 - y1), 0);
-        Matrix_RotateX(gCalcMatrix, M_DTOR * (-D_menu_801CDA0C - x1), 1);
+        Matrix_RotateY(gCalcMatrix, M_DTOR * (-D_menu_801CDA10 - y1), MTXF_NEW);
+        Matrix_RotateX(gCalcMatrix, M_DTOR * (-D_menu_801CDA0C - x1), MTXF_APPLY);
 
         Matrix_MultVec3f(gCalcMatrix, &src, &dst);
 
@@ -4557,34 +4555,34 @@ void Map_801A6EC0(PlanetId planetId) {
 void Map_801A7230(PlanetId planetId) {
     switch (sPlanets[planetId].anim) {
         case PL_ANIM_STATIC:
-            if ((D_menu_801CD944 == 3 || planetId == sCurrentPlanetId || planetId == sNextPlanetId) &&
+            if (((D_menu_801CD944 == 3) || (planetId == sCurrentPlanetId) || (planetId == sNextPlanetId)) &&
                 D_menu_801CD944 != 1 && D_menu_801CD944 != 7) {
-                RCP_SetupDL(&gMasterDisp, 0x35);
+                RCP_SetupDL(&gMasterDisp, SETUPDL_53);
             } else {
-                RCP_SetupDL(&gMasterDisp, 0x29);
+                RCP_SetupDL(&gMasterDisp, SETUPDL_41);
                 gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, sPlanets[planetId].alpha);
             }
             break;
 
         case PL_ANIM_ROTATE_Y:
-            if ((D_menu_801CD944 == 3 || planetId == sCurrentPlanetId || planetId == sNextPlanetId) &&
+            if (((D_menu_801CD944 == 3) || (planetId == sCurrentPlanetId) || (planetId == sNextPlanetId)) &&
                 D_menu_801CD944 != 1 && D_menu_801CD944 != 7) {
-                RCP_SetupDL(&gMasterDisp, 0x17);
+                RCP_SetupDL(&gMasterDisp, SETUPDL_23);
             } else {
-                RCP_SetupDL(&gMasterDisp, 0x2E);
+                RCP_SetupDL(&gMasterDisp, SETUPDL_46);
                 gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, sPlanets[planetId].alpha);
             }
             break;
 
         case PL_ANIM_BILLBOARD:
         case PL_ANIM_SPIN:
-            RCP_SetupDL(&gMasterDisp, 0x40);
+            RCP_SetupDL(&gMasterDisp, SETUPDL_64);
 
             gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, sPlanets[planetId].alpha);
             break;
 
         case PL_ANIM_ROTATE_Z:
-            RCP_SetupDL(&gMasterDisp, 0x43);
+            RCP_SetupDL(&gMasterDisp, SETUPDL_67);
 
             gDPSetPrimColor(gMasterDisp++, 0, 0, 240, 0, 0, sPlanets[planetId].alpha);
             gDPSetEnvColor(gMasterDisp++, 31, 0, 0, 0);
@@ -4611,7 +4609,7 @@ void Map_801A74F4(PlanetId planetId) {
         alpha = 128;
     }
 
-    RCP_SetupDL(&gMasterDisp, 0x43);
+    RCP_SetupDL(&gMasterDisp, SETUPDL_67);
 
     gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, alpha);
     gDPSetEnvColor(gMasterDisp++, 31, 0, 0, 0);
@@ -4619,8 +4617,8 @@ void Map_801A74F4(PlanetId planetId) {
     Matrix_Push(&gGfxMatrix);
 
     Matrix_Copy(gGfxMatrix, &D_menu_801CDE20[planetId]);
-    Matrix_RotateZ(gGfxMatrix, M_DTOR * D_menu_801B6A74, 1);
-    Matrix_Scale(gGfxMatrix, 0.8f, 0.8f, 0.8f, 1);
+    Matrix_RotateZ(gGfxMatrix, M_DTOR * D_menu_801B6A74, MTXF_APPLY);
+    Matrix_Scale(gGfxMatrix, 0.8f, 0.8f, 0.8f, MTXF_APPLY);
 
     Matrix_SetGfxMtx(&gMasterDisp);
 
@@ -4642,7 +4640,7 @@ void Map_801A7684(PlanetId planetId) {
         r = g = b = 64;
     }
 
-    RCP_SetupDL(&gMasterDisp, 0x40);
+    RCP_SetupDL(&gMasterDisp, SETUPDL_64);
 
     gDPSetPrimColor(gMasterDisp++, 0, 0, r, g, b, sPlanets[planetId].alpha);
 
@@ -4656,7 +4654,7 @@ void Map_801A7684(PlanetId planetId) {
 }
 
 void Map_801A77B0(PlanetId planetId) {
-    RCP_SetupDL(&gMasterDisp, 0x40);
+    RCP_SetupDL(&gMasterDisp, SETUPDL_64);
 
     gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, sPlanets[planetId].alpha);
 
@@ -4665,11 +4663,11 @@ void Map_801A77B0(PlanetId planetId) {
     Matrix_Copy(gGfxMatrix, &D_menu_801CDE20[planetId]);
 
     if ((planetId == 10) || (planetId == 7) || (planetId == 8)) {
-        Matrix_RotateY(gGfxMatrix, M_DTOR * 180.0f, 1);
+        Matrix_RotateY(gGfxMatrix, M_DTOR * 180.0f, MTXF_APPLY);
     }
 
-    Matrix_RotateZ(gGfxMatrix, M_DTOR * sPlanets[planetId].orbit.tilt, 1);
-    Matrix_Scale(gGfxMatrix, 1.6f, 1.6f, 1.6f, 1);
+    Matrix_RotateZ(gGfxMatrix, M_DTOR * sPlanets[planetId].orbit.tilt, MTXF_APPLY);
+    Matrix_Scale(gGfxMatrix, 1.6f, 1.6f, 1.6f, MTXF_APPLY);
 
     Matrix_SetGfxMtx(&gMasterDisp);
 
@@ -4679,7 +4677,7 @@ void Map_801A77B0(PlanetId planetId) {
 }
 
 void Map_801A791C(PlanetId planetId) {
-    RCP_SetupDL(&gMasterDisp, 0x43);
+    RCP_SetupDL(&gMasterDisp, SETUPDL_67);
 
     gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 175, 175, sPlanets[planetId].alpha);
     gDPSetEnvColor(gMasterDisp++, 73, 31, 15, 0);
@@ -4688,10 +4686,10 @@ void Map_801A791C(PlanetId planetId) {
 
     Matrix_Copy(gGfxMatrix, &D_menu_801CDE20[planetId]);
 
-    Matrix_RotateZ(gGfxMatrix, M_DTOR * -sPlanets[planetId].orbit.tilt, 1);
-    Matrix_RotateX(gGfxMatrix, M_DTOR * 20.0f, 1);
+    Matrix_RotateZ(gGfxMatrix, M_DTOR * -sPlanets[planetId].orbit.tilt, MTXF_APPLY);
+    Matrix_RotateX(gGfxMatrix, M_DTOR * 20.0f, MTXF_APPLY);
 
-    Matrix_Scale(gGfxMatrix, 3.0f, 3.0f, 3.0f, 1);
+    Matrix_Scale(gGfxMatrix, 3.0f, 3.0f, 3.0f, MTXF_APPLY);
 
     Matrix_SetGfxMtx(&gMasterDisp);
 
@@ -4701,7 +4699,7 @@ void Map_801A791C(PlanetId planetId) {
 }
 
 void Map_801A7A84(PlanetId planetId) {
-    RCP_SetupDL(&gMasterDisp, 0x43);
+    RCP_SetupDL(&gMasterDisp, SETUPDL_67);
 
     gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 175, 175, sPlanets[planetId].alpha);
     gDPSetEnvColor(gMasterDisp++, 73, 31, 15, 0);
@@ -4709,9 +4707,9 @@ void Map_801A7A84(PlanetId planetId) {
     Matrix_Push(&gGfxMatrix);
 
     Matrix_Copy(gGfxMatrix, &D_menu_801CDE20[planetId]);
-    Matrix_RotateZ(gGfxMatrix, M_DTOR * -sPlanets[planetId].orbit.tilt, 1);
-    Matrix_RotateX(gGfxMatrix, M_DTOR * 20.0f, 1);
-    Matrix_Scale(gGfxMatrix, 3.0f, 3.0f, 3.0f, 1);
+    Matrix_RotateZ(gGfxMatrix, M_DTOR * -sPlanets[planetId].orbit.tilt, MTXF_APPLY);
+    Matrix_RotateX(gGfxMatrix, M_DTOR * 20.0f, MTXF_APPLY);
+    Matrix_Scale(gGfxMatrix, 3.0f, 3.0f, 3.0f, MTXF_APPLY);
 
     Matrix_SetGfxMtx(&gMasterDisp);
 
@@ -4727,7 +4725,7 @@ void Map_801A7BEC(f32* zAngle, f32 next, f32 scale) {
         alpha = 128;
     }
 
-    RCP_SetupDL(&gMasterDisp, 0x43);
+    RCP_SetupDL(&gMasterDisp, SETUPDL_67);
 
     gDPSetPrimColor(gMasterDisp++, 0, 0, 63, 95, 30, alpha);
     gDPSetEnvColor(gMasterDisp++, 0, 0, 0, 0);
@@ -4735,8 +4733,8 @@ void Map_801A7BEC(f32* zAngle, f32 next, f32 scale) {
     Matrix_Push(&gGfxMatrix);
 
     Matrix_Copy(gGfxMatrix, &D_menu_801CDE20[PLANET_VENOM]);
-    Matrix_RotateZ(gGfxMatrix, M_DTOR * (*zAngle), 1);
-    Matrix_Scale(gGfxMatrix, scale, scale, scale, 1);
+    Matrix_RotateZ(gGfxMatrix, M_DTOR * (*zAngle), MTXF_APPLY);
+    Matrix_Scale(gGfxMatrix, scale, scale, scale, MTXF_APPLY);
 
     Matrix_SetGfxMtx(&gMasterDisp);
 
@@ -4760,16 +4758,16 @@ void Map_801A7D3C(PlanetId planetId) {
 
     Matrix_Push(&gGfxMatrix);
 
-    Matrix_Mult(gGfxMatrix, &D_menu_801CDA60[planetId], 1);
-    Matrix_RotateY(gGfxMatrix, M_DTOR * D_menu_801CEAF8[planetId], 1);
-    Matrix_Translate(gGfxMatrix, D_menu_801AFFB8[planetId], 0.0f, 0.0f, 1);
-    Matrix_RotateY(gGfxMatrix, M_DTOR * -D_menu_801CEAF8[planetId], 1);
+    Matrix_Mult(gGfxMatrix, &D_menu_801CDA60[planetId], MTXF_APPLY);
+    Matrix_RotateY(gGfxMatrix, M_DTOR * D_menu_801CEAF8[planetId], MTXF_APPLY);
+    Matrix_Translate(gGfxMatrix, D_menu_801AFFB8[planetId], 0.0f, 0.0f, MTXF_APPLY);
+    Matrix_RotateY(gGfxMatrix, M_DTOR * -D_menu_801CEAF8[planetId], MTXF_APPLY);
 
     Matrix_SetGfxMtx(&gMasterDisp);
 
     Matrix_Copy(&D_menu_801CE5A0[planetId], gGfxMatrix);
-    Matrix_RotateZ(gGfxMatrix, M_DTOR * D_menu_801CEAB8[planetId], 1);
-    Matrix_Scale(gGfxMatrix, scale, scale, scale, 1);
+    Matrix_RotateZ(gGfxMatrix, M_DTOR * D_menu_801CEAB8[planetId], MTXF_APPLY);
+    Matrix_Scale(gGfxMatrix, scale, scale, scale, MTXF_APPLY);
     Matrix_MultVec3f(gGfxMatrix, &src, &dest);
 
     D_menu_801CEA18[planetId] = dest.z;
@@ -4792,7 +4790,7 @@ void Map_801A7F1C(PlanetId planetId) {
     }
 
     if (alpha != 0) {
-        RCP_SetupDL(&gMasterDisp, 0x43);
+        RCP_SetupDL(&gMasterDisp, SETUPDL_67);
 
         gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, alpha);
         gDPSetEnvColor(gMasterDisp++, 80, 80, 0, 0);
@@ -4833,7 +4831,7 @@ void Map_801A809C(PlanetId planetId) {
     if (D_menu_801CD98C == 1) {
         switch (D_menu_801CD990) {
             case 0:
-                RCP_SetupDL(&gMasterDisp, 0x43);
+                RCP_SetupDL(&gMasterDisp, SETUPDL_67);
 
                 gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, alpha);
                 gDPSetEnvColor(gMasterDisp++, 80, 80, 0, 0);
@@ -4841,7 +4839,7 @@ void Map_801A809C(PlanetId planetId) {
                 Matrix_Push(&gGfxMatrix);
 
                 Matrix_Copy(gGfxMatrix, &D_menu_801CE1E0[planetId]);
-                Matrix_Translate(gGfxMatrix, 0.0f, -30.0f, 0.0f, 1);
+                Matrix_Translate(gGfxMatrix, 0.0f, -30.0f, 0.0f, MTXF_APPLY);
 
                 Matrix_SetGfxMtx(&gMasterDisp);
 
@@ -4864,7 +4862,7 @@ void Map_801A809C(PlanetId planetId) {
 
                 Math_SmoothStepToF(&D_menu_801CD99C, 150.0f, 0.09f, 100.0f, 0.1f);
 
-                RCP_SetupDL(&gMasterDisp, 0x43);
+                RCP_SetupDL(&gMasterDisp, SETUPDL_67);
 
                 gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, D_menu_801CD994);
                 gDPSetEnvColor(gMasterDisp++, 80, 80, 0, 0);
@@ -4873,11 +4871,11 @@ void Map_801A809C(PlanetId planetId) {
                     Matrix_Push(&gGfxMatrix);
 
                     Matrix_Copy(gGfxMatrix, &D_menu_801CE5A0[planetId]);
-                    Matrix_Translate(gGfxMatrix, 0.0f, -30.0f, 0.0f, 1);
-                    Matrix_RotateZ(gGfxMatrix, M_DTOR * (i * -45.0f), 1);
-                    Matrix_Translate(gGfxMatrix, 0.0f, D_menu_801CD99C, 0.0f, 1);
-                    Matrix_RotateZ(gGfxMatrix, M_DTOR * (D_menu_801B6A78), 1);
-                    Matrix_Scale(gGfxMatrix, scale, scale, scale, 1);
+                    Matrix_Translate(gGfxMatrix, 0.0f, -30.0f, 0.0f, MTXF_APPLY);
+                    Matrix_RotateZ(gGfxMatrix, M_DTOR * (i * -45.0f), MTXF_APPLY);
+                    Matrix_Translate(gGfxMatrix, 0.0f, D_menu_801CD99C, 0.0f, MTXF_APPLY);
+                    Matrix_RotateZ(gGfxMatrix, M_DTOR * (D_menu_801B6A78), MTXF_APPLY);
+                    Matrix_Scale(gGfxMatrix, scale, scale, scale, MTXF_APPLY);
 
                     Matrix_SetGfxMtx(&gMasterDisp);
 
@@ -4893,7 +4891,7 @@ void Map_801A809C(PlanetId planetId) {
                     D_menu_801CD994 = 0;
                 }
 
-                RCP_SetupDL(&gMasterDisp, 0x40);
+                RCP_SetupDL(&gMasterDisp, SETUPDL_64);
 
                 gDPSetTextureFilter(gMasterDisp++, G_TF_POINT);
                 gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, D_menu_801CD998);
@@ -4901,8 +4899,8 @@ void Map_801A809C(PlanetId planetId) {
                 Matrix_Push(&gGfxMatrix);
 
                 Matrix_Copy(gGfxMatrix, &D_menu_801CE5A0[planetId]);
-                Matrix_Translate(gGfxMatrix, 0.0f, -30.0f, 0.0f, 1);
-                Matrix_Scale(gGfxMatrix, 3.0f, 3.0f, 3.0f, 1);
+                Matrix_Translate(gGfxMatrix, 0.0f, -30.0f, 0.0f, MTXF_APPLY);
+                Matrix_Scale(gGfxMatrix, 3.0f, 3.0f, 3.0f, MTXF_APPLY);
 
                 Matrix_SetGfxMtx(&gMasterDisp);
 
@@ -4915,7 +4913,7 @@ void Map_801A809C(PlanetId planetId) {
                 D_menu_801CD998 += 8;
 
                 if (D_menu_801CD998 == 8) {
-                    AUDIO_PLAY_SFX(0x49008030U, gDefaultSfxSource, 4U);
+                    AUDIO_PLAY_SFX(NA_SE_GET_EMBLEM, gDefaultSfxSource, 4);
                 }
 
                 if (D_menu_801CD998 >= 255) {
@@ -4931,7 +4929,7 @@ void Map_801A809C(PlanetId planetId) {
                 break;
         }
     } else {
-        RCP_SetupDL(&gMasterDisp, 0x40);
+        RCP_SetupDL(&gMasterDisp, SETUPDL_64);
 
         gDPSetTextureFilter(gMasterDisp++, G_TF_POINT);
         gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, alpha);
@@ -4939,8 +4937,8 @@ void Map_801A809C(PlanetId planetId) {
         Matrix_Push(&gGfxMatrix);
 
         Matrix_Copy(gGfxMatrix, &D_menu_801CE5A0[planetId]);
-        Matrix_Translate(gGfxMatrix, 0.0f, -30.0f, 0.0f, 1);
-        Matrix_Scale(gGfxMatrix, 3.0f, 3.0f, 3.0f, 1);
+        Matrix_Translate(gGfxMatrix, 0.0f, -30.0f, 0.0f, MTXF_APPLY);
+        Matrix_Scale(gGfxMatrix, 3.0f, 3.0f, 3.0f, MTXF_APPLY);
 
         Matrix_SetGfxMtx(&gMasterDisp);
 
@@ -4954,7 +4952,7 @@ void Map_801A809C(PlanetId planetId) {
 
 void Map_801A8738(void) {
     if (D_menu_801CEB34 >= 0) {
-        RCP_SetupDL(&gMasterDisp, 0x43);
+        RCP_SetupDL(&gMasterDisp, SETUPDL_67);
 
         gDPSetEnvColor(gMasterDisp++, 255, 0, 0, 0);
 
@@ -4995,9 +4993,9 @@ void Map_801A8738(void) {
         Matrix_Push(&gGfxMatrix);
 
         Matrix_Copy(gGfxMatrix, &D_menu_801CDE20[PLANET_CORNERIA]);
-        Matrix_RotateZ(gGfxMatrix, M_DTOR * -50.0f, 1);
-        Matrix_Translate(gGfxMatrix, 0.0f, 25.0f, 0.0f, 1);
-        Matrix_Scale(gGfxMatrix, D_menu_801CEB3C, D_menu_801CEB3C, D_menu_801CEB3C, 1);
+        Matrix_RotateZ(gGfxMatrix, M_DTOR * -50.0f, MTXF_APPLY);
+        Matrix_Translate(gGfxMatrix, 0.0f, 25.0f, 0.0f, MTXF_APPLY);
+        Matrix_Scale(gGfxMatrix, D_menu_801CEB3C, D_menu_801CEB3C, D_menu_801CEB3C, MTXF_APPLY);
 
         Matrix_SetGfxMtx(&gMasterDisp);
 
@@ -5025,7 +5023,7 @@ void Map_801A89BC(PlanetId planetId, s32 arg1) {
         temp2 = 5;
     }
 
-    RCP_SetupDL(&gMasterDisp, 0x43);
+    RCP_SetupDL(&gMasterDisp, SETUPDL_67);
 
     gDPSetEnvColor(gMasterDisp++, 255, 0, 0, 0);
 
@@ -5079,10 +5077,11 @@ void Map_801A89BC(PlanetId planetId, s32 arg1) {
 
         Matrix_Push(&gGfxMatrix);
 
-        Matrix_Mult(gGfxMatrix, &D_menu_801CDA60[planetId], 1);
-        Matrix_RotateZ(gGfxMatrix, M_DTOR * D_menu_801CEDB0[arg1][i], 1);
-        Matrix_Translate(gGfxMatrix, 0.0f, D_menu_801CED38[arg1][i], 0.0f, 1);
-        Matrix_Scale(gGfxMatrix, D_menu_801CEC48[arg1][i], D_menu_801CEC48[arg1][i], D_menu_801CEC48[arg1][i], 1);
+        Matrix_Mult(gGfxMatrix, &D_menu_801CDA60[planetId], MTXF_APPLY);
+        Matrix_RotateZ(gGfxMatrix, M_DTOR * D_menu_801CEDB0[arg1][i], MTXF_APPLY);
+        Matrix_Translate(gGfxMatrix, 0.0f, D_menu_801CED38[arg1][i], 0.0f, MTXF_APPLY);
+        Matrix_Scale(gGfxMatrix, D_menu_801CEC48[arg1][i], D_menu_801CEC48[arg1][i], D_menu_801CEC48[arg1][i],
+                     MTXF_APPLY);
 
         Matrix_SetGfxMtx(&gMasterDisp);
 
@@ -5099,7 +5098,7 @@ void Map_801A8F40(void) {
     if (D_menu_801CD97C != 0) {
         Lights_SetOneLight(&gMasterDisp, 0, 0, 127, 80, 80, 60, 50, 50, 50);
 
-        RCP_SetupDL(&gMasterDisp, 0x17);
+        RCP_SetupDL(&gMasterDisp, SETUPDL_23);
 
         temp = Math_SmoothStepToF(&D_menu_801CEAA8, D_menu_801CEAB0, 0.1f, 100.0f, 1.0f);
 
@@ -5111,10 +5110,10 @@ void Map_801A8F40(void) {
 
         Matrix_Push(&gGfxMatrix);
 
-        Matrix_Mult(gGfxMatrix, &D_menu_801CDA60[sCurrentPlanetId], 1);
-        Matrix_Translate(gGfxMatrix, 0.0f, D_menu_801CEAA8, 0.0f, 1);
-        Matrix_RotateY(gGfxMatrix, M_DTOR * D_menu_801B6A7C, 1);
-        Matrix_Scale(gGfxMatrix, 3.0f, 3.0f, 3.0f, 1);
+        Matrix_Mult(gGfxMatrix, &D_menu_801CDA60[sCurrentPlanetId], MTXF_APPLY);
+        Matrix_Translate(gGfxMatrix, 0.0f, D_menu_801CEAA8, 0.0f, MTXF_APPLY);
+        Matrix_RotateY(gGfxMatrix, M_DTOR * D_menu_801B6A7C, MTXF_APPLY);
+        Matrix_Scale(gGfxMatrix, 3.0f, 3.0f, 3.0f, MTXF_APPLY);
 
         Matrix_SetGfxMtx(&gMasterDisp);
 
@@ -5172,25 +5171,25 @@ void Map_801A9224(void) {
             mask = 0xFFFFFFFF;
         }
 
-        if ((D_menu_801CD944 == 3) || ((sCurrentPlanetId == 0) && (D_menu_801CD944 != 7))) {
-            RCP_SetupDL(&gMasterDisp, 0x35);
+        if ((D_menu_801CD944 == 3) || ((sCurrentPlanetId == PLANET_METEO) && (D_menu_801CD944 != 7))) {
+            RCP_SetupDL(&gMasterDisp, SETUPDL_53);
         } else {
-            RCP_SetupDL(&gMasterDisp, 0x40);
+            RCP_SetupDL(&gMasterDisp, SETUPDL_64);
             gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, sPlanets[PLANET_METEO].alpha);
         }
 
-        if (gGameFrameCount & mask) {
+        if ((gGameFrameCount & mask) != 0) {
             for (i = 0; i < 42; i++) {
                 Matrix_Push(&gGfxMatrix);
 
-                Matrix_RotateY(gGfxMatrix, M_DTOR * D_menu_801AFA38[i].angle, 1);
-                Matrix_Translate(gGfxMatrix, D_menu_801AFA38[i].x, D_menu_801AFA38[i].y, 0.0f, 1);
-                Matrix_RotateY(gGfxMatrix, M_DTOR * -D_menu_801AFA38[i].angle, 1);
+                Matrix_RotateY(gGfxMatrix, M_DTOR * D_menu_801AFA38[i].angle, MTXF_APPLY);
+                Matrix_Translate(gGfxMatrix, D_menu_801AFA38[i].x, D_menu_801AFA38[i].y, 0.0f, MTXF_APPLY);
+                Matrix_RotateY(gGfxMatrix, M_DTOR * -D_menu_801AFA38[i].angle, MTXF_APPLY);
 
                 Map_801AD048();
 
                 Matrix_Scale(gGfxMatrix, D_menu_801AFA38[i].scale, D_menu_801AFA38[i].scale, D_menu_801AFA38[i].scale,
-                             1);
+                             MTXF_APPLY);
 
                 Matrix_SetGfxMtx(&gMasterDisp);
 
@@ -5225,9 +5224,9 @@ void Map_801A9448(void) {
     }
 
     if ((D_menu_801CD944 == 3) || (sCurrentPlanetId == PLANET_AREA_6)) {
-        RCP_SetupDL(&gMasterDisp, 0x17);
+        RCP_SetupDL(&gMasterDisp, SETUPDL_23);
     } else {
-        RCP_SetupDL(&gMasterDisp, 0x2E);
+        RCP_SetupDL(&gMasterDisp, SETUPDL_46);
         gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, sPlanets[PLANET_AREA_6].alpha);
     }
 
@@ -5235,18 +5234,19 @@ void Map_801A9448(void) {
     dest.y = 0.0f;
     dest.z = 0.0f;
 
-    if (gGameFrameCount & mask) {
+    if ((gGameFrameCount & mask) != 0) {
         for (i = 0; i < 4; i++) {
             Matrix_Push(&gGfxMatrix);
 
-            Matrix_RotateY(gGfxMatrix, M_DTOR * D_menu_801AFCD8[i].angle, 1);
-            Matrix_Translate(gGfxMatrix, D_menu_801AFCD8[i].x, D_menu_801AFCD8[i].y, 0.0f, 1);
-            Matrix_RotateY(gGfxMatrix, M_DTOR * -(D_menu_801AFCD8[i].angle), 1);
+            Matrix_RotateY(gGfxMatrix, M_DTOR * D_menu_801AFCD8[i].angle, MTXF_APPLY);
+            Matrix_Translate(gGfxMatrix, D_menu_801AFCD8[i].x, D_menu_801AFCD8[i].y, 0.0f, MTXF_APPLY);
+            Matrix_RotateY(gGfxMatrix, M_DTOR * -(D_menu_801AFCD8[i].angle), MTXF_APPLY);
 
             Map_801AD048();
 
-            Matrix_RotateY(gGfxMatrix, M_DTOR * D_menu_801B6A80, 1);
-            Matrix_Scale(gGfxMatrix, D_menu_801AFCD8[i].scale, D_menu_801AFCD8[i].scale, D_menu_801AFCD8[i].scale, 1);
+            Matrix_RotateY(gGfxMatrix, M_DTOR * D_menu_801B6A80, MTXF_APPLY);
+            Matrix_Scale(gGfxMatrix, D_menu_801AFCD8[i].scale, D_menu_801AFCD8[i].scale, D_menu_801AFCD8[i].scale,
+                         MTXF_APPLY);
 
             Matrix_SetGfxMtx(&gMasterDisp);
 
@@ -5263,8 +5263,8 @@ void Map_801A9448(void) {
             dest.y = 0.0f;
             dest.z = 100.0f;
 
-            Matrix_RotateY(gCalcMatrix, M_DTOR * (-D_menu_801CDA10 - y1), 0);
-            Matrix_RotateX(gCalcMatrix, M_DTOR * (-D_menu_801CDA0C - x1), 1);
+            Matrix_RotateY(gCalcMatrix, M_DTOR * (-D_menu_801CDA10 - y1), MTXF_NEW);
+            Matrix_RotateX(gCalcMatrix, M_DTOR * (-D_menu_801CDA0C - x1), MTXF_APPLY);
 
             Matrix_MultVec3f(gCalcMatrix, &dest, &src);
             Lights_SetOneLight(&gMasterDisp, src.x, src.y, src.z, 80, 80, 60, 0, 0, 0);
@@ -5280,10 +5280,10 @@ void Map_801A9814(void) {
     if (D_menu_801B8280 != 0) {
         Matrix_Push(&gGfxMatrix);
         Matrix_LookAt(gGfxMatrix, D_menu_801CD9F4, D_menu_801CD9F8, D_menu_801CD9FC, D_menu_801CDA00, D_menu_801CDA04,
-                      D_menu_801CDA08, D_menu_801CDA20, D_menu_801CDA24, D_menu_801CDA28, 1);
-        Matrix_Translate(gGfxMatrix, D_menu_801CEA58, D_menu_801CEA5C, D_menu_801CEA60, 1);
+                      D_menu_801CDA08, D_menu_801CDA20, D_menu_801CDA24, D_menu_801CDA28, MTXF_APPLY);
+        Matrix_Translate(gGfxMatrix, D_menu_801CEA58, D_menu_801CEA5C, D_menu_801CEA60, MTXF_APPLY);
         Matrix_SetGfxMtx(&gMasterDisp);
-        func_fade_80084688(2, D_menu_801B8284);
+        Wipe_Draw(WIPE_VERTICAL, D_menu_801B8284);
         Matrix_Pop(&gGfxMatrix);
     }
 }
@@ -5293,7 +5293,7 @@ void Map_801A9910(void) {
     s32 i;
     s32 var_s0 = D_menu_801B6A84[sCurrentPlanetId];
 
-    RCP_SetupDL(&gMasterDisp, 0x53);
+    RCP_SetupDL(&gMasterDisp, SETUPDL_83);
 
     gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, (s32) D_menu_801CEA6C);
 
@@ -5308,93 +5308,91 @@ void Map_801A9910(void) {
 void Map_801A9A8C(void) {
     s32 i;
     s32 sp58;
-    u8* sp54;
+    u8* missionNoTex;
     static f32 D_menu_801B6AC0[2] = { 91.0f, 207.0f };
     static f32 D_menu_801B6AC8[2] = { 61.0f, 61.0f };
 
     switch (gCurrentLevel) {
         case LEVEL_CORNERIA:
-            sp54 = D_500A050;
+            missionNoTex = aLargeText_1;
             sp58 = 0;
             break;
 
         case LEVEL_METEO:
-            sp54 = D_500A140;
+            missionNoTex = aLargeText_2;
             sp58 = 1;
             break;
 
         case LEVEL_SECTOR_Y:
-            sp54 = D_500A140;
+            missionNoTex = aLargeText_2;
             sp58 = 2;
             break;
 
         case LEVEL_FORTUNA:
-            sp54 = D_500A230;
+            missionNoTex = aLargeText_3;
             sp58 = 3;
             break;
 
         case LEVEL_KATINA:
-            sp54 = D_500A230;
+            missionNoTex = aLargeText_3;
             sp58 = 4;
             break;
 
         case LEVEL_AQUAS:
-            sp54 = D_500A230;
+            missionNoTex = aLargeText_3;
             sp58 = 5;
             break;
 
         case LEVEL_SECTOR_X:
-            sp54 = D_500A320;
+            missionNoTex = aLargeText_4;
             sp58 = 6;
             break;
 
         case LEVEL_SOLAR:
-            sp54 = D_500A320;
+            missionNoTex = aLargeText_4;
             sp58 = 7;
             break;
 
         case LEVEL_ZONESS:
-            sp54 = D_500A320;
+            missionNoTex = aLargeText_4;
             sp58 = 8;
             break;
 
         case LEVEL_TITANIA:
-            sp54 = D_500A410;
+            missionNoTex = aLargeText_5;
             sp58 = 9;
             break;
 
         case LEVEL_MACBETH:
-            sp54 = D_500A410;
+            missionNoTex = aLargeText_5;
             sp58 = 10;
             break;
 
         case LEVEL_SECTOR_Z:
-            sp54 = D_500A410;
+            missionNoTex = aLargeText_5;
             sp58 = 11;
             break;
 
         case LEVEL_BOLSE:
-            sp54 = D_500A500;
+            missionNoTex = aLargeText_6;
             sp58 = 12;
             break;
 
         case LEVEL_AREA_6:
-            sp54 = D_500A500;
+            missionNoTex = aLargeText_6;
             sp58 = 13;
             break;
     }
 
-    RCP_SetupDL(&gMasterDisp, 0x53);
+    RCP_SetupDL(&gMasterDisp, SETUPDL_83);
     gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, 255);
 
-    if (CVarGetInteger("gLevelSelector", 0) && gCurrentPlanet == 6) {
+    if (CVarGetInteger("gLevelSelector", 0) && gMissionNumber == 6) {
         return;
     }
 
-    TextureRect_8bIA(&gMasterDisp, D_5000500, 112, 19, D_menu_801B6AC0[0], D_menu_801B6AC8[0], 1.0f, 1.0f);
-    TextureRect_8bIA(&gMasterDisp, sp54, 16, 15, D_menu_801B6AC0[1], D_menu_801B6AC8[1], 1.0f, 1.0f);
-
-    for (i = 0; i < D_menu_801AF834[sp58].height; i++) {}
+    TextureRect_8bIA(&gMasterDisp, aTextMissionNo, 112, 19, D_menu_801B6AC0[0], D_menu_801B6AC8[0], 1.0f, 1.0f);
+    TextureRect_8bIA(&gMasterDisp, missionNoTex, 16, 15, D_menu_801B6AC0[1], D_menu_801B6AC8[1], 1.0f, 1.0f);
 
     TextureRect_8bIA(&gMasterDisp, D_menu_801AF834[sp58].texture, D_menu_801AF834[sp58].width,
                      D_menu_801AF834[sp58].height, D_menu_801AF834[sp58].xPos, 94.0f, 1.0f, 1.0f);
@@ -5417,11 +5415,11 @@ void Map_801A9DE8(void) {
         D_menu_801CF00C--;
     }
 
-    if (gGameFrameCount & mask) {
+    if ((gGameFrameCount & mask) != 0) {
         Map_801AD7EC(254, 16, gLifeCount[gPlayerNum]);
     }
 
-    if ((D_game_80161A34 == 7) || (D_game_80161A34 == 5)) {
+    if ((gLastGameState == GSTATE_PLAY) || (gLastGameState == GSTATE_GAME_OVER)) {
         if (D_menu_801CD83C < gTotalHits) {
             D_menu_801CD83C = gTotalHits;
         }
@@ -5431,7 +5429,7 @@ void Map_801A9DE8(void) {
 }
 
 void Map_801A9EE4(void) {
-    RCP_SetupDL(&gMasterDisp, 0x53);
+    RCP_SetupDL(&gMasterDisp, SETUPDL_83);
 
     gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 0, 255);
 
@@ -5449,36 +5447,36 @@ void Map_801A9FD4(s32 arg0) {
     f32 temp = 16.0f;
 
     if (arg0) {
-        var_s3 = gCurrentPlanet;
+        var_s3 = gMissionNumber;
     } else {
-        if ((D_game_80161A34 == 7) || (D_game_80161A34 == 8)) {
-            var_s3 = gCurrentPlanet;
+        if ((gLastGameState == GSTATE_PLAY) || (gLastGameState == GSTATE_ENDING)) {
+            var_s3 = gMissionNumber;
         }
-        if (D_game_80161A34 == 5) {
+        if (gLastGameState == GSTATE_GAME_OVER) {
             var_s3 = D_menu_801CD9AC;
         }
     }
 
     Map_801AA1CC(var_s3);
 
-    if ((D_game_80161A34 == 7) || (D_game_80161A34 == 8)) {
+    if ((gLastGameState == GSTATE_PLAY) || (gLastGameState == GSTATE_ENDING)) {
         var_s3 = 7;
     }
 
-    if (D_game_80161A34 == 5) {
+    if (gLastGameState == GSTATE_GAME_OVER) {
         var_s3++;
     }
 
     Matrix_Push(&gGfxMatrix);
 
-    Matrix_LookAt(gGfxMatrix, 0.0f, 0.0f, 100.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1);
+    Matrix_LookAt(gGfxMatrix, 0.0f, 0.0f, 100.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, MTXF_APPLY);
 
     Matrix_SetGfxMtx(&gMasterDisp);
 
     for (var_fs0 = 0.0f, var_fs1 = -41.5f, i = 0; i < var_s3; i++, var_fs0 += 24.0f + temp, var_fs1 += 13.8f) {
-        if (D_ctx_80177B90[i] != PLANET_NONE) {
-            Map_801AA434(i, 28.0f + var_fs0, 182.0f, D_ctx_80177B90[i]);
-            Map_801AA778(i, var_fs1, -25.4f, D_ctx_80177B90[i]);
+        if (gMissionPlanet[i] != PLANET_NONE) {
+            Map_801AA434(i, 28.0f + var_fs0, 182.0f, gMissionPlanet[i]);
+            Map_801AA778(i, var_fs1, -25.4f, gMissionPlanet[i]);
         }
     }
 
@@ -5494,15 +5492,15 @@ void Map_801AA1CC(s32 arg0) {
     s32 temp;
     f32 y = 182.0f;
     f32 x2 = 16.0f;
-    PlanetId* ptr = &D_ctx_80177B90[0];
+    PlanetId* ptr = &gMissionPlanet[0];
 
     for (x = 0.0f, i = 0; i < 7; i++, x += 24.0f + x2, ptr++) {
-        RCP_SetupDL(&gMasterDisp, 0x53);
+        RCP_SetupDL(&gMasterDisp, SETUPDL_83);
 
         if (i < 6) {
             r = g = b = 255;
             if (i < arg0) {
-                temp = Map_801A655C(*ptr, *(ptr + 1));
+                temp = Map_GetPathId(*ptr, *(ptr + 1));
                 switch (sPaths[temp].type) {
                     case 0:
                         r = 16;
@@ -5526,10 +5524,10 @@ void Map_801AA1CC(s32 arg0) {
             } else {
                 gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, 255);
             }
-            TextureRect_16bRGBA(&gMasterDisp, D_MAP_60447A0, 8, 8, 28.0f + x + 24.0f, y + 11.0f, 2.0f, 0.2f);
+            TextureRect_RGBA16(&gMasterDisp, D_MAP_60447A0, 8, 8, 28.0f + x + 24.0f, y + 11.0f, 2.0f, 0.2f);
         }
         gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, 255);
-        TextureRect_16bRGBA(&gMasterDisp, D_MAP_6047550, 24, 24, 28.0f + x, y, 1.0f, 1.0f);
+        TextureRect_RGBA16(&gMasterDisp, D_MAP_6047550, 24, 24, 28.0f + x, y, 1.0f, 1.0f);
     }
 }
 
@@ -5544,28 +5542,28 @@ void Map_801AA434(s32 arg0, f32 x, f32 y, s32 idx) {
     static s32 D_menu_801B6AE8[] = { 30, 179, 30 };
     static s32 D_menu_801B6AF4[] = { 0, 67, 255 };
 
-    RCP_SetupDL(&gMasterDisp, 0x53);
+    RCP_SetupDL(&gMasterDisp, SETUPDL_83);
     gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 0, 255);
 
     Graphics_DisplaySmallText(x + 12.0f - Graphics_GetSmallTextWidth(sPlanetNames[idx]) * 0.5f, y - 8.0f, 1.0f, 1.0f,
                               sPlanetNames[idx]);
 
-    Graphics_DisplaySmallNumber(x + 15.0f - ((func_hud_8008BCBC(D_ctx_80177B70[arg0]) - 1) * 8), y + 24.0f + 1.0f,
-                                D_ctx_80177B70[arg0]);
+    Graphics_DisplaySmallNumber(x + 15.0f - ((func_hud_8008BCBC(gMissionHitCount[arg0]) - 1) * 8), y + 24.0f + 1.0f,
+                                gMissionHitCount[arg0]);
 
-    if (D_game_80161A34 == 7) {
-        temp = gCurrentPlanet;
+    if (gLastGameState == GSTATE_PLAY) {
+        temp = gMissionNumber;
     }
-    if ((D_game_80161A34 == 5) || (D_game_80161A34 == 8)) {
-        temp = gCurrentPlanet + 1;
+    if ((gLastGameState == GSTATE_GAME_OVER) || (gLastGameState == GSTATE_ENDING)) {
+        temp = gMissionNumber + 1;
     }
 
     if (arg0 < temp) {
         mask = 0x00FF0000;
         x2 = 0.0f;
         for (i = 0; i < 3; i++, x2 += 9.0f) {
-            if ((D_ctx_80177B50[arg0] & mask)) {
-                RCP_SetupDL(&gMasterDisp, 0x53);
+            if ((gMissionTeamStatus[arg0] & mask)) {
+                RCP_SetupDL(&gMasterDisp, SETUPDL_83);
                 gDPSetPrimColor(gMasterDisp++, 0, 0, D_menu_801B6ADC[i], D_menu_801B6AE8[i], D_menu_801B6AF4[i], 255);
                 Graphics_DisplaySmallText((s32) x + x2 - 1.0f, (s32) y + 24.0f + 8.0f + 2.0f, 1.0f, 1.0f,
                                           D_menu_801B6AD0[i]);
@@ -5584,16 +5582,16 @@ void Map_801AA778(s32 arg0, f32 x, f32 y, PlanetId planetId) {
 
     switch (planetId) {
         case PLANET_SOLAR:
-            if (gGameFrameCount & mask) {
-                RCP_SetupDL(&gMasterDisp, 0x43);
+            if ((gGameFrameCount & mask) != 0) {
+                RCP_SetupDL(&gMasterDisp, SETUPDL_67);
 
                 gDPSetPrimColor(gMasterDisp++, 0, 0, 240, 0, 0, 255);
                 gDPSetEnvColor(gMasterDisp++, 31, 0, 0, 0);
 
                 Matrix_Push(&gGfxMatrix);
-                Matrix_Translate(gGfxMatrix, x, y, 0.0f, 1);
-                Matrix_RotateZ(gGfxMatrix, M_DTOR * (sPlanets[planetId].orbit.tilt), 1);
-                Matrix_Scale(gGfxMatrix, 0.11f, 0.11f, 0.11f, 1);
+                Matrix_Translate(gGfxMatrix, x, y, 0.0f, MTXF_APPLY);
+                Matrix_RotateZ(gGfxMatrix, M_DTOR * (sPlanets[planetId].orbit.tilt), MTXF_APPLY);
+                Matrix_Scale(gGfxMatrix, 0.11f, 0.11f, 0.11f, MTXF_APPLY);
                 Matrix_SetGfxMtx(&gMasterDisp);
 
                 gSPDisplayList(gMasterDisp++, D_menu_801B68F8[sPlanets[planetId].id]);
@@ -5601,7 +5599,7 @@ void Map_801AA778(s32 arg0, f32 x, f32 y, PlanetId planetId) {
                 gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, 128);
                 gDPSetEnvColor(gMasterDisp++, 31, 0, 0, 0);
 
-                Matrix_Scale(gGfxMatrix, 0.8f, 0.8f, 0.8f, 1);
+                Matrix_Scale(gGfxMatrix, 0.8f, 0.8f, 0.8f, MTXF_APPLY);
                 Matrix_SetGfxMtx(&gMasterDisp);
 
                 gSPDisplayList(gMasterDisp++, D_menu_801B68F8[sPlanets[planetId].id]);
@@ -5611,22 +5609,22 @@ void Map_801AA778(s32 arg0, f32 x, f32 y, PlanetId planetId) {
             break;
 
         case PLANET_METEO:
-            if (gGameFrameCount & mask) {
-                RCP_SetupDL(&gMasterDisp, 0x3E);
+            if ((gGameFrameCount & mask) != 0) {
+                RCP_SetupDL(&gMasterDisp, SETUPDL_62);
 
                 gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, 255);
 
                 Matrix_Push(&gGfxMatrix);
 
-                Matrix_Translate(gGfxMatrix, x - 0.4f, y + 0.9f, 0.0f, 1);
-                Matrix_RotateZ(gGfxMatrix, M_DTOR * sPlanets[planetId].orbit.tilt, 1);
-                Matrix_Scale(gGfxMatrix, 0.1f, 0.1f, 0.1f, 1);
+                Matrix_Translate(gGfxMatrix, x - 0.4f, y + 0.9f, 0.0f, MTXF_APPLY);
+                Matrix_RotateZ(gGfxMatrix, M_DTOR * sPlanets[planetId].orbit.tilt, MTXF_APPLY);
+                Matrix_Scale(gGfxMatrix, 0.1f, 0.1f, 0.1f, MTXF_APPLY);
 
                 Matrix_SetGfxMtx(&gMasterDisp);
 
                 gSPDisplayList(gMasterDisp++, D_menu_801B68F8[sPlanets[planetId].id]);
 
-                Matrix_Translate(gGfxMatrix, 18.0f, -20.0f, 0.0f, 1);
+                Matrix_Translate(gGfxMatrix, 18.0f, -20.0f, 0.0f, MTXF_APPLY);
 
                 Matrix_SetGfxMtx(&gMasterDisp);
 
@@ -5638,16 +5636,16 @@ void Map_801AA778(s32 arg0, f32 x, f32 y, PlanetId planetId) {
         case PLANET_SECTOR_X:
         case PLANET_SECTOR_Y:
         case PLANET_SECTOR_Z:
-            if (gGameFrameCount & mask) {
-                RCP_SetupDL(&gMasterDisp, 0x3E);
+            if ((gGameFrameCount & mask) != 0) {
+                RCP_SetupDL(&gMasterDisp, SETUPDL_62);
 
                 gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, 144);
 
                 Matrix_Push(&gGfxMatrix);
 
-                Matrix_Translate(gGfxMatrix, x, y, 0.0f, 1);
-                Matrix_RotateZ(gGfxMatrix, M_DTOR * sPlanets[planetId].orbit.tilt, 1);
-                Matrix_Scale(gGfxMatrix, 0.09f, 0.09f, 0.09f, 1);
+                Matrix_Translate(gGfxMatrix, x, y, 0.0f, MTXF_APPLY);
+                Matrix_RotateZ(gGfxMatrix, M_DTOR * sPlanets[planetId].orbit.tilt, MTXF_APPLY);
+                Matrix_Scale(gGfxMatrix, 0.09f, 0.09f, 0.09f, MTXF_APPLY);
 
                 Matrix_SetGfxMtx(&gMasterDisp);
 
@@ -5658,18 +5656,18 @@ void Map_801AA778(s32 arg0, f32 x, f32 y, PlanetId planetId) {
             break;
 
         case PLANET_BOLSE:
-            if (gGameFrameCount & mask) {
-                RCP_SetupDL(&gMasterDisp, 0x17);
+            if ((gGameFrameCount & mask) != 0) {
+                RCP_SetupDL(&gMasterDisp, SETUPDL_23);
 
                 Lights_SetOneLight(&gMasterDisp, 0, 0, 100, 50, 50, 40, 100, 100, 100);
 
                 Matrix_Push(&gGfxMatrix);
 
-                Matrix_Translate(gGfxMatrix, x, y, 0.0f, 1);
-                Matrix_RotateX(gGfxMatrix, M_DTOR * 20.0f, 1);
-                Matrix_RotateY(gGfxMatrix, M_DTOR * D_menu_801AFFF4, 1);
-                Matrix_RotateZ(gGfxMatrix, M_DTOR * sPlanets[planetId].orbit.tilt, 1);
-                Matrix_Scale(gGfxMatrix, 0.004f, 0.004f, 0.004f, 1);
+                Matrix_Translate(gGfxMatrix, x, y, 0.0f, MTXF_APPLY);
+                Matrix_RotateX(gGfxMatrix, M_DTOR * 20.0f, MTXF_APPLY);
+                Matrix_RotateY(gGfxMatrix, M_DTOR * D_menu_801AFFF4, MTXF_APPLY);
+                Matrix_RotateZ(gGfxMatrix, M_DTOR * sPlanets[planetId].orbit.tilt, MTXF_APPLY);
+                Matrix_Scale(gGfxMatrix, 0.004f, 0.004f, 0.004f, MTXF_APPLY);
 
                 Matrix_SetGfxMtx(&gMasterDisp);
 
@@ -5680,18 +5678,18 @@ void Map_801AA778(s32 arg0, f32 x, f32 y, PlanetId planetId) {
             break;
 
         case PLANET_AREA_6:
-            if (gGameFrameCount & mask) {
-                RCP_SetupDL(&gMasterDisp, 0x17);
+            if ((gGameFrameCount & mask) != 0) {
+                RCP_SetupDL(&gMasterDisp, SETUPDL_23);
 
                 Lights_SetOneLight(&gMasterDisp, 0, 0, 100, 50, 50, 40, 100, 100, 100);
 
                 Matrix_Push(&gGfxMatrix);
 
-                Matrix_Translate(gGfxMatrix, x, y, 0.0f, 1);
-                Matrix_RotateX(gGfxMatrix, M_DTOR * 20.0f, 1);
-                Matrix_RotateY(gGfxMatrix, M_DTOR * D_menu_801AFFFC, 1);
-                Matrix_RotateZ(gGfxMatrix, M_DTOR * sPlanets[planetId].orbit.tilt, 1);
-                Matrix_Scale(gGfxMatrix, 0.003f, 0.003f, 0.003f, 1);
+                Matrix_Translate(gGfxMatrix, x, y, 0.0f, MTXF_APPLY);
+                Matrix_RotateX(gGfxMatrix, M_DTOR * 20.0f, MTXF_APPLY);
+                Matrix_RotateY(gGfxMatrix, M_DTOR * D_menu_801AFFFC, MTXF_APPLY);
+                Matrix_RotateZ(gGfxMatrix, M_DTOR * sPlanets[planetId].orbit.tilt, MTXF_APPLY);
+                Matrix_Scale(gGfxMatrix, 0.003f, 0.003f, 0.003f, MTXF_APPLY);
 
                 Matrix_SetGfxMtx(&gMasterDisp);
 
@@ -5702,16 +5700,16 @@ void Map_801AA778(s32 arg0, f32 x, f32 y, PlanetId planetId) {
             break;
 
         default:
-            if (gGameFrameCount & mask) {
-                RCP_SetupDL(&gMasterDisp, 0x3E);
+            if ((gGameFrameCount & mask) != 0) {
+                RCP_SetupDL(&gMasterDisp, SETUPDL_62);
 
                 gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, 255);
 
                 Matrix_Push(&gGfxMatrix);
 
-                Matrix_Translate(gGfxMatrix, x, y, 0.0f, 1);
-                Matrix_RotateZ(gGfxMatrix, M_DTOR * sPlanets[planetId].orbit.tilt, 1);
-                Matrix_Scale(gGfxMatrix, 0.1f, 0.1f, 0.1f, 1);
+                Matrix_Translate(gGfxMatrix, x, y, 0.0f, MTXF_APPLY);
+                Matrix_RotateZ(gGfxMatrix, M_DTOR * sPlanets[planetId].orbit.tilt, MTXF_APPLY);
+                Matrix_Scale(gGfxMatrix, 0.1f, 0.1f, 0.1f, MTXF_APPLY);
 
                 Matrix_SetGfxMtx(&gMasterDisp);
 
@@ -5727,7 +5725,7 @@ void Map_801AA778(s32 arg0, f32 x, f32 y, PlanetId planetId) {
                         }
                         gSPDisplayList(gMasterDisp++, D_menu_801B4A40);
                     }
-                    Matrix_Scale(gGfxMatrix, 1.6f, 1.6f, 1.6f, 1);
+                    Matrix_Scale(gGfxMatrix, 1.6f, 1.6f, 1.6f, MTXF_APPLY);
                     Matrix_SetGfxMtx(&gMasterDisp);
                     gSPDisplayList(gMasterDisp++, D_MAP_605C230);
                 }
@@ -5736,7 +5734,7 @@ void Map_801AA778(s32 arg0, f32 x, f32 y, PlanetId planetId) {
             break;
     }
 
-    if (D_ctx_80177BB0[arg0] != 0) {
+    if (gMissionMedal[arg0] != 0) {
         Map_801AB17C(x, y, 0.0f);
     }
 }
@@ -5746,13 +5744,13 @@ void Map_801AB17C(f32 x, f32 y, f32 z) {
     static f32 xPos = 4.4f;
     static f32 yPos = 1.0f;
 
-    RCP_SetupDL(&gMasterDisp, 0x35);
+    RCP_SetupDL(&gMasterDisp, SETUPDL_53);
     gDPSetTextureFilter(gMasterDisp++, G_TF_POINT);
 
     Matrix_Push(&gGfxMatrix);
 
-    Matrix_Translate(gGfxMatrix, x - xPos, y + yPos, z, 1);
-    Matrix_Scale(gGfxMatrix, scale, scale, scale, 1);
+    Matrix_Translate(gGfxMatrix, x - xPos, y + yPos, z, MTXF_APPLY);
+    Matrix_Scale(gGfxMatrix, scale, scale, scale, MTXF_APPLY);
     Matrix_SetGfxMtx(&gMasterDisp);
 
     gSPDisplayList(gMasterDisp++, D_MAP_601D1F0);
@@ -5762,19 +5760,19 @@ void Map_801AB17C(f32 x, f32 y, f32 z) {
 
 void Map_801AB284(void) {
     D_menu_801CD940 = 0;
-    D_ctx_80178308 = D_menu_801AF428[sCurrentPlanetId][D_menu_801CD940];
-    D_ctx_80177D68 = D_menu_801AF420[D_menu_801CD940];
+    gRadioMsg = D_menu_801AF428[sCurrentPlanetId][D_menu_801CD940];
+    gRadioMsgRadioId = D_menu_801AF420[D_menu_801CD940];
     D_menu_801CF018 = 100;
-    D_radio_80178728 = 78;
-    D_radio_8017872C = 166;
+    gRadioPrintPosX = 78;
+    gRadioPrintPosY = 166;
 }
 
 void Map_801AB300(void) {
-    if (D_Timer_801782AC > 0) {
-        D_Timer_801782AC--;
+    if (gRadioStateTimer > 0) {
+        gRadioStateTimer--;
     }
-    if (D_Timer_801782B4 > 0) {
-        D_Timer_801782B4--;
+    if (gRadioMouthTimer > 0) {
+        gRadioMouthTimer--;
     }
 
     switch (D_menu_801CF018) {
@@ -5783,32 +5781,32 @@ void Map_801AB300(void) {
 
         case 100:
             D_menu_801CEA74 = 0;
-            D_ctx_801782A4 = 0 + D_ctx_80177D68;
+            gCurrentRadioPortrait = 0 + gRadioMsgRadioId;
             D_menu_801CF018 = 1;
-            D_ctx_80177D50 = 0.0f;
-            D_ctx_801782D8 = 0;
+            gRadioTextBoxScaleY = 0.0f;
+            gRadioMsgCharIndex = 0;
             D_menu_801CF124 = 0.0f;
             D_menu_801CEAB4 = 0;
             break;
 
         case 200:
             D_menu_801CF018 = 210;
-            D_Timer_801782AC = 30;
+            gRadioStateTimer = 30;
             break;
 
         case 210:
-            if (D_Timer_801782AC) {
+            if (gRadioStateTimer != 0) {
                 break;
             }
 
             D_menu_801CD940 = 1;
-            D_ctx_80178308 = D_menu_801AF428[sCurrentPlanetId][D_menu_801CD940];
+            gRadioMsg = D_menu_801AF428[sCurrentPlanetId][D_menu_801CD940];
 
-            Audio_PlayVoice(Message_IdFromPtr(D_ctx_80178308));
+            Audio_PlayVoice(Message_IdFromPtr(gRadioMsg));
 
-            D_ctx_80177D68 = D_menu_801AF420[D_menu_801CD940];
-            D_Timer_801782AC = Message_GetCharCount(D_ctx_80178308) * 2;
-            D_ctx_801782A4 = D_ctx_80177D68;
+            gRadioMsgRadioId = D_menu_801AF420[D_menu_801CD940];
+            gRadioStateTimer = Message_GetCharCount(gRadioMsg) * 2;
+            gCurrentRadioPortrait = gRadioMsgRadioId;
             D_menu_801CF018 = 4;
             D_menu_801CD9A0 = 1;
             break;
@@ -5817,53 +5815,53 @@ void Map_801AB300(void) {
             D_menu_801CEA74 += 8;
             if (D_menu_801CEA74 > 255) {
                 D_menu_801CEA74 = 255;
-                D_ctx_80177D50 = 1.3f;
+                gRadioTextBoxScaleY = 1.3f;
 
-                AUDIO_PLAY_SFX(0x4100001EU, gDefaultSfxSource, 4U);
-                Audio_PlayVoice(Message_IdFromPtr(D_ctx_80178308));
+                AUDIO_PLAY_SFX(NA_SE_COMPUTER_NOISE, gDefaultSfxSource, 4);
+                Audio_PlayVoice(Message_IdFromPtr(gRadioMsg));
 
-                D_Timer_801782AC = Message_GetCharCount(D_ctx_80178308) * 2;
+                gRadioStateTimer = Message_GetCharCount(gRadioMsg) * 2;
                 D_menu_801CD9A4 = 0;
                 D_menu_801CF018 = 4;
             }
             break;
 
         case 4:
-            if (!D_Timer_801782AC && !Audio_GetCurrentVoice()) {
-                D_ctx_801782A4 = D_ctx_80177D68;
+            if (!gRadioStateTimer && !Audio_GetCurrentVoice()) {
+                gCurrentRadioPortrait = gRadioMsgRadioId;
                 Audio_ClearVoice();
                 if (D_menu_801CD940 == 0) {
-                    D_ctx_801782D8 = 0;
-                    D_Timer_801782AC = 30;
+                    gRadioMsgCharIndex = 0;
+                    gRadioStateTimer = 30;
                 } else {
-                    D_Timer_801782AC = 20;
+                    gRadioStateTimer = 20;
                 }
                 D_menu_801CF018 = 41;
                 break;
             }
 
-            D_ctx_801782A4 = D_ctx_80177D68;
+            gCurrentRadioPortrait = gRadioMsgRadioId;
 
-            if (D_Timer_801782B4 > 0) {
-                D_ctx_801782A4 = 1 + D_ctx_80177D68;
+            if (gRadioMouthTimer > 0) {
+                gCurrentRadioPortrait = 1 + gRadioMsgRadioId;
             }
 
-            if (D_ctx_801782D8 >= Message_GetCharCount(D_ctx_80178308)) {
+            if (gRadioMsgCharIndex >= Message_GetCharCount(gRadioMsg)) {
                 D_menu_801CD9A4 = 1;
             }
 
             if (D_menu_801CD9A0 == 1) {
                 D_menu_801CF124 += 0.7f;
-                D_ctx_801782D8 = D_menu_801CF124;
+                gRadioMsgCharIndex = D_menu_801CF124;
             } else {
-                D_ctx_801782D8 += 2;
+                gRadioMsgCharIndex += 2;
             }
 
             if (D_menu_801CEAB4) {
                 if (Audio_GetCurrentVoiceStatus() == 1) {
-                    D_Timer_801782B4 = 2;
+                    gRadioMouthTimer = 2;
                 } else {
-                    D_Timer_801782B4 = 0;
+                    gRadioMouthTimer = 0;
                 }
             }
 
@@ -5871,7 +5869,7 @@ void Map_801AB300(void) {
             break;
 
         case 41:
-            if (D_Timer_801782AC) {
+            if (gRadioStateTimer != 0) {
                 break;
             }
 
@@ -5880,13 +5878,13 @@ void Map_801AB300(void) {
                 break;
             } else {
                 D_menu_801CD940 = 1;
-                D_ctx_80178308 = D_menu_801AF428[sCurrentPlanetId][D_menu_801CD940];
-                Audio_PlayVoice(Message_IdFromPtr(D_ctx_80178308));
-                D_ctx_80177D68 = D_menu_801AF420[D_menu_801CD940];
-                D_ctx_801782A4 = D_ctx_80177D68;
-                D_ctx_801782D8 = 0;
+                gRadioMsg = D_menu_801AF428[sCurrentPlanetId][D_menu_801CD940];
+                Audio_PlayVoice(Message_IdFromPtr(gRadioMsg));
+                gRadioMsgRadioId = D_menu_801AF420[D_menu_801CD940];
+                gCurrentRadioPortrait = gRadioMsgRadioId;
+                gRadioMsgCharIndex = 0;
                 D_menu_801CF124 = 0.0f;
-                D_Timer_801782AC = Message_GetCharCount(D_ctx_80178308) * 2;
+                gRadioStateTimer = Message_GetCharCount(gRadioMsg) * 2;
                 D_menu_801CD9A0 = 1;
                 D_menu_801CD9A4 = 0;
                 D_menu_801CF018 = 4;
@@ -5894,16 +5892,16 @@ void Map_801AB300(void) {
             break;
 
         case 5:
-            D_Timer_801782AC = 5;
-            D_ctx_801782A4 = D_ctx_80177D68;
+            gRadioStateTimer = 5;
+            gCurrentRadioPortrait = gRadioMsgRadioId;
             D_menu_801CF018++;
             break;
 
         case 6:
-            if (D_Timer_801782AC == 0) {
-                Audio_KillSfxById(0x4100001EU);
+            if (gRadioStateTimer == 0) {
+                Audio_KillSfxById(NA_SE_COMPUTER_NOISE);
                 Audio_PlayVoice(0);
-                D_ctx_80177D50 = 0.0f;
+                gRadioTextBoxScaleY = 0.0f;
                 D_menu_801CF018++;
                 D_menu_801CF018 = 7;
             }
@@ -5913,14 +5911,14 @@ void Map_801AB300(void) {
             break;
 
         case 8:
-            D_ctx_801782A4 = D_ctx_80177D68;
-            D_ctx_80177D50 = 1.3f;
+            gCurrentRadioPortrait = gRadioMsgRadioId;
+            gRadioTextBoxScaleY = 1.3f;
             D_menu_801CEA74 = 255;
             break;
     }
 
     if ((D_menu_801CF018 > 0) && (D_menu_801CF018 != 100)) {
-        Map_801AB978(D_ctx_801782A4);
+        Map_801AB978(gCurrentRadioPortrait);
         Map_801AB978(D_menu_801AF420[!D_menu_801CD940]);
         if (CVarGetInteger("gLevelSelector", 0) && gCurrentPlanet == 6) {
             return;
@@ -5946,7 +5944,7 @@ void Map_801AB978(s32 arg0) {
         case 20:
         case 21:
             if (D_menu_801CEA74 != 0) {
-                RCP_SetupDL(&gMasterDisp, 0x4C);
+                RCP_SetupDL(&gMasterDisp, SETUPDL_76);
                 gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, D_menu_801CEA74);
                 xPos = 205.0f;
                 yPos = 77.0f;
@@ -5954,7 +5952,7 @@ void Map_801AB978(s32 arg0) {
                 TextureRect_16bRGBA(&gMasterDisp, D_MAP_6044820, 92, 51, xPos, yPos, 1.0f, 1.0f);
 
                 if (arg0 == 21) {
-                    TextureRect_16bRGBA(&gMasterDisp, D_MAP_6046CD0, 32, 34, xPos + 47.0, yPos, 1.0f, 1.0f);
+                    TextureRect_RGBA16(&gMasterDisp, D_MAP_6046CD0, 32, 34, xPos + 47.0, yPos, 1.0f, 1.0f);
                 }
 
                 for (i = 0; i < 3; i++) {
@@ -5969,9 +5967,9 @@ void Map_801AB978(s32 arg0) {
                             break;
 
                         case 0:
-                            RCP_SetupDL(&gMasterDisp, 0x53);
+                            RCP_SetupDL(&gMasterDisp, SETUPDL_83);
                             gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 0, 255);
-                            if (gGameFrameCount & 0x10) {
+                            if ((gGameFrameCount & 0x10) != 0) {
                                 Graphics_DisplaySmallText(D_menu_801B6B0C[i], 131 + 28, 1.0f, 1.0f, "OK !");
                             }
                             sp90[i] = D_menu_801CEA74;
@@ -5982,10 +5980,10 @@ void Map_801AB978(s32 arg0) {
                             break;
                     }
 
-                    RCP_SetupDL(&gMasterDisp, 0x4C);
+                    RCP_SetupDL(&gMasterDisp, SETUPDL_76);
                     gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, sp90[i]);
-                    TextureRect_16bRGBA(&gMasterDisp, D_menu_801B6B18[i], 28, 28, D_menu_801B6B0C[i], 131.0f, 1.0f,
-                                        1.0f);
+                    TextureRect_RGBA16(&gMasterDisp, D_menu_801B6B18[i], 28, 28, D_menu_801B6B0C[i], 131.0f, 1.0f,
+                                       1.0f);
 
                     if ((gSavedTeamShields[3 - i] < 0) && (gSavedTeamShields[3 - i] != -2)) {
                         Map_801ABCDC(i, D_menu_801CEA74);
@@ -6000,35 +5998,35 @@ void Map_801ABCDC(s32 arg0, s32 alpha) {
 
     Matrix_Push(&gGfxMatrix);
 
-    Matrix_LookAt(gGfxMatrix, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, -400.0f, 0.0f, 1.0f, 0.0f, 1);
+    Matrix_LookAt(gGfxMatrix, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, -400.0f, 0.0f, 1.0f, 0.0f, MTXF_APPLY);
 
     Matrix_SetGfxMtx(&gMasterDisp);
 
-    RCP_SetupDL(&gMasterDisp, 0x29);
+    RCP_SetupDL(&gMasterDisp, SETUPDL_41);
 
     gDPSetTextureFilter(gMasterDisp++, G_TF_POINT);
     gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, alpha);
 
     Matrix_Push(&gGfxMatrix);
 
-    Matrix_Translate(gGfxMatrix, D_menu_801B6B24[arg0], -35.0f, -400.0f, 1);
-    Matrix_RotateZ(gGfxMatrix, M_DTOR * -40.0f, 1);
-    Matrix_Scale(gGfxMatrix, 0.3f, 0.3f, 1.0f, 1);
+    Matrix_Translate(gGfxMatrix, D_menu_801B6B24[arg0], -35.0f, -400.0f, MTXF_APPLY);
+    Matrix_RotateZ(gGfxMatrix, M_DTOR * -40.0f, MTXF_APPLY);
+    Matrix_Scale(gGfxMatrix, 0.3f, 0.3f, 1.0f, MTXF_APPLY);
 
     Matrix_SetGfxMtx(&gMasterDisp);
 
-    gSPDisplayList(gMasterDisp++, D_500B600);
+    gSPDisplayList(gMasterDisp++, aDownWrenchDL);
 
     Matrix_Pop(&gGfxMatrix);
     Matrix_Push(&gGfxMatrix);
 
-    Matrix_Translate(gGfxMatrix, D_menu_801B6B24[arg0], -35.0f, -400.0f, 1);
-    Matrix_RotateZ(gGfxMatrix, M_DTOR * 40.0f, 1);
-    Matrix_Scale(gGfxMatrix, 0.3f, 0.3f, 1.0f, 1);
+    Matrix_Translate(gGfxMatrix, D_menu_801B6B24[arg0], -35.0f, -400.0f, MTXF_APPLY);
+    Matrix_RotateZ(gGfxMatrix, M_DTOR * 40.0f, MTXF_APPLY);
+    Matrix_Scale(gGfxMatrix, 0.3f, 0.3f, 1.0f, MTXF_APPLY);
 
     Matrix_SetGfxMtx(&gMasterDisp);
 
-    gSPDisplayList(gMasterDisp++, D_500B600);
+    gSPDisplayList(gMasterDisp++, aDownWrenchDL);
 
     Matrix_Pop(&gGfxMatrix);
     Matrix_Pop(&gGfxMatrix);
@@ -6037,20 +6035,20 @@ void Map_801ABCDC(s32 arg0, s32 alpha) {
 void Map_801ABF1C(void) {
     Matrix_Push(&gGfxMatrix);
     {
-        Matrix_LookAt(gGfxMatrix, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, -400.0f, 0.0f, 1.0f, 0.0f, 1);
+        Matrix_LookAt(gGfxMatrix, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, -400.0f, 0.0f, 1.0f, 0.0f, MTXF_APPLY);
 
         Matrix_SetGfxMtx(&gMasterDisp);
 
-        RCP_SetupDL(&gMasterDisp, 0x15);
+        RCP_SetupDL(&gMasterDisp, SETUPDL_21);
 
         Matrix_Push(&gGfxMatrix);
         {
-            Matrix_Translate(gGfxMatrix, D_menu_801CEA88, D_menu_801CEA8C, D_menu_801CEA90, 1);
-            Matrix_RotateY(gGfxMatrix, M_DTOR * D_menu_801CEA94, 1);
+            Matrix_Translate(gGfxMatrix, D_menu_801CEA88, D_menu_801CEA8C, D_menu_801CEA90, MTXF_APPLY);
+            Matrix_RotateY(gGfxMatrix, M_DTOR * D_menu_801CEA94, MTXF_APPLY);
 
             Map_801AD048();
 
-            Matrix_Scale(gGfxMatrix, D_menu_801CEA78, D_menu_801CEA7C, 1.0f, 1);
+            Matrix_Scale(gGfxMatrix, D_menu_801CEA78, D_menu_801CEA7C, 1.0f, MTXF_APPLY);
 
             Matrix_SetGfxMtx(&gMasterDisp);
 
@@ -6062,19 +6060,19 @@ void Map_801ABF1C(void) {
         }
         Matrix_Pop(&gGfxMatrix);
 
-        RCP_SetupDL(&gMasterDisp, 0x43);
+        RCP_SetupDL(&gMasterDisp, SETUPDL_67);
 
         gDPSetPrimColor(gMasterDisp++, 0, 0, 32, 32, 255, D_menu_801CEA98);
         gDPSetEnvColor(gMasterDisp++, 207, 207, 255, 0);
 
         Matrix_Push(&gGfxMatrix);
         {
-            Matrix_Translate(gGfxMatrix, D_menu_801CEA88, D_menu_801CEA8C - 1.5f, D_menu_801CEA90, 1);
-            Matrix_RotateY(gGfxMatrix, M_DTOR * D_menu_801CEA94, 1);
+            Matrix_Translate(gGfxMatrix, D_menu_801CEA88, D_menu_801CEA8C - 1.5f, D_menu_801CEA90, MTXF_APPLY);
+            Matrix_RotateY(gGfxMatrix, M_DTOR * D_menu_801CEA94, MTXF_APPLY);
 
             Map_801AD048();
 
-            Matrix_Scale(gGfxMatrix, D_menu_801CEA80, D_menu_801CEA84, 3.3f, 1);
+            Matrix_Scale(gGfxMatrix, D_menu_801CEA80, D_menu_801CEA84, 3.3f, MTXF_APPLY);
 
             Matrix_SetGfxMtx(&gMasterDisp);
 
@@ -6088,17 +6086,14 @@ void Map_801ABF1C(void) {
 }
 
 void Map_801AC200(s32 index) {
-    // f32 z;
-    // f32 x;
-    // f32 y;
     Vec3f v;
     f32 r;
     f32 r2;
     Vec3f vec;
 
-    v.x = gTexturedLines[index].unk_10.x - gTexturedLines[index].unk_04.x;
-    v.y = gTexturedLines[index].unk_10.y - gTexturedLines[index].unk_04.y;
-    v.z = gTexturedLines[index].unk_10.z - gTexturedLines[index].unk_04.z;
+    v.x = gTexturedLines[index].posBB.x - gTexturedLines[index].posAA.x;
+    v.y = gTexturedLines[index].posBB.y - gTexturedLines[index].posAA.y;
+    v.z = gTexturedLines[index].posBB.z - gTexturedLines[index].posAA.z;
 
     r = VEC3F_MAG(&v);
 
@@ -6111,9 +6106,9 @@ void Map_801AC200(s32 index) {
         vec.y = (v.y / r) * (r / (sPaths[index].length - 1));
         vec.z = (v.z / r) * (r / (sPaths[index].length - 1));
 
-        D_menu_801CEEB0.x = gTexturedLines[index].unk_04.x + (vec.x * D_menu_801CEEA0);
-        D_menu_801CEEB0.y = gTexturedLines[index].unk_04.y + (vec.y * D_menu_801CEEA0);
-        D_menu_801CEEB0.z = gTexturedLines[index].unk_04.z + (vec.z * D_menu_801CEEA0);
+        D_menu_801CEEB0.x = gTexturedLines[index].posAA.x + (vec.x * D_menu_801CEEA0);
+        D_menu_801CEEB0.y = gTexturedLines[index].posAA.y + (vec.y * D_menu_801CEEA0);
+        D_menu_801CEEB0.z = gTexturedLines[index].posAA.z + (vec.z * D_menu_801CEEA0);
 
         switch (D_menu_801CEEA4) {
             case 0:
@@ -6125,16 +6120,16 @@ void Map_801AC200(s32 index) {
                 break;
 
             case 10:
-                if (D_menu_801CD9BC) {
-                    break;
+                if (D_menu_801CD9BC != 0) {
+                    break; // investigate
                 }
                 D_menu_801CD9BC = 5;
                 D_menu_801CEEA4 = 20;
                 break;
 
             case 20:
-                if (D_menu_801CD9BC) {
-                    break;
+                if (D_menu_801CD9BC != 0) {
+                    break; // investigate
                 }
 
                 D_menu_801CEEA0++;
@@ -6150,17 +6145,17 @@ void Map_801AC200(s32 index) {
             return;
         }
     } else {
-        vec.x = (v.x / r) * gTexturedLines[index].unk_24;
-        vec.y = (v.y / r) * gTexturedLines[index].unk_24;
-        vec.z = (v.z / r) * gTexturedLines[index].unk_24;
+        vec.x = (v.x / r) * gTexturedLines[index].zScale;
+        vec.y = (v.y / r) * gTexturedLines[index].zScale;
+        vec.z = (v.z / r) * gTexturedLines[index].zScale;
 
-        D_menu_801CEEB0.x = gTexturedLines[index].unk_04.x + vec.x;
-        D_menu_801CEEB0.y = gTexturedLines[index].unk_04.y + vec.y;
-        D_menu_801CEEB0.z = gTexturedLines[index].unk_04.z + vec.z;
+        D_menu_801CEEB0.x = gTexturedLines[index].posAA.x + vec.x;
+        D_menu_801CEEB0.y = gTexturedLines[index].posAA.y + vec.y;
+        D_menu_801CEEB0.z = gTexturedLines[index].posAA.z + vec.z;
 
-        v.x = D_menu_801CEEB0.x - gTexturedLines[index].unk_04.x;
-        v.y = D_menu_801CEEB0.y - gTexturedLines[index].unk_04.y;
-        v.z = D_menu_801CEEB0.z - gTexturedLines[index].unk_04.z;
+        v.x = D_menu_801CEEB0.x - gTexturedLines[index].posAA.x;
+        v.y = D_menu_801CEEB0.y - gTexturedLines[index].posAA.y;
+        v.z = D_menu_801CEEB0.z - gTexturedLines[index].posAA.z;
         r2 = VEC3F_MAG(&v);
 
         if (((r / 9.0f) * 8.0f) < r2) {
@@ -6195,21 +6190,21 @@ void Map_801AC530(s32 index) {
     src.z = 0.0f;
 
     if (D_menu_801CEEA8 == 255) {
-        RCP_SetupDL(&gMasterDisp, 0x17);
+        RCP_SetupDL(&gMasterDisp, SETUPDL_23);
     } else {
-        RCP_SetupDL(&gMasterDisp, 0x2E);
+        RCP_SetupDL(&gMasterDisp, SETUPDL_46);
         gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, D_menu_801CEEA8);
     }
 
     Matrix_Push(&gGfxMatrix);
 
-    Matrix_Translate(gGfxMatrix, D_menu_801CEEB0.x, D_menu_801CEEB0.y, D_menu_801CEEB0.z, 1);
+    Matrix_Translate(gGfxMatrix, D_menu_801CEEB0.x, D_menu_801CEEB0.y, D_menu_801CEEB0.z, MTXF_APPLY);
 
-    Matrix_RotateY(gGfxMatrix, gTexturedLines[index].unk_20, 1);
-    Matrix_RotateX(gGfxMatrix, M_DTOR * -90.0f, 1);
-    Matrix_RotateX(gGfxMatrix, gTexturedLines[index].unk_1C, 1);
+    Matrix_RotateY(gGfxMatrix, gTexturedLines[index].yRot, MTXF_APPLY);
+    Matrix_RotateX(gGfxMatrix, M_DTOR * -90.0f, MTXF_APPLY);
+    Matrix_RotateX(gGfxMatrix, gTexturedLines[index].xRot, MTXF_APPLY);
 
-    Matrix_Scale(gGfxMatrix, 0.8f, 0.8f, 0.8f, 1);
+    Matrix_Scale(gGfxMatrix, 0.8f, 0.8f, 0.8f, MTXF_APPLY);
 
     Matrix_SetGfxMtx(&gMasterDisp);
 
@@ -6226,8 +6221,8 @@ void Map_801AC530(s32 index) {
     src.y = 0.0f;
     src.z = 10.0f;
 
-    Matrix_RotateY(gCalcMatrix, M_DTOR * (-D_menu_801CDA10 - y1), 0);
-    Matrix_RotateX(gCalcMatrix, M_DTOR * (-D_menu_801CDA0C - x1), 1);
+    Matrix_RotateY(gCalcMatrix, M_DTOR * (-D_menu_801CDA10 - y1), MTXF_NEW);
+    Matrix_RotateX(gCalcMatrix, M_DTOR * (-D_menu_801CDA0C - x1), MTXF_APPLY);
     Matrix_MultVec3f(gCalcMatrix, &src, &dest);
 
     dirX = dest.x;
@@ -6257,19 +6252,19 @@ void Map_801AC80C(PathType pathType) {
         b = 0;
     }
 
-    RCP_SetupDL(&gMasterDisp, 0x43);
+    RCP_SetupDL(&gMasterDisp, SETUPDL_67);
 
     gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 80, D_menu_801CEEAC);
     gDPSetEnvColor(gMasterDisp++, r, g, b, 0);
 
     Matrix_Push(&gGfxMatrix);
 
-    Matrix_Translate(gGfxMatrix, D_menu_801CEEB0.x, D_menu_801CEEB0.y, D_menu_801CEEB0.z, 1);
+    Matrix_Translate(gGfxMatrix, D_menu_801CEEB0.x, D_menu_801CEEB0.y, D_menu_801CEEB0.z, MTXF_APPLY);
 
     Map_801AD048();
 
-    Matrix_RotateZ(gGfxMatrix, M_DTOR * D_menu_801B6B30, 1);
-    Matrix_Scale(gGfxMatrix, 10.0f, 10.0f, 10.0f, 1);
+    Matrix_RotateZ(gGfxMatrix, M_DTOR * D_menu_801B6B30, MTXF_APPLY);
+    Matrix_Scale(gGfxMatrix, 10.0f, 10.0f, 10.0f, MTXF_APPLY);
 
     Matrix_SetGfxMtx(&gMasterDisp);
 
@@ -6329,38 +6324,38 @@ void Map_801AC9A0(s32 index) {
 
     gTexturedLines[index].mode = 4;
 
-    gTexturedLines[index].unk_04.x = srcPos.x;
-    gTexturedLines[index].unk_04.y = srcPos.y;
-    gTexturedLines[index].unk_04.z = srcPos.z;
+    gTexturedLines[index].posAA.x = srcPos.x;
+    gTexturedLines[index].posAA.y = srcPos.y;
+    gTexturedLines[index].posAA.z = srcPos.z;
 
-    gTexturedLines[index].unk_10.x = destPos.x;
-    gTexturedLines[index].unk_10.y = destPos.y;
-    gTexturedLines[index].unk_10.z = destPos.z;
+    gTexturedLines[index].posBB.x = destPos.x;
+    gTexturedLines[index].posBB.y = destPos.y;
+    gTexturedLines[index].posBB.z = destPos.z;
 
-    gTexturedLines[index].unk_20 = Math_Atan2F(x, z);
-    gTexturedLines[index].unk_1C = -Math_Atan2F(y, sqrtf(SQ(x) + SQ(z)));
+    gTexturedLines[index].yRot = Math_Atan2F(x, z);
+    gTexturedLines[index].xRot = -Math_Atan2F(y, sqrtf(SQ(x) + SQ(z)));
 
-    switch (D_ctx_80177BD8[index]) {
+    switch (gPlanetPathStatus[index]) {
         case 1:
-            AUDIO_PLAY_SFX(0x1900404DU, gDefaultSfxSource, 4U);
-            D_ctx_80177BD8[index] = 11;
+            AUDIO_PLAY_SFX(NA_SE_MAP_LINE_DRAW, gDefaultSfxSource, 4);
+            gPlanetPathStatus[index] = 11;
             break;
 
         case 11:
-            Math_SmoothStepToF(&gTexturedLines[index].unk_24, target, 0.1f, 100.0f, 4.0f);
-            gTexturedLines[index].unk_2F = 255;
-            if (gTexturedLines[index].unk_24 == target) {
-                Audio_KillSfxById(0x1900404DU);
-                D_ctx_80177BD8[index] = 4;
+            Math_SmoothStepToF(&gTexturedLines[index].zScale, target, 0.1f, 100.0f, 4.0f);
+            gTexturedLines[index].prim.a = 255;
+            if (gTexturedLines[index].zScale == target) {
+                Audio_KillSfxById(NA_SE_MAP_LINE_DRAW);
+                gPlanetPathStatus[index] = 4;
             }
             break;
 
         case 5:
         case 6:
-            Math_SmoothStepToF(&gTexturedLines[index].unk_24, target, 0.1f, 100.0f, 1.0f);
-            if (gTexturedLines[index].unk_24 == target) {
-                gTexturedLines[index].unk_24 = 0.0f;
-                D_ctx_80177BD8[index] = 6;
+            Math_SmoothStepToF(&gTexturedLines[index].zScale, target, 0.1f, 100.0f, 1.0f);
+            if (gTexturedLines[index].zScale == target) {
+                gTexturedLines[index].zScale = 0.0f;
+                gPlanetPathStatus[index] = 6;
                 D_menu_801CEEAC = 255;
             }
             break;
@@ -6370,55 +6365,55 @@ void Map_801AC9A0(s32 index) {
             if (D_menu_801CD944 == 7) {
                 temp = 0.25f;
             }
-            Math_SmoothStepToF(&gTexturedLines[index].unk_24, target, temp, 100.0f, 4.0f);
-            gTexturedLines[index].unk_2F = 255;
-            if (gTexturedLines[index].unk_24 == target) {
-                D_ctx_80177BD8[index] = 3;
+            Math_SmoothStepToF(&gTexturedLines[index].zScale, target, temp, 100.0f, 4.0f);
+            gTexturedLines[index].prim.a = 255;
+            if (gTexturedLines[index].zScale == target) {
+                gPlanetPathStatus[index] = 3;
             }
             break;
 
         case 3:
         case 4:
-            gTexturedLines[index].unk_24 = target;
-            gTexturedLines[index].unk_2F = sPaths[index].alpha;
+            gTexturedLines[index].zScale = target;
+            gTexturedLines[index].prim.a = sPaths[index].alpha;
             break;
     }
 
-    if ((D_ctx_80177BD8[index] == 1) || (D_ctx_80177BD8[index] == 11) || (D_ctx_80177BD8[index] == 4)) {
-        gTexturedLines[index].unk_2C = 32;
-        gTexturedLines[index].unk_2D = 32;
-        gTexturedLines[index].unk_2E = 32;
-        gTexturedLines[index].unk_28 = 4.0f;
+    if ((gPlanetPathStatus[index] == 1) || (gPlanetPathStatus[index] == 11) || (gPlanetPathStatus[index] == 4)) {
+        gTexturedLines[index].prim.r = 32;
+        gTexturedLines[index].prim.g = 32;
+        gTexturedLines[index].prim.b = 32;
+        gTexturedLines[index].xyScale = 4.0f;
     } else {
         switch (sPaths[index].type) {
             case PL_PATH_BLU:
-                gTexturedLines[index].unk_2C = 16;
-                gTexturedLines[index].unk_2D = 64;
-                gTexturedLines[index].unk_2E = 255;
-                gTexturedLines[index].unk_28 = 8.0f;
+                gTexturedLines[index].prim.r = 16;
+                gTexturedLines[index].prim.g = 64;
+                gTexturedLines[index].prim.b = 255;
+                gTexturedLines[index].xyScale = 8.0f;
                 break;
 
             case PL_PATH_YLW:
-                gTexturedLines[index].unk_2C = 255;
-                gTexturedLines[index].unk_2D = 175;
-                gTexturedLines[index].unk_2E = 0;
-                gTexturedLines[index].unk_28 = 8.0f;
+                gTexturedLines[index].prim.r = 255;
+                gTexturedLines[index].prim.g = 175;
+                gTexturedLines[index].prim.b = 0;
+                gTexturedLines[index].xyScale = 8.0f;
                 break;
 
             case PL_PATH_RED:
-                gTexturedLines[index].unk_2C = 255;
-                gTexturedLines[index].unk_2D = 0;
-                gTexturedLines[index].unk_2E = 0;
-                gTexturedLines[index].unk_28 = 8.0f;
+                gTexturedLines[index].prim.r = 255;
+                gTexturedLines[index].prim.g = 0;
+                gTexturedLines[index].prim.b = 0;
+                gTexturedLines[index].xyScale = 8.0f;
                 break;
 
             case PL_WARP_YLW:
             case PL_WARP_RED:
-                gTexturedLines[index].unk_2C = 0;
-                gTexturedLines[index].unk_2D = 0;
-                gTexturedLines[index].unk_2E = 0;
-                gTexturedLines[index].unk_2F = 0;
-                gTexturedLines[index].unk_28 = 0.1f;
+                gTexturedLines[index].prim.r = 0;
+                gTexturedLines[index].prim.g = 0;
+                gTexturedLines[index].prim.b = 0;
+                gTexturedLines[index].prim.a = 0;
+                gTexturedLines[index].xyScale = 0.1f;
                 break;
         }
     }
@@ -6527,8 +6522,8 @@ void Map_801AD048(void) {
                            sqrtf(SQ(D_menu_801CD9F4 - D_menu_801CDA00) + SQ(D_menu_801CD9FC - D_menu_801CDA08)));
     f32 temp = -Math_Atan2F(D_menu_801CD9F4 - D_menu_801CDA00, D_menu_801CD9FC - D_menu_801CDA08);
 
-    Matrix_RotateY(gGfxMatrix, -temp, 1);
-    Matrix_RotateX(gGfxMatrix, -sp1C, 1);
+    Matrix_RotateY(gGfxMatrix, -temp, MTXF_APPLY);
+    Matrix_RotateX(gGfxMatrix, -sp1C, MTXF_APPLY);
 }
 
 void Map_801AD11C(void) {
@@ -6545,8 +6540,8 @@ void Map_801AD11C(void) {
     var_t0 = 0;
 
     if (gControllerPress[gMainController].button & A_BUTTON) {
-        if ((D_game_80161A34 == 7) && (D_menu_801CD93C != 0) && (!D_menu_801CEFD0)) {
-            func_8001D6DC(1);
+        if ((gLastGameState == GSTATE_PLAY) && (sPrevMissionStatus != MISSION_COMPLETE) && !D_menu_801CEFD0) {
+            Audio_PlayMapMenuSfx(1);
             D_menu_801CEFC4 = 1;
             D_menu_801CEFD4 = 0;
             D_menu_801CEFDC = 0;
@@ -6562,11 +6557,11 @@ void Map_801AD11C(void) {
     }
 
     if (gControllerPress[gMainController].button & START_BUTTON) {
-        if (D_menu_801CD944 == 3 && D_game_80161A34 == 7) {
+        if ((D_menu_801CD944 == 3) && (gLastGameState == GSTATE_PLAY)) {
             if (D_menu_801CEFD0) {
-                AUDIO_PLAY_SFX(0x4900100AU, gDefaultSfxSource, 4U);
+                AUDIO_PLAY_SFX(NA_SE_ERROR, gDefaultSfxSource, 4);
             } else {
-                func_8001D6DC(1);
+                Audio_PlayMapMenuSfx(1);
                 D_menu_801CEFC4 = 1;
                 D_menu_801CEFD4 = 0;
                 D_menu_801CEFDC = 0;
@@ -6605,70 +6600,70 @@ void Map_801AD11C(void) {
         if (var_a1 < var_a2) {
             var_a0 = var_a2;
         }
-        func_8001D15C(var_a0);
+        Audio_SetSfxMapModulation(var_a0);
     }
 
     if (D_menu_801CF014 == 0 && var_a3 == 1) {
-        func_8001D10C(gDefaultSfxSource, 0x1100204C);
+        Audio_PlaySfxModulated(gDefaultSfxSource, NA_SE_MAP_ROLL);
         D_menu_801CF014 = 1;
     }
 
     if ((D_menu_801CF014 == 1) && (var_a3 == 0) && (y == 0.0f) && (x == 0.0f)) {
         var_a1 = 0;
         var_a2 = 0;
-        Audio_KillSfxById(0x1100204CU);
+        Audio_KillSfxById(NA_SE_MAP_ROLL);
         D_menu_801CF014 = 0;
     }
 
     if (gControllerHold[gMainController].button & R_TRIG) {
-        if (D_menu_801CDA14 - 20.0f > 2475.0f) {
+        if ((D_menu_801CDA14 - 20.0f) > 2475.0f) {
             D_menu_801CDA14 -= 20.0f;
             var_t0 = 1;
         }
     }
 
     if (gControllerHold[gMainController].button & Z_TRIG) {
-        if (D_menu_801CDA14 + 20.0f < 7695.0f) {
+        if ((D_menu_801CDA14 + 20.0f) < 7695.0f) {
             D_menu_801CDA14 += 20.0f;
             var_t0 = 1;
         }
     }
 
     if (gControllerHold[gMainController].button & U_CBUTTONS) {
-        if (D_menu_801CDA04 - 10.0f >= -1200.0f) {
+        if ((D_menu_801CDA04 - 10.0f) >= -1200.0f) {
             D_menu_801CDA04 -= 10.0f;
             var_t0 = 1;
         }
     }
 
     if (gControllerHold[gMainController].button & D_CBUTTONS) {
-        if (D_menu_801CDA04 + 10.0f <= 1200.0f) {
+        if ((D_menu_801CDA04 + 10.0f) <= 1200.0f) {
             D_menu_801CDA04 += 10.0f;
             var_t0 = 1;
         }
     }
 
     if (gControllerHold[gMainController].button & L_CBUTTONS) {
-        if (D_menu_801CDA00 + 10.0f <= 1200.0f) {
+        if ((D_menu_801CDA00 + 10.0f) <= 1200.0f) {
             D_menu_801CDA00 += 10.0f;
             var_t0 = 1;
         }
     }
 
     if (gControllerHold[gMainController].button & R_CBUTTONS) {
-        if (D_menu_801CDA00 - 10.0f >= -1200.0f) {
+        if ((D_menu_801CDA00 - 10.0f) >= -1200.0f) {
             D_menu_801CDA00 -= 10.0f;
             var_t0 = 1;
         }
     }
 
-    if (D_menu_801CF010 == 0 && var_t0 == 1) {
-        AUDIO_PLAY_SFX(0x1100004CU, gDefaultSfxSource, 4U);
+    if ((D_menu_801CF010 == 0) && (var_t0 == 1)) {
+        AUDIO_PLAY_SFX(NA_SE_MAP_MOVE, gDefaultSfxSource, 4);
         D_menu_801CF010 = 1;
     }
 
-    if (D_menu_801CF010 == 1 && var_t0 == 0) {
-        Audio_KillSfxById(0x1100004CU);
+    if ((D_menu_801CF010 == 1) && (var_t0 == 0)) {
+        Audio_KillSfxById(NA_SE_MAP_MOVE);
         D_menu_801CF010 = 0;
     }
 }
@@ -6684,9 +6679,9 @@ void Map_801AD718(f32 arg0, f32 arg1, f32 arg2, f32* arg3, f32* arg4, f32* arg5,
     sp20.y = 0.0f;
     sp20.z = arg6;
 
-    Matrix_Translate(gCalcMatrix, arg0, arg1, arg2, 0);
-    Matrix_RotateY(gCalcMatrix, M_DTOR * arg8, 1);
-    Matrix_RotateX(gCalcMatrix, M_DTOR * arg7, 1);
+    Matrix_Translate(gCalcMatrix, arg0, arg1, arg2, MTXF_NEW);
+    Matrix_RotateY(gCalcMatrix, M_DTOR * arg8, MTXF_APPLY);
+    Matrix_RotateX(gCalcMatrix, M_DTOR * arg7, MTXF_APPLY);
     Matrix_MultVec3f(gCalcMatrix, &sp20, &sp2C);
 
     *arg3 = sp2C.x;
@@ -6695,17 +6690,17 @@ void Map_801AD718(f32 arg0, f32 arg1, f32 arg2, f32* arg3, f32* arg4, f32* arg5,
 }
 
 void Map_801AD7EC(s32 xPos, s32 yPos, s32 number) {
-    RCP_SetupDL(&gMasterDisp, 0x55);
+    RCP_SetupDL(&gMasterDisp, SETUPDL_85);
 
     gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, 255);
 
-    TextureRect_4bCI(&gMasterDisp, D_MAP_601DC10, D_MAP_601DC90, 16, 16, xPos, yPos, 1.0f, 1.0f);
+    TextureRect_CI4(&gMasterDisp, D_MAP_601DC10, D_MAP_601DC90, 16, 16, xPos, yPos, 1.0f, 1.0f);
 
     gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 0, 255);
 
-    TextureRect_4bCI(&gMasterDisp, D_MAP_601DCA0, D_MAP_601DCD8, 16, 7, xPos + 18.0f, yPos + 9.0f, 1.0f, 1.0f);
+    TextureRect_CI4(&gMasterDisp, D_MAP_601DCA0, D_MAP_601DCD8, 16, 7, xPos + 18.0f, yPos + 9.0f, 1.0f, 1.0f);
 
-    RCP_SetupDL(&gMasterDisp, 0x53);
+    RCP_SetupDL(&gMasterDisp, SETUPDL_83);
 
     gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 0, 255);
 

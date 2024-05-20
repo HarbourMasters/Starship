@@ -1,0 +1,317 @@
+  - name: makerom
+    type: code
+    start: 0x0
+    subsegments:
+      - {start: 0x0, type: header, name: header}
+      - {start: 0x40, type: textbin, name: ipl3}
+      - {start: 0x1000, type: asm, vram: 0x80000400, name: entry}
+
+  - name: main
+    type: code
+    start: 0x1050
+    vram: 0x80000450
+    bss_size: 0x95A50
+    subsegments:
+      # Microcode
+      - [0x01050, textbin, rspboot]
+      - [0x01120, textbin, aspmain]
+      - [0x02020, textbin, f3dex]
+
+      # Nintendo libraries  
+      - [0x03450, c, sys/sys_joybus]
+      - [0x03A90, c, sys/sys_lib]
+      - [0x041E0, c, sys/sys_lights]
+      - [0x04660, c, sys/sys_main]
+      - [0x05A30, c, sys/sys_math]
+      - [0x06460, c, sys/sys_matrix]
+      - [0x07D00, c, sys/sys_memory]
+      - [0x07D40, c, sys/sys_timer]
+      - [0x07F10, c, sys/sys_save]
+      - [0x08190, c, sys/sys_fault]
+      - [0x08E70, c, audio/audio_synthesis]
+      - [0x0CA20, c, audio/audio_heap]
+      - [0x0F250, c, audio/audio_load]
+      - [0x125B0, c, audio/audio_playback]
+      - [0x14120, c, audio/audio_effects]
+      - [0x14BC0, c, audio/audio_seqplayer]
+      - [0x17770, c, audio/audio_general]
+      - [0x1EC30, c, audio/audio_thread]
+      - [0x1FB40, c, driverominit]
+      - [0x1FB50, hasm, mio0]
+      - [0x1FBF0, hasm, rdramcheck]
+      - [0x1FCA0, textbin, alt_ipl3]
+      - [0x206C0, c, libc_sprintf]
+
+      # Libultra
+      - [0x20760, asm]
+      - [0x20C90, asm]
+      - [0x21050, asm]
+      - [0x212B0, asm]
+      - [0x213F0, asm]
+      - [0x21540, asm]
+      - [0x215F0, asm]
+      - [0x21880, asm]
+      - [0x21D70, asm]
+      - [0x21DF0, asm]
+      - [0x21EA0, asm]
+      - [0x21FB0, asm]
+      - [0x22050, asm]
+      - [0x22150, asm]
+      - [0x221C0, asm]
+      - [0x22380, asm]
+      - [0x223B0, asm]
+      - [0x22420, asm]
+      - [0x22490, asm]
+      - [0x227F0, asm]
+      - [0x22800, asm]
+      - [0x22950, asm]
+      - [0x22E00, asm]
+      - [0x22F90, asm]
+      - [0x233A0, asm]
+      - [0x233B0, asm]
+      - [0x236E0, asm]
+      - [0x237C0, asm]
+      - [0x23AC0, asm]
+      - [0x242D0, asm]
+      - [0x24370, asm]
+      - [0x25030, asm]
+      - [0x25060, asm]
+      - [0x25070, asm]
+      - [0x252A0, asm]
+      - [0x25380, asm]
+      - [0x25390, asm]
+      - [0x25440, asm]
+      - [0x25450, asm]
+      - [0x25780, asm]
+      - [0x258F0, asm]
+      - [0x25DE0, asm]
+      - [0x26190, asm]
+      - [0x261D0, asm] # exceptasm
+      - [0x26AC0, asm]
+      - [0x26D30, asm]
+      - [0x26EB0, asm]
+      - [0x27000, asm]
+      - [0x27010, asm]
+      - [0x27020, asm]
+      - [0x27330, asm]
+      - [0x273B0, asm]
+      - [0x27430, asm]
+      - [0x27470, asm]
+      - [0x27500, asm]
+      - [0x27530, asm]
+      - [0x27950, asm]
+      - [0x27960, asm]
+      - [0x27CC0, asm]
+      - [0x283F0, asm]
+      - [0x284A0, asm]
+      - [0x28500, asm]
+      - [0x28560, asm]
+      - [0x28600, asm]
+      - [0x28E80, asm]
+      - [0x29120, asm]
+      - [0x29BE0, asm]
+      - [0x29C40, asm]
+      - [0x2A1D0, asm]
+      - [0x2A370, asm]
+      - [0x2A430, asm]
+      - [0x2A440, asm]
+      - [0x2A4A0, asm]
+      - [0x2A4F0, asm]
+      - [0x2A590, asm]
+      - [0x2A5E0, asm]
+      - [0x2A6D0, asm]
+      - [0x2A860, asm]
+
+      # Game engine
+      - [0x2BF20, c, engine/fox_360]
+      - [0x337A0, c, engine/fox_beam]
+      - [0x3B560, c, engine/fox_bg]
+      - [0x40940, c, engine/fox_boss]
+      - [0x40D00, c, engine/fox_tank]
+      - [0x46540, c, engine/fox_demo]
+      - [0x4F580, c, engine/fox_display]
+      - [0x565D0, c, engine/fox_load]
+      - [0x56F20, c, engine/fox_edata]
+      - [0x570F0, c, engine/fox_edisplay]
+      - [0x5E8F0, c, engine/fox_enmy]
+      - [0x68190, c, engine/fox_enmy2]
+      - [0x74BE0, c, engine/fox_effect]
+      - [0x81D10, c, engine/fox_fade]
+      - [0x82090, c, engine/fox_blur]
+      - [0x822D0, c, engine/fox_hud]
+      - [0x94EA0, c, engine/fox_col1]
+      - [0x974A0, c, engine/fox_std_lib]
+      - [0x9F480, c, engine/fox_game]
+      - [0xA1250, c, engine/fox_col2]
+      - [0xA1860, c, engine/fox_pause]
+      - [0xA1B10, c, engine/fox_play]
+      - [0xB69E0, c, engine/fox_rcp]
+      - [0xB8370, c, engine/fox_radio]
+      - [0xBA0A0, c, engine/fox_reset]
+      - [0xBA350, c, engine/fox_versus]
+      - [0xC0580, c, engine/fox_message]
+      - [0xC0D00, c, engine/fox_save]
+
+      # DATA - Microcode
+      - [0xC1030, data, aspmain]
+      - [0xC1360, data, audio/audio_tables]
+      - [0xC1B20, data, f3dex]
+
+      # DATA - Nintendo Libraries
+      - [0xC2320, data, sys/sys_main]
+      - [0xC2330, data, sys/sys_math]
+      - [0xC2370, data, sys/sys_matrix]
+      - [0xC2440, data, sys/sys_fault]
+      - [0xC2620, data, audio/audio_synthesis]
+      - [0xC2700, data, audio/audio_heap]
+      - [0xC2CA0, data, audio/audio_load]
+      - [0xC3290, data, audio/audio_playback] # could be C6110?
+      - [0xC3670, data, audio/audio_effects]
+      - [0xC3690, data, audio/audio_seqplayer]
+      - [0xC3A50, data, audio/audio_general]
+      - [0xC5240, data, audio/audio_context]
+      - [0xC59C0, data, audio/audio_thread]
+
+      # DATA - Libultra
+      - [0xC59F0, data]
+
+      # RODATA - Nintendo Libraries
+      - [0xC5CC0, .rodata, sys/sys_math]
+      - [0xC5D20, .rodata, sys/sys_matrix]
+      - [0xC5D30, .rodata, sys/sys_save]
+      - [0xC5E50, .rodata, sys/sys_fault]
+      - [0xC6230, .rodata, audio/audio_synthesis] 
+      - [0xC6270, .rodata, audio/audio_heap] 
+      - [0xC6290, .rodata, audio/audio_load] 
+      - [0xC62D0, .rodata, audio/audio_playback] 
+      - [0xC6300, .rodata, audio/audio_effects] 
+      - [0xC6330, .rodata, audio/audio_seqplayer] 
+      - [0xC69E0, .rodata, audio/audio_general] 
+      - [0xC6D00, .rodata, audio/audio_thread]
+
+      # RODATA - Libultra
+      - [0xC6F20, rodata]
+      - [0xC6F30, rodata]
+      - [0xC6F80, rodata]
+      - [0xC6FD0, rodata]
+      - [0xC70D0, rodata]
+      - [0xC7120, rodata]
+      - [0xC7140, rodata]
+      - [0xC7150, rodata]
+      - [0xC71B0, rodata]
+
+      # DATA - Game engine
+      - [0xC7230, data, engine/fox_360]
+      - [0xC7360, data, engine/fox_beam]
+      - [0xC73D0, data, engine/fox_bg]
+      - [0xC7630, data, engine/fox_boss]
+      - [0xC76A0, data, engine/fox_tank]
+      - [0xC7700, data, engine/fox_demo]
+      - [0xC79C0, data, engine/fox_display]
+      - [0xC7B50, .data, engine/fox_load]
+      - [0xC9610, data, engine/fox_edata]
+      - [0xCD110, data, engine/fox_edisplay]
+      - [0xCD540, data, engine/fox_enmy]
+      - [0xCD720, data, engine/fox_enmy2]
+      - [0xCEC80, data, engine/fox_effect]
+      - [0xCF110, data, engine/fox_hud]
+      - [0xCFD60, data, engine/fox_std_lib]
+      - [0xD0160, data, engine/fox_game]
+      - [0xD0220, data, engine/fox_col2]
+      - [0xD0850, data, engine/fox_play]
+      - [0xD0A80, data, engine/fox_context]
+      - [0xD0AB0, data, engine/fox_rcp]
+      - [0xD2370, data, engine/fox_radio]
+      - [0xD2380, data, engine/fox_reset]
+      - [0xD2390, data, engine/fox_versus]
+      - [0xD2610, data, engine/fox_message]
+      - [0xDB900, data, engine/fox_save]
+
+      # RODATA - Game engine
+      - [0xDBA00, .rodata, engine/fox_360]
+      - [0xDBCE0, .rodata, engine/fox_beam]
+      - [0xDBF80, .rodata, engine/fox_bg]
+      - [0xDC1C0, .rodata, engine/fox_boss]
+      - [0xDC1E0, .rodata, engine/fox_tank]
+      - [0xDC340, .rodata, engine/fox_demo]
+      - [0xDC990, .rodata, engine/fox_display]
+      - [0xDCB90, .rodata, engine/fox_load]
+      - [0xDCC10, .rodata, engine/fox_edisplay]
+      - [0xDCFC0, .rodata, engine/fox_enmy]
+      - [0xDD640, .rodata, engine/fox_enmy2]
+      - [0xDDE20, .rodata, engine/fox_effect]
+      - [0xDE2E0, .rodata, engine/fox_fade]
+      - [0xDE310, .rodata, engine/fox_hud]
+      - [0xDECB0, .rodata, engine/fox_col1]
+      - [0xDECC0, .rodata, engine/fox_std_lib]
+      - [0xDED20, .rodata, engine/fox_game]
+      - [0xDEDA0, .rodata, engine/fox_col2]
+      - [0xDEDB0, .rodata, engine/fox_pause]
+      - [0xDEDC0, .rodata, engine/fox_play]
+      - [0xDF6C0, .rodata, engine/fox_radio]
+      - [0xDFD20, .rodata, engine/fox_versus]
+      - [0xDFE30, .rodata, engine/fox_message]
+      - [0xDFEF0, .rodata, engine/fox_save]
+
+      # Common assets
+      - [0xDFF60, data, fox_msg_textures]
+      - [0xE4FE0, data, fox_shapes]
+      - [0xE67C0, data, fox_wheels]
+      - [0xE7560, data, fox_msg_palettes]
+      - [0xE75E0, data, fox_rcp_init]
+      - [0xE7650, data, wave_samples]
+      - [0xE8270, data, note_data]
+
+      # Nintendo Library bss
+      - { type: bss, vram: 0x800E87C0, name: sys_joybus }
+      - { type: bss, vram: 0x800E89E0, name: sys_main }
+      - { type: bss, vram: 0x801462E0, name: sys_math }
+      - { type: bss, vram: 0x80146300, name: sys_matrix }
+      - { type: bss, vram: 0x80147310, name: sys_memory }
+      - { type: bss, vram: 0x8014FB20, name: sys_timer }
+      - { type: bss, vram: 0x8014FEA0, name: sys_save }
+      - { type: bss, vram: 0x801502A0, name: sys_fault }
+      - { type: bss, vram: 0x80150C80, name: audio/audio_synthesis }
+      - { type: bss, vram: 0x80151CC0, name: audio/audio_load }
+      - { type: bss, vram: 0x80151DA0, name: audio/audio_general }
+      - { type: bss, vram: 0x80156980, name: audio/audio_context }
+      - { type: bss, vram: 0x80160CE0, name: audio/audio_thread }
+      
+      # Libultra bss
+      - { type: bss, vram: 0x80161560, name: libultra }
+
+      # Game engine bss
+      - { type: bss, vram: 0x801650A0, name: engine/fox_360 }
+      - { type: bss, vram: 0x801650F0, name: engine/fox_beam }
+      - { type: bss, vram: 0x80165100, name: engine/fox_bg }
+      - { type: bss, vram: 0x80166B40, name: engine/fox_boss }
+      - { type: bss, vram: 0x80166B50, name: engine/fox_display }
+      - { type: bss, vram: 0x80166D70, name: engine/fox_edisplay }
+      - { type: bss, vram: 0x80166E10, name: engine/fox_enmy }
+      - { type: bss, vram: 0x80166E30, name: engine/fox_enmy2 }
+      - { type: bss, vram: 0x80166E40, name: engine/fox_hud }
+      - { type: bss, vram: 0x801670F0, name: engine/fox_col1 }
+      - { type: bss, vram: 0x80167140, name: engine/fox_std_lib }
+      - { type: bss, vram: 0x801671B0, name: engine/fox_game }
+      - { type: bss, vram: 0x801671F0, name: engine/fox_play }
+      - { type: bss, vram: 0x80167210, name: engine/fox_context}
+      - { type: bss, vram: 0x8017DD20, name: engine/fox_rcp }
+      - { type: bss, vram: 0x8017DEC0, name: engine/fox_radio }
+      - { type: bss, vram: 0x8017DEF0, name: engine/fox_versus }
+      - { type: bss, vram: 0x8017E010, name: engine/fox_save }
+
+  - name: dma_table
+    type: code
+    start: 0xE93C0
+    vram: 0x8017E210
+    follows_vram: main
+    subsegments:
+     - [0xE93C0, .data, dmatable]
+
+  - name: buffers
+    exclusive_ram_id: buffer
+    type: code
+    vram: 0x80281000
+    bss_size: 0x17F000
+    subsegments:
+    - { type: .bss, vram: 0x80281000, name: buffers }

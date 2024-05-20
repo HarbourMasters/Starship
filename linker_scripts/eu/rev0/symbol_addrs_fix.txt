@@ -1,0 +1,123 @@
+
+// hallucinated symbols
+D_400001 = 0x400001; //ignore:true
+D_7FFFFFFE = 0x7FFFFFFE; //ignore:True
+D_80000000 = 0x80000000; //ignore:True
+D_80000001 = 0x80000001; //ignore:true
+D_80000002 = 0x80000002; //ignore:True
+D_80000003 = 0x80000003; //ignore:True
+D_80000004 = 0x80000004; //ignore:True
+D_80000006 = 0x80000006; //ignore:True
+D_80000008 = 0x80000008; //ignore:True
+D_8000000A = 0x8000000A; //ignore:True
+D_8000000C = 0x8000000C; //ignore:True
+D_8000000D = 0x8000000D; //ignore:True
+D_8000000E = 0x8000000E; //ignore:True
+D_8000000F = 0x8000000F; //ignore:True
+D_80000014 = 0x80000014; //ignore:True
+D_80000018 = 0x80000018; //ignore:True
+D_8000001C = 0x8000001C; //ignore:True
+D_80000024 = 0x80000024; //ignore:True
+D_800F0032 = 0x800F0032; //ignore:True
+D_80100032 = 0x80100032; //ignore:True
+D_80110000 = 0x80110000; //ignore:True
+D_801100C8 = 0x801100C8; //ignore:True
+D_80120000 = 0x80120000; //ignore:True
+D_801200C8 = 0x801200C8; //ignore:True
+D_80130001 = 0x80130001; //ignore:True
+D_801300C8 = 0x801300C8; //ignore:True
+D_80140001 = 0x80140001; //ignore:true
+D_80150000 = 0x80150000; //ignore:true
+D_80160000 = 0x80160000; //ignore:true
+D_80170000 = 0x80170000; //ignore:true
+D_80170001 = 0x80170001; //ignore:true
+D_80180001 = 0x80180001; //ignore:True
+D_80180058 = 0x80180058; //ignore:True
+D_801D0001 = 0x801D0001; //ignore:True
+D_801C0130 = 0x801C0130; //ignore:True
+
+// mirage symbols
+D_3000000 = 0x3000000; //ignore:true
+D_6000000 = 0x6000000; //ignore:true
+D_7000000 = 0x7000000; //ignore:true
+D_8000000 = 0x8000000; //ignore:true
+D_A000000 = 0xA000000; //ignore:true
+D_C000000 = 0xC000000; //ignore:true
+
+// rsp
+rspbootTextStart = 0x800004D0;//name_end:rspbootTextEnd
+aspMainTextStart = 0x800005A0;//name_end:aspMainTextEnd
+gspF3DEX_fifoTextStart = 0x80001490;//name_end:gspF3DEX_fifoTextEnd
+gspF3DEX_fifoDataStart = 0x800C4980; //name_end:gspF3DEX_fifoDataEnd
+aspMainDataStart = 0x800C3E70; //name_end:aspMainDataEnd
+altIPL3Start = 0x8001F090;
+
+// redundant rodata
+D_800D63EC = 0x800D63EC; //force_migration:true
+D_800D65F8 = 0x800D65F8; //force_migration:true
+D_800D660C = 0x800D660C; //force_migration:true
+D_800D99D0 = 0x800D99D0; //force_migration:true
+D_800D99E0 = 0x800D99E0; //force_migration:true
+D_800D9A04 = 0x800D9A04; //force_migration:true
+D_800DA7B0 = 0x800DA7B0; //force_migration:true
+D_i3_801C517C = 0x801C517C; //force_migration:true segment:ovl_i3
+D_i3_801C5188 = 0x801C5188; //force_migration:true segment:ovl_i3
+D_i3_801C5190 = 0x801C5190; //force_migration:true segment:ovl_i3
+D_i3_801C51B8 = 0x801C51B8; //force_migration:true segment:ovl_i3
+D_i4_801A3754 = 0x801A3754; //force_migration:true segment:ovl_i4
+D_i5_801BF248 = 0x801BF248; //force_migration:true segment:ovl_i5
+D_i5_801BF27C = 0x801BF27C; //force_migration:true segment:ovl_i5
+D_i5_801BF510 = 0x801BF510; //force_migration:true segment:ovl_i5
+D_i5_801BF524 = 0x801BF524; //force_migration:true segment:ovl_i5
+D_i6_801AAF70 = 0x801AAF70; //force_migration:true segment:ovl_i6
+
+// constant for K1 access
+D_A0000000 = 0xA0000000;//ignore:true
+
+// hardcoded address used in sys_rdram
+D_A0300000 = 0xA0300000;//ignore:true
+D_A4000000 = 0xA4000000;//ignore:true
+
+// hardcoded addresses in libultra
+D_BFF00000 = 0xBFF00000;//ignore:true
+D_BFF08000 = 0xBFF08000;//ignore:true
+D_BFF08004 = 0xBFF08004;//ignore:true
+
+// RDB regs used only in exceptasm. Also -2.0f
+D_C0000000 = 0xC0000000;//ignore:true
+D_C0000008 = 0xC0000008;//ignore:true
+D_C000000C = 0xC000000C;//ignore:true
+
+// hidden symbols
+sSamplesPerWavePeriod = 0x800C63E8; //size:0x4 type:u8
+sOvlUnused_Unk = 0x800CCBAC;
+D_800D6994 = 0x800D6994;
+D_801BE59C = 0x801BE59C; //segment:ovl_i5
+
+// fake symbol removal
+gDmaTable = 0x8017ABE0; //size:0x650
+
+// that stupid thing where i6 sets a value in ending
+D_i6_8019A490 = 0x8019A490; //ignore:true segment:ovl_i6
+
+// dma symbols
+dma_table_ROM_START  =  0xE0570;
+audio_seq_ROM_START  =  0xE0BC0;
+audio_bank_ROM_START = 0x127F50;
+audio_table_ROM_START = 0x1471E0;
+ast_radio_de_ROM_START = 0xDE12C0;
+ast_radio_de_VRAM = 0x8017B230;
+ast_radio_de_ROM_END = 0xDF10B0;
+ast_radio_en_ROM_START = 0xEFB1A0;
+ast_radio_fr_ROM_START = 0xF08CF0;
+ast_radio_fr_ROM_END = 0xF17200;
+
+// buffers
+gDramStack = 0x80289000; //size:0x400 segment:buffers defined:true
+gOSYieldData = 0x80289400; //size:0xC00 segment:buffers defined:true
+gZBuffer = 0x8028A000; //size:0x25800 segment:buffers defined:true
+gTaskOutputBuffer = 0x802AF800; //size:0x30000 name_end:gTaskOutputBufferEnd segment:buffers defined:true
+gAudioHeap = 0x802DF800; //size:0xB0000 segment:buffers defined:true
+gFillBuffer = 0x8038F800; //size:0x780 segment:buffers defined:true
+D_8038FA80 = 0x8038FA80;//ignore:true segment:buffers
+gFrameBuffers = 0x8038FF80; //size:0x70800 segment:buffers defined:true

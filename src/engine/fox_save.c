@@ -59,7 +59,11 @@ s32 Save_Read(void) {
         (void) "ＥＥＰＲＯＭ ＲＯＭ［０］ 正常\n";
         return 0;
     }
+#ifdef AVOID_UB
+    for (i = 0; i < sizeof(SaveData); i++) {
+#else
     for (i = 0; i <= sizeof(SaveData); i++) { // should be <, but gets overwritten immediately.
+#endif
         gSaveFile.save.raw[i] = gSaveFile.backup.raw[i];
     }
     gSaveFile.save.checksum = gSaveFile.backup.checksum;

@@ -1,0 +1,15 @@
+:config:
+  segments:
+    - [0x08, 0xD91F10]
+  header:
+    code:
+      - '#include "assets/ast_ending_expert.h"'
+    header:
+      - '#include "gfx.h"'
+      - '#include "sf64object.h"'
+
+ending_expert_reward:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 316, height: 240, offset: 0x8000000, symbol: gEndingExpertReward }
+
+ending_normal_reward:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 316, height: 240, offset: 0x8025080, symbol: gEndingNormalReward }

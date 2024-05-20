@@ -1,0 +1,200 @@
+:config:
+  segments:
+    - [0x06, 0xB0AA00]
+  header:
+    code:
+      - '#include "assets/ast_bolse.h"'
+    header:
+      - '#include "gfx.h"'
+      - '#include "sf64object.h"'
+      - '#include "sf64level.h"'
+      - '#include "sf64event.h"'
+      - '#include "sf64player.h"'
+      - '#include "sf64audio_external.h"'
+      - '#include "sf64mesg.h"'
+# Bolse Defense Outpost
+D_BO_6000000:
+  { type: TEXTURE, ctype: u8, format: IA8, width: 168, height: 19, offset: 0x6000000, symbol: D_BO_6000000 }
+  
+D_BO_6000C80:
+  { type: TEXTURE, ctype: u8, format: IA8, width: 16, height: 16, offset: 0x6000C80, symbol: D_BO_6000C80 }
+
+D_BO_6000D80:
+  { type: GFX, offset: 0x6000D80, symbol: D_BO_6000D80 }
+
+D_BO_6001908:
+  { type: TEXTURE, format: RGBA16, offset: 0x6001908, width: 16, height: 16, ctype: u16, symbol: D_BO_6001908 }
+
+D_BO_6001C64:
+  { type: SF64:ANIM, offset: 0x6001C64, symbol: D_BO_6001C64 }
+    
+D_BO_6001FB0: 
+  { type: SF64:SKELETON, offset: 0x6001FB0, symbol: D_BO_6001FB0 }
+
+D_BO_6002020:
+  { type: GFX, offset: 0x6002020, symbol: D_BO_6002020 }
+
+D_BO_6004848:
+  { type: TEXTURE, format: RGBA16, offset: 0x06004848, width: 32, height: 32, ctype: u16, symbol: D_BO_6004848 }
+
+D_BO_6005048:
+  { type: TEXTURE, format: RGBA16, offset: 0x06005048, width: 16, height: 32, ctype: u16, symbol: D_BO_6005048 }
+
+D_BO_6005908:
+  { type: TEXTURE, format: RGBA16, offset: 0x06005908, width: 32, height: 32, ctype: u16, symbol: D_BO_6005908 }
+
+D_BO_6006108:
+  { type: TEXTURE, format: RGBA16, offset: 0x06006108, width: 32, height: 32, ctype: u16, symbol: D_BO_6006108 }
+
+D_BO_6006910:
+  { type: GFX, offset: 0x6006910, symbol: D_BO_6006910 }
+
+D_BO_6006AD0:
+  { type: TEXTURE, ctype: u8, format: CI8, width: 32, height: 32, offset: 0x6006AD0, symbol: D_BO_6006AD0 }
+
+D_BO_6006ED0:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 64, offset: 0x06006ED0, symbol: D_BO_6006ED0 }
+
+D_BO_6006F50:
+  { type: TEXTURE, format: RGBA16, offset: 0x06006F50, width: 4, height: 16, ctype: u16, symbol: D_BO_6006F50 }
+
+D_BO_6006FD0:
+  { type: TEXTURE, format: RGBA16, offset: 0x06006FD0, width: 32, height: 32, ctype: u16, symbol: D_BO_6006FD0 }
+
+D_BO_60077D0:
+  { type: TEXTURE, ctype: u8, format: CI8, width: 32, height: 32, offset: 0x60077D0, symbol: D_BO_60077D0 }
+
+D_BO_6007BD0:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 64, offset: 0x06007BD0, symbol: D_BO_6007BD0 }
+
+D_BO_6007DF8:
+  { type: TEXTURE, format: RGBA16, offset: 0x06007DF8, width: 16, height: 32, ctype: u16, symbol: D_BO_6007DF8 }
+
+D_BO_6008440:
+  { type: TEXTURE, format: RGBA16, offset: 0x06008440, width: 16, height: 16, ctype: u16, symbol: D_BO_6008440 }
+
+# Unused Animation
+D_BO_6008668: 
+  { type: SF64:ANIM, offset: 0x6008668, symbol: D_BO_6008668 }
+
+# Unused Skeleton
+D_BO_60086B4: 
+  { type: SF64:SKELETON, offset: 0x60086B4, symbol: D_BO_60086B4 }
+
+# Unused Animation
+D_BO_60086F4: 
+  { type: SF64:ANIM, offset: 0x60086F4, symbol: D_BO_60086F4 }
+
+# Unused Skeleton
+D_BO_6008760: 
+  { type: SF64:SKELETON, offset: 0x6008760, symbol: D_BO_6008760 }
+
+D_BO_6008770:
+  { type: GFX, offset: 0x6008770, symbol: D_BO_6008770 }
+
+D_BO_6008BB8:
+  { type: TEXTURE, format: RGBA16, offset: 0x06008BB8, width: 32, height: 32, ctype: u16, symbol: D_BO_6008BB8 }
+
+D_BO_60093B8:
+  { type: TEXTURE, format: RGBA16, offset: 0x060093B8, width: 32, height: 32, ctype: u16, symbol: D_BO_60093B8 }
+
+D_BO_6009BC0:
+  { type: GFX, offset: 0x6009BC0, symbol: D_BO_6009BC0 }
+
+# Unused DisplayList, looks like a tube.
+D_BO_600A2C0:
+  { type: GFX, offset: 0x600A2C0, symbol: D_BO_600A2C0 }
+
+D_BO_600A810:
+  { type: GFX, offset: 0x600A810, symbol: D_BO_600A810 }
+
+# Unused DisplayList, looks like a cube with an entrance.
+D_BO_600AB90:
+  { type: GFX, offset: 0x600AB90, symbol: D_BO_600AB90 }
+
+D_BO_600AD80:
+  { type: TEXTURE, format: RGBA16, offset: 0x0600AD80, width: 32, height: 32, ctype: u16, symbol: D_BO_600AD80 }
+
+D_BO_600B8B0:
+  { type: GFX, offset: 0x600B8B0, symbol: D_BO_600B8B0 }
+
+D_BO_600BAA0:
+  { type: GFX, offset: 0x600BAA0, symbol: D_BO_600BAA0 }
+
+D_BO_600BEC0:
+  { type: GFX, offset: 0x600BEC0, symbol: D_BO_600BEC0 }
+
+D_BO_600BF30:
+  { type: GFX, offset: 0x600BF30, symbol: D_BO_600BF30 }
+
+D_BO_600C0B8:
+  { type: VTX, count: 34, offset: 0x600C0B8, symbol: D_BO_600C0B8 }
+
+D_BO_600C2D8:
+  { type: TEXTURE, format: IA8, offset: 0x0600C2D8, width: 32, height: 16, ctype: u8, symbol: D_BO_600C2D8 }
+
+D_BO_600C4E0:
+  { type: GFX, offset: 0x600C4E0, symbol: D_BO_600C4E0 }
+
+D_BO_600CF88:
+  { type: TEXTURE, format: RGBA16, offset: 0x0600CF88, width: 16, height: 16, ctype: u16, symbol: D_BO_600CF88 }
+
+D_BO_600D190:
+  { type: GFX, offset: 0x600D190, symbol: D_BO_600D190 }
+
+D_BO_600D2A0:
+  { type: TEXTURE, format: RGBA16, offset: 0x0600D2A0, width: 32, height: 64, ctype: u16, symbol: D_BO_600D2A0 }
+
+D_BO_600E2A0:
+  { type: TEXTURE, format: RGBA16, offset: 0x0600E2A0, width: 32, height: 64, ctype: u16, symbol: D_BO_600E2A0 }
+
+D_BO_600F2E0:
+  { type: SF64:ANIM, offset: 0x600F2E0, symbol: D_BO_600F2E0 }
+    
+D_BO_600F36C: 
+  { type: SF64:SKELETON, offset: 0x600F36C, symbol: D_BO_600F36C }
+
+D_BO_600F3D8:
+  { type: SF64:ANIM, offset: 0x600F3D8, symbol: D_BO_600F3D8 }
+    
+D_BO_600F4A4:
+  { type: SF64:SKELETON, offset: 0x600F4A4, symbol: D_BO_600F4A4 }
+
+D_BO_600F4C0:
+  { type: GFX, offset: 0x600F4C0, symbol: D_BO_600F4C0 }
+
+D_BO_600F728:
+  { type: TEXTURE, format: RGBA16, offset: 0x0600F728, width: 32, height: 32, ctype: u16, symbol: D_BO_600F728 }
+
+D_BO_600FF30:
+  { type: SF64:ENVIRONMENT, offset: 0x600FF30, symbol: D_BO_600FF30 }
+
+D_BO_600FF74: 
+  { type: SF64:OBJECT_INIT, offset: 0x600FF74, symbol: D_BO_600FF74 }
+
+D_BO_6010294:
+  { type: SF64:COLPOLY, count: 262, offset: 0x6010294, symbol: D_BO_6010294, mesh_symbol: D_BO_OFFSET }
+
+PAD_BO_6011B20:
+  { type: BLOB, size: 0x4, offset: 0x6011B20, symbol: PAD_BO_6011B20, mesh_symbol: D_BO_OFFSET }
+
+D_BO_6011B24:
+  { type: SF64:HITBOX, offset: 0x6011B24, symbol: D_BO_6011B24 }
+
+D_BO_6011BA4:
+  { type: SF64:HITBOX, offset: 0x6011BA4, symbol: D_BO_6011BA4 }
+
+D_BO_6011BF4:
+  { type: SF64:HITBOX, offset: 0x6011BF4, symbol: D_BO_6011BF4 }
+
+D_BO_6011C10:
+  { type: SF64:HITBOX, offset: 0x6011C10, symbol: D_BO_6011C10 }
+
+D_BO_6011C48:
+  { type: SF64:HITBOX, offset: 0x6011C48, symbol: D_BO_6011C48 }
+
+D_BO_6011C80:
+  { type: SF64:HITBOX, offset: 0x6011C80, symbol: D_BO_6011C80 }
+
+D_BO_6011E28:
+  { type: VTX, count: 34, offset: 0x6011E28, symbol: D_BO_6011E28 }

@@ -4,7 +4,7 @@ OSContPad gControllerHold[4];
 OSContPad gControllerPress[4];
 u8 gControllerPlugged[4];
 u32 gControllerLock;
-u8 gControllerRumble[4];
+u8 gControllerRumbleEnabled[4];
 OSContPad sNextController[4];      //
 OSContPad sPrevController[4];      //
 OSContStatus sControllerStatus[4]; //
@@ -55,7 +55,7 @@ void Controller_Init(void) {
     osContInit(&gSerialEventQueue, &sp1F, sControllerStatus);
     for (i = 0; i < 4; i++) {
         gControllerPlugged[i] = (sp1F >> i) & 1;
-        gControllerRumble[i] = 0;
+        gControllerRumbleEnabled[i] = 0;
     }
 }
 
@@ -118,30 +118,30 @@ void Controller_Rumble(void) {
     for (i = 0; i < 4; i++) {
         if ((gControllerPlugged[i] != 0) && (sControllerStatus[i].err_no == 0)) {
             if (sControllerStatus[i].status & 1) {
-                if (gControllerRumble[i] == 0) {
+                if (gControllerRumbleEnabled[i] == 0) {
                     if (osMotorInit(&gSerialEventQueue, &sControllerMotor[i], i)) {
-                        gControllerRumble[i] = 0;
+                        gControllerRumbleEnabled[i] = 0;
                     } else {
-                        gControllerRumble[i] = 1;
+                        gControllerRumbleEnabled[i] = 1;
                     }
                 }
-                if (gControllerRumble[i] == 1) {
-                    if (D_80137E84[i] != 0) {
+                if (gControllerRumbleEnabled[i] == 1) {
+                    if (gControllerRumbleFlags[i] != 0) {
                         if (osMotorStart(&sControllerMotor[i])) {
-                            gControllerRumble[i] = 0;
+                            gControllerRumbleEnabled[i] = 0;
                         }
                     } else {
                         if (osMotorStop(&sControllerMotor[i])) {
-                            gControllerRumble[i] = 0;
+                            gControllerRumbleEnabled[i] = 0;
                         }
                     }
                 }
             } else {
-                gControllerRumble[i] = 0;
+                gControllerRumbleEnabled[i] = 0;
             }
         }
     }
     for (i = 0; i < 4; i++) {
-        D_80137E84[i] = 0;
+        gControllerRumbleFlags[i] = 0;
     }
 }

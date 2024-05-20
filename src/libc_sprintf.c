@@ -2,8 +2,8 @@
 
 char D_800C7C80[] = "$Id: sprintf.c,v 1.5 1997/03/19 02:28:53 hayakawa Exp $";
 
-void* proutSprintf(void* dst, const char* fmt, size_t size) {
-    return (void*) ((uintptr_t) memcpy(dst, fmt, size) + size);
+char* proutSprintf(char* dst, const char* fmt, size_t size) {
+    return (char*) ((uintptr_t) memcpy(dst, fmt, size) + size);
 }
 
 // s32 vsprintf(char* dst, const char* fmt, va_list args) {

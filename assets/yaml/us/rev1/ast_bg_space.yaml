@@ -1,0 +1,93 @@
+:config:
+  segments:
+    - [0x02, 0x8A68C0]
+  header:
+    code:
+      - '#include "assets/ast_bg_space.h"'
+    header:
+      - '#include "gfx.h"'
+      - '#include "sf64object.h"'
+
+D_BG_SPACE_2000000:
+  { type: GFX, offset: 0x2000000, symbol: D_BG_SPACE_2000000 }
+
+D_BG_SPACE_2000088:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x2000088, symbol: D_BG_SPACE_2000088 }
+
+D_BG_SPACE_2000890:
+  { type: GFX, offset: 0x2000890, symbol: D_BG_SPACE_2000890 }
+
+D_BG_SPACE_2000918:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x2000918, symbol: D_BG_SPACE_2000918 }
+
+D_BG_SPACE_2001120:
+  { type: GFX, offset: 0x2001120, symbol: D_BG_SPACE_2001120 }
+
+D_BG_SPACE_20011A8:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x020011A8, symbol: D_BG_SPACE_20011A8 }
+
+D_BG_SPACE_20019B0:
+  { type: GFX, offset: 0x20019B0, symbol: D_BG_SPACE_20019B0 }
+
+D_BG_SPACE_2001A38:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x02001A38, symbol: D_BG_SPACE_2001A38 }
+
+D_BG_SPACE_2002240:
+  { type: GFX, offset: 0x2002240, symbol: D_BG_SPACE_2002240 }
+
+D_BG_SPACE_20022C8:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x020022C8, symbol: D_BG_SPACE_20022C8 }
+
+D_BG_SPACE_2002AD0:
+  { type: GFX, offset: 0x2002AD0, symbol: D_BG_SPACE_2002AD0 }
+
+D_BG_SPACE_2002B58:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x02002B58, symbol: D_BG_SPACE_2002B58 }
+
+D_BG_SPACE_2003360:
+  { type: GFX, offset: 0x2003360, symbol: D_BG_SPACE_2003360 }
+
+D_BG_SPACE_20033E8:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x020033E8, symbol: D_BG_SPACE_20033E8 }
+
+D_BG_SPACE_2003BF0:
+  { type: GFX, offset: 0x2003BF0, symbol: D_BG_SPACE_2003BF0 }
+
+D_BG_SPACE_2003C78:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x02003C78, symbol: D_BG_SPACE_2003C78 }
+
+D_BG_SPACE_2004480:
+  { type: GFX, offset: 0x2004480, symbol: D_BG_SPACE_2004480 }
+
+D_BG_SPACE_2004508:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x02004508, symbol: D_BG_SPACE_2004508 }
+
+D_BG_SPACE_2004D10:
+  { type: GFX, offset: 0x2004D10, symbol: D_BG_SPACE_2004D10 }
+
+D_BG_SPACE_2004D98:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x02004D98, symbol: D_BG_SPACE_2004D98 }
+
+D_BG_SPACE_20055A0:
+  { type: GFX, offset: 0x20055A0, symbol: D_BG_SPACE_20055A0 }
+
+D_BG_SPACE_2005628:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x02005628, symbol: D_BG_SPACE_2005628 }
+
+D_BG_SPACE_2005E30:
+  { type: GFX, offset: 0x2005E30, symbol: D_BG_SPACE_2005E30 }
+
+D_BG_SPACE_2005EB8:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x02005EB8, symbol: D_BG_SPACE_2005EB8 }
+
+D_BG_SPACE_20066C0:
+  { type: GFX, offset: 0x20066C0, symbol: D_BG_SPACE_20066C0 }
+
+D_BG_SPACE_2006748:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x02006748, symbol: D_BG_SPACE_2006748 }
+
+D_BG_SPACE_2006F50:
+  { type: GFX, offset: 0x2006F50, symbol: D_BG_SPACE_2006F50 }
+
+D_BG_SPACE_2006FD8:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x02006FD8, symbol: D_BG_SPACE_2006FD8 }

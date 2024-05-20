@@ -1,0 +1,134 @@
+:config:
+  segments:
+    - [0x04, 0x922730]
+  header:
+    code:
+      - '#include "assets/ast_enmy_space.h"'
+    header:
+      - '#include "gfx.h"'
+      - '#include "sf64object.h"'
+
+D_ENMY_SPACE_4000080:
+  { type: SF64:ANIM, offset: 0x4000080, symbol: D_ENMY_SPACE_4000080 }
+
+D_ENMY_SPACE_400014C: 
+  { type: SF64:SKELETON, offset: 0x400014C, symbol: D_ENMY_SPACE_400014C }
+
+D_ENMY_SPACE_4000170:
+  { type: GFX, offset: 0x4000170, symbol: D_ENMY_SPACE_4000170 }
+
+D_ENMY_SPACE_4000650:
+  { type: GFX, offset: 0x4000650, symbol: D_ENMY_SPACE_4000650 }
+
+D_ENMY_SPACE_4000EC0:
+  { type: GFX, offset: 0x4000EC0, symbol: D_ENMY_SPACE_4000EC0 }
+
+D_ENMY_SPACE_4001108:
+  { type: TEXTURE, format: RGBA16, offset: 0x4001108, width: 16, height: 16, ctype: u16, symbol: D_ENMY_SPACE_4001108 }
+
+D_ENMY_SPACE_4001310:
+  { type: GFX, offset: 0x4001310, symbol: D_ENMY_SPACE_4001310 }
+
+D_ENMY_SPACE_4001A30:
+  { type: TEXTURE, format: RGBA16, offset: 0x4001A30, width: 16, height: 16, ctype: u16, symbol: D_ENMY_SPACE_4001A30 }
+
+D_ENMY_SPACE_4001C30:
+  { type: TEXTURE, format: RGBA16, offset: 0x04001C30, width: 16, height: 16, ctype: u16, symbol: D_ENMY_SPACE_4001C30 }
+
+D_ENMY_SPACE_4001E30:
+  { type: TEXTURE, format: RGBA16, offset: 0x04001E30, width: 16, height: 16, ctype: u16, symbol: D_ENMY_SPACE_4001E30 }
+
+D_ENMY_SPACE_4002030:
+  { type: TEXTURE, format: RGBA16, offset: 0x04002030, width: 16, height: 16, ctype: u16, symbol: D_ENMY_SPACE_4002030 }
+
+D_ENMY_SPACE_4002230:
+  { type: GFX, offset: 0x4002230, symbol: D_ENMY_SPACE_4002230 }
+
+D_ENMY_SPACE_4002C50:
+  { type: TEXTURE, format: RGBA16, offset: 0x04002C50, width: 16, height: 16, ctype: u16, symbol: D_ENMY_SPACE_4002C50 }
+
+D_ENMY_SPACE_4002E50:
+  { type: TEXTURE, format: RGBA16, offset: 0x04002E50, width: 16, height: 16, ctype: u16, symbol: D_ENMY_SPACE_4002E50 }
+
+D_ENMY_SPACE_4003050:
+  { type: TEXTURE, format: RGBA16, offset: 0x04003050, width: 16, height: 16, ctype: u16, symbol: D_ENMY_SPACE_4003050 }
+
+D_ENMY_SPACE_4003250:
+  { type: TEXTURE, format: RGBA16, offset: 0x04003250, width: 4, height: 4, ctype: u16, symbol: D_ENMY_SPACE_4003250 }
+
+D_ENMY_SPACE_4003270:
+  { type: TEXTURE, format: RGBA16, offset: 0x04003270, width: 16, height: 16, ctype: u16, symbol: D_ENMY_SPACE_4003270 }
+
+D_ENMY_SPACE_4003470:
+  { type: TEXTURE, format: RGBA16, offset: 0x04003470, width: 16, height: 16, ctype: u16, symbol: D_ENMY_SPACE_4003470 }
+
+D_ENMY_SPACE_4003670:
+  { type: TEXTURE, format: RGBA16, offset: 0x04003670, width: 8, height: 8, ctype: u16, symbol: D_ENMY_SPACE_4003670 }
+
+D_ENMY_SPACE_4003BD0:
+  { type: GFX, offset: 0x4003BD0, symbol: D_ENMY_SPACE_4003BD0 }
+
+D_ENMY_SPACE_40047E8:
+  { type: TEXTURE, format: RGBA16, offset: 0x40047E8, width: 32, height: 32, ctype: u16, symbol: D_ENMY_SPACE_40047E8 }
+
+D_ENMY_SPACE_4004FE8:
+  { type: TEXTURE, format: RGBA16, offset: 0x4004FE8, width: 64, height: 32, ctype: u16, symbol: D_ENMY_SPACE_4004FE8 }
+
+D_ENMY_SPACE_4005FE8:
+  { type: TEXTURE, format: RGBA16, offset: 0x4005FE8, width: 32, height: 32, ctype: u16, symbol: D_ENMY_SPACE_4005FE8 }
+
+D_ENMY_SPACE_40067E8:
+  { type: TEXTURE, format: RGBA16, offset: 0x40067E8, width: 32, height: 32, ctype: u16, symbol: D_ENMY_SPACE_40067E8 }
+
+D_ENMY_SPACE_40077E8:
+  { type: TEXTURE, format: RGBA16, offset: 0x40077E8, width: 8, height: 8, ctype: u16, symbol: D_ENMY_SPACE_40077E8 }
+
+D_ENMY_SPACE_4007870:
+  { type: GFX, offset: 0x4007870, symbol: D_ENMY_SPACE_4007870 }
+
+D_ENMY_SPACE_4006FE8:
+  { type: TEXTURE, format: RGBA16, offset: 0x4006FE8, width: 32, height: 32, ctype: u16, symbol: D_ENMY_SPACE_4006FE8 }
+
+D_ENMY_SPACE_40084D0:
+  { type: GFX, offset: 0x40084D0, symbol: D_ENMY_SPACE_40084D0 }
+
+D_ENMY_SPACE_4008550:
+  { type: TEXTURE, format: RGBA16, offset: 0x04008550, width: 32, height: 32, ctype: u16, symbol: D_ENMY_SPACE_4008550 }
+
+D_ENMY_SPACE_4008D50:
+  { type: GFX, offset: 0x4008D50, symbol: D_ENMY_SPACE_4008D50 }
+
+D_ENMY_SPACE_4008FA0:
+  { type: GFX, offset: 0x4008FA0, symbol: D_ENMY_SPACE_4008FA0 }
+
+D_ENMY_SPACE_40096B8:
+  { type: TEXTURE, format: RGBA16, offset: 0x040096B8, width: 16, height: 16, ctype: u16, symbol: D_ENMY_SPACE_40096B8 }
+
+D_ENMY_SPACE_40098B8:
+  { type: TEXTURE, format: RGBA16, offset: 0x040098B8, width: 16, height: 16, ctype: u16, symbol: D_ENMY_SPACE_40098B8 }
+
+D_ENMY_SPACE_4009AB8:
+  { type: TEXTURE, format: RGBA16, offset: 0x04009AB8, width: 32, height: 32, ctype: u16, symbol: D_ENMY_SPACE_4009AB8 }
+
+D_ENMY_SPACE_400A30C:
+  { type: SF64:ANIM, offset: 0x400A30C, symbol: D_ENMY_SPACE_400A30C }
+
+D_ENMY_SPACE_400A398:
+  { type: SF64:SKELETON, offset: 0x400A398, symbol: D_ENMY_SPACE_400A398 }
+
+D_ENMY_SPACE_400A630:
+  { type: GFX, offset: 0x400A630, symbol: D_ENMY_SPACE_400A630 }
+
+  
+D_ENMY_SPACE_400AAE0:
+  { type: GFX, offset: 0x400AAE0, symbol: D_ENMY_SPACE_400AAE0 }
+
+  
+D_ENMY_SPACE_400B390:
+  { type: GFX, offset: 0x400B390, symbol: D_ENMY_SPACE_400B390 }
+  
+  
+D_ENMY_SPACE_400BD20:
+  { type: GFX, offset: 0x400BD20, symbol: D_ENMY_SPACE_400BD20 }
+
+# size = 0xC510

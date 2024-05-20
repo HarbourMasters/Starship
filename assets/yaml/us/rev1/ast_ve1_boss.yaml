@@ -1,0 +1,243 @@
+:config:
+  segments:
+    - [0x09, 0xAE60A0]
+  header:
+    code:
+      - '#include "assets/ast_ve1_boss.h"'
+    header:
+      - '#include "gfx.h"'
+      - '#include "sf64object.h"'
+
+D_VE1_9000000:
+  {type: GFX, offset: 0x9000000, symbol: D_VE1_9000000}
+
+D_VE1_90003E8:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x90003E8, symbol: D_VE1_90003E8}
+
+D_VE1_90005E8:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x90005E8, symbol: D_VE1_90005E8}
+
+D_VE1_90007F0:
+  {type: GFX, offset: 0x90007F0, symbol: D_VE1_90007F0}
+
+D_VE1_9000AF0:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x9000AF0, symbol: D_VE1_9000AF0}
+
+D_VE1_90012F0:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x90012F0, symbol: D_VE1_90012F0}
+
+D_VE1_9002CD8:
+  {type: SF64:ANIM, offset: 0x9002CD8, symbol: D_VE1_9002CD8}
+
+D_VE1_9002CF0:
+  {type: GFX, offset: 0x9002CF0, symbol: D_VE1_9002CF0}
+
+D_VE1_9002F30:
+  {type: TEXTURE, ctype: u8, format: CI8, width: 32, height: 32, offset: 0x9002F30, symbol: D_VE1_9002F30, tlut: 0x9003330}
+
+D_VE1_9003330:
+  {type: TEXTURE, ctype: u16, format: TLUT, colors: 176, offset: 0x9003330, symbol: D_VE1_9003330}
+
+D_VE1_9003490:
+  {type: TEXTURE, ctype: u8, format: CI8, width: 32, height: 32, offset: 0x9003490, symbol: D_VE1_9003490, tlut: 0x9003890}
+
+D_VE1_9003890:
+  {type: TEXTURE, ctype: u16, format: TLUT, colors: 176, offset: 0x9003890, symbol: D_VE1_9003890}
+
+D_VE1_90039F0:
+  {type: TEXTURE, ctype: u8, format: CI8, width: 32, height: 32, offset: 0x90039F0, symbol: D_VE1_90039F0, tlut: 0x9003DF0}
+
+D_VE1_9003DF0:
+  {type: TEXTURE, ctype: u16, format: TLUT, colors: 176, offset: 0x9003DF0, symbol: D_VE1_9003DF0}
+
+D_VE1_9003F50:
+  {type: GFX, offset: 0x9003F50, symbol: D_VE1_9003F50}
+
+D_VE1_9004478:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 32, offset: 0x9004478, symbol: D_VE1_9004478}
+
+D_VE1_9004878:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x9004878, symbol: D_VE1_9004878}
+
+D_VE1_9005078:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 32, offset: 0x9005078, symbol: D_VE1_9005078}
+
+D_VE1_9005478:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x9005478, symbol: D_VE1_9005478}
+
+D_VE1_9005C80:
+  {type: GFX, offset: 0x9005C80, symbol: D_VE1_9005C80}
+
+D_VE1_9009700:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x9009700, symbol: D_VE1_9009700}
+
+D_VE1_9009F00:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 32, offset: 0x9009F00, symbol: D_VE1_9009F00}
+
+D_VE1_900A300:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x900A300, symbol: D_VE1_900A300}
+
+D_VE1_900AB00:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 32, offset: 0x900AB00, symbol: D_VE1_900AB00}
+
+D_VE1_900AF00:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x900AF00, symbol: D_VE1_900AF00}
+
+D_VE1_900B700:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x900B700, symbol: D_VE1_900B700}
+
+D_VE1_900BF00:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x900BF00, symbol: D_VE1_900BF00}
+
+D_VE1_900C700:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x900C700, symbol: D_VE1_900C700}
+
+D_VE1_900D098:
+  {type: SF64:ANIM, offset: 0x900D098, symbol: D_VE1_900D098}
+
+D_VE1_900D164:
+  {type: SF64:SKELETON, offset: 0x900D164, symbol: D_VE1_900D164}
+
+D_VE1_900D180:
+  {type: GFX, offset: 0x900D180, symbol: D_VE1_900D180}
+
+D_VE1_900D520:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x900D520, symbol: D_VE1_900D520}
+
+D_VE1_900DD20:
+  {type: GFX, offset: 0x900DD20, symbol: D_VE1_900DD20}
+
+D_VE1_900DF20:
+  {type: GFX, offset: 0x900DF20, symbol: D_VE1_900DF20}
+
+D_VE1_900DFB8:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 64, height: 32, offset: 0x900DFB8, symbol: D_VE1_900DFB8}
+
+D_VE1_900EFC0:
+  {type: GFX, offset: 0x900EFC0, symbol: D_VE1_900EFC0}
+
+D_VE1_900F060:
+  {type: GFX, offset: 0x900F060, symbol: D_VE1_900F060}
+
+D_VE1_900F1D0:
+  {type: GFX, offset: 0x900F1D0, symbol: D_VE1_900F1D0}
+
+D_VE1_9010FC4:
+  {type: SF64:ANIM, offset: 0x9010FC4, symbol: D_VE1_9010FC4}
+
+D_VE1_9010FD0:
+  {type: GFX, offset: 0x9010FD0, symbol: D_VE1_9010FD0}
+
+D_VE1_9011200:
+  {type: GFX, offset: 0x9011200, symbol: D_VE1_9011200}
+
+D_VE1_9011980:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x9011980, symbol: D_VE1_9011980}
+
+D_VE1_9012180:
+  {type: GFX, offset: 0x9012180, symbol: D_VE1_9012180}
+
+D_VE1_90123C0:
+  {type: TEXTURE, ctype: u8, format: CI8, width: 32, height: 16, offset: 0x90123C0, symbol: D_VE1_90123C0, tlut: 0x90125C0}
+
+D_VE1_90125C0:
+  {type: TEXTURE, ctype: u16, format: TLUT, colors: 160, offset: 0x90125C0, symbol: D_VE1_90125C0}
+
+D_VE1_9013880:
+  {type: GFX, offset: 0x9013880, symbol: D_VE1_9013880}
+
+D_VE1_9013C20:
+  {type: GFX, offset: 0x9013C20, symbol: D_VE1_9013C20}
+
+D_VE1_9014DF0:
+  {type: GFX, offset: 0x9014DF0, symbol: D_VE1_9014DF0}
+
+D_VE1_90150A0:
+  {type: GFX, offset: 0x90150A0, symbol: D_VE1_90150A0}
+
+D_VE1_9015480:
+  {type: GFX, offset: 0x9015480, symbol: D_VE1_9015480}
+
+D_VE1_9015900:
+  {type: GFX, offset: 0x9015900, symbol: D_VE1_9015900}
+
+D_VE1_9015BB0:
+  {type: GFX, offset: 0x9015BB0, symbol: D_VE1_9015BB0}
+
+D_VE1_9018BD0:
+  {type: SF64:ANIM, offset: 0x9018BD0, symbol: D_VE1_9018BD0}
+
+D_VE1_901A4B8:
+  {type: SF64:ANIM, offset: 0x901A4B8, symbol: D_VE1_901A4B8}
+
+D_VE1_901BDA8:
+  {type: SF64:ANIM, offset: 0x901BDA8, symbol: D_VE1_901BDA8}
+
+D_VE1_901C0F4:
+  {type: SF64:SKELETON, offset: 0x901C0F4, symbol: D_VE1_901C0F4}
+
+D_VE1_901DA38:
+  {type: SF64:ANIM, offset: 0x901DA38, symbol: D_VE1_901DA38}
+
+D_VE1_901DA50:
+  {type: GFX, offset: 0x901DA50, symbol: D_VE1_901DA50}
+
+D_VE1_901DC90:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 32, offset: 0x901DC90, symbol: D_VE1_901DC90}
+
+D_VE1_901E350:
+  {type: GFX, offset: 0x901E350, symbol: D_VE1_901E350}
+
+D_VE1_901F6D0:
+  {type: GFX, offset: 0x901F6D0, symbol: D_VE1_901F6D0}
+
+D_VE1_901F990:
+  {type: GFX, offset: 0x901F990, symbol: D_VE1_901F990}
+
+D_VE1_901FC40:
+  {type: GFX, offset: 0x901FC40, symbol: D_VE1_901FC40}
+
+D_VE1_901FFB0:
+  {type: GFX, offset: 0x901FFB0, symbol: D_VE1_901FFB0}
+
+D_VE1_9020E30:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x9020E30, symbol: D_VE1_9020E30}
+
+D_VE1_9021630:
+  {type: GFX, offset: 0x9021630, symbol: D_VE1_9021630}
+
+D_VE1_9021900:
+  {type: GFX, offset: 0x9021900, symbol: D_VE1_9021900}
+
+D_VE1_9021B80:
+  {type: GFX, offset: 0x9021B80, symbol: D_VE1_9021B80}
+
+D_VE1_9022820:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x9022820, symbol: D_VE1_9022820}
+
+D_VE1_9022A20:
+  {type: GFX, offset: 0x9022A20, symbol: D_VE1_9022A20}
+
+D_VE1_9022D80:
+  {type: GFX, offset: 0x9022D80, symbol: D_VE1_9022D80}
+
+D_VE1_9023290:
+  {type: GFX, offset: 0x9023290, symbol: D_VE1_9023290}
+
+D_VE1_90234D0:
+  {type: GFX, offset: 0x90234D0, symbol: D_VE1_90234D0}
+
+D_VE1_9023880:
+  {type: GFX, offset: 0x9023880, symbol: D_VE1_9023880}
+
+D_VE1_9023AD0:
+  {type: GFX, offset: 0x9023AD0, symbol: D_VE1_9023AD0}
+
+D_VE1_9024738:
+  {type: SF64:ANIM, offset: 0x9024738, symbol: D_VE1_9024738}
+
+D_VE1_9024750:
+  {type: GFX, offset: 0x9024750, symbol: D_VE1_9024750}
+
+D_VE1_9024940:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 4, height: 4, offset: 0x9024940, symbol: D_VE1_9024940}

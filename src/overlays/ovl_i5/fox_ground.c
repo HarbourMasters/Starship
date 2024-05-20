@@ -346,7 +346,7 @@ void Ground_801B5244(s32 arg0, s32 arg1) {
                 gSP1Triangle(D_i5_801C5C00++, (iv1 << 1), (iv1 << 1) + 3, (iv1 << 1) + 2, 0);
             }
         }
-        Matrix_Translate(gGfxMatrix, 0.0f, 0.0f, D_i5_801C24B8[sp5C] * -220.0f, 0);
+        Matrix_Translate(gGfxMatrix, 0.0f, 0.0f, D_i5_801C24B8[sp5C] * -220.0f, MTXF_NEW);
         Matrix_ToMtx(&D_i5_801C5C18[sp60]);
         gSPMatrix(D_i5_801C5C00++, &D_i5_801C5C18[sp60], G_MTX_NOPUSH | G_MTX_MUL | G_MTX_MODELVIEW);
         gSPEndDisplayList(D_i5_801C5C00++);
@@ -373,7 +373,7 @@ void Ground_801B58AC(Gfx** dList, f32 arg1) {
                      G_TX_NOMIRROR | G_TX_WRAP, 5, 5, G_TX_NOLOD, G_TX_NOLOD);
         gDPLoadTileTexture((*dList)++, D_TI_6001BA8, G_IM_FMT_RGBA, G_IM_SIZ_16b, 32, 32);
         gSPMatrix((*dList)++, &gIdentityMtx, G_MTX_PUSH | G_MTX_MUL | G_MTX_MODELVIEW);
-        Matrix_Translate(gGfxMatrix, D_i5_801C62D8.x, D_i5_801C62D8.y, D_i5_801C62D8.z + D_i5_801C5C10, 0);
+        Matrix_Translate(gGfxMatrix, D_i5_801C62D8.x, D_i5_801C62D8.y, D_i5_801C62D8.z + D_i5_801C5C10, MTXF_NEW);
         Matrix_ToMtx(gGfxMtx);
         gSPMatrix((*dList)++, gGfxMtx++, G_MTX_NOPUSH | G_MTX_MUL | G_MTX_MODELVIEW);
         gSPDisplayList((*dList)++, D_i5_801BA950);
@@ -415,7 +415,7 @@ void Ground_801B58AC(Gfx** dList, f32 arg1) {
                     D_i5_801C24B8[(D_i5_801C5C08 + 29) % 28] * -220.0f;
                 D_i5_801BE748[(D_i5_801C5C04 + 27) % 27][i][1].v.ob[2] = 0;
 
-                Matrix_Translate(gGfxMatrix, 0.0f, 0.0f, D_i5_801C24B8[D_i5_801C5C08] * -220.0f, 0);
+                Matrix_Translate(gGfxMatrix, 0.0f, 0.0f, D_i5_801C24B8[D_i5_801C5C08] * -220.0f, MTXF_NEW);
                 Matrix_ToMtx(&D_i5_801C5C18[D_i5_801C5C04]);
             }
             Ground_801B5FE0(D_i5_801C5C08, D_i5_801C5C04, 1);
@@ -563,7 +563,7 @@ void Ground_801B68A8(Gfx** dlist, s32 arg1, s32 arg2) {
     gDPSetupTile((*dlist)++, G_IM_FMT_RGBA, G_IM_SIZ_16b, 32, 32, 0, 0, G_TX_MIRROR | G_TX_WRAP,
                  G_TX_MIRROR | G_TX_WRAP, 5, 5, G_TX_NOLOD, G_TX_NOLOD);
     gDPLoadTileTexture((*dlist)++, D_TI_6001BA8, G_IM_FMT_RGBA, G_IM_SIZ_16b, 32, 32);
-    Matrix_Translate(gGfxMatrix, D_i5_801C62D8.x, D_i5_801C62D8.y, D_i5_801C62D8.z + D_i5_801C5C10, 0);
+    Matrix_Translate(gGfxMatrix, D_i5_801C62D8.x, D_i5_801C62D8.y, D_i5_801C62D8.z + D_i5_801C5C10, MTXF_NEW);
     Matrix_ToMtx(gGfxMtx);
     gSPMatrix((*dlist)++, gGfxMtx++, G_MTX_NOPUSH | G_MTX_MUL | G_MTX_MODELVIEW);
 

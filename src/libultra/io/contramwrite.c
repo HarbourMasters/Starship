@@ -145,8 +145,8 @@ static void __osPackRamWriteData(int channel, u16 address, u8* buffer) {
     ptr = (u8*) __osPfsPifRam.ramarray;
 
 #if BUILD_VERSION < VERSION_I
-    for (i = 0; i < 16; i++) {
-        __osPfsPifRam.ramarray[i] = 0;
+    for (i = 0; i < ARRLEN(__osPfsPifRam.raw); i++) {
+        __osPfsPifRam.raw[i] = 0;
     }
 #endif
 

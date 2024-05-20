@@ -1,0 +1,68 @@
+:config:
+  segments:
+    - [0x09, 0x9F4880]
+  header:
+    code:
+      - '#include "assets/ast_9_ti.h"'
+    header:
+      - '#include "gfx.h"'
+      - '#include "sf64object.h"'
+
+D_TI_9004288:
+  { type: SF64:ANIM, offset: 0x9004288, symbol: D_TI_9004288 }
+
+D_TI_90042A0:
+  { type: GFX, offset: 0x90042A0, symbol: D_TI_90042A0 }
+
+D_TI_90043D0:
+  { type: GFX, offset: 0x90043D0, symbol: D_TI_90043D0 }
+
+D_TI_90044E0:
+  { type: GFX, offset: 0x90044E0, symbol: D_TI_90044E0 }
+
+D_TI_90045F0:
+  { type: GFX, offset: 0x90045F0, symbol: D_TI_90045F0 }
+
+D_TI_9004858:
+  { type: TEXTURE, ctype: u8, format: CI8, width: 16, height: 16, offset: 0x9004858, symbol: D_TI_9004858, tlut: 0x9004958 }
+D_TI_9004958:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 136, offset: 0x9004958, symbol: D_TI_9004958 }
+
+D_TI_9004A68:
+  { type: TEXTURE, ctype: u8, format: CI8, width: 32, height: 32, offset: 0x9004A68, symbol: D_TI_9004A68, tlut: 0x9004E68 }
+D_TI_9004E68:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 232, offset: 0x9004E68, symbol: D_TI_9004E68 }
+
+D_TI_9005040:
+  { type: GFX, offset: 0x9005040, symbol: D_TI_9005040 }
+
+D_TI_90051C0:
+  { type: GFX, offset: 0x90051C0, symbol: D_TI_90051C0 }
+
+D_TI_9005450:
+  { type: GFX, offset: 0x9005450, symbol: D_TI_9005450 }
+
+D_TI_9005600:
+  { type: GFX, offset: 0x9005600, symbol: D_TI_9005600 }
+
+D_TI_90058A0:
+  { type: GFX, offset: 0x90058A0, symbol: D_TI_90058A0 }
+
+D_TI_90059B8:
+  { type: TEXTURE, ctype: u8, format: CI8, width: 16, height: 16, offset: 0x90059B8, symbol: D_TI_90059B8, tlut: 0x9005AB8 }
+D_TI_9005AB8:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 240, offset: 0x9005AB8, symbol: D_TI_9005AB8 }
+
+D_TI_900FC4C:
+  { type: SF64:ANIM, offset: 0x900FC4C, symbol: D_TI_900FC4C }
+
+D_TI_900FC60:
+  { type: GFX, offset: 0x900FC60, symbol: D_TI_900FC60 }
+
+D_TI_900FD70:
+  { type: GFX, offset: 0x900FD70, symbol: D_TI_900FD70 }
+
+D_TI_900FE80:
+  { type: GFX, offset: 0x900FE80, symbol: D_TI_900FE80 }
+
+  # size: 0x10120

@@ -1,0 +1,234 @@
+  - name: ovl_i1
+    exclusive_ram_id: overlay
+    type: code
+    dir: overlays/ovl_i1
+    start: 0xDA9680
+    vram: 0x8017E7A0
+    follows_vram: dma_table
+    bss_size: 0xA10
+    symbol_name_format: i1_$VRAM
+    subsegments:
+    - [0xDA9680, c, fox_i1]
+    - [0xDA9690, c, fox_co]
+    - [0xDB4240, c, fox_ve1]
+    - [0xDBAA40, c, fox_tr]
+    - [0xDBADB0, c, fox_tr360]
+    - [0xDBB930, data, fox_i1]
+    - [0xDBB940, data, fox_co]
+    - [0xDBBCA0, data, fox_ve1]
+    - [0xDBCFB0, data, fox_tr360]
+    - [0xDBD050, .rodata, fox_co]
+    - [0xDBD410, .rodata, fox_ve1]
+    - [0xDBD7A0, .rodata, fox_tr]
+    - [0xDBD7E0, .rodata, fox_tr360]
+    - { type: bss, vram: 0x80192940, name: fox_i1 }
+    - { type: bss, vram: 0x80192950, name: fox_co }
+    - { type: bss, vram: 0x80192A70, name: fox_ve1 }
+
+  - name: ovl_i2
+    exclusive_ram_id: overlay
+    type: code
+    dir: overlays/ovl_i2
+    start: 0xDBD820
+    vram: 0x8017E7A0
+    follows_vram: dma_table
+    bss_size: 0x30
+    symbol_name_format: i2_$VRAM
+    subsegments:
+    - [0xDBD820, c, fox_i2]
+    - [0xDBD830, c, fox_me]
+    - [0xDC52D0, c, fox_sx]
+    - [0xDCB6D0, data, fox_i2]
+    - [0xDCB6E0, data, fox_me]
+    - [0xDCB8F0, data, fox_sx]
+    - [0xDCBA40, .rodata, fox_me]
+    - [0xDCBD00, .rodata, fox_sx]
+    - { type: bss, vram: 0x8018CFA0, name: fox_i2 }
+    - { type: bss, vram: 0x8018CFB0, name: fox_sx }
+
+  - name: ovl_i3
+    exclusive_ram_id: overlay
+    type: code
+    dir: overlays/ovl_i3
+    start: 0xDCC020
+    vram: 0x8017E7A0
+    follows_vram: dma_table
+    bss_size: 0x2220
+    symbol_name_format: i3_$VRAM
+    subsegments:
+    - [0xDCC020, c, fox_i3]
+    - [0xDCC030, c, fox_a6]
+    - [0xDD4A50, c, fox_zo]
+    - [0xDE3300, c, fox_so]
+    - [0xDED940, c, fox_aq]
+    - [0xE037D0, data, fox_i3]
+    - [0xE037E0, data, fox_a6]
+    - [0xE04090, data, fox_zo]
+    - [0xE04410, data, fox_so]
+    - [0xE04690, data, fox_aq]
+    - [0xE05430, .rodata, fox_a6]
+    - [0xE058E0, .rodata, fox_zo]
+    - [0xE06000, .rodata, fox_so]
+    - [0xE06560, .rodata, fox_aq]
+    - { type: bss, vram: 0x801B94F0, name: fox_i3 }
+    - { type: bss, vram: 0x801B9500, name: fox_a6 }
+    - { type: bss, vram: 0x801B95E0, name: fox_zo }
+    - { type: bss, vram: 0x801B99F0, name: fox_so }
+    - { type: bss, vram: 0x801B9A70, name: fox_aq }
+
+
+  - name: ovl_i4
+    exclusive_ram_id: overlay
+    type: code
+    dir: overlays/ovl_i4
+    start: 0xE06D70
+    vram: 0x8017E7A0
+    follows_vram: dma_table
+    bss_size: 0x1B0
+    symbol_name_format: i4_$VRAM
+    subsegments:
+    - [0xE06D70, c, fox_i4]
+    - [0xE06E40, c, fox_fo]
+    - [0xE0B580, c, fox_bo]
+    - [0xE11FD0, c, fox_ka]
+    - [0xE18DD0, c, fox_sz]
+    - [0xE1E2A0, data, fox_i4]
+    - [0xE1E2B0, data, fox_fo]
+    - [0xE1E350, data, fox_bo]
+    - [0xE1E5C0, data, fox_ka]
+    - [0xE1E980, data, fox_sz]
+    - [0xE1EBA0, .rodata, fox_i4]
+    - [0xE1EBE0, .rodata, fox_fo]
+    - [0xE1EDE0, .rodata, fox_bo]
+    - [0xE1F1E0, .rodata, fox_ka]
+    - [0xE1F570, .rodata, fox_sz]
+    - { type: bss, vram: 0x801972A0, name: fox_i4 }
+    - { type: bss, vram: 0x801972B0, name: fox_bo }
+    - { type: bss, vram: 0x80197420, name: fox_ka }
+    - { type: bss, vram: 0x80197440, name: fox_sz }
+
+
+  - name: ovl_i5
+    exclusive_ram_id: overlay
+    type: code
+    dir: overlays/ovl_i5
+    start: 0xE1F870
+    vram: 0x8017E7A0
+    follows_vram: dma_table
+    bss_size: 0xAF70
+    symbol_name_format: i5_$VRAM
+    subsegments:
+    - [0xE1F870, c, fox_i5]
+    - [0xE1F880, c, fox_ti_cs]
+    - [0xE21280, c, fox_ti]
+    - [0xE31C90, c, fox_ma]
+    - [0xE4CDB0, c, fox_ground]
+    - [0xE4F670, data, fox_i5]
+    - [0xE4F680, data, fox_ti_cs]
+    - [0xE4F740, data, fox_ti]
+    - [0xE51230, data, fox_ma]
+    - [0xE52CF0, data, fox_ground]
+    - [0xE52DC0, .rodata, fox_i5]
+    - [0xE52DD0, .rodata, fox_ti_cs]
+    - [0xE52E30, .rodata, fox_ti]
+    - [0xE53690, .rodata, fox_ma]
+    - [0xE541D0, .rodata, fox_ground]
+    - { type: bss, vram: 0x801B31F0, name: fox_i5 }
+    - { type: bss, vram: 0x801B3200, name: fox_ti }
+    - { type: bss, vram: 0x801B5540, name: fox_ma }
+    - { type: bss, vram: 0x801B5A40, name: fox_ground }
+
+
+  - name: ovl_i6
+    exclusive_ram_id: overlay
+    type: code
+    dir: overlays/ovl_i6
+    start: 0xE542C0
+    vram: 0x8017E7A0
+    follows_vram: dma_table
+    bss_size: 0x520
+    symbol_name_format: i6_$VRAM
+    subsegments:
+    - [0xE542C0, c, fox_i6]
+    - [0xE542D0, c, fox_andross]
+    - [0xE62FF0, c, fox_ve2]
+    - [0xE648F0, c, fox_sy]
+    - [0xE72330, c, fox_turret]
+    - [0xE73520, data, fox_i6]
+    - [0xE73530, data, fox_andross]
+    - [0xE73680, data, fox_ve2]
+    - [0xE736E0, data, fox_sy]
+    - [0xE73950, data, fox_turret]
+    - [0xE73960, .rodata, fox_i6]
+    - [0xE73970, .rodata, fox_andross]
+    - [0xE74210, .rodata, fox_ve2]
+    - [0xE74250, .rodata, fox_sy]
+    - [0xE74CA0, .rodata, fox_turret]
+    - { type: bss, vram: 0x8019F1E0, name: fox_i6 }
+    - { type: bss, vram: 0x8019F1F0, name: fox_andross }
+    - { type: bss, vram: 0x8019F6E0, name: fox_sy }
+
+
+  - name: ovl_menu
+    exclusive_ram_id: overlay
+    type: code
+    dir: overlays/ovl_menu
+    start: 0xE74D00
+    vram: 0x8017E7A0
+    follows_vram: dma_table
+    bss_size: 0x17570
+    symbol_name_format: menu_$VRAM
+    subsegments:
+    - [0xE74D00, c, fox_i_menu]
+    - [0xE74DC0, c, fox_title]
+    - [0xE7F410, c, fox_option]
+    - [0xE8C1E0, c, fox_map]
+    - [0xE9B3E0, data, fox_i_menu]
+    - [0xE9B3F0, data, fox_title]
+    - [0xE9BF60, data, fox_option]
+    - [0xE9CE00, data, fox_map]
+    - [0xEA4740, .rodata, fox_i_menu]
+    - [0xEA4760, .rodata, fox_title]
+    - [0xEA4B00, .rodata, fox_option]
+    - [0xEA4F00, .rodata, fox_map]
+    - { type: bss, vram: 0x801AF0B0, name: fox_menu }
+    - { type: bss, vram: 0x801AF0C0, name: fox_title }
+    - { type: bss, vram: 0x801B05A0, name: fox_option }
+    - { type: bss, vram: 0x801B0910, name: fox_map }
+
+
+  - name: ovl_ending
+    exclusive_ram_id: overlay
+    type: code
+    dir: overlays/ovl_ending
+    start: 0xEA5610
+    vram: 0x8017E7A0
+    follows_vram: dma_table
+    bss_size: 0x2710
+    symbol_name_format: ending_$VRAM
+    subsegments:
+    - [0xEA5610, c, fox_end1]
+    - [0xEAAF10, c, fox_end2]
+    - [0xEB0800, data, fox_end1]
+    - [0xEB0E50, data, fox_end2]
+    - [0xEB41A0, .rodata, fox_end1]
+    - [0xEB45A0, .rodata, fox_end2]
+    - { type: bss, vram: 0x8018DD90, name: fox_end1 }
+    - { type: bss, vram: 0x8018F620, name: fox_end2 }
+
+
+  - name: ovl_unused
+    exclusive_ram_id: overlay
+    type: code
+    dir: overlays/ovl_unused
+    start: 0xEB4C00
+    vram: 0x8017E7A0
+    follows_vram: dma_table
+    bss_size: 0x10
+    symbol_name_format: unused_$VRAM
+    subsegments:
+    - [0xEB4C00, c, fox_unused]
+    - [0xEB4C10, data, fox_unused]
+    - { type: bss, vram: 0x8017E840, name: fox_unused }
+    
+  - [0xEB4CA0]

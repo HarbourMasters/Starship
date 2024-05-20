@@ -8,11 +8,11 @@ s32 __osPfsGetStatus(OSMesgQueue* queue, int channel) {
     u8 pattern;
     OSContStatus status[4];
 
-    __osPfsRequestData(0);
-    ret = __osSiRawStartDma(1, &__osPfsPifRam);
-    osRecvMesg(queue, &dummy, 1);
-    ret = __osSiRawStartDma(0, &__osPfsPifRam);
-    osRecvMesg(queue, &dummy, 1);
+    __osPfsRequestData(CONT_CMD_REQUEST_STATUS);
+    ret = __osSiRawStartDma(OS_WRITE, &__osPfsPifRam);
+    osRecvMesg(queue, &dummy, OS_MESG_BLOCK);
+    ret = __osSiRawStartDma(OS_READ, &__osPfsPifRam);
+    osRecvMesg(queue, &dummy, OS_MESG_BLOCK);
     __osPfsGetInitData(&pattern, status);
 
     if (status[channel].status & CONT_CARD_ON && status[channel].status & CONT_CARD_PULL) {

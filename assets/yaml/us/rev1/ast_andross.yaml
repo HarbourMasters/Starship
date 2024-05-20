@@ -1,0 +1,272 @@
+:config:
+  segments:
+    - [0x0C, 0xCE9E70]
+  header:
+    code:
+      - '#include "assets/ast_andross.h"'
+    header:
+      - '#include "gfx.h"'
+      - '#include "sf64object.h"'
+      - '#include "sf64level.h"'
+      - '#include "sf64event.h"'
+      - '#include "sf64player.h"'
+      - '#include "sf64audio_external.h"'
+      - '#include "sf64mesg.h"'
+
+D_ANDROSS_C000000:
+  {type: TEXTURE, ctype: u8, format: IA8, width: 96, height: 28, offset: 0xC000000, symbol: D_ANDROSS_C000000}
+
+D_ANDROSS_C000A80:
+  {type: TEXTURE, ctype: u8, format: IA8, width: 128, height: 28, offset: 0xC000A80, symbol: D_ANDROSS_C000A80}
+
+D_ANDROSS_C001880:
+  {type: GFX, offset: 0xC001880, symbol: D_ANDROSS_C001880}
+
+D_ANDROSS_C0019E8:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0xC0019E8, symbol: D_ANDROSS_C0019E8}
+
+D_ANDROSS_C00208C:
+  {type: SF64:ANIM, offset: 0xC00208C, symbol: D_ANDROSS_C00208C}
+
+D_ANDROSS_C002654:
+  {type: SF64:ANIM, offset: 0xC002654, symbol: D_ANDROSS_C002654}
+
+D_ANDROSS_C002B08:
+  {type: SF64:ANIM, offset: 0xC002B08, symbol: D_ANDROSS_C002B08}
+
+D_ANDROSS_C002B20:
+  {type: GFX, offset: 0xC002B20, symbol: D_ANDROSS_C002B20}
+
+D_ANDROSS_C002F00:
+  {type: GFX, offset: 0xC002F00, symbol: D_ANDROSS_C002F00}
+
+D_ANDROSS_C0031D0:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0xC0031D0, symbol: D_ANDROSS_C0031D0}
+
+D_ANDROSS_C0039D0:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0xC0039D0, symbol: D_ANDROSS_C0039D0}
+
+D_ANDROSS_C0041D0:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0xC0041D0, symbol: D_ANDROSS_C0041D0}
+
+D_ANDROSS_C0043D0:
+  {type: GFX, offset: 0xC0043D0, symbol: D_ANDROSS_C0043D0}
+
+D_ANDROSS_C004658:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0xC004658, symbol: D_ANDROSS_C004658}
+
+D_ANDROSS_C004860:
+  {type: GFX, offset: 0xC004860, symbol: D_ANDROSS_C004860}
+
+D_ANDROSS_C006F08:
+  {type: SF64:ANIM, offset: 0xC006F08, symbol: D_ANDROSS_C006F08}
+
+D_ANDROSS_C007FC0:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0xC007FC0, symbol: D_ANDROSS_C007FC0}
+
+D_ANDROSS_C0087C0:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0xC0087C0, symbol: D_ANDROSS_C0087C0}
+
+D_ANDROSS_C00DE48:
+  {type: SF64:ANIM, offset: 0xC00DE48, symbol: D_ANDROSS_C00DE48}
+
+D_ANDROSS_C00E598:
+  {type: SF64:ANIM, offset: 0xC00E598, symbol: D_ANDROSS_C00E598}
+
+D_ANDROSS_C00F108:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 64, offset: 0xC00F108, symbol: D_ANDROSS_C00F108}
+
+D_ANDROSS_C010108:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 8, height: 8, offset: 0xC010108, symbol: D_ANDROSS_C010108}
+
+D_ANDROSS_C010188:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0xC010188, symbol: D_ANDROSS_C010188}
+
+D_ANDROSS_C010988:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 64, height: 32, offset: 0xC010988, symbol: D_ANDROSS_C010988}
+
+D_ANDROSS_C011988:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0xC011988, symbol: D_ANDROSS_C011988}
+
+D_ANDROSS_C012188:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0xC012188, symbol: D_ANDROSS_C012188}
+
+D_ANDROSS_C012988:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0xC012988, symbol: D_ANDROSS_C012988}
+
+D_ANDROSS_C013738:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0xC013738, symbol: D_ANDROSS_C013738}
+
+D_ANDROSS_C013F38:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0xC013F38, symbol: D_ANDROSS_C013F38}
+
+D_ANDROSS_C014738:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 64, height: 32, offset: 0xC014738, symbol: D_ANDROSS_C014738}
+
+D_ANDROSS_C015740:
+  {type: GFX, offset: 0xC015740, symbol: D_ANDROSS_C015740}
+
+D_ANDROSS_C016100:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0xC016100, symbol: D_ANDROSS_C016100}
+
+D_ANDROSS_C017050:
+  {type: SF64:ANIM, offset: 0xC017050, symbol: D_ANDROSS_C017050}
+
+D_ANDROSS_C017430:
+  {type: SF64:ANIM, offset: 0xC017430, symbol: D_ANDROSS_C017430}
+
+D_ANDROSS_C017440:
+  {type: GFX, offset: 0xC017440, symbol: D_ANDROSS_C017440}
+
+D_ANDROSS_C017598:
+  {type: VTX, count: 34, offset: 0xC017598, symbol: D_ANDROSS_C017598}
+
+D_ANDROSS_C0177B8:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0xC0177B8, symbol: D_ANDROSS_C0177B8}
+
+D_ANDROSS_C018BC4:
+  {type: SF64:ANIM, offset: 0xC018BC4, symbol: D_ANDROSS_C018BC4}
+
+D_ANDROSS_C01C490:
+  {type: SF64:ANIM, offset: 0xC01C490, symbol: D_ANDROSS_C01C490}
+
+D_ANDROSS_C01CC3C:
+  {type: SF64:SKELETON, offset: 0xC01CC3C, symbol: D_ANDROSS_C01CC3C}
+
+D_ANDROSS_C020128:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0xC020128, symbol: D_ANDROSS_C020128}
+
+D_ANDROSS_C022520:
+  {type: GFX, offset: 0xC022520, symbol: D_ANDROSS_C022520}
+
+D_ANDROSS_C022A10:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 8, height: 8, offset: 0xC022A10, symbol: D_ANDROSS_C022A10}
+
+D_ANDROSS_C022A90:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0xC022A90, symbol: D_ANDROSS_C022A90}
+
+D_ANDROSS_C023B54:
+  {type: SF64:ANIM, offset: 0xC023B54, symbol: D_ANDROSS_C023B54}
+
+D_ANDROSS_C0240D0:
+  {type: SF64:ANIM, offset: 0xC0240D0, symbol: D_ANDROSS_C0240D0}
+
+D_ANDROSS_C025C00:
+  {type: SF64:ANIM, offset: 0xC025C00, symbol: D_ANDROSS_C025C00}
+
+D_ANDROSS_C029F74:
+  {type: SF64:ANIM, offset: 0xC029F74, symbol: D_ANDROSS_C029F74}
+
+D_ANDROSS_C02E494:
+  {type: SF64:ANIM, offset: 0xC02E494, symbol: D_ANDROSS_C02E494}
+
+D_ANDROSS_C02EDA0:
+  {type: SF64:ANIM, offset: 0xC02EDA0, symbol: D_ANDROSS_C02EDA0}
+
+D_ANDROSS_C02F634:
+  {type: SF64:ANIM, offset: 0xC02F634, symbol: D_ANDROSS_C02F634}
+
+D_ANDROSS_C030244:
+  {type: SF64:ANIM, offset: 0xC030244, symbol: D_ANDROSS_C030244}
+
+D_ANDROSS_C033780:
+  {type: SF64:ANIM, offset: 0xC033780, symbol: D_ANDROSS_C033780}
+
+D_ANDROSS_C033D98:
+  {type: SF64:ANIM, offset: 0xC033D98, symbol: D_ANDROSS_C033D98}
+
+D_ANDROSS_C035110:
+  {type: SF64:ENVIRONMENT, offset: 0xC035110, symbol: D_ANDROSS_C035110}
+
+D_ANDROSS_C035154:
+  {type: SF64:OBJECT_INIT, offset: 0xC035154, symbol: D_ANDROSS_C035154}
+
+D_ANDROSS_C0356A4:
+  {type: SF64:OBJECT_INIT, offset: 0xC0356A4, symbol: D_ANDROSS_C0356A4}
+
+D_ANDROSS_C0356CC:
+  {type: SF64:OBJECT_INIT, offset: 0xC0356CC, symbol: D_ANDROSS_C0356CC}
+
+D_ANDROSS_C036310:
+  {type: SF64:OBJECT_INIT, offset: 0xC036310, symbol: D_ANDROSS_C036310}
+
+D_ANDROSS_C036B6C:
+  {type: SF64:OBJECT_INIT, offset: 0xC036B6C, symbol: D_ANDROSS_C036B6C}
+
+D_ANDROSS_C03733C:
+  {type: SF64:OBJECT_INIT, offset: 0xC03733C, symbol: D_ANDROSS_C03733C}
+
+D_ANDROSS_C037E3C:
+  {type: SF64:SCRIPT, offset: 0xC037E3C, symbol: D_ANDROSS_C037E3C}
+
+D_ANDROSS_C037FCC:
+  {type: SF64:HITBOX, offset: 0xC037FCC, symbol: D_ANDROSS_C037FCC}
+
+D_ANDROSS_C0380C0:
+  {type: SF64:HITBOX, offset: 0xC0380C0, symbol: D_ANDROSS_C0380C0}
+
+D_ANDROSS_C0381B4:
+  {type: SF64:HITBOX, offset: 0xC0381B4, symbol: D_ANDROSS_C0381B4}
+
+D_ANDROSS_C0382A8:
+  {type: SF64:HITBOX, offset: 0xC0382A8, symbol: D_ANDROSS_C0382A8}
+
+D_ANDROSS_C03839C:
+  {type: SF64:HITBOX, offset: 0xC03839C, symbol: D_ANDROSS_C03839C}
+
+D_ANDROSS_C038490:
+  {type: SF64:HITBOX, offset: 0xC038490, symbol: D_ANDROSS_C038490}
+
+D_ANDROSS_C038584:
+  {type: SF64:HITBOX, offset: 0xC038584, symbol: D_ANDROSS_C038584}
+
+D_ANDROSS_C038678:
+  {type: SF64:HITBOX, offset: 0xC038678, symbol: D_ANDROSS_C038678}
+
+D_ANDROSS_C03876C:
+  {type: SF64:HITBOX, offset: 0xC03876C, symbol: D_ANDROSS_C03876C}
+
+D_ANDROSS_C038860:
+  {type: SF64:HITBOX, offset: 0xC038860, symbol: D_ANDROSS_C038860}
+
+D_ANDROSS_C038954:
+  {type: SF64:HITBOX, offset: 0xC038954, symbol: D_ANDROSS_C038954}
+
+D_ANDROSS_C038A48:
+  {type: SF64:HITBOX, offset: 0xC038A48, symbol: D_ANDROSS_C038A48}
+
+D_ANDROSS_C038AC4:
+  {type: SF64:HITBOX, offset: 0xC038AC4, symbol: D_ANDROSS_C038AC4}
+
+D_ANDROSS_C038B40:
+  {type: SF64:HITBOX, offset: 0xC038B40, symbol: D_ANDROSS_C038B40}
+
+D_ANDROSS_C038BA4:
+  {type: SF64:HITBOX, offset: 0xC038BA4, symbol: D_ANDROSS_C038BA4}
+
+D_ANDROSS_C038BD8:
+  {type: SF64:HITBOX, offset: 0xC038BD8, symbol: D_ANDROSS_C038BD8}
+
+D_ANDROSS_C038CCC:
+  {type: SF64:HITBOX, offset: 0xC038CCC, symbol: D_ANDROSS_C038CCC}
+
+D_ANDROSS_C038DC0:
+  {type: SF64:HITBOX, offset: 0xC038DC0, symbol: D_ANDROSS_C038DC0}
+
+D_ANDROSS_C038F24:
+  {type: SF64:HITBOX, offset: 0xC038F24, symbol: D_ANDROSS_C038F24}
+
+D_ANDROSS_C038FE8:
+  {type: VTX, count: 34, offset: 0xC038FE8, symbol: D_ANDROSS_C038FE8}
+
+D_ANDROSS_C039208:
+  {type: GFX, offset: 0xC039208, symbol: D_ANDROSS_C039208}
+
+D_ANDROSS_C039290:
+  {type: TEXTURE, ctype: u32, format: RGBA32, width: 32, height: 32, offset: 0xC039290, symbol: D_ANDROSS_C039290}
+
+D_ANDROSS_C03A290:
+  {type: TEXTURE, ctype: u32, format: RGBA32, width: 32, height: 32, offset: 0xC03A290, symbol: D_ANDROSS_C03A290}
+
+
+

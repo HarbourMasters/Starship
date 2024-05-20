@@ -7,7 +7,7 @@ void __osPackEepWriteData(u8 address, u8* buffer);
 s32 osEepromWrite(OSMesgQueue* mq, u8 address, u8* buffer) {
     s32 ret = 0;
     int i;
-    u8* ptr = (u8*) &__osEepPifRam.ramarray;
+    u8* ptr = (u8*) __osEepPifRam.ramarray;
     __OSContEepromFormat eepromformat;
     OSContStatus sdata;
 
@@ -31,8 +31,8 @@ s32 osEepromWrite(OSMesgQueue* mq, u8 address, u8* buffer) {
     ret = __osSiRawStartDma(OS_WRITE, &__osEepPifRam);
     osRecvMesg(mq, NULL, OS_MESG_BLOCK);
 
-    for (i = 0; i < 0x10; i++) {
-        __osEepPifRam.ramarray[i] = 255;
+    for (i = 0; i < ARRLEN(__osEepPifRam.raw); i++) {
+        __osEepPifRam.raw[i] = CONT_CMD_NOP;
     }
 
     __osEepPifRam.pifstatus = 0;
@@ -51,13 +51,13 @@ s32 osEepromWrite(OSMesgQueue* mq, u8 address, u8* buffer) {
 }
 
 void __osPackEepWriteData(u8 address, u8* buffer) {
-    u8* ptr = (u8*) &__osEepPifRam.ramarray;
+    u8* ptr = (u8*) __osEepPifRam.ramarray;
     __OSContEepromFormat eepromformat;
     int i;
 
 #if BUILD_VERSION < VERSION_J
-    for (i = 0; i < ARRLEN(__osEepPifRam.ramarray) + 1; i++) {
-        __osEepPifRam.ramarray[i] = CONT_CMD_NOP;
+    for (i = 0; i < ARRLEN(__osEepPifRam.raw); i++) {
+        __osEepPifRam.raw[i] = CONT_CMD_NOP;
     }
 #endif
     __osEepPifRam.pifstatus = CONT_CMD_EXE;
@@ -86,8 +86,8 @@ s32 __osEepStatus(OSMesgQueue* mq, OSContStatus* data) {
     u8* ptr = (u8*) __osEepPifRam.ramarray;
     __OSContRequesFormat requestformat;
 
-    for (i = 0; i < ARRLEN(__osEepPifRam.ramarray) + 1; i++) {
-        __osEepPifRam.ramarray[i] = 0;
+    for (i = 0; i < ARRLEN(__osEepPifRam.raw); i++) {
+        __osEepPifRam.raw[i] = 0;
     }
 
     __osEepPifRam.pifstatus = CONT_CMD_EXE;

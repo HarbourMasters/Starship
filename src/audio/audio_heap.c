@@ -11,62 +11,62 @@ void* AudioHeap_SearchRegularCaches(s32 tableType, s32 cache, s32 id);
 void* AudioHeap_SearchPermanentCache(s32 tableType, s32 id);
 SampleCacheEntry* AudioHeap_AllocPersistentSampleCacheEntry(u32);
 
-static char devstr00[] = "Warning:Kill Note  %x \n";
-static char devstr01[] = "Kill Voice %d (ID %d) %d\n";
-static char devstr02[] = "Warning: Running Sequence's data disappear!\n";
-static char devstr03[] = "%x %x %x\n";
-static char devstr04[] = "Audio:Memory:Heap OverFlow : Not Allocate %d!\n";
-static char devstr05[] = "%x %x %x\n";
-static char devstr06[] = "Audio:Memory:Heap OverFlow : Not Allocate %d!\n";
-static char devstr07[] = "Audio:Memory:DataHeap Not Allocate \n";
-static char devstr08[] = "StayHeap Not Allocate %d\n";
-static char devstr09[] = "AutoHeap Not Allocate %d\n";
-static char devstr10[] = "Status ID0 : %d  ID1 : %d\n";
-static char devstr11[] = "id 0 is Stopping\n";
-static char devstr12[] = "id 0 is Stop\n";
-static char devstr13[] = "id 1 is Stopping\n";
-static char devstr14[] = "id 1 is Stop\n";
-static char devstr15[] = "WARNING: NO FREE AUTOSEQ AREA.\n";
-static char devstr16[] = "WARNING: NO STOP AUTO AREA.\n";
-static char devstr17[] = "         AND TRY FORCE TO STOP SIDE \n";
-static char devstr18[] = "Check ID0  (seq ID %d) Useing ...\n";
-static char devstr19[] = "Check ID1  (seq ID %d) Useing ...\n";
-static char devstr20[] = "No Free Seq area.\n";
-static char devstr21[] = "CH %d: ID %d\n";
-static char devstr22[] = "TWO SIDES ARE LOADING... ALLOC CANCELED.\n";
-static char devstr23[] = "WARNING: Before Area Overlaid After.";
-static char devstr24[] = "WARNING: After Area Overlaid Before.";
-static char devstr25[] = "MEMORY:SzHeapAlloc ERROR: sza->side %d\n";
-static char devstr26[] = "Audio:MEMORY:SzHeap Overflow error. (%d bytes)\n";
-static char devstr27[] = "Auto Heap Unhit for ID %d\n";
-static char devstr28[] = "Heap Reconstruct Start %x\n";
-static char devstr29[] = "---------------------------------------TEMPO %d %f\n";
-static char devstr30[] = "%f \n";
-static char devstr31[] = "%f \n";
-static char devstr32[] = "AHPBASE %x\n";
-static char devstr33[] = "AHPCUR  %x\n";
-static char devstr34[] = "HeapTop %x\n";
-static char devstr35[] = "SynoutRate %d / %d \n";
-static char devstr36[] = "FXSIZE %d\n";
-static char devstr37[] = "FXCOMP %d\n";
-static char devstr38[] = "FXDOWN %d\n";
-static char devstr39[] = "WaveCacheLen: %d\n";
-static char devstr40[] = "SpecChange Finished\n";
-static char devstr41[] = "Warning:Emem Over,not alloc %d\n";
-static char devstr42[] = "Single AutoSize %d\n";
-static char devstr43[] = "Single Ptr %x\n";
-static char devstr44[] = "Request--------Single-Auto, %d\n";
-static char devstr45[] = "Retry %x, %x, len %x\n";
-static char devstr46[] = "DMAing list %d is killed.\n";
-static char devstr47[] = "Try Kill %d \n";
-static char devstr48[] = "Try Kill %x %x\n";
-static char devstr49[] = "Try Kill %x %x %x\n";
-static char devstr50[] = "Rom back %x %x \n";
-static char devstr51[] = "Error sw NULL \n";
-static char devstr52[] = "Request--------Single-Stay, %d\n";
-static char devstr53[] = "Try Kill %d \n";
-static char devstr54[] = "Try Kill %x %x\n";
-static char devstr55[] = "Try Kill %x %x %x\n";
+static const char devstr00[] = "Warning:Kill Note  %x \n";
+static const char devstr01[] = "Kill Voice %d (ID %d) %d\n";
+static const char devstr02[] = "Warning: Running Sequence's data disappear!\n";
+static const char devstr03[] = "%x %x %x\n";
+static const char devstr04[] = "Audio:Memory:Heap OverFlow : Not Allocate %d!\n";
+static const char devstr05[] = "%x %x %x\n";
+static const char devstr06[] = "Audio:Memory:Heap OverFlow : Not Allocate %d!\n";
+static const char devstr07[] = "Audio:Memory:DataHeap Not Allocate \n";
+static const char devstr08[] = "StayHeap Not Allocate %d\n";
+static const char devstr09[] = "AutoHeap Not Allocate %d\n";
+static const char devstr10[] = "Status ID0 : %d  ID1 : %d\n";
+static const char devstr11[] = "id 0 is Stopping\n";
+static const char devstr12[] = "id 0 is Stop\n";
+static const char devstr13[] = "id 1 is Stopping\n";
+static const char devstr14[] = "id 1 is Stop\n";
+static const char devstr15[] = "WARNING: NO FREE AUTOSEQ AREA.\n";
+static const char devstr16[] = "WARNING: NO STOP AUTO AREA.\n";
+static const char devstr17[] = "         AND TRY FORCE TO STOP SIDE \n";
+static const char devstr18[] = "Check ID0  (seq ID %d) Useing ...\n";
+static const char devstr19[] = "Check ID1  (seq ID %d) Useing ...\n";
+static const char devstr20[] = "No Free Seq area.\n";
+static const char devstr21[] = "CH %d: ID %d\n";
+static const char devstr22[] = "TWO SIDES ARE LOADING... ALLOC CANCELED.\n";
+static const char devstr23[] = "WARNING: Before Area Overlaid After.";
+static const char devstr24[] = "WARNING: After Area Overlaid Before.";
+static const char devstr25[] = "MEMORY:SzHeapAlloc ERROR: sza->side %d\n";
+static const char devstr26[] = "Audio:MEMORY:SzHeap Overflow error. (%d bytes)\n";
+static const char devstr27[] = "Auto Heap Unhit for ID %d\n";
+static const char devstr28[] = "Heap Reconstruct Start %x\n";
+static const char devstr29[] = "---------------------------------------TEMPO %d %f\n";
+static const char devstr30[] = "%f \n";
+static const char devstr31[] = "%f \n";
+static const char devstr32[] = "AHPBASE %x\n";
+static const char devstr33[] = "AHPCUR  %x\n";
+static const char devstr34[] = "HeapTop %x\n";
+static const char devstr35[] = "SynoutRate %d / %d \n";
+static const char devstr36[] = "FXSIZE %d\n";
+static const char devstr37[] = "FXCOMP %d\n";
+static const char devstr38[] = "FXDOWN %d\n";
+static const char devstr39[] = "WaveCacheLen: %d\n";
+static const char devstr40[] = "SpecChange Finished\n";
+static const char devstr41[] = "Warning:Emem Over,not alloc %d\n";
+static const char devstr42[] = "Single AutoSize %d\n";
+static const char devstr43[] = "Single Ptr %x\n";
+static const char devstr44[] = "Request--------Single-Auto, %d\n";
+static const char devstr45[] = "Retry %x, %x, len %x\n";
+static const char devstr46[] = "DMAing list %d is killed.\n";
+static const char devstr47[] = "Try Kill %d \n";
+static const char devstr48[] = "Try Kill %x %x\n";
+static const char devstr49[] = "Try Kill %x %x %x\n";
+static const char devstr50[] = "Rom back %x %x \n";
+static const char devstr51[] = "Error sw NULL \n";
+static const char devstr52[] = "Request--------Single-Stay, %d\n";
+static const char devstr53[] = "Try Kill %d \n";
+static const char devstr54[] = "Try Kill %x %x\n";
+static const char devstr55[] = "Try Kill %x %x %x\n";
 
 void AudioHeap_ResetLoadStatus(void) {
     s32 i;
@@ -109,7 +109,7 @@ void AudioHeap_DiscardFont(s32 fontId) {
 void AudioHeap_DiscardSequence(s32 seqId) {
     s32 i;
 
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < ARRAY_COUNT(gSeqPlayers); i++) {
         if (gSeqPlayers[i].enabled && gSeqPlayers[i].seqId == seqId) {
             func_800144E4(&gSeqPlayers[i]);
         }
@@ -300,7 +300,7 @@ void* AudioHeap_AllocCached(s32 tableType, s32 size, s32 cache, s32 id) {
             // Check if there is a side which isn't in active use, if so, evict that one.
             if (tableType == 0) {
                 if (loadStatusEntry0 == 2) {
-                    for (i = 0; i < 4; i++) {
+                    for (i = 0; i < ARRAY_COUNT(gSeqPlayers); i++) {
                         if (gSeqPlayers[i].enabled && (gSeqPlayers[i].seqId == temporaryCache->entries[0].id)) {
                             break;
                         }
@@ -311,7 +311,7 @@ void* AudioHeap_AllocCached(s32 tableType, s32 size, s32 cache, s32 id) {
                     }
                 }
                 if (loadStatusEntry1 == 2) {
-                    for (i = 0; i < 4; i++) {
+                    for (i = 0; i < ARRAY_COUNT(gSeqPlayers); i++) {
                         if (gSeqPlayers[i].enabled && (gSeqPlayers[i].seqId == temporaryCache->entries[1].id)) {
                             break;
                         }
@@ -464,15 +464,15 @@ void* AudioHeap_SearchRegularCaches(s32 tableType, s32 cache, s32 id) {
 
     switch (tableType) {
         case SEQUENCE_TABLE:
-            loadedCache = (AudioCache*) &gSeqCache;
+            loadedCache = &gSeqCache;
             break;
 
         case FONT_TABLE:
-            loadedCache = (AudioCache*) &gFontCache;
+            loadedCache = &gFontCache;
             break;
 
         case SAMPLE_TABLE:
-            loadedCache = (AudioCache*) &gSampleBankCache;
+            loadedCache = &gSampleBankCache;
             break;
     }
 
@@ -535,7 +535,7 @@ void AudioHeap_UpdateReverbs(void) {
     s32 count;
     s32 reverbIndex;
 
-    if (gAudioBufferParams.specUnk4 == 2) {
+    if (gAudioBufferParams.count == 2) {
         count = 2;
     } else {
         count = 1;
@@ -563,14 +563,14 @@ s32 AudioHeap_ResetStep(void) {
     s32 j;
     s32 sp24;
 
-    if (gAudioBufferParams.specUnk4 == 2) {
+    if (gAudioBufferParams.count == 2) {
         sp24 = 2;
     } else {
         sp24 = 1;
     }
     switch (gResetStatus) {
         case 5:
-            for (i = 0; i < 4; i++) {
+            for (i = 0; i < ARRAY_COUNT(gSeqPlayers); i++) {
                 func_800144E4(&gSeqPlayers[i]);
             }
             gResetFadeoutFramesLeft = 4 / sp24;
@@ -660,17 +660,17 @@ void AudioHeap_Init(void) {
     gAudioBufferParams.samplesPerTickMax = gAudioBufferParams.samplesPerTick + 8;
     gAudioBufferParams.samplesPerTickMin = gAudioBufferParams.samplesPerTick - 8;
     gAudioBufferParams.resampleRate = 32000.0f / (s32) gAudioBufferParams.samplingFrequency;
-    gAudioBufferParams.ticksPerUpdateInvScaled = 0.001171875f / gAudioBufferParams.ticksPerUpdate;
+    gAudioBufferParams.ticksPerUpdateInvScaled = (3.0f / 2560.0f) / gAudioBufferParams.ticksPerUpdate;
     gAudioBufferParams.ticksPerUpdateInv = 1.0f / gAudioBufferParams.ticksPerUpdate;
     gNumNotes = spec->numNotes;
     D_8014C1B0 = spec->unk_14;
     gMaxTempo = (u16) ((gAudioBufferParams.ticksPerUpdate * 2880000.0f / gSeqTicksPerBeat) / gMaxTempoTvTypeFactors);
-    gAudioBufferParams.specUnk4 = spec->unk_04;
-    gAudioBufferParams.samplesPerFrameTarget *= gAudioBufferParams.specUnk4;
-    gAudioBufferParams.maxAiBufferLength *= gAudioBufferParams.specUnk4;
-    gAudioBufferParams.minAiBufferLength *= gAudioBufferParams.specUnk4;
-    gAudioBufferParams.ticksPerUpdate *= gAudioBufferParams.specUnk4;
-    if (gAudioBufferParams.specUnk4 >= 2) {
+    gAudioBufferParams.count = spec->numBuffers;
+    gAudioBufferParams.samplesPerFrameTarget *= gAudioBufferParams.count;
+    gAudioBufferParams.maxAiBufferLength *= gAudioBufferParams.count;
+    gAudioBufferParams.minAiBufferLength *= gAudioBufferParams.count;
+    gAudioBufferParams.ticksPerUpdate *= gAudioBufferParams.count;
+    if (gAudioBufferParams.count >= 2) {
         gAudioBufferParams.maxAiBufferLength -= 0x10;
     }
     gMaxAudioCmds = (gNumNotes * 0x14 * gAudioBufferParams.ticksPerUpdate) + (spec->numReverbs * 0x20) + 0x1E0;
@@ -703,7 +703,7 @@ void AudioHeap_Init(void) {
     for (i = 0; i != 2; i++) {
         gAbiCmdBuffs[i] = AudioHeap_AllocZeroed(&gMiscPool, gMaxAudioCmds * 8);
     }
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < ARRAY_COUNT(gSynthReverbs); i++) {
         gSynthReverbs[i].useReverb = 0;
     }
     gNumSynthReverbs = spec->numReverbs;
@@ -765,6 +765,7 @@ u8* AudioHeap_AllocPermanent(s32 tableType, s32 id, u32 size) {
 
     ramAddr = AudioHeap_Alloc(&gPermanentPool.pool, size);
     gPermanentPool.entry[index].ramAddr = ramAddr;
+
     if (ramAddr == NULL) {
         return NULL;
     }
@@ -772,7 +773,10 @@ u8* AudioHeap_AllocPermanent(s32 tableType, s32 id, u32 size) {
     gPermanentPool.entry[index].tableType = tableType;
     gPermanentPool.entry[index].id = id;
     gPermanentPool.entry[index].size = size;
-    // return temp;
+
+#ifdef AVOID_UB
+    return ramAddr;
+#endif
 }
 
 void* AudioHeap_AllocTemporarySampleCache(s32 size, s32 fontId, uintptr_t sampleAddr, s8 medium) {
@@ -969,7 +973,7 @@ SampleCacheEntry* AudioHeap_AllocPersistentSampleCacheEntry(u32 size) {
 void AudioHeap_DiscardSampleCaches(void) {
     s32 fontId;
     s32 i;
-    s32 numFonts;
+    s32 numFonts = gSoundFontTable->numEntries;
     s32 pad;
     s32 sampleBankId2;
     s32 sampleBankId1;
@@ -979,7 +983,10 @@ void AudioHeap_DiscardSampleCaches(void) {
     Instrument* instrument;
     SampleCacheEntry* entry;
 
-    numFonts = gSoundFontTable->numEntries;
+#ifdef AVOID_UB
+    entry = gPersistentSampleCache.entries;
+#endif
+
     for (fontId = 0; fontId < numFonts; fontId++) {
         sampleBankId1 = gSoundFontList[fontId].sampleBankId1;
         sampleBankId2 = gSoundFontList[fontId].sampleBankId2;

@@ -31,7 +31,7 @@ s32 BonusText_Display(f32 xPos, f32 yPos, f32 zPos, s32 hits) {
             gBonusText[i].pos.x = xPos;
             gBonusText[i].pos.y = yPos;
             gBonusText[i].pos.z = zPos;
-            gBonusText[i].unk_10 = 0.0f;
+            gBonusText[i].rise = 0.0f;
             gBonusText[i].timer = 65;
             break;
         }
@@ -52,14 +52,14 @@ void BonusText_Update(void) {
             }
 
             if (gLevelMode == LEVELMODE_ON_RAILS) {
-                bonus->pos.z -= D_ctx_80177D08;
-            } else if (gPlayer[0].state_1C8 == PLAYERSTATE_1C8_3) {
+                bonus->pos.z -= gPathVelZ;
+            } else if (gPlayer[0].state_1C8 == PLAYERSTATE_1C8_ACTIVE) {
                 bonus->pos.x += gPlayer[0].vel.x;
                 bonus->pos.z += gPlayer[0].vel.z;
             }
 
             if (bonus->timer < 45) {
-                Math_SmoothStepToF(&bonus->unk_10, 300.0f, 0.1f, 20.0f, 0.0f);
+                Math_SmoothStepToF(&bonus->rise, 300.0f, 0.1f, 20.0f, 0.0f);
             }
         }
     }
@@ -83,16 +83,16 @@ void BonusText_Draw(BonusText* bonus) {
     f32 sp50;
 
     if (bonus->timer <= 45) {
-        Matrix_Translate(gGfxMatrix, bonus->pos.x, bonus->pos.y, bonus->pos.z + D_ctx_80177D20, 1);
+        Matrix_Translate(gGfxMatrix, bonus->pos.x, bonus->pos.y, bonus->pos.z + gPathProgress, MTXF_APPLY);
         Matrix_MultVec3f(gGfxMatrix, &sp60, &sp54);
 
         if ((fabsf(sp54.x) < 20000.0f) && (fabsf(sp54.y) < 20000.0f)) {
             if ((sp54.z < 0.0f) && (sp54.z > -20000.0f)) {
                 sp50 = (VEC3F_MAG(&sp54)) * 0.0015f * 0.2f;
-                Matrix_RotateY(gGfxMatrix, -gPlayer[gPlayerNum].unk_058, 1);
-                Matrix_RotateX(gGfxMatrix, gPlayer[gPlayerNum].unk_05C, 1);
-                Matrix_Scale(gGfxMatrix, sp50, sp50, 1.0f, 1);
-                Matrix_Translate(gGfxMatrix, 0.0f, bonus->unk_10, 0.0f, 1);
+                Matrix_RotateY(gGfxMatrix, -gPlayer[gPlayerNum].camYaw, MTXF_APPLY);
+                Matrix_RotateX(gGfxMatrix, gPlayer[gPlayerNum].camPitch, MTXF_APPLY);
+                Matrix_Scale(gGfxMatrix, sp50, sp50, 1.0f, MTXF_APPLY);
+                Matrix_Translate(gGfxMatrix, 0.0f, bonus->rise, 0.0f, MTXF_APPLY);
                 Matrix_SetGfxMtx(&gMasterDisp);
 
                 if (bonus->hits <= 10) {
@@ -133,7 +133,7 @@ void BonusText_DrawAll(void) {
     BonusText* bonus;
     s32 i;
 
-    RCP_SetupDL(&gMasterDisp, 0x3E);
+    RCP_SetupDL(&gMasterDisp, SETUPDL_62);
     gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, 255);
 
     for (i = 0, bonus = gBonusText; i < ARRAY_COUNT(gBonusText); i++, bonus++) {
@@ -167,7 +167,7 @@ Effect* func_effect_8007783C(ObjectId objId) {
 void func_effect_800778C4(Effect* effect, f32 xPos, f32 yPos, f32 zPos, f32 xVel, f32 yVel, f32 zVel, f32 scale2) {
     Effect_Initialize(effect);
     effect->obj.status = OBJ_INIT;
-    effect->obj.id = OBJ_EFFECT_339;
+    effect->obj.id = OBJ_EFFECT_FIRE_SMOKE;
 
     effect->obj.pos.x = xPos;
     effect->obj.pos.y = yPos;
@@ -206,11 +206,11 @@ void func_effect_80077A7C(Effect* effect) {
     RCP_SetupDL_49();
     gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, effect->unk_44);
     gDPSetEnvColor(gMasterDisp++, 255, 255, 255, effect->unk_44);
-    Matrix_Scale(gGfxMatrix, effect->scale1, effect->scale2, 1.0f, 1);
-    Matrix_Translate(gGfxMatrix, 0.0f, 20.0f, 0.0f, 1);
+    Matrix_Scale(gGfxMatrix, effect->scale1, effect->scale2, 1.0f, MTXF_APPLY);
+    Matrix_Translate(gGfxMatrix, 0.0f, 20.0f, 0.0f, MTXF_APPLY);
     Matrix_SetGfxMtx(&gMasterDisp);
     gSPDisplayList(gMasterDisp++, D_ZO_6024220);
-    RCP_SetupDL(&gMasterDisp, 0x40);
+    RCP_SetupDL(&gMasterDisp, SETUPDL_64);
 }
 
 void func_effect_80077B78(Effect* effect) {
@@ -220,10 +220,10 @@ void func_effect_80077B84(Effect* effect) {
     Graphics_SetScaleMtx(effect->scale2);
 
     if ((effect->scale1 == 71.0f) ||
-        ((gPlayer[0].state_1C8 == PLAYERSTATE_1C8_7) && (gCurrentLevel == LEVEL_CORNERIA))) {
-        RCP_SetupDL(&gMasterDisp, 0x26);
+        ((gPlayer[0].state_1C8 == PLAYERSTATE_1C8_LEVEL_COMPLETE) && (gCurrentLevel == LEVEL_CORNERIA))) {
+        RCP_SetupDL(&gMasterDisp, SETUPDL_38);
     } else {
-        RCP_SetupDL(&gMasterDisp, 0x43);
+        RCP_SetupDL(&gMasterDisp, SETUPDL_67);
     }
 
     gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, effect->unk_44);
@@ -250,7 +250,7 @@ void func_effect_80077B84(Effect* effect) {
             break;
         case 6:
             if (gCurrentLevel == LEVEL_BOLSE) {
-                RCP_SetupDL(&gMasterDisp, 0x26);
+                RCP_SetupDL(&gMasterDisp, SETUPDL_38);
             }
             switch ((effect->index + gGameFrameCount) % 4U) {
                 case 0:
@@ -286,17 +286,17 @@ void func_effect_80077B84(Effect* effect) {
     }
 
     gSPDisplayList(gMasterDisp++, D_1024AC0);
-    RCP_SetupDL(&gMasterDisp, 0x40);
+    RCP_SetupDL(&gMasterDisp, SETUPDL_64);
 }
 
 void func_effect_80078038(Effect* effect) {
     Graphics_SetScaleMtx(effect->scale2);
     RCP_SetupDL_49();
-    RCP_SetupDL(&gMasterDisp, 0x26);
+    RCP_SetupDL(&gMasterDisp, SETUPDL_38);
     gDPSetPrimColor(gMasterDisp++, 0, 0, 64, 192, 255, effect->unk_44);
     gDPSetEnvColor(gMasterDisp++, 0, 0, 0, effect->unk_44);
     gSPDisplayList(gMasterDisp++, D_1024AC0);
-    RCP_SetupDL(&gMasterDisp, 0x40);
+    RCP_SetupDL(&gMasterDisp, SETUPDL_64);
 }
 
 // Possibly the little sparks of electricity that come off the arwing and landmaster when low on health
@@ -349,14 +349,14 @@ void func_effect_800780F8(Effect* effect) {
     for (i = 0; i < 10; i++) {
         if ((i >= effect->unk_48) && (i < effect->unk_46)) {
             Matrix_Push(&gGfxMatrix);
-            Matrix_Translate(gGfxMatrix, 0.0f, -60.0f, 0.0f, 1);
-            Matrix_Scale(gGfxMatrix, 0.8f, 3.0f, 1.0f, 1);
+            Matrix_Translate(gGfxMatrix, 0.0f, -60.0f, 0.0f, MTXF_APPLY);
+            Matrix_Scale(gGfxMatrix, 0.8f, 3.0f, 1.0f, MTXF_APPLY);
             Matrix_SetGfxMtx(&gMasterDisp);
             gSPDisplayList(gMasterDisp++, D_102F5E0);
             Matrix_Pop(&gGfxMatrix);
         }
-        Matrix_Translate(gGfxMatrix, 0.0f, -120.0f, 0.0f, 1);
-        Matrix_RotateZ(gGfxMatrix, D_800D1534[effect->unk_4C][i] * M_DTOR, 1);
+        Matrix_Translate(gGfxMatrix, 0.0f, -120.0f, 0.0f, MTXF_APPLY);
+        Matrix_RotateZ(gGfxMatrix, D_800D1534[effect->unk_4C][i] * M_DTOR, MTXF_APPLY);
     }
 }
 
@@ -375,18 +375,18 @@ void func_effect_80078438(Effect* effect) {
 void func_effect_800784B4(Effect* effect) {
     gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, effect->unk_46);
     Graphics_SetScaleMtx(effect->scale2);
-    Matrix_RotateX(gGfxMatrix, M_PI / 2, 1);
+    Matrix_RotateX(gGfxMatrix, M_PI / 2, MTXF_APPLY);
     Matrix_SetGfxMtx(&gMasterDisp);
     gSPDisplayList(gMasterDisp++, D_BG_PLANET_200D750);
 }
 
 void func_effect_80078550(Effect* effect) {
-    RCP_SetupDL(&gMasterDisp, 0x43);
+    RCP_SetupDL(&gMasterDisp, SETUPDL_67);
     Graphics_SetScaleMtx(effect->scale2);
     gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, effect->unk_4A);
     gDPSetEnvColor(gMasterDisp++, 101, 138, 153, 255);
     gSPDisplayList(gMasterDisp++, D_blue_marine_3000660);
-    RCP_SetupDL(&gMasterDisp, 0x40);
+    RCP_SetupDL(&gMasterDisp, SETUPDL_64);
 }
 
 void func_effect_80078604(Effect* effect) {
@@ -400,30 +400,30 @@ void func_effect_80078604(Effect* effect) {
 void func_effect_8007868C(Effect* effect) {
     RCP_SetupDL_60(gFogRed, gFogGreen, gFogBlue, gFogAlpha, gFogNear, gFogFar);
     gSPClearGeometryMode(gMasterDisp++, G_CULL_BACK);
-    Matrix_Scale(gGfxMatrix, effect->scale2, effect->scale2, effect->scale2, 1);
+    Matrix_Scale(gGfxMatrix, effect->scale2, effect->scale2, effect->scale2, MTXF_APPLY);
     if (effect->unk_44 >= 2) {
-        Matrix_RotateX(gGfxMatrix, M_PI / 2, 1);
+        Matrix_RotateX(gGfxMatrix, M_PI / 2, MTXF_APPLY);
     }
     Matrix_SetGfxMtx(&gMasterDisp);
     gSPDisplayList(gMasterDisp++, D_1029780);
-    RCP_SetupDL(&gMasterDisp, 0x40);
+    RCP_SetupDL(&gMasterDisp, SETUPDL_64);
 }
 
 void func_effect_8007879C(Effect* effect) {
     RCP_SetupDL_60(gFogRed, gFogGreen, gFogBlue, gFogAlpha, gFogNear, gFogFar);
     gSPClearGeometryMode(gMasterDisp++, G_CULL_BACK);
-    Matrix_Scale(gGfxMatrix, effect->scale2 * 0.6f, 1.0f, effect->scale2 * 3.5f, 1);
-    Matrix_RotateX(gGfxMatrix, M_PI / 2, 1);
+    Matrix_Scale(gGfxMatrix, effect->scale2 * 0.6f, 1.0f, effect->scale2 * 3.5f, MTXF_APPLY);
+    Matrix_RotateX(gGfxMatrix, M_PI / 2, MTXF_APPLY);
     Matrix_SetGfxMtx(&gMasterDisp);
     gSPDisplayList(gMasterDisp++, D_1029780);
-    RCP_SetupDL(&gMasterDisp, 0x40);
+    RCP_SetupDL(&gMasterDisp, SETUPDL_64);
 }
 
 static s32 D_800D173C[] = { 255, 255, 255, 0, 0, 0, 255, 0, 255, 0, 0, 0, 255, 255, 0, 0, 0, 255, 0, 0 };
 
 void func_effect_800788B0(Effect* effect) {
     s32 temp_ft3;
-    s32* tmp;
+    s32 tmp;
 
     switch (gCurrentLevel) {
         case LEVEL_METEO:
@@ -433,14 +433,14 @@ void func_effect_800788B0(Effect* effect) {
             break;
 
         case LEVEL_AQUAS:
-            RCP_SetupDL(&gMasterDisp, 0x43);
+            RCP_SetupDL(&gMasterDisp, SETUPDL_67);
             temp_ft3 = Math_ModF(effect->index, 4.0f);
             gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, (s32) effect->scale1);
-            tmp = &D_800D173C[(s32) (temp_ft3 * 4.0f)];
-            gDPSetEnvColor(gMasterDisp++, tmp[0], tmp[1], tmp[2], 255);
+            tmp = temp_ft3 * 4.0f;
+            gDPSetEnvColor(gMasterDisp++, D_800D173C[tmp + 0], D_800D173C[tmp + 1], D_800D173C[tmp + 2], 255);
             Graphics_SetScaleMtx(effect->scale2);
             gSPDisplayList(gMasterDisp++, D_1024AC0);
-            RCP_SetupDL(&gMasterDisp, 0x40);
+            RCP_SetupDL(&gMasterDisp, SETUPDL_64);
             break;
     }
 }
@@ -463,7 +463,7 @@ void func_effect_80078AEC(Effect* effect) {
 void func_effect_80078B8C(Effect* effect) {
     RCP_SetupDL_21();
     gSPDisplayList(gMasterDisp++, D_101ABD0);
-    RCP_SetupDL(&gMasterDisp, 0x40);
+    RCP_SetupDL(&gMasterDisp, SETUPDL_64);
 }
 
 void func_effect_80078BE0(Effect* effect) {
@@ -548,15 +548,15 @@ void func_effect_80078EBC(Effect* effect) {
 
 void func_effect_80078F78(Effect* effect) {
     if (effect->state != 0) {
-        RCP_SetupDL(&gMasterDisp, 0x43);
+        RCP_SetupDL(&gMasterDisp, SETUPDL_67);
     } else {
-        RCP_SetupDL(&gMasterDisp, 0x3F);
+        RCP_SetupDL(&gMasterDisp, SETUPDL_63);
     }
     gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, 255);
     gDPSetEnvColor(gMasterDisp++, 255, 255, 0, 255);
     Graphics_SetScaleMtx(effect->scale2 * effect->scale1);
     gSPDisplayList(gMasterDisp++, D_101C2E0);
-    RCP_SetupDL(&gMasterDisp, 0x40);
+    RCP_SetupDL(&gMasterDisp, SETUPDL_64);
 }
 
 void func_effect_8007905C(Effect* effect, f32 xPos, f32 yPos, f32 zPos, f32 scale2, u8 arg5) {
@@ -594,8 +594,8 @@ void func_effect_8007905C(Effect* effect, f32 xPos, f32 yPos, f32 zPos, f32 scal
         yAng = Math_Atan2F(sp3C.x - xPos, sp3C.z - zPos);
         sp38 = sqrtf(SQ(sp3C.x - xPos) + SQ(sp3C.z - zPos));
         xAng = -Math_Atan2F(sp3C.y - yPos, sp38);
-        Matrix_RotateY(gCalcMatrix, yAng, 0);
-        Matrix_RotateX(gCalcMatrix, xAng, 1);
+        Matrix_RotateY(gCalcMatrix, yAng, MTXF_NEW);
+        Matrix_RotateX(gCalcMatrix, xAng, MTXF_APPLY);
         sp54.x = RAND_FLOAT_CENTERED(50.0f);
         sp54.y = RAND_FLOAT_CENTERED(50.0f);
         sp54.z = RAND_FLOAT(10.0f) + 150.0f;
@@ -628,10 +628,11 @@ void func_effect_800794CC(f32 xPos, f32 yPos, f32 zPos, f32 scale2) {
     }
 }
 
+// Broken pieces and debris effect
 void func_effect_8007953C(f32 xPos, f32 yPos, f32 zPos, f32 scale2) {
     s32 i;
 
-    for (i = 79; i >= 0; i--) {
+    for (i = (ARRAY_COUNT(gEffects) - 20) - 1; i >= 0; i--) {
         if (gEffects[i].obj.status == OBJ_FREE) {
             func_effect_8007905C(&gEffects[i], xPos, yPos, zPos, scale2, 0);
             break;
@@ -663,14 +664,14 @@ void func_effect_80079618(f32 xPos, f32 yPos, f32 zPos, f32 scale2) {
 
 void func_effect_8007968C(Effect* effect) {
     if ((gCurrentLevel != LEVEL_MACBETH) || (effect->unk_44 != 7)) {
-        if ((effect->timer_50 == 0) || (effect->obj.pos.y < gGroundLevel)) {
+        if ((effect->timer_50 == 0) || (effect->obj.pos.y < gGroundHeight)) {
             Object_Kill(&effect->obj, effect->sfxSource);
         }
     } else {
         if (((gGameFrameCount % 4) == 0)) {
             func_effect_8007D2C8(effect->obj.pos.x, effect->obj.pos.y + 550.0f, effect->obj.pos.z, 10.0f);
         }
-        if ((effect->timer_50 == 0) || (effect->obj.pos.y < (gGroundLevel - 100.0f))) {
+        if ((effect->timer_50 == 0) || (effect->obj.pos.y < (gGroundHeight - 100.0f))) {
             Object_Kill(&effect->obj, effect->sfxSource);
         }
     }
@@ -683,7 +684,8 @@ void func_effect_8007968C(Effect* effect) {
         effect->vel.y -= 0.5f;
     }
 
-    if ((gCurrentLevel == LEVEL_BOLSE) && (gPlayer[0].state_1C8 == PLAYERSTATE_1C8_7) && (gCsFrameCount > 175)) {
+    if ((gCurrentLevel == LEVEL_BOLSE) && (gPlayer[0].state_1C8 == PLAYERSTATE_1C8_LEVEL_COMPLETE) &&
+        (gCsFrameCount > 175)) {
         effect->vel.x *= 0.95f;
         effect->vel.y *= 0.95f;
         effect->vel.z *= 0.95f;
@@ -700,9 +702,9 @@ void func_effect_8007968C(Effect* effect) {
     }
 }
 
-bool func_effect_800798C4(s32 arg0, Gfx** arg1, Vec3f* arg2, Vec3f* arg3, void* arg4) {
-    if ((arg0 != 1) && (arg0 != 5)) {
-        *arg1 = NULL;
+bool func_effect_800798C4(s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3f* rot, void* data) {
+    if ((limbIndex != 1) && (limbIndex != 5)) {
+        *dList = NULL;
     }
     return false;
 }
@@ -710,11 +712,11 @@ bool func_effect_800798C4(s32 arg0, Gfx** arg1, Vec3f* arg2, Vec3f* arg3, void* 
 void func_effect_800798F0(Effect* effect) {
     Vec3f frameJointTable[50];
 
-    if ((gCurrentLevel == LEVEL_BOLSE) && (gPlayer[0].state_1C8 == PLAYERSTATE_1C8_7)) {
-        func_edisplay_8005F670(&effect->obj.pos);
+    if ((gCurrentLevel == LEVEL_BOLSE) && (gPlayer[0].state_1C8 == PLAYERSTATE_1C8_LEVEL_COMPLETE)) {
+        Display_SetSecondLight(&effect->obj.pos);
     }
 
-    RCP_SetupDL(&gMasterDisp, 0x1D);
+    RCP_SetupDL(&gMasterDisp, SETUPDL_29);
 
     if (gCurrentLevel == LEVEL_KATINA) {
         gSPFogPosition(gMasterDisp++, gFogNear, 1005);
@@ -734,13 +736,13 @@ void func_effect_800798F0(Effect* effect) {
                     break;
 
                 case 2:
-                    RCP_SetupDL(&gMasterDisp, 0x39);
+                    RCP_SetupDL(&gMasterDisp, SETUPDL_57);
                     if ((effect->index % 2) != 0) {
                         gSPDisplayList(gMasterDisp++, D_MA_601A7A0);
                     } else {
                         gSPDisplayList(gMasterDisp++, D_MA_60223C0);
                     }
-                    RCP_SetupDL(&gMasterDisp, 0x1D);
+                    RCP_SetupDL(&gMasterDisp, SETUPDL_29);
                     break;
 
                 case 7:
@@ -762,7 +764,7 @@ void func_effect_800798F0(Effect* effect) {
                     break;
 
                 case 10:
-                    RCP_SetupDL(&gMasterDisp, 0x43);
+                    RCP_SetupDL(&gMasterDisp, SETUPDL_67);
                     gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, 255);
                     gDPSetEnvColor(gMasterDisp++, 255, 80, 0, 255);
                     Graphics_SetScaleMtx(effect->scale1);
@@ -823,7 +825,7 @@ void func_effect_800798F0(Effect* effect) {
 
         case LEVEL_AQUAS:
             Matrix_SetGfxMtx(&gMasterDisp);
-            RCP_SetupDL(&gMasterDisp, 0x3C);
+            RCP_SetupDL(&gMasterDisp, SETUPDL_60);
             gSPDisplayList(gMasterDisp++, D_AQ_600A220);
             break;
 
@@ -840,29 +842,29 @@ void func_effect_800798F0(Effect* effect) {
                 case 1:
                     switch ((s32) (effect->index % 4U)) {
                         case 0:
-                            Matrix_Scale(gGfxMatrix, 1.0f, 0.3f, 1.0f, 1);
+                            Matrix_Scale(gGfxMatrix, 1.0f, 0.3f, 1.0f, MTXF_APPLY);
                             break;
                         case 1:
-                            Matrix_Scale(gGfxMatrix, 0.3f, 1.0f, 1.0f, 1);
+                            Matrix_Scale(gGfxMatrix, 0.3f, 1.0f, 1.0f, MTXF_APPLY);
                             break;
                         case 2:
-                            Matrix_Scale(gGfxMatrix, 1.0f, 0.5f, 1.0f, 1);
+                            Matrix_Scale(gGfxMatrix, 1.0f, 0.5f, 1.0f, MTXF_APPLY);
                             break;
                         case 3:
-                            Matrix_Scale(gGfxMatrix, 0.5f, 1.0f, 1.0f, 1);
+                            Matrix_Scale(gGfxMatrix, 0.5f, 1.0f, 1.0f, MTXF_APPLY);
                             break;
                     }
                     Matrix_SetGfxMtx(&gMasterDisp);
-                    RCP_SetupDL(&gMasterDisp, 0x39);
+                    RCP_SetupDL(&gMasterDisp, SETUPDL_57);
                     gSPClearGeometryMode(gMasterDisp++, G_CULL_BACK);
                     gSPDisplayList(gMasterDisp++, D_1021E20);
-                    RCP_SetupDL(&gMasterDisp, 0x40);
+                    RCP_SetupDL(&gMasterDisp, SETUPDL_64);
                     break;
             }
             break;
     }
 
-    RCP_SetupDL(&gMasterDisp, 0x40);
+    RCP_SetupDL(&gMasterDisp, SETUPDL_64);
 
     if (gCurrentLevel == LEVEL_KATINA) {
         gSPFogPosition(gMasterDisp++, gFogNear, gFogFar);
@@ -871,7 +873,7 @@ void func_effect_800798F0(Effect* effect) {
 
 void func_effect_8007A28C(Effect* effect) {
     Texture_Scroll(D_10190C0, 16, 32, 0);
-    D_ctx_8017812C = 2;
+    gGroundClipMode = 2;
     effect->obj.rot.y += 1.0f;
     Math_SmoothStepToF(&effect->scale2, effect->scale1, 0.05f, 1.5f, 0.001f);
 
@@ -893,14 +895,14 @@ void func_effect_8007A28C(Effect* effect) {
         if (effect->unk_44 < 0) {
             effect->unk_44 = 0;
             Object_Kill(&effect->obj, effect->sfxSource);
-            D_ctx_8017812C = 0;
+            gGroundClipMode = 0;
         }
     }
 }
 
 void func_effect_8007A3C0(Effect* effect) {
     if (gReflectY > 0) {
-        Matrix_Scale(gGfxMatrix, effect->scale2, effect->scale2, effect->scale2, 1);
+        Matrix_Scale(gGfxMatrix, effect->scale2, effect->scale2, effect->scale2, MTXF_APPLY);
         Matrix_SetGfxMtx(&gMasterDisp);
         RCP_SetupDL_64_2();
         gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, effect->unk_44);
@@ -923,7 +925,7 @@ void func_effect_8007A4B8(Effect* effect, f32 xPos, f32 yPos, f32 zPos, f32 scal
     effect->obj.pos.y = yPos;
     effect->obj.pos.z = zPos;
 
-    AUDIO_PLAY_SFX(0x2940F026, effect->sfxSource, 4);
+    AUDIO_PLAY_SFX(NA_SE_EN_STAR_EXPLOSION, effect->sfxSource, 4);
     Object_SetInfo(&effect->info, effect->obj.id);
 }
 
@@ -950,9 +952,9 @@ void func_effect_8007A5F8(Effect* effect, Vec3f* pos, u32 sfxId) {
 
     effect->timer_50 = 50;
 
-    if ((sfxId == 0x1903400F) || (sfxId == 0x11000055)) {
+    if ((sfxId == NA_SE_OB_EXPLOSION_S) || (sfxId == NA_SE_OB_SMOKE)) {
         AUDIO_PLAY_SFX(sfxId, effect->sfxSource, 0);
-        if (sfxId == 0x11000055) {
+        if (sfxId == NA_SE_OB_SMOKE) {
             effect->timer_50 = 300;
         }
     } else {
@@ -979,7 +981,7 @@ void func_effect_8007A748(Effect* effect) {
 }
 
 bool func_effect_8007A774(Player* player, Effect* effect, f32 arg2) {
-    if ((fabsf(player->unk_138 - effect->obj.pos.z) < arg2) && (fabsf(player->pos.x - effect->obj.pos.x) < arg2) &&
+    if ((fabsf(player->trueZpos - effect->obj.pos.z) < arg2) && (fabsf(player->pos.x - effect->obj.pos.x) < arg2) &&
         (fabsf(player->pos.y - effect->obj.pos.y) < arg2) && (player->timer_498 == 0)) {
         Player_ApplyDamage(player, 0, effect->info.damage);
         return true;
@@ -1040,17 +1042,17 @@ void func_effect_8007A994(Effect* effect) {
     effect->unk_4A++;
 }
 
-static Gfx* D_800D178C[] = { D_TI_6003440, D_TI_60034E0, D_TI_6003580, D_TI_6003620, D_TI_60036C0, D_TR_6003760 };
+static Gfx* D_800D178C[] = { D_TI_6003440, D_TI_60034E0, D_TI_6003580, D_TI_6003620, D_TI_60036C0, D_TI_6003760 };
 
 void func_effect_8007AA60(Effect* effect) {
-    RCP_SetupDL(&gMasterDisp, 0x44);
+    RCP_SetupDL(&gMasterDisp, SETUPDL_68);
     gDPSetPrimColor(gMasterDisp++, 0, 0, 31, 10, 00, effect->unk_44);
     gDPSetEnvColor(gMasterDisp++, 141, 73, 5, 0);
-    Matrix_Scale(gGfxMatrix, effect->scale2, effect->scale2, 1.0f, 1);
+    Matrix_Scale(gGfxMatrix, effect->scale2, effect->scale2, 1.0f, MTXF_APPLY);
     Matrix_SetGfxMtx(&gMasterDisp);
     gSPDisplayList(gMasterDisp++, D_800D178C[effect->unk_4C]);
     effect->unk_4C = effect->unk_48;
-    RCP_SetupDL(&gMasterDisp, 0x40);
+    RCP_SetupDL(&gMasterDisp, SETUPDL_64);
 }
 
 void func_effect_8007AB50(Effect* effect) {
@@ -1075,7 +1077,7 @@ void func_effect_8007AC0C(Effect* effect, f32 xPos, f32 unused_posY, f32 zPos, f
     effect->obj.id = OBJ_EFFECT_372;
 
     effect->obj.pos.x = xPos;
-    effect->obj.pos.y = gGroundLevel;
+    effect->obj.pos.y = gGroundHeight;
     effect->obj.pos.z = zPos;
 
     effect->unk_44 = 180;
@@ -1105,7 +1107,7 @@ void func_effect_8007AD58(Effect* effect, f32 xPos, f32 unused_posY, f32 zPos, f
     effect->state = 1;
 
     effect->obj.pos.x = xPos;
-    effect->obj.pos.y = gGroundLevel;
+    effect->obj.pos.y = gGroundHeight;
     effect->obj.pos.z = zPos;
 
     effect->unk_44 = 180;
@@ -1144,7 +1146,7 @@ void func_effect_8007AF30(Effect* effect, f32 xPos, f32 zPos, f32 xVel, f32 zVel
     effect->obj.pos.z = zPos;
 
     effect->vel.x = xVel;
-    effect->vel.z = zVel - D_ctx_80177D08;
+    effect->vel.z = zVel - gPathVelZ;
     effect->scale1 = scale1;
     effect->timer_50 = 100;
     Object_SetInfo(&effect->info, effect->obj.id);
@@ -1165,7 +1167,7 @@ void func_effect_8007B040(Effect* effect) {
     f32 sp2C;
     s32 sp28;
 
-    if (func_play_800A73E4(&sp2C, &sp28, effect->obj.pos.x, effect->obj.pos.y, effect->obj.pos.z)) {
+    if (Play_CheckDynaFloorCollision(&sp2C, &sp28, effect->obj.pos.x, effect->obj.pos.y, effect->obj.pos.z)) {
         D_ctx_801782EC[sp28] = effect->scale1;
         D_ctx_801782EC[sp28 + 1] = effect->scale1 * 0.7f;
         D_ctx_801782EC[sp28 - 1] = effect->scale1 * 0.7f;
@@ -1196,7 +1198,7 @@ void func_effect_8007B180(Effect* effect, f32 xPos, f32 yPos, f32 zPos, f32 scal
     effect->unk_44 = 255;
     effect->scale1 = scale1;
     Object_SetInfo(&effect->info, effect->obj.id);
-    AUDIO_PLAY_SFX(0x1100000C, effect->sfxSource, 0);
+    AUDIO_PLAY_SFX(NA_SE_SPLASH_LEVEL_L, effect->sfxSource, 0);
 }
 
 void func_effect_8007B228(f32 xPos, f32 yPos, f32 zPos, f32 scale1) {
@@ -1225,6 +1227,7 @@ void func_effect_8007B2BC(Effect* effect, f32 xPos, f32 yPos, f32 zPos, f32 scal
     Object_SetInfo(&effect->info, effect->obj.id);
 }
 
+// Orange-yellowish light effect simulating an explosion
 void func_effect_8007B344(f32 xPos, f32 yPos, f32 zPos, f32 scale1, s32 arg4) {
     s32 i;
 
@@ -1400,7 +1403,7 @@ void func_effect_8007B960(Effect* effect) {
 void func_effect_8007B9DC(Effect* effect) {
     //! DEBUG: Hold Z on controller 4 to set up a display list.
     if (gControllerHold[3].button & Z_TRIG) {
-        RCP_SetupDL(&gMasterDisp, 4);
+        RCP_SetupDL(&gMasterDisp, SETUPDL_4);
     }
 
     Graphics_SetScaleMtx(effect->scale2);
@@ -1417,7 +1420,7 @@ void func_effect_8007B9DC(Effect* effect) {
     }
     //! DEBUG: Hold Z on controller 4 to set up a display list.
     if (gControllerHold[3].button & Z_TRIG) {
-        RCP_SetupDL(&gMasterDisp, 0x40);
+        RCP_SetupDL(&gMasterDisp, SETUPDL_64);
     }
 }
 
@@ -1467,11 +1470,11 @@ void func_effect_8007BC7C(f32 xPos, f32 yPos, f32 zPos, f32 scale2) {
 }
 
 void func_effect_8007BCE8(Effect* effect) {
-    if (gPlayer[0].state_1C8 == PLAYERSTATE_1C8_7) {
-        effect->obj.rot.x = RAD_TO_DEG(gPlayer[0].unk_05C);
-        effect->obj.rot.y = RAD_TO_DEG(-gPlayer[0].unk_058);
+    if (gPlayer[0].state_1C8 == PLAYERSTATE_1C8_LEVEL_COMPLETE) {
+        effect->obj.rot.x = RAD_TO_DEG(gPlayer[0].camPitch);
+        effect->obj.rot.y = RAD_TO_DEG(-gPlayer[0].camYaw);
     }
-    if (gPlayer[0].state_1C8 == PLAYERSTATE_1C8_6) {
+    if (gPlayer[0].state_1C8 == PLAYERSTATE_1C8_NEXT) {
         effect->unk_46 = 2;
         effect->vel.y -= 0.13f;
     }
@@ -1577,7 +1580,7 @@ void func_effect_8007C1AC(f32 xPos, f32 yPos, f32 zPos, f32 xVel, f32 yVel, f32 
     for (i = ARRAY_COUNT(gEffects) - 1; i >= 0; i--) {
         if (gEffects[i].obj.status == OBJ_FREE) {
             func_effect_8007BF64(&gEffects[i], xPos, yPos, zPos, xVel, yVel, zVel, scale2, timer50);
-            func_play_800A6070(gEffects[i].sfxSource, 0x29000000);
+            Play_PlaySfxNoPlayer(gEffects[i].sfxSource, NA_SE_EXPLOSION_S);
             break;
         }
     }
@@ -1593,12 +1596,12 @@ void func_effect_8007C250(Effect* effect) {
     Math_SmoothStepToF(&effect->vel.y, 0.0f, 0.2f, 10.0f, 0.1f);
     Math_SmoothStepToF(&effect->vel.z, 0.0f, 0.2f, 10.0f, 0.1f);
 
-    var_v0 = 3;
+    var_v0 = 4 - 1;
     if (gLevelMode == LEVELMODE_ALL_RANGE) {
-        var_v0 = 1;
+        var_v0 = 2 - 1;
     }
 
-    if (!(effect->timer_50 & var_v0)) {
+    if ((effect->timer_50 & var_v0) == 0) {
         randX = RAND_FLOAT_CENTERED(40.0f);
         randY = RAND_FLOAT_CENTERED(40.0f);
         randOther = RAND_FLOAT(0.5f) + 1.0f;
@@ -1699,7 +1702,7 @@ void func_effect_8007C6FC(Effect* effect, f32 xPos, f32 yPos, f32 zPos, f32 scal
     if (Rand_ZeroOne() < 0.5f) {
         effect->unk_48 = -effect->unk_48;
     }
-    if ((gCurrentLevel == LEVEL_FORTUNA) && (gPlayer[0].state_1C8 != PLAYERSTATE_1C8_6)) {
+    if ((gCurrentLevel == LEVEL_FORTUNA) && (gPlayer[0].state_1C8 != PLAYERSTATE_1C8_NEXT)) {
         effect->unk_4A = 180;
     } else {
         effect->unk_4A = 255;
@@ -1735,12 +1738,12 @@ void func_effect_8007C8C4(Effect* effect) {
     f32 randOther;
     s32 var_v0;
 
-    var_v0 = 0;
-    if ((gCurrentLevel == LEVEL_FORTUNA) && (gPlayer[0].state_1C8 != PLAYERSTATE_1C8_6)) {
-        var_v0 = 3;
+    var_v0 = 1 - 1;
+    if ((gCurrentLevel == LEVEL_FORTUNA) && (gPlayer[0].state_1C8 != PLAYERSTATE_1C8_NEXT)) {
+        var_v0 = 4 - 1;
     }
 
-    if (!(effect->timer_50 & var_v0) && (gLevelType == LEVELTYPE_PLANET)) {
+    if (((effect->timer_50 & var_v0) == 0) && (gLevelType == LEVELTYPE_PLANET)) {
         randX = RAND_FLOAT_CENTERED(10.0f);
         randY = RAND_FLOAT_CENTERED(10.0f);
         randOther = RAND_FLOAT(0.5f) + 1.0f;
@@ -1780,7 +1783,7 @@ void func_effect_8007CAF0(Effect* effect) {
         gDPSetPrimColor(gMasterDisp++, 0, 0, 0, 0, 0, effect->unk_4A);
         gSPDisplayList(gMasterDisp++, D_102A010);
     } else {
-        Matrix_Scale(gGfxMatrix, 1.5f, 1.5f, 1.5f, 1);
+        Matrix_Scale(gGfxMatrix, 1.5f, 1.5f, 1.5f, MTXF_APPLY);
         Matrix_SetGfxMtx(&gMasterDisp);
         gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, effect->unk_4A);
         gSPDisplayList(gMasterDisp++, D_BG_PLANET_20031B0);
@@ -1790,7 +1793,7 @@ void func_effect_8007CAF0(Effect* effect) {
 void func_effect_8007CC00(Effect* effect, f32 xPos, f32 yPos, f32 zPos, f32 scale2) {
     Effect_Initialize(effect);
     effect->obj.status = OBJ_INIT;
-    effect->obj.id = OBJ_EFFECT_339;
+    effect->obj.id = OBJ_EFFECT_FIRE_SMOKE;
     effect->obj.pos.x = xPos;
     effect->obj.pos.y = yPos;
     effect->obj.pos.z = zPos;
@@ -1964,7 +1967,7 @@ void func_effect_8007D2C8(f32 xPos, f32 yPos, f32 zPos, f32 scale2) {
 
 void func_effect_8007D2F4(Effect* effect) {
     if (gLevelType == LEVELTYPE_PLANET) {
-        if ((gCurrentLevel == LEVEL_KATINA) && (gPlayer[0].state_1C8 == PLAYERSTATE_1C8_7)) {
+        if ((gCurrentLevel == LEVEL_KATINA) && (gPlayer[0].state_1C8 == PLAYERSTATE_1C8_LEVEL_COMPLETE)) {
             effect->vel.y += 0.1f;
             if (effect->timer_50 == 0) {
                 effect->unk_4C++;
@@ -1977,7 +1980,7 @@ void func_effect_8007D2F4(Effect* effect) {
                 }
             }
         } else {
-            if ((gCurrentLevel == LEVEL_MACBETH) && (gPlayer[0].state_1C8 == PLAYERSTATE_1C8_7) &&
+            if ((gCurrentLevel == LEVEL_MACBETH) && (gPlayer[0].state_1C8 == PLAYERSTATE_1C8_LEVEL_COMPLETE) &&
                 (effect->vel.x != 0)) {
                 Math_SmoothStepToF(&effect->vel.x, -1.0f, 1.0f, 1.0f, 0.0f);
                 Math_SmoothStepToF(&effect->vel.z, 4.0f, 1.0f, 1.0f, 0.0f);
@@ -2004,14 +2007,14 @@ void func_effect_8007D2F4(Effect* effect) {
         }
         effect->unk_44 -= 15;
     }
-    if (D_ctx_8017836C < effect->scale1) {
-        D_ctx_8017836C = effect->scale1;
-        D_ctx_80178370 = effect->obj.pos.x;
-        D_ctx_80178374 = effect->obj.pos.y;
-        D_ctx_80178378 = effect->obj.pos.z;
-        D_ctx_80178360 = 255;
-        D_ctx_80178364 = 50;
-        D_ctx_80178368 = 0;
+    if (gLight3Brightness < effect->scale1) {
+        gLight3Brightness = effect->scale1;
+        gLight3x = effect->obj.pos.x;
+        gLight3y = effect->obj.pos.y;
+        gLight3z = effect->obj.pos.z;
+        gLight3R = 255;
+        gLight3G = 50;
+        gLight3B = 0;
     }
     Math_SmoothStepToF(&effect->scale1, 0.0f, 1.0f, 0.05f, 0.0f);
 }
@@ -2029,8 +2032,7 @@ static f32 D_800D17F8[] = {
     1.6f, 1.6f, 1.7f, 1.7f, 1.8f, 1.8f, 1.9f, 1.9f, 2.0f, 2.0f,
 };
 
-// RGBA values
-static u8 D_800D184C[][4] = {
+static Color_RGBA32 D_800D184C[] = {
     { 255, 255, 255, 255 }, { 255, 0, 0, 255 },     { 255, 40, 40, 255 },   { 255, 80, 80, 255 },
     { 255, 120, 120, 255 }, { 255, 160, 160, 255 }, { 255, 200, 200, 255 }, { 255, 240, 240, 255 },
     { 255, 255, 255, 255 }, { 255, 255, 255, 255 }, { 255, 255, 255, 255 }, { 255, 255, 255, 255 },
@@ -2050,17 +2052,17 @@ void func_effect_8007D55C(Effect* effect) {
 
     Graphics_SetScaleMtx(effect->scale2);
     if (gLevelType == LEVELTYPE_PLANET) {
-        gDPSetPrimColor(gMasterDisp++, 0, 0, D_800D184C[effect->unk_4C][0], D_800D184C[effect->unk_4C][1],
-                        D_800D184C[effect->unk_4C][2], D_800D184C[effect->unk_4C][3]);
+        gDPSetPrimColor(gMasterDisp++, 0, 0, D_800D184C[effect->unk_4C].r, D_800D184C[effect->unk_4C].g,
+                        D_800D184C[effect->unk_4C].b, D_800D184C[effect->unk_4C].a);
         scale = D_800D17F8[effect->unk_4C] - 0.5f;
-        Matrix_Scale(gGfxMatrix, scale, scale, 1.0f, 1);
+        Matrix_Scale(gGfxMatrix, scale, scale, 1.0f, MTXF_APPLY);
         Matrix_SetGfxMtx(&gMasterDisp);
         gSPDisplayList(gMasterDisp++, D_800D17A4[effect->unk_4C]);
         return;
     }
     gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 100, effect->unk_44);
     if (effect->unk_4C == 0) {
-        Matrix_Scale(gGfxMatrix, 2.5f, 2.5f, 2.5f, 1);
+        Matrix_Scale(gGfxMatrix, 2.5f, 2.5f, 2.5f, MTXF_APPLY);
         Matrix_SetGfxMtx(&gMasterDisp);
         gSPDisplayList(gMasterDisp++, D_800D18A0[effect->unk_4C]);
         return;
@@ -2092,14 +2094,14 @@ void func_effect_8007D748(Effect* effect) {
         }
         effect->unk_44 -= 15;
     }
-    if (D_ctx_8017836C < effect->scale1) {
-        D_ctx_8017836C = effect->scale1;
-        D_ctx_80178370 = effect->obj.pos.x;
-        D_ctx_80178374 = effect->obj.pos.y;
-        D_ctx_80178378 = effect->obj.pos.z;
-        D_ctx_80178360 = 255;
-        D_ctx_80178364 = 50;
-        D_ctx_80178368 = 0;
+    if (gLight3Brightness < effect->scale1) {
+        gLight3Brightness = effect->scale1;
+        gLight3x = effect->obj.pos.x;
+        gLight3y = effect->obj.pos.y;
+        gLight3z = effect->obj.pos.z;
+        gLight3R = 255;
+        gLight3G = 50;
+        gLight3B = 0;
     }
     Math_SmoothStepToF(&effect->scale1, 0, 1.0f, 0.1f, 0.0f);
 }
@@ -2164,7 +2166,7 @@ void func_effect_8007DAE4(Effect* effect) {
     Graphics_SetScaleMtx(effect->scale2);
     RCP_SetupDL_29(gFogRed, gFogGreen, gFogBlue, gFogAlpha, gFogNear, gFogFar);
     gSPDisplayList(gMasterDisp++, D_CO_6004900);
-    RCP_SetupDL(&gMasterDisp, 0x40);
+    RCP_SetupDL(&gMasterDisp, SETUPDL_64);
 }
 
 void func_effect_8007DB70(Effect* effect) {
@@ -2173,24 +2175,24 @@ void func_effect_8007DB70(Effect* effect) {
     switch (effect->state) {
         case 0:
             effect->vel.y -= 0.5f;
-            if ((effect->timer_50 == 0) && ((func_enmy_8006351C(1000, &effect->obj.pos, &sp54, 1) != 0) ||
-                                            (effect->obj.pos.y < (gGroundLevel + 10.0f)))) {
+            if ((effect->timer_50 == 0) && ((Object_CheckCollision(1000, &effect->obj.pos, &sp54, 1) != 0) ||
+                                            (effect->obj.pos.y < (gGroundHeight + 10.0f)))) {
                 effect->vel.y = 0.0f;
-                if (effect->obj.pos.y < (gGroundLevel + 10.0f)) {
-                    effect->obj.pos.y = gGroundLevel;
+                if (effect->obj.pos.y < (gGroundHeight + 10.0f)) {
+                    effect->obj.pos.y = gGroundHeight;
                 }
                 effect->state = 1;
                 effect->timer_50 = 30;
                 effect->unk_44 = 192;
                 effect->scale2 = 2.5f;
                 effect->scale1 = 2.5f;
-                AUDIO_PLAY_SFX(0x2903B009, effect->sfxSource, 4);
+                AUDIO_PLAY_SFX(NA_SE_EN_EXPLOSION_M, effect->sfxSource, 4);
                 func_effect_8007D0E0(effect->obj.pos.x, effect->obj.pos.y + 30.0f, effect->obj.pos.z, 7.0f);
                 func_effect_8007BFFC(effect->obj.pos.x, effect->obj.pos.y + 30.0f, effect->obj.pos.z, 0.0f, 0.0f, 0.0f,
                                      4.0f, 5);
-                if ((effect->obj.pos.y < (gGroundLevel + 10.0f)) || (gGroundType != GROUNDTYPE_WATER)) {
-                    func_beam_800365E4(effect->obj.pos.x, 3.0f, effect->obj.pos.z, effect->obj.pos.x, effect->obj.pos.z,
-                                       0.0f, 0.0f, 90.0f, 5.0f, 0, 0);
+                if ((effect->obj.pos.y < (gGroundHeight + 10.0f)) || (gGroundSurface != SURFACE_WATER)) {
+                    PlayerShot_SpawnEffect344(effect->obj.pos.x, 3.0f, effect->obj.pos.z, effect->obj.pos.x,
+                                              effect->obj.pos.z, 0.0f, 0.0f, 90.0f, 5.0f, 0, 0);
                     break;
                 }
             }
@@ -2206,7 +2208,7 @@ void func_effect_8007DB70(Effect* effect) {
                 }
             }
             effect->obj.rot.y = 180.0f - effect->obj.rot.y;
-            if ((fabsf(gPlayer[0].unk_138 - effect->obj.pos.z) < 40.0f) &&
+            if ((fabsf(gPlayer[0].trueZpos - effect->obj.pos.z) < 40.0f) &&
                 (fabsf(gPlayer[0].pos.x - effect->obj.pos.x) < 80.0f)) {
                 if ((effect->obj.pos.y < gPlayer[0].pos.y) &&
                     ((gPlayer[0].pos.y - effect->obj.pos.y) < (effect->scale2 * 35.0f)) &&
@@ -2224,16 +2226,16 @@ void func_effect_8007DED4(Effect* effect) {
             Graphics_SetScaleMtx(effect->scale2);
             RCP_SetupDL_60(gFogRed, gFogGreen, gFogBlue, gFogAlpha, gFogNear, gFogFar);
             gSPDisplayList(gMasterDisp++, D_ENMY_PLANET_4008CE0);
-            RCP_SetupDL(&gMasterDisp, 0x40);
+            RCP_SetupDL(&gMasterDisp, SETUPDL_64);
             break;
 
         case 1:
-            Matrix_Scale(gGfxMatrix, effect->scale1, effect->scale2, 2.5f, 1);
+            Matrix_Scale(gGfxMatrix, effect->scale1, effect->scale2, 2.5f, MTXF_APPLY);
             Matrix_SetGfxMtx(&gMasterDisp);
             RCP_SetupDL_40();
             gSPClearGeometryMode(gMasterDisp++, G_CULL_BACK);
             gSPDisplayList(gMasterDisp++, D_ENMY_PLANET_4008F70);
-            RCP_SetupDL(&gMasterDisp, 0x40);
+            RCP_SetupDL(&gMasterDisp, SETUPDL_64);
             break;
     }
 }
@@ -2244,8 +2246,8 @@ void func_effect_8007E014(Effect* effect) {
     f32 z;
     f32 y;
 
-    if (D_ctx_801784AC == 4) {
-        Ground_801B6E20(effect->obj.pos.x, effect->obj.pos.z + D_ctx_80177D20, &x, &y, &z);
+    if (gGroundType == 4) {
+        Ground_801B6E20(effect->obj.pos.x, effect->obj.pos.z + gPathProgress, &x, &y, &z);
         effect->obj.pos.y = y + 3.0f;
         effect->obj.rot.x = RAD_TO_DEG(x);
         effect->obj.rot.z = RAD_TO_DEG(z);
@@ -2321,7 +2323,7 @@ void func_effect_8007E45C(Effect* effect) {
             }
 
             effect->scale2 += 0.02f;
-            effect->unk_44 -= 1;
+            effect->unk_44--;
 
             if (effect->unk_44 < 0) {
                 Object_Kill(&effect->obj, effect->sfxSource);
@@ -2376,12 +2378,12 @@ void func_effect_8007E6B8(Effect* effect, u32 objId, f32 xPos, f32 yPos, f32 zPo
     effect->obj.pos.z = zPos;
 
     Object_SetInfo(&effect->info, effect->obj.id);
-    sp50 = Math_Atan2F(gPlayer[0].pos.x - xPos, gPlayer[0].unk_138 - zPos);
-    temp_ft4 = sqrtf(SQ(gPlayer[0].pos.x - xPos) + SQ(gPlayer[0].unk_138 - zPos));
+    sp50 = Math_Atan2F(gPlayer[0].pos.x - xPos, gPlayer[0].trueZpos - zPos);
+    temp_ft4 = sqrtf(SQ(gPlayer[0].pos.x - xPos) + SQ(gPlayer[0].trueZpos - zPos));
     sp54 = -Math_Atan2F(gPlayer[0].pos.y - yPos, temp_ft4);
 
-    Matrix_RotateY(gCalcMatrix, sp50, 0);
-    Matrix_RotateX(gCalcMatrix, sp54, 1);
+    Matrix_RotateY(gCalcMatrix, sp50, MTXF_NEW);
+    Matrix_RotateX(gCalcMatrix, sp54, MTXF_APPLY);
 
     sp40.x = 0.0f;
     sp40.y = 0.0f;
@@ -2389,9 +2391,9 @@ void func_effect_8007E6B8(Effect* effect, u32 objId, f32 xPos, f32 yPos, f32 zPo
 
     Matrix_MultVec3f(gCalcMatrix, &sp40, &sp34);
 
-    effect->vel.x = sp34.x + D_ctx_801779E4;
-    effect->vel.y = sp34.y + D_ctx_801779F4;
-    effect->vel.z = sp34.z - D_ctx_80177D08;
+    effect->vel.x = sp34.x + gPathVelX;
+    effect->vel.y = sp34.y + gPathVelY;
+    effect->vel.z = sp34.z - gPathVelZ;
 
     if ((objId == OBJ_EFFECT_353) || (objId == OBJ_EFFECT_354)) {
         effect->obj.rot.x = RAD_TO_DEG(sp54);
@@ -2399,21 +2401,18 @@ void func_effect_8007E6B8(Effect* effect, u32 objId, f32 xPos, f32 yPos, f32 zPo
     }
 
     if (objId == OBJ_EFFECT_356) {
-        AUDIO_PLAY_SFX(0x31000025, effect->sfxSource, 4);
+        AUDIO_PLAY_SFX(NA_SE_EN_ENERGY_BEAM, effect->sfxSource, 4);
     }
 
     if (objId == OBJ_EFFECT_376) {
         effect->obj.rot.z = RAND_FLOAT(360.0f);
         effect->unk_4A = 180;
         effect->scale2 = 5.0f;
-        return;
+    } else if ((objId == OBJ_EFFECT_355) || (objId == OBJ_EFFECT_377)) {
+        AUDIO_PLAY_SFX(NA_SE_EN_ENERGY_BEAM, effect->sfxSource, 4);
+    } else {
+        AUDIO_PLAY_SFX(NA_SE_EN_SHOT_0, effect->sfxSource, 4);
     }
-
-    if ((objId == OBJ_EFFECT_355) || (objId == OBJ_EFFECT_377)) {
-        AUDIO_PLAY_SFX(0x31000025, effect->sfxSource, 4);
-        return;
-    }
-    AUDIO_PLAY_SFX(0x29002002, effect->sfxSource, 4);
 }
 
 void func_effect_8007E93C(Effect* effect, u32 objId, f32 xPos, f32 yPos, f32 zPos, f32 speed) {
@@ -2433,12 +2432,12 @@ void func_effect_8007E93C(Effect* effect, u32 objId, f32 xPos, f32 yPos, f32 zPo
     effect->obj.pos.z = zPos;
 
     Object_SetInfo(&effect->info, effect->obj.id);
-    sp50 = Math_Atan2F(gPlayer[0].camEye.x - xPos, gPlayer[0].camEye.z - zPos);
-    temp_ft4 = sqrtf(SQ(gPlayer[0].camEye.x - xPos) + SQ(gPlayer[0].camEye.z - zPos));
-    sp54 = -Math_Atan2F(gPlayer[0].camEye.y - yPos, temp_ft4);
+    sp50 = Math_Atan2F(gPlayer[0].cam.eye.x - xPos, gPlayer[0].cam.eye.z - zPos);
+    temp_ft4 = sqrtf(SQ(gPlayer[0].cam.eye.x - xPos) + SQ(gPlayer[0].cam.eye.z - zPos));
+    sp54 = -Math_Atan2F(gPlayer[0].cam.eye.y - yPos, temp_ft4);
 
-    Matrix_RotateY(gCalcMatrix, sp50, 0);
-    Matrix_RotateX(gCalcMatrix, sp54, 1);
+    Matrix_RotateY(gCalcMatrix, sp50, MTXF_NEW);
+    Matrix_RotateX(gCalcMatrix, sp54, MTXF_APPLY);
 
     sp40.x = 0.0f;
     sp40.y = 0.0f;
@@ -2446,9 +2445,9 @@ void func_effect_8007E93C(Effect* effect, u32 objId, f32 xPos, f32 yPos, f32 zPo
 
     Matrix_MultVec3f(gCalcMatrix, &sp40, &sp34);
 
-    effect->vel.x = sp34.x + D_ctx_801779E4;
-    effect->vel.y = sp34.y + D_ctx_801779F4;
-    effect->vel.z = sp34.z - D_ctx_80177D08;
+    effect->vel.x = sp34.x + gPathVelX;
+    effect->vel.y = sp34.y + gPathVelY;
+    effect->vel.z = sp34.z - gPathVelZ;
 
     if (objId == OBJ_EFFECT_353) {
         effect->obj.rot.x = RAD_TO_DEG(sp54);
@@ -2456,21 +2455,18 @@ void func_effect_8007E93C(Effect* effect, u32 objId, f32 xPos, f32 yPos, f32 zPo
     }
 
     if (objId == OBJ_EFFECT_356) {
-        AUDIO_PLAY_SFX(0x31000025, effect->sfxSource, 4);
+        AUDIO_PLAY_SFX(NA_SE_EN_ENERGY_BEAM, effect->sfxSource, 4);
     }
 
     if (objId == OBJ_EFFECT_376) {
         effect->obj.rot.z = RAND_FLOAT(360.0f);
         effect->unk_4A = 180;
         effect->scale2 = 5.0f;
-        return;
+    } else if ((objId == OBJ_EFFECT_355) || (objId == OBJ_EFFECT_377)) {
+        AUDIO_PLAY_SFX(NA_SE_EN_ENERGY_BEAM, effect->sfxSource, 4);
+    } else {
+        AUDIO_PLAY_SFX(NA_SE_EN_SHOT_0, effect->sfxSource, 4);
     }
-
-    if ((objId == OBJ_EFFECT_355) || (objId == OBJ_EFFECT_377)) {
-        AUDIO_PLAY_SFX(0x31000025, effect->sfxSource, 4);
-        return;
-    }
-    AUDIO_PLAY_SFX(0x29002002, effect->sfxSource, 4);
 }
 
 void func_effect_8007EBB8(Effect* effect, ObjectId objId, f32 xPos, f32 yPos, f32 zPos, f32 xVel, f32 yVel, f32 zVel,
@@ -2491,9 +2487,9 @@ void func_effect_8007EBB8(Effect* effect, ObjectId objId, f32 xPos, f32 yPos, f3
 
     effect->scale2 = scale2;
     if (objId == OBJ_EFFECT_355) {
-        AUDIO_PLAY_SFX(0x31000025, effect->sfxSource, 4);
+        AUDIO_PLAY_SFX(NA_SE_EN_ENERGY_BEAM, effect->sfxSource, 4);
     } else {
-        AUDIO_PLAY_SFX(0x29002002, effect->sfxSource, 4);
+        AUDIO_PLAY_SFX(NA_SE_EN_SHOT_0, effect->sfxSource, 4);
     }
     Object_SetInfo(&effect->info, effect->obj.id);
 }
@@ -2538,7 +2534,7 @@ void func_effect_8007ED54(Effect* effect, ObjectId objId, f32 xPos, f32 yPos, f3
 
     effect->scale2 = scale2;
     if (effect->obj.id != OBJ_EFFECT_380) {
-        AUDIO_PLAY_SFX(0x29002002, effect->sfxSource, 4);
+        AUDIO_PLAY_SFX(NA_SE_EN_SHOT_0, effect->sfxSource, 4);
     }
     Object_SetInfo(&effect->info, effect->obj.id);
 }
@@ -2547,19 +2543,19 @@ void func_effect_8007EE68(ObjectId objId, Vec3f* pos, Vec3f* rot, Vec3f* arg3, V
     s32 i;
     Vec3f sp68;
 
-    Matrix_RotateY(gCalcMatrix, arg3->y * M_DTOR, 0);
-    Matrix_RotateX(gCalcMatrix, arg3->x * M_DTOR, 1);
-    Matrix_RotateZ(gCalcMatrix, arg3->z * M_DTOR, 1);
-    Matrix_RotateY(gCalcMatrix, rot->y * M_DTOR, 1);
-    Matrix_RotateX(gCalcMatrix, rot->x * M_DTOR, 1);
-    Matrix_RotateZ(gCalcMatrix, rot->z * M_DTOR, 1);
+    Matrix_RotateY(gCalcMatrix, arg3->y * M_DTOR, MTXF_NEW);
+    Matrix_RotateX(gCalcMatrix, arg3->x * M_DTOR, MTXF_APPLY);
+    Matrix_RotateZ(gCalcMatrix, arg3->z * M_DTOR, MTXF_APPLY);
+    Matrix_RotateY(gCalcMatrix, rot->y * M_DTOR, MTXF_APPLY);
+    Matrix_RotateX(gCalcMatrix, rot->x * M_DTOR, MTXF_APPLY);
+    Matrix_RotateZ(gCalcMatrix, rot->z * M_DTOR, MTXF_APPLY);
     Matrix_MultVec3f(gCalcMatrix, arg4, &sp68);
 
     for (i = ARRAY_COUNT(gEffects) - 1; i >= 0; i--) {
         if (gEffects[i].obj.status == OBJ_FREE) {
             func_effect_8007ED54(&gEffects[i], objId, pos->x + sp68.x, pos->y + sp68.y, pos->z + sp68.z, rot->x, rot->y,
-                                 rot->z, arg3->x, arg3->y, arg3->z, sp68.x + D_ctx_801779E4, sp68.y + D_ctx_801779F4,
-                                 sp68.z - D_ctx_80177D08, scale2);
+                                 rot->z, arg3->x, arg3->y, arg3->z, sp68.x + gPathVelX, sp68.y + gPathVelY,
+                                 sp68.z - gPathVelZ, scale2);
             break;
         }
     }
@@ -2581,7 +2577,7 @@ void func_effect_8007F04C(ObjectId objId, f32 xPos, f32 yPos, f32 zPos, f32 xRot
 void func_effect_8007F11C(ObjectId objId, f32 xPos, f32 yPos, f32 zPos, f32 speed) {
     s32 i;
 
-    if ((fabsf(zPos - gPlayer[0].unk_138) > 300.0f) || (fabsf(xPos - gPlayer[0].pos.x) > 300.0f)) {
+    if ((fabsf(zPos - gPlayer[0].trueZpos) > 300.0f) || (fabsf(xPos - gPlayer[0].pos.x) > 300.0f)) {
         for (i = ARRAY_COUNT(gEffects) - 1; i >= 0; i--) {
             if (gEffects[i].obj.status == OBJ_FREE) {
                 Matrix_Push(&gCalcMatrix);
@@ -2596,7 +2592,7 @@ void func_effect_8007F11C(ObjectId objId, f32 xPos, f32 yPos, f32 zPos, f32 spee
 void func_effect_8007F20C(ObjectId objId, f32 xPos, f32 yPos, f32 zPos, f32 speed) {
     s32 i;
 
-    if ((fabsf(zPos - gPlayer[0].camEye.z) > 300.0f) || (fabsf(xPos - gPlayer[0].camEye.x) > 300.0f)) {
+    if ((fabsf(zPos - gPlayer[0].cam.eye.z) > 300.0f) || (fabsf(xPos - gPlayer[0].cam.eye.x) > 300.0f)) {
         for (i = ARRAY_COUNT(gEffects) - 1; i >= 0; i--) {
             if (gEffects[i].obj.status == OBJ_FREE) {
                 Matrix_Push(&gCalcMatrix);
@@ -2613,7 +2609,7 @@ void func_effect_8007F2FC(Effect* effect) {
         Object_Kill(&effect->obj, effect->sfxSource);
     }
 
-    if ((effect->obj.pos.y < gGroundLevel) && (gLevelType == LEVELTYPE_PLANET)) {
+    if ((effect->obj.pos.y < gGroundHeight) && (gLevelType == LEVELTYPE_PLANET)) {
         Object_Kill(&effect->obj, effect->sfxSource);
     }
 
@@ -2621,7 +2617,7 @@ void func_effect_8007F2FC(Effect* effect) {
         effect->vel.y -= 0.3f;
     }
 
-    if (effect->obj.pos.y < D_ctx_80177CC0) {
+    if (effect->obj.pos.y < gWaterLevel) {
         effect->vel.y += 0.2f;
         effect->obj.pos.y -= effect->vel.y * 0.5f;
         effect->obj.pos.x -= effect->vel.x * 0.5f;
@@ -2646,13 +2642,13 @@ void func_effect_8007F438(Effect* effect) {
 
         if (effect->unk_46 == 0) {
             effect->unk_46 = 30;
-            effect->unk_44 += 1;
+            effect->unk_44++;
             effect->unk_44 &= 1;
         } else {
             effect->unk_46--;
         }
 
-        if (D_ctx_80177D08 < 0.0f) {
+        if (gPathVelZ < 0.0f) {
             effect->vel.z = -10.0f;
         }
 
@@ -2673,7 +2669,7 @@ void func_effect_8007F438(Effect* effect) {
 void func_effect_8007F5AC(Effect* effect) {
     if (effect->unk_4C == 0) {
         effect->unk_46++;
-        if (!(effect->unk_46 & 0x20)) {
+        if ((effect->unk_46 & 0x20) == 0) {
             effect->vel.x += 0.5f;
         } else {
             effect->vel.x -= 0.5f;
@@ -2687,7 +2683,7 @@ void func_effect_8007F5AC(Effect* effect) {
         }
 
         effect->scale2 += 0.02f;
-        if (!(gGameFrameCount & 0x10)) {
+        if ((gGameFrameCount & 0x10) == 0) {
             effect->scale2 += 0.01f;
         } else {
             effect->scale2 -= 0.01f;
@@ -2719,10 +2715,10 @@ void func_effect_8007F6B0(Effect* effect) {
             temp = (i * 10.0f * M_DTOR) + randfloat;
             sin = __sinf(temp) * effect->scale2 * 8.0f;
             cos = __cosf(temp) * effect->scale2 * 8.0f;
-            yPos = gGroundLevel + 40.0f;
+            yPos = gGroundHeight + 40.0f;
 
-            if (D_ctx_801784AC == 4) {
-                Ground_801B6E20(effect->obj.pos.x + sin, effect->obj.pos.z + cos + D_ctx_80177D20, &x, &y, &z);
+            if (gGroundType == 4) {
+                Ground_801B6E20(effect->obj.pos.x + sin, effect->obj.pos.z + cos + gPathProgress, &x, &y, &z);
                 yPos = y + 30.0f;
             }
 
@@ -2766,10 +2762,10 @@ void func_effect_8007F958(Effect* effect) {
             temp = (i * 72.0f * M_DTOR) + randFloat;
             sin = __sinf(temp) * effect->scale2 * 16.0f;
             cos = __cosf(temp) * effect->scale2 * 16.0f;
-            yPos = gGroundLevel + 10.0f;
+            yPos = gGroundHeight + 10.0f;
 
-            if (D_ctx_801784AC == 4) {
-                Ground_801B6E20(effect->obj.pos.x + sin, effect->obj.pos.z + cos + D_ctx_80177D20, &x, &y, &z);
+            if (gGroundType == 4) {
+                Ground_801B6E20(effect->obj.pos.x + sin, effect->obj.pos.z + cos + gPathProgress, &x, &y, &z);
                 yPos = y + 10.0f;
             }
 
@@ -2807,7 +2803,7 @@ void func_effect_8007FBE0(Effect* effect) {
             temp = (i * 36.0f * M_DTOR) + randFloat;
             sin = __sinf(temp) * effect->scale2 * 16.0f;
             cos = __cosf(temp) * effect->scale2 * 16.0f;
-            yPos = gGroundLevel + 10.0f;
+            yPos = gGroundHeight + 10.0f;
             func_effect_8007BC7C(effect->obj.pos.x + sin, yPos, effect->obj.pos.z + cos, 12.0f);
         }
     }
@@ -2817,20 +2813,20 @@ bool func_effect_8007FD84(Effect* effect) {
     s32 i;
     Actor* actor;
 
-    for (i = 1; i < ARRAY_COUNT(D_enmy2_800CFF80); i++) {
-        actor = &gActors[D_enmy2_800CFF80[i]];
+    for (i = 1; i < ARRAY_COUNT(gTeamEventActorIndex); i++) {
+        actor = &gActors[gTeamEventActorIndex[i]];
         if (actor->obj.status == OBJ_ACTIVE) {
-            if ((actor->iwork[12] > 0) && (actor->iwork[12] < 6) &&
+            if ((actor->iwork[12] >= TEAM_ID_FALCO) && (actor->iwork[12] <= TEAM_ID_BILL) &&
                 (fabsf(actor->obj.pos.z - effect->obj.pos.z) < 100.0f) &&
                 (fabsf(actor->obj.pos.x - effect->obj.pos.x) < 100.0f) &&
                 (fabsf(actor->obj.pos.y - effect->obj.pos.y) < 100.0f)) {
-                actor->unk_0D0 = 1;
-                actor->unk_0D2 = 0;
+                actor->dmgType = DMG_BEAM;
+                actor->dmgPart = 0;
                 actor->damage = 10;
                 if (effect->obj.id == OBJ_EFFECT_354) {
                     actor->damage = 30;
                 }
-                actor->unk_0D4 = 100;
+                actor->dmgSource = CS_SHOT_ID;
                 return true;
             }
         }
@@ -2849,23 +2845,23 @@ void func_effect_8007FE88(Effect* effect) {
         return;
     }
 
-    if (func_effect_8007FD84(effect) != 0) {
+    if (func_effect_8007FD84(effect)) {
         Object_Kill(&effect->obj, effect->sfxSource);
         return;
     }
 
-    if (gPlayer[0].unk_280 != 0) {
+    if (gPlayer[0].barrelRollAlpha != 0) {
         var_fa0 = 100.0f;
     }
 
-    if (fabsf(gPlayer[0].unk_138 - effect->obj.pos.z) < (50.0f + var_fa0)) {
+    if (fabsf(gPlayer[0].trueZpos - effect->obj.pos.z) < (50.0f + var_fa0)) {
         if ((fabsf(gPlayer[0].pos.x - effect->obj.pos.x) < (30.0f + var_fa0)) &&
             (fabsf(gPlayer[0].pos.y - effect->obj.pos.y) < (30.0f + var_fa0))) {
-            if ((gPlayer[0].unk_280 != 0) || (gPlayer[0].timer_27C != 0)) {
+            if ((gPlayer[0].barrelRollAlpha != 0) || (gPlayer[0].meteoWarpTimer != 0)) {
                 effect->obj.rot.y = 90.0f;
                 effect->obj.rot.x = RAND_FLOAT(360.0f);
-                Matrix_RotateY(gCalcMatrix, effect->obj.rot.y * M_DTOR, 0);
-                Matrix_RotateX(gCalcMatrix, effect->obj.rot.x * M_DTOR, 1);
+                Matrix_RotateY(gCalcMatrix, effect->obj.rot.y * M_DTOR, MTXF_NEW);
+                Matrix_RotateX(gCalcMatrix, effect->obj.rot.x * M_DTOR, MTXF_APPLY);
                 srcVelocity.x = 0.0f;
                 srcVelocity.y = 0.0f;
                 srcVelocity.z = 100.0f;
@@ -2873,20 +2869,20 @@ void func_effect_8007FE88(Effect* effect) {
                 effect->vel.x = destVelocity.x;
                 effect->vel.y = destVelocity.y;
                 effect->vel.z = destVelocity.z;
-                gPlayer[0].unk_2C4 += 1;
-                AUDIO_PLAY_SFX(0x09007011, effect->sfxSource, 0);
+                gPlayer[0].unk_2C4++;
+                AUDIO_PLAY_SFX(NA_SE_ROLLING_REFLECT, effect->sfxSource, 0);
             }
 
-            if ((gPlayer[0].unk_280 == 0) && (gPlayer[0].timer_498 == 0)) {
+            if ((gPlayer[0].barrelRollAlpha == 0) && (gPlayer[0].timer_498 == 0)) {
                 Player_ApplyDamage(gPlayer, 0, effect->info.damage);
-                gPlayer[0].unk_0D8.x = 20.0f;
+                gPlayer[0].knockback.x = 20.0f;
                 if (effect->vel.x < 0.0f) {
-                    gPlayer[0].unk_0D8.x *= -1.0f;
+                    gPlayer[0].knockback.x *= -1.0f;
                 }
                 if (gCurrentLevel != LEVEL_MACBETH) {
-                    gPlayer[0].unk_0D8.y = 20.0f;
+                    gPlayer[0].knockback.y = 20.0f;
                     if (effect->vel.y < 0.0f) {
-                        gPlayer[0].unk_0D8.y *= -1.0f;
+                        gPlayer[0].knockback.y *= -1.0f;
                     }
                 }
                 Object_Kill(&effect->obj, effect->sfxSource);
@@ -2894,14 +2890,14 @@ void func_effect_8007FE88(Effect* effect) {
         }
     }
 
-    if (D_ctx_801784AC == 4) {
-        if (Ground_801B6AEC(effect->obj.pos.x, effect->obj.pos.y, effect->obj.pos.z + D_ctx_80177D20) != 0) {
+    if (gGroundType == 4) {
+        if (Ground_801B6AEC(effect->obj.pos.x, effect->obj.pos.y, effect->obj.pos.z + gPathProgress) != 0) {
             Object_Kill(&effect->obj, effect->sfxSource);
         }
-    } else if (effect->obj.pos.y < gGroundLevel) {
+    } else if (effect->obj.pos.y < gGroundHeight) {
         Object_Kill(&effect->obj, effect->sfxSource);
-        if (gGroundType != GROUNDTYPE_WATER) {
-            effect->obj.pos.y = gGroundLevel;
+        if (gGroundSurface != SURFACE_WATER) {
+            effect->obj.pos.y = gGroundHeight;
             func_effect_8007D074(effect->obj.pos.x, effect->obj.pos.y, effect->obj.pos.z, 2.0f);
         }
     }
@@ -2911,7 +2907,7 @@ void func_effect_8007FE88(Effect* effect) {
     velocity.z = effect->vel.z;
 
     if (gCurrentLevel != LEVEL_MACBETH) {
-        if (func_enmy_8006351C(1000, &effect->obj.pos, &velocity, 2) != 0) {
+        if (Object_CheckCollision(1000, &effect->obj.pos, &velocity, 2) != 0) {
             func_effect_8007D10C(effect->obj.pos.x, effect->obj.pos.y, effect->obj.pos.z, 2.0f);
             Object_Kill(&effect->obj, effect->sfxSource);
         }
@@ -2960,18 +2956,18 @@ void func_effect_8008040C(Effect* effect) {
 
     switch (effect->state) {
         case 0:
-            yRot = Math_Atan2F(gPlayer[0].pos.x - effect->obj.pos.x, gPlayer[0].unk_138 - effect->obj.pos.z);
-            temp = sqrtf(SQ(gPlayer[0].pos.x - effect->obj.pos.x) + SQ(gPlayer[0].unk_138 - effect->obj.pos.z));
+            yRot = Math_Atan2F(gPlayer[0].pos.x - effect->obj.pos.x, gPlayer[0].trueZpos - effect->obj.pos.z);
+            temp = sqrtf(SQ(gPlayer[0].pos.x - effect->obj.pos.x) + SQ(gPlayer[0].trueZpos - effect->obj.pos.z));
             xRot = -Math_Atan2F(gPlayer[0].pos.y - effect->obj.pos.y, temp);
-            Matrix_RotateY(gCalcMatrix, yRot, 0);
-            Matrix_RotateX(gCalcMatrix, xRot, 1);
+            Matrix_RotateY(gCalcMatrix, yRot, MTXF_NEW);
+            Matrix_RotateX(gCalcMatrix, xRot, MTXF_APPLY);
             srcVelocity.y = 0.0f;
             srcVelocity.x = 0.0f;
             srcVelocity.z = 100.0f;
             Matrix_MultVec3f(gCalcMatrix, &srcVelocity, &destVelocity);
-            effect->vel.x = destVelocity.x + D_ctx_801779E4;
-            effect->vel.y = destVelocity.y + D_ctx_801779F4;
-            effect->vel.z = destVelocity.z - D_ctx_80177D08;
+            effect->vel.x = destVelocity.x + gPathVelX;
+            effect->vel.y = destVelocity.y + gPathVelY;
+            effect->vel.z = destVelocity.z - gPathVelZ;
             effect->state++;
             break;
 
@@ -2982,23 +2978,23 @@ void func_effect_8008040C(Effect* effect) {
                 return;
             }
 
-            if (func_effect_8007FD84(effect) != 0) {
+            if (func_effect_8007FD84(effect)) {
                 Object_Kill(&effect->obj, effect->sfxSource);
                 return;
             }
 
-            if (gPlayer[0].unk_280 != 0) {
+            if (gPlayer[0].barrelRollAlpha != 0) {
                 var_fa0 = 100.0f;
             }
 
-            if (fabsf(gPlayer[0].unk_138 - effect->obj.pos.z) < (50.0f + var_fa0)) {
+            if (fabsf(gPlayer[0].trueZpos - effect->obj.pos.z) < (50.0f + var_fa0)) {
                 if ((fabsf(gPlayer[0].pos.x - effect->obj.pos.x) < (30.0f + var_fa0)) &&
                     (fabsf(gPlayer[0].pos.y - effect->obj.pos.y) < (30.0f + var_fa0))) {
-                    if ((gPlayer[0].unk_280 != 0) || (gPlayer[0].timer_27C != 0)) {
+                    if ((gPlayer[0].barrelRollAlpha != 0) || (gPlayer[0].meteoWarpTimer != 0)) {
                         effect->obj.rot.y = 90.0f;
                         effect->obj.rot.x = RAND_FLOAT(360.0f);
-                        Matrix_RotateY(gCalcMatrix, effect->obj.rot.y * M_DTOR, 0);
-                        Matrix_RotateX(gCalcMatrix, effect->obj.rot.x * M_DTOR, 1);
+                        Matrix_RotateY(gCalcMatrix, effect->obj.rot.y * M_DTOR, MTXF_NEW);
+                        Matrix_RotateX(gCalcMatrix, effect->obj.rot.x * M_DTOR, MTXF_APPLY);
                         srcVelocity.y = 0.0f;
                         srcVelocity.x = 0.0f;
                         srcVelocity.z = 100.0f;
@@ -3007,32 +3003,31 @@ void func_effect_8008040C(Effect* effect) {
                         effect->vel.y = destVelocity.y;
                         effect->vel.z = destVelocity.z;
                         gPlayer[0].unk_2C4++;
-                        AUDIO_PLAY_SFX(0x09007011, effect->sfxSource, 0);
+                        AUDIO_PLAY_SFX(NA_SE_ROLLING_REFLECT, effect->sfxSource, 0);
                     }
 
-                    if ((gPlayer[0].unk_280 == 0) && (gPlayer[0].timer_498 == 0)) {
+                    if ((gPlayer[0].barrelRollAlpha == 0) && (gPlayer[0].timer_498 == 0)) {
                         Player_ApplyDamage(gPlayer, 0, effect->info.damage);
-                        gPlayer[0].unk_0D8.x = 20.0f;
+                        gPlayer[0].knockback.x = 20.0f;
                         if (effect->vel.x < 0.0f) {
-                            gPlayer[0].unk_0D8.x *= -1.0f;
+                            gPlayer[0].knockback.x *= -1.0f;
                         }
-                        gPlayer[0].unk_0D8.y = 20.0f;
+                        gPlayer[0].knockback.y = 20.0f;
                         if (effect->vel.y < 0.0f) {
-                            gPlayer[0].unk_0D8.y *= -1.0f;
+                            gPlayer[0].knockback.y *= -1.0f;
                         }
                         Object_Kill(&effect->obj, effect->sfxSource);
                     }
                 }
 
-                if (D_ctx_801784AC == 4) {
-                    if (Ground_801B6AEC(effect->obj.pos.x, effect->obj.pos.y, effect->obj.pos.z + D_ctx_80177D20) !=
-                        0) {
+                if (gGroundType == 4) {
+                    if (Ground_801B6AEC(effect->obj.pos.x, effect->obj.pos.y, effect->obj.pos.z + gPathProgress) != 0) {
                         Object_Kill(&effect->obj, effect->sfxSource);
                     }
-                } else if (effect->obj.pos.y < gGroundLevel) {
+                } else if (effect->obj.pos.y < gGroundHeight) {
                     Object_Kill(&effect->obj, effect->sfxSource);
-                    if (gGroundType != GROUNDTYPE_WATER) {
-                        effect->obj.pos.y = gGroundLevel;
+                    if (gGroundSurface != SURFACE_WATER) {
+                        effect->obj.pos.y = gGroundHeight;
                         func_effect_8007D074(effect->obj.pos.x, effect->obj.pos.y, effect->obj.pos.z, 2.0f);
                     }
                 }
@@ -3041,7 +3036,7 @@ void func_effect_8008040C(Effect* effect) {
                 sp3C.y = effect->vel.y;
                 sp3C.z = effect->vel.z;
 
-                if (func_enmy_8006351C(1000, &effect->obj.pos, &sp3C, 2) != 0) {
+                if (Object_CheckCollision(1000, &effect->obj.pos, &sp3C, 2) != 0) {
                     func_effect_8007D10C(effect->obj.pos.x, effect->obj.pos.y, effect->obj.pos.z, 2.0f);
                     Object_Kill(&effect->obj, effect->sfxSource);
                 }
@@ -3055,20 +3050,20 @@ void func_effect_8008040C(Effect* effect) {
 void func_effect_8008092C(Effect* effect) {
     switch (effect->unk_44) {
         case 0:
-            RCP_SetupDL(&gMasterDisp, 0x31);
+            RCP_SetupDL(&gMasterDisp, SETUPDL_49);
             gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 0, 255);
             gDPSetEnvColor(gMasterDisp++, 255, 0, 0, 255);
-            Matrix_Scale(gGfxMatrix, 4.0f, 2.0f, 4.0f, 1);
+            Matrix_Scale(gGfxMatrix, 4.0f, 2.0f, 4.0f, MTXF_APPLY);
             Matrix_SetGfxMtx(&gMasterDisp);
             gSPDisplayList(gMasterDisp++, D_ZO_6018AF0);
             break;
 
         case 1:
-            RCP_SetupDL(&gMasterDisp, 0x31);
+            RCP_SetupDL(&gMasterDisp, SETUPDL_49);
             gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 0, 255);
             gDPSetEnvColor(gMasterDisp++, 255, 0, 0, 255);
-            Matrix_RotateZ(gGfxMatrix, 30.0f * M_DTOR, 1);
-            Matrix_Scale(gGfxMatrix, 3.0f, 1.5f, 3.0f, 1);
+            Matrix_RotateZ(gGfxMatrix, 30.0f * M_DTOR, MTXF_APPLY);
+            Matrix_Scale(gGfxMatrix, 3.0f, 1.5f, 3.0f, MTXF_APPLY);
             Matrix_SetGfxMtx(&gMasterDisp);
             gSPDisplayList(gMasterDisp++, D_1024AC0);
             break;
@@ -3083,11 +3078,11 @@ void func_effect_80080ACC(Effect* effect) {
             break;
 
         case 1:
-            effect->unk_46 -= 1;
+            effect->unk_46--;
             break;
 
         case 10:
-            effect->unk_44 -= 1;
+            effect->unk_44--;
             if (effect->unk_44 <= 0) {
                 effect->unk_44 = effect->unk_46;
             }
@@ -3115,7 +3110,7 @@ void func_effect_80080ACC(Effect* effect) {
             effect->obj.rot.x += effect->unk_60.x;
             effect->obj.rot.y += effect->unk_60.y;
             effect->obj.rot.z += effect->unk_60.z;
-            if ((effect->unk_44 == 0) && (effect->obj.pos.y < gGroundLevel)) {
+            if ((effect->unk_44 == 0) && (effect->obj.pos.y < gGroundHeight)) {
                 Object_Kill(&effect->obj, effect->sfxSource);
             }
             if (effect->unk_44 != 0) {
@@ -3153,7 +3148,7 @@ void func_effect_80080D04(Effect* effect) {
             }
             gSPDisplayList(gMasterDisp++, effect->unk_74);
             if (effect->unk_44 != 64) {
-                RCP_SetupDL(&gMasterDisp, 0x40);
+                RCP_SetupDL(&gMasterDisp, SETUPDL_64);
             }
             break;
 
@@ -3179,78 +3174,78 @@ void func_effect_80080D04(Effect* effect) {
             }
 
             if (effect->unk_44 != 64) {
-                RCP_SetupDL(&gMasterDisp, 0x40);
+                RCP_SetupDL(&gMasterDisp, SETUPDL_64);
             }
             break;
 
         case 10:
-            RCP_SetupDL(&gMasterDisp, 0x41);
+            RCP_SetupDL(&gMasterDisp, SETUPDL_65);
             gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, effect->unk_48);
-            Matrix_Scale(gGfxMatrix, 1.0f, 1.0f, effect->scale2, 1);
+            Matrix_Scale(gGfxMatrix, 1.0f, 1.0f, effect->scale2, MTXF_APPLY);
             Matrix_SetGfxMtx(&gMasterDisp);
             gSPDisplayList(gMasterDisp++, D_TI_A000000);
-            RCP_SetupDL(&gMasterDisp, 0x40);
+            RCP_SetupDL(&gMasterDisp, SETUPDL_64);
             break;
 
         case 11:
-            RCP_SetupDL(&gMasterDisp, 0x44);
+            RCP_SetupDL(&gMasterDisp, SETUPDL_68);
             Graphics_SetScaleMtx(effect->scale2);
             gDPSetPrimColor(gMasterDisp++, 0, 0, 120, 60, 0, effect->unk_44);
             gDPSetEnvColor(gMasterDisp++, 0, 0, 0, 0);
             gSPDisplayList(gMasterDisp++, D_1023750);
-            RCP_SetupDL(&gMasterDisp, 0x40);
+            RCP_SetupDL(&gMasterDisp, SETUPDL_64);
             break;
 
         case 12:
             Graphics_SetScaleMtx(effect->scale2);
-            RCP_SetupDL(&gMasterDisp, 0x17);
+            RCP_SetupDL(&gMasterDisp, SETUPDL_23);
             gSPDisplayList(gMasterDisp++, D_VE1_9013C20);
-            RCP_SetupDL(&gMasterDisp, 0x40);
+            RCP_SetupDL(&gMasterDisp, SETUPDL_64);
             break;
 
         case 13:
             Graphics_SetScaleMtx(effect->scale2);
-            RCP_SetupDL(&gMasterDisp, 0x44);
+            RCP_SetupDL(&gMasterDisp, SETUPDL_68);
             gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, effect->unk_44);
             gDPSetEnvColor(gMasterDisp++, 36, 45, 28, 0);
             gSPDisplayList(gMasterDisp++, D_1023750);
-            RCP_SetupDL(&gMasterDisp, 0x40);
+            RCP_SetupDL(&gMasterDisp, SETUPDL_64);
             break;
 
         case 14:
             Graphics_SetScaleMtx(effect->scale2);
-            RCP_SetupDL(&gMasterDisp, 0x44);
+            RCP_SetupDL(&gMasterDisp, SETUPDL_68);
             gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, effect->unk_44);
             gDPSetEnvColor(gMasterDisp++, 255, 255, 255, 0);
             gSPDisplayList(gMasterDisp++, D_1023750);
-            RCP_SetupDL(&gMasterDisp, 0x40);
+            RCP_SetupDL(&gMasterDisp, SETUPDL_64);
             break;
 
         case 15:
             Graphics_SetScaleMtx(effect->scale2);
-            RCP_SetupDL(&gMasterDisp, 0x44);
+            RCP_SetupDL(&gMasterDisp, SETUPDL_68);
             gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, effect->unk_4A);
             gDPSetEnvColor(gMasterDisp++, 36, 45, 28, 0);
             gSPDisplayList(gMasterDisp++, D_1023750);
-            RCP_SetupDL(&gMasterDisp, 0x40);
+            RCP_SetupDL(&gMasterDisp, SETUPDL_64);
             break;
 
         case 16:
             Graphics_SetScaleMtx(effect->scale2);
             gDPSetPrimColor(gMasterDisp++, 0, 0, 96, 96, 255, 255);
-            Matrix_Translate(gGfxMatrix, 34.14f, 0.0f, 0.0f, 1);
+            Matrix_Translate(gGfxMatrix, 34.14f, 0.0f, 0.0f, MTXF_APPLY);
             Matrix_Push(&gGfxMatrix);
-            Matrix_Scale(gGfxMatrix, 0.25f, 1.0f, 1.0f, 1);
+            Matrix_Scale(gGfxMatrix, 0.25f, 1.0f, 1.0f, MTXF_APPLY);
             Matrix_SetGfxMtx(&gMasterDisp);
             gSPDisplayList(gMasterDisp++, D_102F5E0);
             Matrix_Pop(&gGfxMatrix);
 
             for (i = 0; i < 7; i++) {
-                Matrix_Translate(gGfxMatrix, 0.0f, 10.0f, 0.0f, 1);
-                Matrix_RotateZ(gGfxMatrix, M_PI / 4, 1);
-                Matrix_Translate(gGfxMatrix, 1.0f, 20.0f, 0.0f, 1);
+                Matrix_Translate(gGfxMatrix, 0.0f, 10.0f, 0.0f, MTXF_APPLY);
+                Matrix_RotateZ(gGfxMatrix, M_PI / 4, MTXF_APPLY);
+                Matrix_Translate(gGfxMatrix, 1.0f, 20.0f, 0.0f, MTXF_APPLY);
                 Matrix_Push(&gGfxMatrix);
-                Matrix_Scale(gGfxMatrix, 0.25f, 1.0f, 1.0f, 1);
+                Matrix_Scale(gGfxMatrix, 0.25f, 1.0f, 1.0f, MTXF_APPLY);
                 Matrix_SetGfxMtx(&gMasterDisp);
                 gSPDisplayList(gMasterDisp++, D_102F5E0);
                 Matrix_Pop(&gGfxMatrix);
@@ -3277,18 +3272,18 @@ void func_effect_80080D04(Effect* effect) {
 
             for (i = 0; i < 10; i++) {
                 Matrix_Push(&gGfxMatrix);
-                Matrix_Translate(gGfxMatrix, 0.0f, -60.0f, 0.0f, 1);
-                Matrix_Scale(gGfxMatrix, 0.8f, 3.0f, 1.0f, 1);
+                Matrix_Translate(gGfxMatrix, 0.0f, -60.0f, 0.0f, MTXF_APPLY);
+                Matrix_Scale(gGfxMatrix, 0.8f, 3.0f, 1.0f, MTXF_APPLY);
                 Matrix_SetGfxMtx(&gMasterDisp);
                 gSPDisplayList(gMasterDisp++, D_102F5E0);
                 Matrix_Pop(&gGfxMatrix);
-                Matrix_Translate(gGfxMatrix, 0.0f, -120.0f, 0.0f, 1);
-                Matrix_RotateZ(gGfxMatrix, D_800D1534[D_800D18E4][i] * M_DTOR, 1);
+                Matrix_Translate(gGfxMatrix, 0.0f, -120.0f, 0.0f, MTXF_APPLY);
+                Matrix_RotateZ(gGfxMatrix, D_800D1534[D_800D18E4][i] * M_DTOR, MTXF_APPLY);
             }
             break;
 
         case 18:
-            RCP_SetupDL(&gMasterDisp, 0x30);
+            RCP_SetupDL(&gMasterDisp, SETUPDL_48);
             gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 190, 255);
             gDPSetEnvColor(gMasterDisp++, 239, 15, 0, 255);
             Graphics_SetScaleMtx(effect->scale2);
@@ -3372,7 +3367,7 @@ void func_effect_8008165C(Effect* effect, f32 xPos, f32 yPos, f32 zPos, f32 scal
 
         case 10:
             effect->timer_50 = 10;
-            AUDIO_PLAY_SFX(0x31405094, effect->sfxSource, 4);
+            AUDIO_PLAY_SFX(NA_SE_EN_A6BOSS_BEAM, effect->sfxSource, 4);
             break;
 
         case 11:
@@ -3393,8 +3388,8 @@ void func_effect_8008165C(Effect* effect, f32 xPos, f32 yPos, f32 zPos, f32 scal
             effect->obj.pos.y = yPos;
             effect->obj.pos.z = zPos;
 
-            AUDIO_PLAY_SFX(0x2940F026, effect->sfxSource, 4);
-            D_Timer_80177BD0[0] = 60;
+            AUDIO_PLAY_SFX(NA_SE_EN_STAR_EXPLOSION, effect->sfxSource, 4);
+            gControllerRumbleTimers[0] = 60;
             break;
     }
 }
@@ -3498,7 +3493,7 @@ void func_effect_80081C5C(Effect* effect) {
                                      effect->vel.z, RAND_FLOAT(0.05f) + 0.05f, 0);
             }
 
-            if (func_enmy_8006351C(effect->index, &effect->obj.pos, &velocity, 1) != 0) {
+            if (Object_CheckCollision(effect->index, &effect->obj.pos, &velocity, 1) != 0) {
                 func_effect_8007B344(effect->obj.pos.x, effect->obj.pos.y, effect->obj.pos.z, 3.0f, 7);
                 Object_Kill(&effect->obj, effect->sfxSource);
             }
@@ -3525,7 +3520,7 @@ void func_effect_80081C5C(Effect* effect) {
                 Math_SmoothStepToF(&effect->scale2, 0.5f, 0.01f, 0.02f, 0.0f);
             }
 
-            if (func_enmy_8006351C(effect->index, &effect->obj.pos, &velocity, 1) != 0) {
+            if (Object_CheckCollision(effect->index, &effect->obj.pos, &velocity, 1) != 0) {
                 Object_Kill(&effect->obj, effect->sfxSource);
                 func_effect_8007D0E0(effect->obj.pos.x, effect->obj.pos.y, effect->obj.pos.z, 1.0f);
             }
@@ -3563,7 +3558,7 @@ void func_effect_80081C5C(Effect* effect) {
                                      (RAND_FLOAT_CENTERED(effect->scale2) * 50.0f) + effect->obj.pos.z, effect->vel.x,
                                      effect->vel.y, effect->vel.z, RAND_FLOAT(0.03f) + 0.05f, 10);
             }
-            if (func_enmy_8006351C(effect->index, &effect->obj.pos, &velocity, 1) != 0) {
+            if (Object_CheckCollision(effect->index, &effect->obj.pos, &velocity, 1) != 0) {
                 func_effect_8007B344(effect->obj.pos.x, effect->obj.pos.y, effect->obj.pos.z, 3.0f, 7);
                 Object_Kill(&effect->obj, effect->sfxSource);
             }
@@ -3575,8 +3570,8 @@ void func_effect_80081C5C(Effect* effect) {
             if (effect->unk_44 != 0) {
                 Object_Kill(&effect->obj, effect->sfxSource);
                 func_effect_8007D0E0(effect->obj.pos.x, effect->obj.pos.y, effect->obj.pos.z, 5.0f);
-            } else if (fabsf(gPlayer[0].unk_138 - effect->obj.pos.z) < 1000.0f) {
-                ActorEvent_8006F0D8(effect->obj.pos.x, effect->obj.pos.y, effect->obj.pos.z, 15.0f);
+            } else if (fabsf(gPlayer[0].trueZpos - effect->obj.pos.z) < 1000.0f) {
+                ActorEvent_SpawnEffect347(effect->obj.pos.x, effect->obj.pos.y, effect->obj.pos.z, 15.0f);
                 Object_Kill(&effect->obj, effect->sfxSource);
             }
             sp84 = 50.0f;
@@ -3623,7 +3618,7 @@ void func_effect_80081C5C(Effect* effect) {
                     effect->obj.rot.y += effect->unk_60.y;
                     effect->obj.rot.z += effect->unk_60.z;
                     effect->vel.y -= 0.5f;
-                    if ((effect->timer_50 == 0) || (effect->obj.pos.y < gGroundLevel)) {
+                    if ((effect->timer_50 == 0) || (effect->obj.pos.y < gGroundHeight)) {
                         Object_Kill(&effect->obj, effect->sfxSource);
                     }
                     break;
@@ -3641,8 +3636,8 @@ void func_effect_80081C5C(Effect* effect) {
 
                     effect->vel.y -= 1.0f;
 
-                    if ((func_play_800A73E4(&posYOut, &unusedOut, effect->obj.pos.x, effect->obj.pos.y,
-                                            effect->obj.pos.z)) ||
+                    if ((Play_CheckDynaFloorCollision(&posYOut, &unusedOut, effect->obj.pos.x, effect->obj.pos.y,
+                                                      effect->obj.pos.z)) ||
                         (effect->timer_50 == 0)) {
                         func_effect_8007B228(effect->obj.pos.x, posYOut, effect->obj.pos.z, effect->scale2);
                         Object_Kill(&effect->obj, effect->sfxSource);
@@ -3653,8 +3648,8 @@ void func_effect_80081C5C(Effect* effect) {
 
         case 8:
             Math_SmoothStepToF(D_ctx_801779A8, 30.0f, 1.0f, 5.0f, 0.0f);
-            Matrix_RotateY(gCalcMatrix, gBosses[0].obj.rot.y * M_DTOR, 0);
-            Matrix_RotateX(gCalcMatrix, gBosses[0].obj.rot.x * M_DTOR, 1);
+            Matrix_RotateY(gCalcMatrix, gBosses[0].obj.rot.y * M_DTOR, MTXF_NEW);
+            Matrix_RotateX(gCalcMatrix, gBosses[0].obj.rot.x * M_DTOR, MTXF_APPLY);
 
             velocity.y = 0.0f;
             velocity.x = 0;
@@ -3723,8 +3718,8 @@ void func_effect_80081C5C(Effect* effect) {
             yRotDeg = Math_RadToDeg(Math_Atan2F(posXDiff, posZDiff));
             xRotDeg = Math_RadToDeg(-Math_Atan2F(posYDiff, sqrtf(SQ(posXDiff) + SQ(posZDiff))));
 
-            Matrix_RotateY(gCalcMatrix, M_DTOR * yRotDeg, 0);
-            Matrix_RotateX(gCalcMatrix, M_DTOR * xRotDeg, 1);
+            Matrix_RotateY(gCalcMatrix, M_DTOR * yRotDeg, MTXF_NEW);
+            Matrix_RotateX(gCalcMatrix, M_DTOR * xRotDeg, MTXF_APPLY);
 
             velocity.x = velocity.y = 0.0f;
             velocity.z = 20.0f;
@@ -3760,17 +3755,17 @@ void func_effect_80081C5C(Effect* effect) {
                         effect->unk_46 = 50;
                     }
                     if (effect->unk_46 != 0) {
-                        effect->unk_46 -= 1;
+                        effect->unk_46--;
                     }
                     if ((((gGameFrameCount % 16) == 0)) && (effect->timer_50 == 0)) {
                         D_800D18EC =
-                            RAD_TO_DEG(Math_Atan2F(gPlayer[0].camEye.x - gBosses[0].obj.pos.x,
-                                                   gPlayer[0].camEye.z - (gBosses[0].obj.pos.z + D_ctx_80177D20)));
+                            RAD_TO_DEG(Math_Atan2F(gPlayer[0].cam.eye.x - gBosses[0].obj.pos.x,
+                                                   gPlayer[0].cam.eye.z - (gBosses[0].obj.pos.z + gPathProgress)));
 
                         D_800D18E8 = RAD_TO_DEG(
-                            -Math_Atan2F(gPlayer[0].camEye.y - gBosses[0].obj.pos.y,
-                                         sqrtf(SQ(gPlayer[0].camEye.z - (gBosses[0].obj.pos.z + D_ctx_80177D20)) +
-                                               SQ(gPlayer[0].camEye.x - gBosses[0].obj.pos.x))));
+                            -Math_Atan2F(gPlayer[0].cam.eye.y - gBosses[0].obj.pos.y,
+                                         sqrtf(SQ(gPlayer[0].cam.eye.z - (gBosses[0].obj.pos.z + gPathProgress)) +
+                                               SQ(gPlayer[0].cam.eye.x - gBosses[0].obj.pos.x))));
                     }
                     if (gBosses[0].timer_050 == 0) {
                         gBosses[0].swork[39] = effect->index;
@@ -3792,8 +3787,8 @@ void func_effect_80081C5C(Effect* effect) {
             effect->obj.rot.y = gBosses[0].obj.rot.y;
             effect->obj.rot.z += 30.0f;
 
-            Matrix_RotateY(gCalcMatrix, gBosses[0].obj.rot.y * M_DTOR, 0);
-            Matrix_RotateX(gCalcMatrix, gBosses[0].obj.rot.x * M_DTOR, 1);
+            Matrix_RotateY(gCalcMatrix, gBosses[0].obj.rot.y * M_DTOR, MTXF_NEW);
+            Matrix_RotateX(gCalcMatrix, gBosses[0].obj.rot.x * M_DTOR, MTXF_APPLY);
 
             velocity.x = velocity.y = 0.0f;
             velocity.z = 250.0f;
@@ -3811,7 +3806,7 @@ void func_effect_80081C5C(Effect* effect) {
             }
 
             velocity.x = velocity.y = 0.0f;
-            velocity.z = fabsf(gPlayer[0].unk_138 - effect->obj.pos.z);
+            velocity.z = fabsf(gPlayer[0].trueZpos - effect->obj.pos.z);
 
             Matrix_MultVec3fNoTranslate(gCalcMatrix, &velocity, &velocityDest);
 
@@ -3863,8 +3858,8 @@ void func_effect_80082F78(Effect* effect) {
 
     switch (effect->state) {
         case 0:
-            RCP_SetupDL(&gMasterDisp, 0x31);
-            Matrix_Scale(gGfxMatrix, 0.7f, 0.7f, 1.0f, 1);
+            RCP_SetupDL(&gMasterDisp, SETUPDL_49);
+            Matrix_Scale(gGfxMatrix, 0.7f, 0.7f, 1.0f, MTXF_APPLY);
             Matrix_SetGfxMtx(&gMasterDisp);
             gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, 255);
             gDPSetEnvColor(gMasterDisp++, 32, 32, 255, 255);
@@ -3872,15 +3867,15 @@ void func_effect_80082F78(Effect* effect) {
             break;
 
         case 1:
-            RCP_SetupDL(&gMasterDisp, 0x29);
+            RCP_SetupDL(&gMasterDisp, SETUPDL_41);
             gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, 255);
             Graphics_SetScaleMtx(effect->scale2);
             gSPDisplayList(gMasterDisp++, D_101C2E0);
             break;
 
         case 2:
-            RCP_SetupDL(&gMasterDisp, 0x31);
-            Matrix_Scale(gGfxMatrix, effect->scale2, effect->scale2, effect->scale2, 1);
+            RCP_SetupDL(&gMasterDisp, SETUPDL_49);
+            Matrix_Scale(gGfxMatrix, effect->scale2, effect->scale2, effect->scale2, MTXF_APPLY);
             Matrix_SetGfxMtx(&gMasterDisp);
             gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, 255);
             gDPSetEnvColor(gMasterDisp++, 32, 32, 255, 255);
@@ -3894,7 +3889,7 @@ void func_effect_80082F78(Effect* effect) {
 
         case 4:
             Graphics_SetScaleMtx(effect->scale2);
-            RCP_SetupDL(&gMasterDisp, 0x44);
+            RCP_SetupDL(&gMasterDisp, SETUPDL_68);
             gDPSetPrimColor(gMasterDisp++, 0, 0, 0, 0, 0, effect->unk_4A);
             gDPSetEnvColor(gMasterDisp++, 0, 0, 0, 0);
             gSPDisplayList(gMasterDisp++, D_1023750);
@@ -3903,7 +3898,7 @@ void func_effect_80082F78(Effect* effect) {
         case 5:
         case 7:
             Graphics_SetScaleMtx(effect->scale2);
-            RCP_SetupDL(&gMasterDisp, 0x3C);
+            RCP_SetupDL(&gMasterDisp, SETUPDL_60);
             if (gCurrentLevel == LEVEL_AQUAS) {
                 gSPDisplayList(gMasterDisp++, D_AQ_600A220);
             }
@@ -3917,14 +3912,14 @@ void func_effect_80082F78(Effect* effect) {
             if (gCurrentLevel == LEVEL_ZONESS) {
                 Graphics_SetScaleMtx(effect->scale2);
             }
-            RCP_SetupDL(&gMasterDisp, 0x40);
+            RCP_SetupDL(&gMasterDisp, SETUPDL_64);
             gDPSetPrimColor(gMasterDisp++, 0, 0, 0, 255, 0, effect->unk_4A);
             gSPDisplayList(gMasterDisp++, D_1023750);
             break;
 
         case 8:
-            RCP_SetupDL(&gMasterDisp, 0x31);
-            Matrix_Scale(gGfxMatrix, effect->scale2, effect->scale2, effect->scale2, 1);
+            RCP_SetupDL(&gMasterDisp, SETUPDL_49);
+            Matrix_Scale(gGfxMatrix, effect->scale2, effect->scale2, effect->scale2, MTXF_APPLY);
             Matrix_SetGfxMtx(&gMasterDisp);
             gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, 255);
             gDPSetEnvColor(gMasterDisp++, 255, 0, 128, 255);
@@ -3932,8 +3927,8 @@ void func_effect_80082F78(Effect* effect) {
             break;
 
         case 9:
-            RCP_SetupDL(&gMasterDisp, 0x31);
-            Matrix_Scale(gGfxMatrix, effect->scale2, effect->scale2, effect->scale2, 1);
+            RCP_SetupDL(&gMasterDisp, SETUPDL_49);
+            Matrix_Scale(gGfxMatrix, effect->scale2, effect->scale2, effect->scale2, MTXF_APPLY);
             Matrix_SetGfxMtx(&gMasterDisp);
             gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, effect->scale1);
             gDPSetEnvColor(gMasterDisp++, 255, 255, 128, 255);
@@ -3944,15 +3939,15 @@ void func_effect_80082F78(Effect* effect) {
             if (gPlayState != PLAY_PAUSE) {
                 Texture_Scroll(D_A6_6012840, 16, 16, 0);
             }
-            RCP_SetupDL(&gMasterDisp, 0x35);
-            Matrix_Scale(gGfxMatrix, effect->unk_60.x, effect->unk_60.y, effect->unk_60.z, 1);
+            RCP_SetupDL(&gMasterDisp, SETUPDL_53);
+            Matrix_Scale(gGfxMatrix, effect->unk_60.x, effect->unk_60.y, effect->unk_60.z, MTXF_APPLY);
             Matrix_SetGfxMtx(&gMasterDisp);
             gSPClearGeometryMode(gMasterDisp++, G_CULL_BACK);
             gSPDisplayList(gMasterDisp++, D_A6_6012550);
             break;
 
         case 11:
-            RCP_SetupDL(&gMasterDisp, 0x43);
+            RCP_SetupDL(&gMasterDisp, SETUPDL_67);
             gDPSetPrimColor(gMasterDisp++, 0, 0, 111, 111, 111, (s32) effect->scale1);
             gDPSetEnvColor(gMasterDisp++, 255, 255, 255, 255);
             Graphics_SetScaleMtx(effect->scale2);
@@ -3964,7 +3959,7 @@ void func_effect_80082F78(Effect* effect) {
             break;
     }
 
-    RCP_SetupDL(&gMasterDisp, 0x40);
+    RCP_SetupDL(&gMasterDisp, SETUPDL_64);
 }
 
 void func_effect_800836C0(Effect* effect, f32 xPos, f32 yPos, f32 zPos, f32 arg4, f32 scale) {
@@ -4050,18 +4045,18 @@ void func_effect_800837EC(Effect* effect) {
             break;
     }
 
-    effect->obj.rot.y = RAD_TO_DEG(Math_Atan2F(gPlayer[0].camEye.x - effect->obj.pos.x,
-                                               gPlayer[0].camEye.z - (effect->obj.pos.z + D_ctx_80177D20)));
+    effect->obj.rot.y = RAD_TO_DEG(Math_Atan2F(gPlayer[0].cam.eye.x - effect->obj.pos.x,
+                                               gPlayer[0].cam.eye.z - (effect->obj.pos.z + gPathProgress)));
 }
 
 void func_effect_80083B8C(Effect* effect) {
     RCP_SetupDL_49();
     gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, effect->unk_44);
     gDPSetEnvColor(gMasterDisp++, 36, 45, 28, 255);
-    Matrix_Scale(gGfxMatrix, effect->unk_60.x, effect->scale2 * effect->unk_60.y, effect->scale2, 1);
+    Matrix_Scale(gGfxMatrix, effect->unk_60.x, effect->scale2 * effect->unk_60.y, effect->scale2, MTXF_APPLY);
     Matrix_SetGfxMtx(&gMasterDisp);
     gSPDisplayList(gMasterDisp++, D_ZO_601BAD0);
-    RCP_SetupDL(&gMasterDisp, 0x40);
+    RCP_SetupDL(&gMasterDisp, SETUPDL_64);
 }
 
 void func_effect_80083C70(Effect* effect, f32 xPos, f32 yPos, f32 zPos, f32 xVel, f32 yVel, f32 zVel, f32 arg7,
@@ -4115,27 +4110,27 @@ void func_effect_80083D2C(f32 xPos, f32 yPos, f32 zPos, f32 srcZ) {
 
     x = gPlayer[0].pos.x + xSway - xPos;
     y = gPlayer[0].pos.y - yPos;
-    z = gPlayer[0].unk_138 - zPos;
+    z = gPlayer[0].trueZpos - zPos;
 
     yRot = Math_Atan2F(x, z);
     xRot = -Math_Atan2F(y, sqrtf(SQ(x) + SQ(z)));
 
-    Matrix_RotateY(gCalcMatrix, yRot, 0);
-    Matrix_RotateX(gCalcMatrix, xRot, 1);
+    Matrix_RotateY(gCalcMatrix, yRot, MTXF_NEW);
+    Matrix_RotateX(gCalcMatrix, xRot, MTXF_APPLY);
 
     src.x = src.y = 0.0f;
     src.z = srcZ;
 
     Matrix_MultVec3fNoTranslate(gCalcMatrix, &src, &dest);
 
-    dest.z -= D_ctx_80177D08;
+    dest.z -= gPathVelZ;
 
     for (i = 0; i < 6; i++) {
         for (j = 0; j < ARRAY_COUNT(gEffects); j++) {
             if (gEffects[j].obj.status == OBJ_FREE) {
                 func_effect_80083C70(&gEffects[j], xPos, yPos, zPos, dest.x, dest.y, dest.z, i * 60.0f, i);
                 if (i == 0) {
-                    AUDIO_PLAY_SFX(0x3103109B, gEffects[j].sfxSource, 4);
+                    AUDIO_PLAY_SFX(NA_SE_EN_MARBLE_BEAM, gEffects[j].sfxSource, 4);
                 }
                 break;
             }
@@ -4152,12 +4147,12 @@ void func_effect_80083FA8(Effect* effect) {
         return;
     }
 
-    effect->obj.rot.y = RAD_TO_DEG(-gPlayer[0].unk_058);
-    effect->obj.rot.x = RAD_TO_DEG(gPlayer[0].unk_05C);
+    effect->obj.rot.y = RAD_TO_DEG(-gPlayer[0].camYaw);
+    effect->obj.rot.x = RAD_TO_DEG(gPlayer[0].camPitch);
     effect->obj.rot.z += 20.0f;
 
-    Matrix_RotateZ(gCalcMatrix, effect->unk_60.z * M_DTOR, 0);
-    Matrix_RotateZ(gCalcMatrix, effect->unk_46 * M_DTOR, 1);
+    Matrix_RotateZ(gCalcMatrix, effect->unk_60.z * M_DTOR, MTXF_NEW);
+    Matrix_RotateZ(gCalcMatrix, effect->unk_46 * M_DTOR, MTXF_APPLY);
 
     src.x = 0.0f;
     src.y = effect->scale1;
@@ -4195,19 +4190,19 @@ void func_effect_80084194(Effect* effect) {
     s32 tmp;
 
     if (gCurrentLevel != LEVEL_AQUAS) {
-        RCP_SetupDL(&gMasterDisp, 0x31);
-        Matrix_Scale(gGfxMatrix, effect->scale2, effect->scale2, effect->scale2, 1);
+        RCP_SetupDL(&gMasterDisp, SETUPDL_49);
+        Matrix_Scale(gGfxMatrix, effect->scale2, effect->scale2, effect->scale2, MTXF_APPLY);
         Matrix_SetGfxMtx(&gMasterDisp);
         gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, 255);
         tmp = effect->unk_44 * 4;
         gDPSetEnvColor(gMasterDisp++, D_800D18F0[tmp + 0], D_800D18F0[tmp + 1], D_800D18F0[tmp + 2], 255);
     } else {
-        RCP_SetupDL(&gMasterDisp, 0x31);
-        Matrix_Scale(gGfxMatrix, effect->scale2, effect->scale2, effect->scale2, 1);
+        RCP_SetupDL(&gMasterDisp, SETUPDL_49);
+        Matrix_Scale(gGfxMatrix, effect->scale2, effect->scale2, effect->scale2, MTXF_APPLY);
         Matrix_SetGfxMtx(&gMasterDisp);
         gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, D_800D1950[effect->unk_44]);
         gDPSetEnvColor(gMasterDisp++, 255, 0, 0, 255);
     }
     gSPDisplayList(gMasterDisp++, D_1024AC0);
-    RCP_SetupDL(&gMasterDisp, 0x40);
+    RCP_SetupDL(&gMasterDisp, SETUPDL_64);
 }

@@ -1,0 +1,61 @@
+:config:
+  segments:
+    - [0x0A, 0xA049A0]
+  header:
+    code:
+      - '#include "assets/ast_A_ti.h"'
+    header:
+      - '#include "gfx.h"'
+      - '#include "sf64object.h"'
+      
+D_TI_A000000:
+  {type: GFX, offset: 0xA000000, symbol: D_TI_A000000}
+
+D_TI_A0000C8:
+  { type: TEXTURE, ctype: u8, format: CI8, width: 16, height: 16, offset: 0x0A0000C8, symbol: D_TI_A0000C8, tlut: 0x0A0001C8 }
+
+D_TI_A0001C8:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 60, offset: 0x0A0001C8, symbol: D_TI_A0001C8 }
+
+D_TI_A0002BC:
+  {type: SF64:ANIM, offset: 0xA0002BC, symbol: D_TI_A0002BC}
+
+D_TI_A00047C:
+  {type: SF64:ANIM, offset: 0xA00047C, symbol: D_TI_A00047C}
+
+D_TI_A000568:
+  {type: SF64:SKELETON, offset: 0xA000568, symbol: D_TI_A000568}
+
+D_TI_A000858:
+  {type: SF64:ANIM, offset: 0xA000858, symbol: D_TI_A000858}
+
+D_TI_A000934:
+  {type: SF64:ANIM, offset: 0xA000934, symbol: D_TI_A000934}
+
+D_TI_A000D50:
+  {type: SF64:ANIM, offset: 0xA000D50, symbol: D_TI_A000D50}
+
+D_TI_A000EDC:
+  {type: SF64:SKELETON, offset: 0xA000EDC, symbol: D_TI_A000EDC}
+
+D_TI_A001A70:
+  {type: SF64:SKELETON, offset: 0xA001A70, symbol: D_TI_A001A70}
+
+D_TI_A001BE0:
+  {type: GFX, offset: 0xA001BE0, symbol: D_TI_A001BE0}
+
+D_TI_A001DB0:
+  {type: GFX, offset: 0xA001DB0, symbol: D_TI_A001DB0}
+
+D_TI_A001EC0:
+  {type: GFX, offset: 0xA001EC0, symbol: D_TI_A001EC0}
+
+D_TI_A001FA0:
+  {type: GFX, offset: 0xA001FA0, symbol: D_TI_A001FA0}
+
+D_TI_A002170:
+  {type: GFX, offset: 0xA002170, symbol: D_TI_A002170}
+
+D_TI_A009990:
+  {type: SF64:ANIM, offset: 0xA009990, symbol: D_TI_A009990}
+

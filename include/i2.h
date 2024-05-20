@@ -8,11 +8,11 @@
 #include "sf64player.h"
 #include "sf64mesg.h"
 
-void Meteo_8018CD8C(Player*);
-void Meteo_8018E084(Player*);
+void Meteo_LevelStart(Player*);
+void Meteo_LevelComplete(Player*);
 void Meteo_8018ED9C(Actor*);
-void SectorX_80193A30(Player*);
-void SectorX_80194728(Player*);
+void SectorX_LevelStart(Player*);
+void SectorX_LevelComplete(Player*);
 
 void OvlI2_CallFunction(s32, void*);
 void Meteo_80187B08(Actor *);

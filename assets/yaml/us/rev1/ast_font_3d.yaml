@@ -1,0 +1,128 @@
+:config:
+  segments:
+    - [0x09, 0xCDDCA0]
+  header:
+    code:
+      - '#include "assets/ast_font_3d.h"'
+    header:
+      - '#include "gfx.h"'
+      - '#include "sf64object.h"'
+
+D_FONT3D_9000000:
+  { type: GFX, offset: 0x9000000, symbol: D_FONT3D_9000000 }
+
+D_FONT3D_90001F0:
+  { type: GFX, offset: 0x90001F0, symbol: D_FONT3D_90001F0 }
+
+D_FONT3D_9000528:
+  { type: TEXTURE, ctype: u8, format: CI4, width: 8, height: 8, offset: 0x09000528, symbol: D_FONT3D_9000528, tlut: 0x09000548 }
+
+D_FONT3D_9000548:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 16, offset: 0x09000548, symbol: D_FONT3D_9000548 }
+
+D_FONT3D_9000570:
+  { type: GFX, offset: 0x9000570, symbol: D_FONT3D_9000570 }
+
+D_FONT3D_9000980:
+  { type: GFX, offset: 0x9000980, symbol: D_FONT3D_9000980 }
+
+D_FONT3D_9001120:
+  { type: GFX, offset: 0x9001120, symbol: D_FONT3D_9001120 }
+
+D_FONT3D_90014E0:
+  { type: GFX, offset: 0x90014E0, symbol: D_FONT3D_90014E0 }
+
+D_FONT3D_9001A10:
+  { type: GFX, offset: 0x9001A10, symbol: D_FONT3D_9001A10 }
+
+D_FONT3D_9001E90:
+  { type: GFX, offset: 0x9001E90, symbol: D_FONT3D_9001E90 }
+
+D_FONT3D_90022A0:
+  { type: GFX, offset: 0x90022A0, symbol: D_FONT3D_90022A0 }
+
+D_FONT3D_9002890:
+  { type: GFX, offset: 0x9002890, symbol: D_FONT3D_9002890 }
+
+D_FONT3D_9002EA0:
+  { type: GFX, offset: 0x9002EA0, symbol: D_FONT3D_9002EA0 }
+
+D_FONT3D_9003230:
+  { type: GFX, offset: 0x9003230, symbol: D_FONT3D_9003230 }
+
+D_FONT3D_9003620:
+  { type: GFX, offset: 0x9003620, symbol: D_FONT3D_9003620 }
+
+D_FONT3D_9003A30:
+  { type: GFX, offset: 0x9003A30, symbol: D_FONT3D_9003A30 }
+
+D_FONT3D_9004230:
+  { type: GFX, offset: 0x9004230, symbol: D_FONT3D_9004230 }
+
+D_FONT3D_9004920:
+  { type: GFX, offset: 0x9004920, symbol: D_FONT3D_9004920 }
+
+D_FONT3D_9004E10:
+  { type: GFX, offset: 0x9004E10, symbol: D_FONT3D_9004E10 }
+
+D_FONT3D_9005380:
+  { type: GFX, offset: 0x9005380, symbol: D_FONT3D_9005380 }
+
+D_FONT3D_9005980:
+  { type: GFX, offset: 0x9005980, symbol: D_FONT3D_9005980 }
+
+D_FONT3D_9005CA0:
+  { type: GFX, offset: 0x9005CA0, symbol: D_FONT3D_9005CA0 }
+
+D_FONT3D_90062D0:
+  { type: GFX, offset: 0x90062D0, symbol: D_FONT3D_90062D0 }
+
+D_FONT3D_9006500:
+  { type: GFX, offset: 0x9006500, symbol: D_FONT3D_9006500 }
+
+D_FONT3D_9006AE0:
+  { type: GFX, offset: 0x9006AE0, symbol: D_FONT3D_9006AE0 }
+
+D_FONT3D_90070C0:
+  { type: GFX, offset: 0x90070C0, symbol: D_FONT3D_90070C0 }
+
+D_FONT3D_90075A0:
+  { type: GFX, offset: 0x90075A0, symbol: D_FONT3D_90075A0 }
+
+D_FONT3D_9007BB0:
+  { type: GFX, offset: 0x9007BB0, symbol: D_FONT3D_9007BB0 }
+
+D_FONT3D_9007FD0:
+  { type: GFX, offset: 0x9007FD0, symbol: D_FONT3D_9007FD0 }
+
+D_FONT3D_90086F0:
+  { type: GFX, offset: 0x90086F0, symbol: D_FONT3D_90086F0 }
+
+D_FONT3D_9008C60:
+  { type: GFX, offset: 0x9008C60, symbol: D_FONT3D_9008C60 }
+
+D_FONT3D_9009280:
+  { type: GFX, offset: 0x9009280, symbol: D_FONT3D_9009280 }
+
+D_FONT3D_9009990:
+  { type: GFX, offset: 0x9009990, symbol: D_FONT3D_9009990 }
+
+D_FONT3D_9009CB0:
+  { type: GFX, offset: 0x9009CB0, symbol: D_FONT3D_9009CB0 }
+
+D_FONT3D_900A290:
+  { type: GFX, offset: 0x900A290, symbol: D_FONT3D_900A290 }
+
+D_FONT3D_900A870:
+  { type: GFX, offset: 0x900A870, symbol: D_FONT3D_900A870 }
+
+D_FONT3D_900AF60:
+  { type: GFX, offset: 0x900AF60, symbol: D_FONT3D_900AF60 }
+
+D_FONT3D_900B580:
+  { type: GFX, offset: 0x900B580, symbol: D_FONT3D_900B580 }
+
+D_FONT3D_900BB90:
+  { type: GFX, offset: 0x900BB90, symbol: D_FONT3D_900BB90 }
+
+# size = 0xC1D0

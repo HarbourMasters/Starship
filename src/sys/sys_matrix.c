@@ -51,15 +51,16 @@ void Matrix_Copy(Matrix* dst, Matrix* src) {
 // Makes a copy of the stack's current matrix and puts it on the top of the stack
 void Matrix_Push(Matrix** mtxStack) {
     Matrix_Copy(*mtxStack + 1, *mtxStack);
-    *mtxStack += 1;
+    (*mtxStack)++;
 }
 
 // Removes the top matrix of the stack
 void Matrix_Pop(Matrix** mtxStack) {
-    *mtxStack -= 1;
+    (*mtxStack)--;
 }
 
-void MtxFMtxFMult(MtxF* mfB, MtxF* mfA, MtxF* dest) {
+// Copies tf into mtx (MTXF_NEW) or applies it to mtx (MTXF_APPLY)
+void Matrix_Mult(Matrix* mtx, Matrix* tf, u8 mode) {
     f32 rx;
     f32 ry;
     f32 rz;
@@ -233,7 +234,7 @@ void Matrix_Mult(Matrix* mtx, Matrix* tf, u8 mode) {
     }
 }
 
-// Creates a translation matrix in mtx (MTXMODE_NEW) or applies one to mtx (MTXMODE_APPLY)
+// Creates a translation matrix in mtx (MTXF_NEW) or applies one to mtx (MTXF_APPLY)
 void Matrix_Translate(Matrix* mtx, f32 x, f32 y, f32 z, u8 mode) {
     MtxF* cmf = mtx->m;
     f32 tempX;
@@ -272,9 +273,11 @@ void Matrix_Translate(Matrix* mtx, f32 x, f32 y, f32 z, u8 mode) {
     }
 }
 
-// Creates a scale matrix in mtx (MTXMODE_NEW) or applies one to mtx (MTXMODE_APPLY)
-void Matrix_Scale(Matrix* mtx, f32 x, f32 y, f32 z, u8 mode) {
-    MtxF* cmf = mtx->m;
+// Creates a scale matrix in mtx (MTXF_NEW) or applies one to mtx (MTXF_APPLY)
+void Matrix_Scale(Matrix* mtx, f32 xScale, f32 yScale, f32 zScale, u8 mode) {
+    f32 rx;
+    f32 ry;
+    s32 i;
 
     if (mode == 1) {
         cmf->xx *= x;
@@ -309,15 +312,13 @@ void Matrix_Scale(Matrix* mtx, f32 x, f32 y, f32 z, u8 mode) {
     }
 }
 
-// Creates rotation matrix about the X axis in mtx (MTXMODE_NEW) or applies one to mtx (MTXMODE_APPLY)
-void Matrix_RotateX(Matrix* mtx, f32 x, u8 mode) {
-    MtxF* cmf;
-    f32 sin;
-    f32 cos;
-    f32 tempY;
-    f32 tempZ;
-    f32 zero = 0.0;
-    f32 one = 1.0;
+// Creates rotation matrix about the X axis in mtx (MTXF_NEW) or applies one to mtx (MTXF_APPLY)
+void Matrix_RotateX(Matrix* mtx, f32 angle, u8 mode) {
+    f32 cs;
+    f32 sn;
+    f32 ry;
+    f32 rz;
+    s32 i;
 
     if (mode == 1) {
         if (x != 0) {
@@ -376,15 +377,13 @@ void Matrix_RotateX(Matrix* mtx, f32 x, u8 mode) {
     }
 }
 
-// Creates rotation matrix about the Y axis in mtx (MTXMODE_NEW) or applies one to mtx (MTXMODE_APPLY)
-void Matrix_RotateY(Matrix* mtx, f32 y, u8 mode) {
-    MtxF* cmf;
-    f32 sin;
-    f32 cos;
-    f32 tempX;
-    f32 tempZ;
-    f32 zero = 0.0;
-    f32 one = 1.0;
+// Creates rotation matrix about the Y axis in mtx (MTXF_NEW) or applies one to mtx (MTXF_APPLY)
+void Matrix_RotateY(Matrix* mtx, f32 angle, u8 mode) {
+    f32 cs;
+    f32 sn;
+    f32 rx;
+    f32 rz;
+    s32 i;
 
     if (mode == 1) {
         if (y != 0.0f) {
@@ -443,13 +442,13 @@ void Matrix_RotateY(Matrix* mtx, f32 y, u8 mode) {
     }
 }
 
-// Creates rotation matrix about the Z axis in mtx (MTXMODE_NEW) or applies one to mtx (MTXMODE_APPLY)
-void Matrix_RotateZ(Matrix* mtx, f32 z, u8 mode) {
-    MtxF* cmf;
-    f32 sin;
-    f32 cos;
-    f32 tempX;
-    f32 tempY;
+// Creates rotation matrix about the Z axis in mtx (MTXF_NEW) or applies one to mtx (MTXF_APPLY)
+void Matrix_RotateZ(Matrix* mtx, f32 angle, u8 mode) {
+    f32 cs;
+    f32 sn;
+    f32 rx;
+    f32 ry;
+    s32 i;
 
     if (mode == 1) {
         if (z != 0) {
@@ -508,7 +507,7 @@ void Matrix_RotateZ(Matrix* mtx, f32 z, u8 mode) {
     }
 }
 
-// Creates rotation matrix about a given vector axis in mtx (MTXMODE_NEW) or applies one to mtx (MTXMODE_APPLY).
+// Creates rotation matrix about a given vector axis in mtx (MTXF_NEW) or applies one to mtx (MTXF_APPLY).
 // The vector specifying the axis does not need to be a unit vector.
 void Matrix_RotateAxis(Matrix* mtx, f32 angle, f32 x, f32 y, f32 z, u8 mode) {
     MtxF* cmf;
@@ -651,8 +650,8 @@ void Matrix_GetYRPAngles(Matrix* mtx, Vec3f* rot) {
     xHatP.z -= originP.z;
     rot->y = Math_Atan2F(zHatP.x, zHatP.z);
     rot->x = -Math_Atan2F(zHatP.y, sqrtf(SQ(zHatP.x) + SQ(zHatP.z)));
-    Matrix_RotateX(&invYP, -rot->x, 0);
-    Matrix_RotateY(&invYP, -rot->y, 1);
+    Matrix_RotateX(&invYP, -rot->x, MTXF_NEW);
+    Matrix_RotateY(&invYP, -rot->y, MTXF_APPLY);
     Matrix_MultVec3fNoTranslate(&invYP, &xHatP, &xHat);
     rot->x *= M_RTOD;
     rot->y *= M_RTOD;
@@ -681,15 +680,15 @@ void Matrix_GetXYZAngles(Matrix* mtx, Vec3f* rot) {
     yHatP.z -= originP.z;
     rot->z = Math_Atan2F(xHatP.y, xHatP.x);
     rot->y = -Math_Atan2F(xHatP.z, sqrtf(SQ(xHatP.x) + SQ(xHatP.y)));
-    Matrix_RotateY(&invYZ, -rot->y, 0);
-    Matrix_RotateZ(&invYZ, -rot->z, 1);
+    Matrix_RotateY(&invYZ, -rot->y, MTXF_NEW);
+    Matrix_RotateZ(&invYZ, -rot->z, MTXF_APPLY);
     Matrix_MultVec3fNoTranslate(&invYZ, &yHatP, &yHat);
     rot->x = Math_Atan2F(yHat.z, yHat.y) * M_RTOD;
     rot->y *= M_RTOD;
     rot->z *= M_RTOD;
 }
 
-// Creates a look-at matrix from Eye, At, and Up in mtx (MTXMODE_NEW) or applies one to mtx (MTXMODE_APPLY).
+// Creates a look-at matrix from Eye, At, and Up in mtx (MTXF_NEW) or applies one to mtx (MTXF_APPLY).
 // A look-at matrix is a rotation-translation matrix that maps y to Up, z to (At - Eye), and translates to Eye
 void Matrix_LookAt(Matrix* mtx, f32 xEye, f32 yEye, f32 zEye, f32 xAt, f32 yAt, f32 zAt, f32 xUp, f32 yUp, f32 zUp,
                    u8 mode) {

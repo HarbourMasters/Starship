@@ -1,3 +1,4 @@
+#include "mods.h"
 
 long long __ull_rshift(unsigned long long left, unsigned long long right) {
     return left >> right;
@@ -44,3 +45,10 @@ long long __ll_mod(long long left, long long right) {
 long long __ll_rshift(long long left, long long right) {
     return left >> right;
 }
+
+// IDO FIX
+#if MODS_FPS_COUNTER == 1
+float __ull_to_f(unsigned long long u) {
+    return u;
+}
+#endif

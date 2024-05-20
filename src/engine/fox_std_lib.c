@@ -1,5 +1,5 @@
 #include "global.h"
-#include "assets/ast_font.h"
+#include "assets/ast_text.h"
 
 char D_801619A0[100];
 
@@ -28,46 +28,46 @@ s32 Graphics_Printf(const char* fmt, ...) {
 void Texture_Scroll(u16* texture, s32 width, s32 height, u8 mode) {
     return;
     // LTodo: [HD-Textures] This is broken
-    u16* temp_t0 = LOAD_ASSET(texture);
-    u16 temp_a3;
-    s32 var_a0;
-    s32 var_t4;
+    u16* pixel = LOAD_ASSET(texture);
+    u16 tempPxl;
+    s32 u;
+    s32 v;
 
     switch (mode) {
         case 0:
-            for (var_a0 = 0; var_a0 < width; var_a0++) {
-                temp_a3 = temp_t0[var_a0];
-                for (var_t4 = 1; var_t4 < height; var_t4++) {
-                    temp_t0[(var_t4 - 1) * width + var_a0] = temp_t0[(var_t4) *width + var_a0];
+            for (u = 0; u < width; u++) {
+                tempPxl = pixel[u];
+                for (v = 1; v < height; v++) {
+                    pixel[(v - 1) * width + u] = pixel[(v) *width + u];
                 }
-                temp_t0[(height - 1) * width + var_a0] = temp_a3;
+                pixel[(height - 1) * width + u] = tempPxl;
             }
             break;
         case 1:
-            for (var_a0 = 0; var_a0 < width; var_a0++) {
-                temp_a3 = temp_t0[(height - 1) * width + var_a0];
-                for (var_t4 = height - 2; var_t4 >= 0; var_t4--) {
-                    temp_t0[(var_t4 + 1) * width + var_a0] = temp_t0[(var_t4) *width + var_a0];
+            for (u = 0; u < width; u++) {
+                tempPxl = pixel[(height - 1) * width + u];
+                for (v = height - 2; v >= 0; v--) {
+                    pixel[(v + 1) * width + u] = pixel[(v) *width + u];
                 }
-                temp_t0[var_a0] = temp_a3;
+                pixel[u] = tempPxl;
             }
             break;
         case 2:
-            for (var_t4 = 0; var_t4 < height; var_t4++) {
-                temp_a3 = temp_t0[var_t4 * width + width - 1];
-                for (var_a0 = width - 2; var_a0 >= 0; var_a0--) {
-                    temp_t0[var_t4 * width + var_a0 + 1] = temp_t0[var_t4 * width + var_a0];
+            for (v = 0; v < height; v++) {
+                tempPxl = pixel[v * width + width - 1];
+                for (u = width - 2; u >= 0; u--) {
+                    pixel[v * width + u + 1] = pixel[v * width + u];
                 }
-                temp_t0[var_t4 * width] = temp_a3;
+                pixel[v * width] = tempPxl;
             }
             break;
         case 3:
-            for (var_t4 = 0; var_t4 < height; var_t4++) {
-                temp_a3 = temp_t0[var_t4 * width];
-                for (var_a0 = 1; var_a0 < width; var_a0++) {
-                    temp_t0[var_t4 * width + var_a0 - 1] = temp_t0[var_t4 * width + var_a0];
+            for (v = 0; v < height; v++) {
+                tempPxl = pixel[v * width];
+                for (u = 1; u < width; u++) {
+                    pixel[v * width + u - 1] = pixel[v * width + u];
                 }
-                temp_t0[var_t4 * width + width - 1] = temp_a3;
+                pixel[v * width + width - 1] = tempPxl;
             }
             break;
     }
@@ -78,57 +78,62 @@ void Texture_Scroll(u16* texture, s32 width, s32 height, u8 mode) {
 
 void Texture_Mottle(u16* dst, u16* src, u8 mode) {
     return;
-    s32 var_v1;
-    s32 var_s3;
-    u8* var_s0_2;
-    u8* var_s4_2;
-    s32 temp_ft3;
+    s32 u;
+    s32 v;
+    u8* dst8;
+    u8* src8;
+    s32 offset;
 
     // LTodo: [HD-Textures] This is broken
     dst = LOAD_ASSET(dst);
     src = LOAD_ASSET(src);
     switch (mode) {
         case 2:
-            for (var_s3 = 0; var_s3 < 32 * 32; var_s3 += 32) {
-                temp_ft3 = 3.0f * __sinf((s32) (((var_s3 / 32) + (gGameFrameCount / 4)) % 32U) * (2 * M_PI / 32));
-                for (var_v1 = 0; var_v1 < 32; var_v1++) {
-                    dst[var_s3 + (temp_ft3 + var_v1) % 32U] = src[var_s3 + var_v1];
+            for (v = 0; v < 32 * 32; v += 32) {
+                offset = 3.0f * __sinf((s32) (((v / 32) + (gGameFrameCount / 4)) % 32U) * (2 * M_PI / 32));
+                for (u = 0; u < 32; u++) {
+                    dst[v + (offset + u) % 32U] = src[v + u];
                 }
             }
             break;
+
         case 3:
-            for (var_s3 = 0; var_s3 < 22 * 64; var_s3 += 64) {
-                temp_ft3 = __sinf((s32) (((var_s3 / 64) + (gGameFrameCount / 4)) % 32U) * (2 * M_PI / 8));
-                for (var_v1 = 0; var_v1 < 64; var_v1++) {
-                    dst[var_s3 + (temp_ft3 + var_v1) % 64U] = src[var_s3 + var_v1];
+            for (v = 0; v < 22 * 64; v += 64) { // should be 32 * 64?
+                offset = __sinf((s32) (((v / 64) + (gGameFrameCount / 4)) % 32U) * (2 * M_PI / 8));
+                for (u = 0; u < 64; u++) {
+                    dst[v + (offset + u) % 64U] = src[v + u];
                 }
             }
             break;
+
         case 1:
-            for (var_s3 = 0; var_s3 < 16 * 16; var_s3 += 16) {
-                temp_ft3 = 2.0f * __sinf((s32) (((var_s3 / 16) + (gGameFrameCount / 2)) % 16U) * (2 * M_PI / 16));
-                for (var_v1 = 0; var_v1 < 16; var_v1++) {
-                    dst[var_s3 + (temp_ft3 + var_v1) % 16U] = src[var_s3 + var_v1];
+            for (v = 0; v < 16 * 16; v += 16) {
+                offset = 2.0f * __sinf((s32) (((v / 16) + (gGameFrameCount / 2)) % 16U) * (2 * M_PI / 16));
+                for (u = 0; u < 16; u++) {
+                    dst[v + (offset + u) % 16U] = src[v + u];
                 }
             }
             break;
+
         case 0:
-            for (var_s3 = 0; var_s3 < 32 * 32; var_s3 += 32) {
-                temp_ft3 = 2.0f * __sinf((s32) (((var_s3 / 32) + (gGameFrameCount / 2)) % 32U) * (2 * M_PI / 32));
-                for (var_v1 = 0; var_v1 < 32; var_v1++) {
-                    dst[var_s3 + (temp_ft3 + var_v1) % 32U] = src[var_s3 + var_v1];
+            for (v = 0; v < 32 * 32; v += 32) {
+                offset = 2.0f * __sinf((s32) (((v / 32) + (gGameFrameCount / 2)) % 32U) * (2 * M_PI / 32));
+                for (u = 0; u < 32; u++) {
+                    dst[v + (offset + u) % 32U] = src[v + u];
                 }
             }
             break;
+
         case 5:
-            var_s0_2 = (u8*) dst;
-            var_s4_2 = (u8*) src;
-            for (var_s3 = 0; var_s3 < 64 * 64; var_s3 += 64) {
-                temp_ft3 = 4.0f * __sinf((s32) (((var_s3 / 64) + (gGameFrameCount / 4)) % 32U) * (2 * M_PI / 32));
-                for (var_v1 = 0; var_v1 < 64; var_v1++) {
-                    var_s0_2[var_s3 + (temp_ft3 + var_v1) % 64U] = var_s4_2[var_s3 + var_v1];
+            dst8 = (u8*) dst;
+            src8 = (u8*) src;
+            for (v = 0; v < 64 * 64; v += 64) {
+                offset = 4.0f * __sinf((s32) (((v / 64) + (gGameFrameCount / 4)) % 32U) * (2 * M_PI / 32));
+                for (u = 0; u < 64; u++) {
+                    dst8[v + (offset + u) % 64U] = src8[v + u];
                 }
             }
+            break;
     }
 
     // LTodo: we should only invalidate one texture
@@ -174,18 +179,18 @@ void Animation_DrawLimb(s32 mode, Limb* limb, Limb** skeleton, Vec3f* jointTable
         override = overrideLimbDraw(limbIndex - 1, &dList, &trans, &rot, data);
     }
     if (!override) {
-        Matrix_Translate(gCalcMatrix, trans.x, trans.y, trans.z, 1);
-        Matrix_RotateZ(gCalcMatrix, rot.z * M_DTOR, 1);
-        Matrix_RotateY(gCalcMatrix, rot.y * M_DTOR, 1);
-        Matrix_RotateX(gCalcMatrix, rot.x * M_DTOR, 1);
+        Matrix_Translate(gCalcMatrix, trans.x, trans.y, trans.z, MTXF_APPLY);
+        Matrix_RotateZ(gCalcMatrix, rot.z * M_DTOR, MTXF_APPLY);
+        Matrix_RotateY(gCalcMatrix, rot.y * M_DTOR, MTXF_APPLY);
+        Matrix_RotateX(gCalcMatrix, rot.x * M_DTOR, MTXF_APPLY);
         if (dList != NULL) {
             if (mode >= 2) {
                 Matrix_MultVec3f(gCalcMatrix, &origin, &pos);
                 if (mode != 5) {
-                    func_edisplay_8005F670(&pos);
+                    Display_SetSecondLight(&pos);
                 }
             }
-            Matrix_Mult(gGfxMatrix, gCalcMatrix, 1);
+            Matrix_Mult(gGfxMatrix, gCalcMatrix, MTXF_APPLY);
             Matrix_SetGfxMtx(&gMasterDisp);
             gSPDisplayList(gMasterDisp++, dList);
         }
@@ -237,12 +242,12 @@ void Animation_DrawSkeleton(s32 mode, Limb** skeletonSegment, Vec3f* jointTable,
         override = overrideLimbDraw(rootIndex - 1, &dList, &baseTrans, &baseRot, data);
     }
     if (override == 0) {
-        Matrix_Translate(gCalcMatrix, baseTrans.x, baseTrans.y, baseTrans.z, 1);
-        Matrix_RotateZ(gCalcMatrix, baseRot.z * M_DTOR, 1);
-        Matrix_RotateY(gCalcMatrix, baseRot.y * M_DTOR, 1);
-        Matrix_RotateX(gCalcMatrix, baseRot.x * M_DTOR, 1);
+        Matrix_Translate(gCalcMatrix, baseTrans.x, baseTrans.y, baseTrans.z, MTXF_APPLY);
+        Matrix_RotateZ(gCalcMatrix, baseRot.z * M_DTOR, MTXF_APPLY);
+        Matrix_RotateY(gCalcMatrix, baseRot.y * M_DTOR, MTXF_APPLY);
+        Matrix_RotateX(gCalcMatrix, baseRot.x * M_DTOR, MTXF_APPLY);
         if (dList != NULL) {
-            Matrix_Mult(gGfxMatrix, gCalcMatrix, 1);
+            Matrix_Mult(gGfxMatrix, gCalcMatrix, MTXF_APPLY);
             Matrix_SetGfxMtx(&gMasterDisp);
             gSPDisplayList(gMasterDisp++, dList);
         }
@@ -256,13 +261,13 @@ void Animation_DrawSkeleton(s32 mode, Limb** skeletonSegment, Vec3f* jointTable,
     }
     Matrix_Pop(&gCalcMatrix);
     if (mode >= 2) {
-        Matrix_Mult(gGfxMatrix, gCalcMatrix, 1);
+        Matrix_Mult(gGfxMatrix, gCalcMatrix, MTXF_APPLY);
     }
 }
 
-s16 Animation_GetFrameData(Animation* anim, s32 frame, Vec3f* frameTable) {
-    Animation* animation = LOAD_ASSET(anim);
-    u16 var4 = animation->limbCount;
+s16 Animation_GetFrameData(Animation* animationSegmemt, s32 frame, Vec3f* frameTable) {
+    Animation* animation = LOAD_ASSET(animationSegmemt);
+    u16 limbCount = animation->limbCount;
     JointKey* key = SEGMENTED_TO_VIRTUAL(animation->jointKey);
     u16* frameData = SEGMENTED_TO_VIRTUAL(animation->frameData);
     s32 i;
@@ -276,7 +281,7 @@ s16 Animation_GetFrameData(Animation* anim, s32 frame, Vec3f* frameTable) {
     frameTable->z = (s16) temp;
 
     frameTable++, key++;
-    for (i = 1; i <= var4; i++, key++, frameTable++) {
+    for (i = 1; i <= limbCount; i++, key++, frameTable++) {
         temp = (frame < key->xLen) ? frameData[key->x + frame] : frameData[key->x];
         frameTable->x = temp * 360.0f / 65536.0f;
         temp = (frame < key->yLen) ? frameData[key->y + frame] : frameData[key->y];
@@ -284,7 +289,7 @@ s16 Animation_GetFrameData(Animation* anim, s32 frame, Vec3f* frameTable) {
         temp = (frame < key->zLen) ? frameData[key->z + frame] : frameData[key->z];
         frameTable->z = temp * 360.0f / 65536.0f;
     }
-    return var4 + 1;
+    return limbCount + 1;
 }
 
 s32 Animation_GetFrameCount(Animation* anim) {
@@ -372,19 +377,19 @@ void Animation_GetSkeletonBoundingBox(Limb** skeletonSegment, Animation* animati
     } else {
         var_t6 = frameData[(s16) key[1].z];
     }
-    Matrix_RotateZ(gGfxMatrix, (((s32) var_t6 * 360.0f) / 65536.0f) * M_DTOR, 0);
+    Matrix_RotateZ(gGfxMatrix, (((s32) var_t6 * 360.0f) / 65536.0f) * M_DTOR, MTXF_NEW);
     if (frame < (s16) key[1].yLen) {
         var_t6 = frameData[(s16) key[1].y + frame];
     } else {
         var_t6 = frameData[(s16) key[1].y];
     }
-    Matrix_RotateY(gGfxMatrix, (((s32) var_t6 * 360.0f) / 65536.0f) * M_DTOR, 1);
+    Matrix_RotateY(gGfxMatrix, (((s32) var_t6 * 360.0f) / 65536.0f) * M_DTOR, MTXF_APPLY);
     if (frame < (s16) key[1].xLen) {
         var_t6 = frameData[(s16) key[1].x + frame];
     } else {
         var_t6 = frameData[(s16) key[1].x];
     }
-    Matrix_RotateX(gGfxMatrix, (((s32) var_t6 * 360.0f) / 65536.0f) * M_DTOR, 1);
+    Matrix_RotateX(gGfxMatrix, (((s32) var_t6 * 360.0f) / 65536.0f) * M_DTOR, MTXF_APPLY);
     vtxFound = false;
     if (limb->dList != NULL) {
         Animation_FindBoundingBox(limb->dList, 8192, min, max, &vtxFound, &vtxCount, &vtxList);
@@ -528,8 +533,8 @@ s32 Math_PursueVec3f(Vec3f* pos, Vec3f* target, Vec3f* rot, f32 stepSize, f32 sc
     targetRotX = Math_RadToDeg(-Math_Atan2F(diff.y, sqrtf(SQ(diff.x) + SQ(diff.z))));
     Math_SmoothStepToAngle(&rot->y, targetRotY, scaleTurn, maxTurn, 0.0f);
     Math_SmoothStepToAngle(&rot->x, targetRotX, scaleTurn, maxTurn, 0.0f);
-    Matrix_RotateY(&worldTransform, rot->y * M_DTOR, 0);
-    Matrix_RotateX(&worldTransform, rot->x * M_DTOR, 1);
+    Matrix_RotateY(&worldTransform, rot->y * M_DTOR, MTXF_NEW);
+    Matrix_RotateX(&worldTransform, rot->x * M_DTOR, MTXF_APPLY);
     localStep.z = stepSize;
     Matrix_MultVec3fNoTranslate(&worldTransform, &localStep, &worldStep);
 
@@ -544,8 +549,8 @@ s32 Math_PursueVec3f(Vec3f* pos, Vec3f* target, Vec3f* rot, f32 stepSize, f32 sc
     return (VEC3F_MAG(&diff)) < dist;
 }
 
-void TextureRect_4bCI(Gfx** gfxPtr, void* texture, void* palette, u32 width, u32 height, f32 xPos, f32 yPos, f32 xScale,
-                      f32 yScale) {
+void TextureRect_CI4(Gfx** gfxPtr, u8* texture, u16* palette, u32 width, u32 height, f32 xPos, f32 yPos, f32 xScale,
+                     f32 yScale) {
     gDPLoadTLUT_pal16((*gfxPtr)++, 0, palette);
     gDPLoadTextureBlock_4b((*gfxPtr)++, texture, G_IM_FMT_CI, width, height, 0, G_TX_NOMIRROR | G_TX_WRAP,
                            G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
@@ -554,8 +559,8 @@ void TextureRect_4bCI(Gfx** gfxPtr, void* texture, void* palette, u32 width, u32
                         (s32) (1.0f / yScale * 1024.0f));
 }
 
-void TextureRect_4bCI_Flip(Gfx** gfxPtr, void* texture, void* palette, u32 width, u32 height, f32 xPos, f32 yPos,
-                           f32 xScale, f32 yScale) {
+void TextureRect_CI4_Flip(Gfx** gfxPtr, u8* texture, u16* palette, u32 width, u32 height, f32 xPos, f32 yPos,
+                          f32 xScale, f32 yScale) {
     gDPLoadTLUT_pal16((*gfxPtr)++, 0, palette);
     gDPLoadTextureBlock_4b((*gfxPtr)++, texture, G_IM_FMT_CI, width, height, 0, G_TX_NOMIRROR | G_TX_WRAP,
                            G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
@@ -564,8 +569,8 @@ void TextureRect_4bCI_Flip(Gfx** gfxPtr, void* texture, void* palette, u32 width
                             G_TX_RENDERTILE, 0, 0, (s32) (1.0f / xScale * 1024.0f), (s32) (1.0f / yScale * 1024.0f));
 }
 
-void TextureRect_4bCI_MirX(Gfx** gfxPtr, void* texture, void* palette, u32 width, u32 height, f32 xPos, f32 yPos,
-                           f32 xScale, f32 yScale) {
+void TextureRect_CI4_MirX(Gfx** gfxPtr, u8* texture, u16* palette, u32 width, u32 height, f32 xPos, f32 yPos,
+                          f32 xScale, f32 yScale) {
     gDPLoadTLUT_pal16((*gfxPtr)++, 0, palette);
     gDPLoadTextureBlock_4b((*gfxPtr)++, texture, G_IM_FMT_CI, width, height, 0, G_TX_MIRROR | G_TX_WRAP,
                            G_TX_MIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
@@ -574,8 +579,8 @@ void TextureRect_4bCI_MirX(Gfx** gfxPtr, void* texture, void* palette, u32 width
                         (u16) (s32) (-1.0f / xScale * 1024.0f), (s32) (1.0f / yScale * 1024.0f));
 }
 
-void TextureRect_4bCI_MirY(Gfx** gfxPtr, void* texture, void* palette, u32 width, u32 height, f32 xPos, f32 yPos,
-                           f32 xScale, f32 yScale) {
+void TextureRect_CI4_MirY(Gfx** gfxPtr, u8* texture, u16* palette, u32 width, u32 height, f32 xPos, f32 yPos,
+                          f32 xScale, f32 yScale) {
     gDPLoadTLUT_pal16((*gfxPtr)++, 0, palette);
     gDPLoadTextureBlock_4b((*gfxPtr)++, texture, G_IM_FMT_CI, width, height, 0, G_TX_MIRROR | G_TX_WRAP,
                            G_TX_MIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
@@ -584,8 +589,8 @@ void TextureRect_4bCI_MirY(Gfx** gfxPtr, void* texture, void* palette, u32 width
                         (s32) (1.0f / xScale * 1024.0f), (u16) (s32) (-1.0f / yScale * 1024.0f));
 }
 
-void TextureRect_8bCI(Gfx** gfxPtr, void* texture, void* palette, u32 width, u32 height, f32 xPos, f32 yPos, f32 xScale,
-                      f32 yScale) {
+void TextureRect_CI8(Gfx** gfxPtr, u8* texture, u16* palette, u32 width, u32 height, f32 xPos, f32 yPos, f32 xScale,
+                     f32 yScale) {
     gDPLoadTLUT_pal256((*gfxPtr)++, palette);
     gDPLoadTextureBlock((*gfxPtr)++, texture, G_IM_FMT_CI, G_IM_SIZ_8b, width, height, 0, G_TX_NOMIRROR | G_TX_WRAP,
                         G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
@@ -604,7 +609,7 @@ void TextureRect_16bRGBA(Gfx** gfxPtr, void* texture, u32 width, u32 height, f32
     gDPLoadTile((*gfxPtr)++, G_TX_LOADTILE, 0, 0, width - 1 << 2, height - 1 << 2);
 
     gSPTextureRectangle((*gfxPtr)++, (s32) (xPos * 4.0f), (s32) (yPos * 4.0f), (s32) ((xPos + width * xScale) * 4.0f),
-                        (s32) ((yPos + height * yScale) * 4.0f), 0, 0, 0, (s32) (1.0f / xScale * 1024.0f),
+                        (s32) ((yPos + height * yScale) * 4.0f), G_TX_RENDERTILE, 0, 0, (s32) (1.0f / xScale * 1024.0f),
                         (s32) (1.0f / yScale * 1024.0f));
 }
 
@@ -631,12 +636,12 @@ void TextureRect_8bIA(Gfx** gfxPtr, void* texture, u32 width, u32 height, f32 xP
     gDPLoadTile((*gfxPtr)++, G_TX_LOADTILE, 0, 0, width - 1 << 2, height - 1 << 2);
 
     gSPTextureRectangle((*gfxPtr)++, (s32) (xPos * 4.0f), (s32) (yPos * 4.0f), (s32) ((xPos + width * xScale) * 4.0f),
-                        (s32) ((yPos + height * yScale) * 4.0f), 0, 0, 0, (s32) (1.0f / xScale * 1024.0f),
+                        (s32) ((yPos + height * yScale) * 4.0f), G_TX_RENDERTILE, 0, 0, (s32) (1.0f / xScale * 1024.0f),
                         (s32) (1.0f / yScale * 1024.0f));
 }
 
-void TextureRect_8bIA_FilpMirX(Gfx** gfxPtr, void* texture, u32 width, u32 height, f32 xPos, f32 yPos, f32 xScale,
-                               f32 yScale) {
+void TextureRect_IA8_FlipMirX(Gfx** gfxPtr, u8* texture, u32 width, u32 height, f32 xPos, f32 yPos, f32 xScale,
+                              f32 yScale) {
     gDPLoadTextureBlock((*gfxPtr)++, texture, G_IM_FMT_IA, G_IM_SIZ_8b, width, height, 0, G_TX_NOMIRROR | G_TX_WRAP,
                         G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
     gSPTextureRectangleFlip((*gfxPtr)++, (s32) (xPos * 4.0f), (s32) (yPos * 4.0f),
@@ -645,8 +650,8 @@ void TextureRect_8bIA_FilpMirX(Gfx** gfxPtr, void* texture, u32 width, u32 heigh
                             (s32) (1.0f / xScale * 1024.0f));
 }
 
-void TextureRect_8bIA_FilpMirY(Gfx** gfxPtr, void* texture, u32 width, u32 height, f32 xPos, f32 yPos, f32 xScale,
-                               f32 yScale) {
+void TextureRect_IA8_FlipMirY(Gfx** gfxPtr, u8* texture, u32 width, u32 height, f32 xPos, f32 yPos, f32 xScale,
+                              f32 yScale) {
     gDPLoadTextureBlock((*gfxPtr)++, texture, G_IM_FMT_IA, G_IM_SIZ_8b, width, height, 0, G_TX_NOMIRROR | G_TX_WRAP,
                         G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
     gSPTextureRectangleFlip((*gfxPtr)++, (s32) (xPos * 4.0f), (s32) (yPos * 4.0f),
@@ -655,8 +660,8 @@ void TextureRect_8bIA_FilpMirY(Gfx** gfxPtr, void* texture, u32 width, u32 heigh
                             (u16) (s32) (-1.0f / xScale * 1024.0f));
 }
 
-void TextureRect_8bIA_MirX(Gfx** gfxPtr, void* texture, u32 width, u32 height, f32 xPos, f32 yPos, f32 xScale,
-                           f32 yScale) {
+void TextureRect_IA8_MirX(Gfx** gfxPtr, u8* texture, u32 width, u32 height, f32 xPos, f32 yPos, f32 xScale,
+                          f32 yScale) {
     gDPLoadTextureBlock((*gfxPtr)++, texture, G_IM_FMT_IA, G_IM_SIZ_8b, width, height, 0, G_TX_NOMIRROR | G_TX_WRAP,
                         G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
     gSPTextureRectangle((*gfxPtr)++, (s32) (xPos * 4.0f), (s32) (yPos * 4.0f), (s32) ((xPos + width * xScale) * 4.0f),
@@ -664,8 +669,8 @@ void TextureRect_8bIA_MirX(Gfx** gfxPtr, void* texture, u32 width, u32 height, f
                         (u16) (s32) (-1.0f / xScale * 1024.0f), (s32) (1.0f / yScale * 1024.0f));
 }
 
-void TextureRect_8bIA_MirY(Gfx** gfxPtr, void* texture, u32 width, u32 height, f32 xPos, f32 yPos, f32 xScale,
-                           f32 yScale) {
+void TextureRect_IA8_MirY(Gfx** gfxPtr, u8* texture, u32 width, u32 height, f32 xPos, f32 yPos, f32 xScale,
+                          f32 yScale) {
     gDPLoadTextureBlock((*gfxPtr)++, texture, G_IM_FMT_IA, G_IM_SIZ_8b, width, height, 0, G_TX_NOMIRROR | G_TX_WRAP,
                         G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
     gSPTextureRectangle((*gfxPtr)++, (s32) (xPos * 4.0f), (s32) (yPos * 4.0f), (s32) ((xPos + width * xScale) * 4.0f),
@@ -673,7 +678,7 @@ void TextureRect_8bIA_MirY(Gfx** gfxPtr, void* texture, u32 width, u32 height, f
                         (s32) (1.0f / xScale * 1024.0f), (u16) (s32) (-1.0f / yScale * 1024.0f));
 }
 
-void TextureRect_16bIA(Gfx** gfxPtr, void* texture, u32 width, u32 height, f32 xPos, f32 yPos, f32 xScale, f32 yScale) {
+void TextureRect_IA16(Gfx** gfxPtr, u16* texture, u32 width, u32 height, f32 xPos, f32 yPos, f32 xScale, f32 yScale) {
     gDPLoadTextureBlock((*gfxPtr)++, texture, G_IM_FMT_IA, G_IM_SIZ_16b, width, height, 0, G_TX_NOMIRROR | G_TX_WRAP,
                         G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
     gSPTextureRectangle((*gfxPtr)++, (s32) (xPos * 4.0f), (s32) (yPos * 4.0f), (s32) ((xPos + width * xScale) * 4.0f),
@@ -681,8 +686,8 @@ void TextureRect_16bIA(Gfx** gfxPtr, void* texture, u32 width, u32 height, f32 x
                         (s32) (1.0f / yScale * 1024.0f));
 }
 
-void TextureRect_16bIA_MirX(Gfx** gfxPtr, void* texture, u32 width, u32 height, f32 xPos, f32 yPos, f32 xScale,
-                            f32 yScale) {
+void TextureRect_IA16_MirX(Gfx** gfxPtr, u16* texture, u32 width, u32 height, f32 xPos, f32 yPos, f32 xScale,
+                           f32 yScale) {
     gDPLoadTextureBlock((*gfxPtr)++, texture, G_IM_FMT_IA, G_IM_SIZ_16b, width, height, 0, G_TX_MIRROR | G_TX_WRAP,
                         G_TX_MIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
     gSPTextureRectangle((*gfxPtr)++, (s32) (xPos * 4.0f), (s32) (yPos * 4.0f), (s32) ((xPos + width * xScale) * 4.0f),
@@ -690,8 +695,8 @@ void TextureRect_16bIA_MirX(Gfx** gfxPtr, void* texture, u32 width, u32 height, 
                         (u16) (s32) (-1.0f / xScale * 1024.0f), (s32) (1.0f / yScale * 1024.0f));
 }
 
-void TextureRect_16bIA_MirY(Gfx** gfxPtr, void* texture, u32 width, u32 height, f32 xPos, f32 yPos, f32 xScale,
-                            f32 yScale) {
+void TextureRect_IA16_MirY(Gfx** gfxPtr, u16* texture, u32 width, u32 height, f32 xPos, f32 yPos, f32 xScale,
+                           f32 yScale) {
     gDPLoadTextureBlock((*gfxPtr)++, texture, G_IM_FMT_IA, G_IM_SIZ_16b, width, height, 0, G_TX_MIRROR | G_TX_WRAP,
                         G_TX_MIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
     gSPTextureRectangle((*gfxPtr)++, (s32) (xPos * 4.0f), (s32) (yPos * 4.0f), (s32) ((xPos + width * xScale) * 4.0f),
@@ -699,8 +704,8 @@ void TextureRect_16bIA_MirY(Gfx** gfxPtr, void* texture, u32 width, u32 height, 
                         (s32) (1.0f / xScale * 1024.0f), (u16) (s32) (-1.0f / yScale * 1024.0f));
 }
 
-void TextureRect_16bIA_MirXY(Gfx** gfxPtr, void* texture, u32 width, u32 height, f32 xPos, f32 yPos, f32 xScale,
-                             f32 yScale) {
+void TextureRect_IA16_MirXY(Gfx** gfxPtr, u16* texture, u32 width, u32 height, f32 xPos, f32 yPos, f32 xScale,
+                            f32 yScale) {
     gDPLoadTextureBlock((*gfxPtr)++, texture, G_IM_FMT_IA, G_IM_SIZ_16b, width, height, 0, G_TX_MIRROR | G_TX_WRAP,
                         G_TX_MIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
     gSPTextureRectangle((*gfxPtr)++, (s32) (xPos * 4.0f), (s32) (yPos * 4.0f), (s32) ((xPos + width * xScale) * 4.0f),
@@ -708,8 +713,7 @@ void TextureRect_16bIA_MirXY(Gfx** gfxPtr, void* texture, u32 width, u32 height,
                         (u16) (s32) (-1.0f / xScale * 1024.0f), (u16) (s32) (-1.0f / yScale * 1024.0f));
 }
 
-void TextureRect_32bRGBA(Gfx** gfxPtr, void* texture, u32 width, u32 height, f32 xPos, f32 yPos, f32 xScale,
-                         f32 yScale) {
+void TextureRect_RGBA32(Gfx** gfxPtr, u32* texture, u32 width, u32 height, f32 xPos, f32 yPos, f32 xScale, f32 yScale) {
     gDPLoadTextureBlock((*gfxPtr)++, texture, G_IM_FMT_RGBA, G_IM_SIZ_32b, width, height, 0, G_TX_NOMIRROR | G_TX_WRAP,
                         G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
     gSPTextureRectangle((*gfxPtr)++, (s32) (xPos * 4.0f), (s32) (yPos * 4.0f), (s32) ((xPos + width * xScale) * 4.0f),
@@ -733,8 +737,8 @@ void Graphics_FillRectangle(Gfx** gfxPtr, s32 ulx, s32 uly, s32 lrx, s32 lry, u8
 void Math_Vec3fFromAngles(Vec3f* step, f32 xRot, f32 yRot, f32 stepsize) {
     Vec3f sp1C;
 
-    Matrix_RotateY(gCalcMatrix, yRot * M_DTOR, 0);
-    Matrix_RotateX(gCalcMatrix, xRot * M_DTOR, 1);
+    Matrix_RotateY(gCalcMatrix, yRot * M_DTOR, MTXF_NEW);
+    Matrix_RotateX(gCalcMatrix, xRot * M_DTOR, MTXF_APPLY);
     sp1C.x = sp1C.y = 0.0f;
     sp1C.z = stepsize;
     Matrix_MultVec3fNoTranslate(gCalcMatrix, &sp1C, step);
@@ -782,7 +786,7 @@ u16* Graphics_SetupTextureRender(Gfx** gfxPtr, u8 width, u8 height) {
     gDPSetFillColor((*gfxPtr)++, FILL_COLOR(gBgColor | 1));
     gDPFillRectangle((*gfxPtr)++, 0, 0, width - 1, height - 1);
     gDPPipeSync((*gfxPtr)++);
-    guPerspective(gGfxMtx, &norm, D_game_80161A3C, (f32) width / height, 10.0f, 12800.0f, 1.0f);
+    guPerspective(gGfxMtx, &norm, gFovY, (f32) width / height, 10.0f, 12800.0f, 1.0f);
     gSPPerspNormalize((*gfxPtr)++, norm);
     gSPMatrix((*gfxPtr)++, gGfxMtx++, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
     guLookAt(gGfxMtx, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, -12800.0f, 0.0f, 1.0f, 0.0f);
@@ -804,19 +808,19 @@ void Graphics_DisplayHUDNumber(s32 xPos, s32 yPos, s32 number) {
     place = 1000000;
     for (place = 1000000; place != 1; place /= 10) {
         if ((number / place != 0) || (startNumber == true)) {
-            TextureRect_4bCI(&gMasterDisp, hudNumberTex[number / place], hudNumberPal[number / place], 16, 8, xPos,
-                             yPos, 1.0f, 1.0f);
+            TextureRect_CI4(&gMasterDisp, hudNumberTex[number / place], hudNumberPal[number / place], 16, 8, xPos, yPos,
+                            1.0f, 1.0f);
             startNumber = true;
             xPos += 9;
             number %= place;
         }
     }
-    TextureRect_4bCI(&gMasterDisp, hudNumberTex[number / place], hudNumberPal[number / place], 16, 8, xPos, yPos, 1.0f,
-                     1.0f);
+    TextureRect_CI4(&gMasterDisp, hudNumberTex[number / place], hudNumberPal[number / place], 16, 8, xPos, yPos, 1.0f,
+                    1.0f);
 }
 
-u8* sSmallNumberTex[] = { D_5000000, D_5000080, D_5000100, D_5000180, D_5000200,
-                          D_5000280, D_5000300, D_5000380, D_5000400, D_5000480 };
+u8* sSmallNumberTex[] = { aSmallText_0, aSmallText_1, aSmallText_2, aSmallText_3, aSmallText_4,
+                          aSmallText_5, aSmallText_6, aSmallText_7, aSmallText_8, aSmallText_9 };
 
 void Graphics_DisplaySmallNumber(s32 xPos, s32 yPos, s32 number) {
     s32 place;
@@ -826,35 +830,40 @@ void Graphics_DisplaySmallNumber(s32 xPos, s32 yPos, s32 number) {
     place = 1000000;
     for (place = 1000000; place != 1; place /= 10) {
         if ((number / place != 0) || (startNumber == true)) {
-            TextureRect_8bIA(&gMasterDisp, sSmallNumberTex[number / place], 16, 8, xPos, yPos, 1.0f, 1.0f);
+            TextureRect_IA8(&gMasterDisp, sSmallNumberTex[number / place], 16, 8, xPos, yPos, 1.0f, 1.0f);
             startNumber = true;
             xPos += 9;
             number %= place;
         }
     }
-    TextureRect_8bIA(&gMasterDisp, sSmallNumberTex[number / place], 16, 8, xPos, yPos, 1.0f, 1.0f);
+    TextureRect_IA8(&gMasterDisp, sSmallNumberTex[number / place], 16, 8, xPos, yPos, 1.0f, 1.0f);
 }
 
 char sSmallChars[] = " ABCDEFGHIJKLMNOPQRSTUVWXYZ!:-.0123456789";
 char sLargeChars[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ. 0123456789st-";
 u8 sLargeCharWidths[] = { 15, 14, 14, 13, 13, 13, 14, 14, 5,  12, 14, 12, 16, 14, 15, 13, 16, 14, 13, 13, 13,
                           16, 17, 17, 16, 13, 5,  16, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 10, 9,  14, 0 };
-void* sLargeCharTex[] = {
-    D_5008020, D_5008110, D_5008200, D_50082F0, D_50083E0, D_50084D0, D_50085C0, D_50086B0, D_50087A0,
-    D_5008890, D_5008980, D_5008A70, D_5008B60, D_5008C50, D_5008D40, D_5008E30, D_5008F20, D_5009010,
-    D_5009100, D_50091F0, D_50092E0, D_50093D0, D_50094C0, D_50096A0, D_5009880, D_5009A60, D_5009DB0,
-    NULL,      D_5009F60, D_500A050, D_500A140, D_500A230, D_500A320, D_500A410, D_500A500, D_500A5F0,
-    D_500A6E0, D_500A7D0, D_5009B50, D_5009C40, D_5009970,
+u8* sLargeCharTex[] = {
+    aLargeText_A, aLargeText_B, aLargeText_C, aLargeText_D,  aLargeText_E,  aLargeText_F,      aLargeText_G,
+    aLargeText_H, aLargeText_I, aLargeText_J, aLargeText_K,  aLargeText_L,  aLargeText_M,      aLargeText_N,
+    aSmallText_O, aLargeText_P, aLargeText_Q, aLargeText_R,  aLargeText_S,  aLargeText_T,      aLargeText_U,
+    aLargeText_V, aLargeText_W, aLargeText_X, aLargeText_Y,  aLargeText_Z,  aLargeText_DOT,    NULL,
+    aLargeText_0, aLargeText_1, aLargeText_2, aLargeText_3,  aLargeText_4,  aLargeText_5,      aLargeText_6,
+    aLargeText_7, aLargeText_8, aLargeText_9, aLargeText_s_, aLargeText_t_, aLargeText_HYPHEN,
 };
-void* sLargeNumberTex[] = {
-    D_5009F60, D_500A050, D_500A140, D_500A230, D_500A320, D_500A410, D_500A500, D_500A5F0, D_500A6E0, D_500A7D0,
+u8* sLargeNumberTex[] = {
+    aLargeText_0, aLargeText_1, aLargeText_2, aLargeText_3, aLargeText_4,
+    aLargeText_5, aLargeText_6, aLargeText_7, aLargeText_8, aLargeText_9,
 };
-void* sSmallCharTex[] = { NULL,      D_50070C0, D_5007100, D_5007180, D_50071C0, D_5007200, D_5007510,
-                          D_5007550, D_5007590, D_50075D0, D_5007610, D_5007650, D_5007F60, D_5007FA0,
-                          D_5007FE0, D_5009D30, D_5009D70, D_5009EA0, D_5009EE0, D_5009F20, D_500B380,
-                          D_500B440, D_500B480, D_500B4C0, D_500B500, D_500B540, D_500B5C0, D_5007140,
-                          D_500B400, D_500B580, D_500B3C0, D_5000000, D_5000080, D_5000100, D_5000180,
-                          D_5000200, D_5000280, D_5000300, D_5000380, D_5000400, D_5000480 };
+u8* sSmallCharTex[] = { NULL,           aSmallText_A, aSmallText_B,         aSmallText_C,     aSmallText_D,
+                        aSmallText_E,   aSmallText_F, aSmallText_G,         aSmallText_H,     aSmallText_I,
+                        aSmallText_J,   aSmallText_K, aSmallText_L,         aSmallText_M,     aSmallText_N,
+                        aSmallText_o_,  aSmallText_p, aSmallText_q,         aSmallText_r,     aSmallText_s,
+                        aSmallText_T,   aSmallText_U, aSmallText_V,         aSmallText_W,     aSmallText_X,
+                        aSmallText_Y,   aSmallText_Z, aSmallTextExclamMark, aSmallText_COLON, aSmallText_HYPHEN,
+                        aSmallText_DOT, aSmallText_0, aSmallText_1,         aSmallText_2,     aSmallText_3,
+                        aSmallText_4,   aSmallText_5, aSmallText_6,         aSmallText_7,     aSmallText_8,
+                        aSmallText_9 };
 
 void Graphics_DisplayLargeText(s32 xPos, s32 yPos, f32 xScale, f32 yScale, char* text) {
     u32 charIndex;
@@ -979,7 +988,7 @@ void Graphics_DisplayLargeText(s32 xPos, s32 yPos, f32 xScale, f32 yScale, char*
                 if ((text[0] == 'W') || (text[0] == 'X')) {
                     width = 32;
                 }
-                TextureRect_8bIA(&gMasterDisp, sLargeCharTex[charIndex], width, 15, xPosCurrent, yPos, xScale, yScale);
+                TextureRect_IA8(&gMasterDisp, sLargeCharTex[charIndex], width, 15, xPosCurrent, yPos, xScale, yScale);
             }
             startPrint = true;
             xPosCurrent += (sLargeCharWidths[charIndex] * xScale) + 2.0f;
@@ -1120,13 +1129,13 @@ void Graphics_DisplayLargeNumber(s32 xPos, s32 yPos, s32 number) {
     place = 1000000;
     for (place = 1000000; place != 1; place /= 10) {
         if ((number / place != 0) || (startNumber == true)) {
-            TextureRect_8bIA(&gMasterDisp, sLargeNumberTex[number / place], 16, 15, xPos, yPos, 1.0f, 1.0f);
+            TextureRect_IA8(&gMasterDisp, sLargeNumberTex[number / place], 16, 15, xPos, yPos, 1.0f, 1.0f);
             startNumber = true;
             xPos += 13;
             number %= place;
         }
     }
-    TextureRect_8bIA(&gMasterDisp, sLargeNumberTex[number / place], 16, 15, xPos, yPos, 1.0f, 1.0f);
+    TextureRect_IA8(&gMasterDisp, sLargeNumberTex[number / place], 16, 15, xPos, yPos, 1.0f, 1.0f);
 }
 
 void Graphics_DisplaySmallText(s32 xPos, s32 yPos, f32 xScale, f32 yScale, char* text) {
@@ -1145,7 +1154,7 @@ void Graphics_DisplaySmallText(s32 xPos, s32 yPos, f32 xScale, f32 yScale, char*
                 if (var_t0 > 30) {
                     width = 16;
                 }
-                TextureRect_8bIA(&gMasterDisp, sSmallCharTex[var_t0], width, 8, xPosCurrent, yPos, xScale, yScale);
+                TextureRect_IA8(&gMasterDisp, sSmallCharTex[var_t0], width, 8, xPosCurrent, yPos, xScale, yScale);
                 if (1) {}
             }
             switch (text[0]) {

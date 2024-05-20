@@ -32,7 +32,7 @@ s32 Message_GetWidth(u16* msgPtr) {
     u16* msgChar = LOAD_ASSET(msgPtr);
 
     while (*msgChar != MSGCHAR_END) {
-        if (*msgChar > 15 || *msgChar == 12) {
+        if ((*msgChar >= MSGCHAR_CLF) || (*msgChar == MSGCHAR_SPC)) {
             width++;
         }
         msgChar++;
@@ -48,7 +48,7 @@ s32 Message_GetCharCount(u16* msgPtr) {
         return 0;
     }
 
-    while (*msgChar != NULL) {
+    while (*msgChar != MSGCHAR_END) {
         count++;
         msgChar++;
     }
@@ -67,13 +67,17 @@ bool Message_DisplayText(Gfx** gfxPtr, u16* msgPtr, s32 xPos, s32 yPos, s32 len)
     s32 xChar = xPos;
     s32 yChar = yPos;
     s32 i;
-    s32 print = false;
-    msgPtr = LOAD_ASSET(msgPtr);
+    bool print;
 
+    msgPtr = LOAD_ASSET(msgPtr);
     gDPSetPrimColor((*gfxPtr)++, 0x00, 0x00, 255, 255, 255, 255);
     gDPSetTextureLUT((*gfxPtr)++, G_TT_RGBA16);
     gDPLoadTLUT((*gfxPtr)++, 64, 256, gTextCharPalettes);
 
+#ifdef AVOID_UB
+    print = false;
+#endif
+    // bug: if the for loop is skipped, print is never initialized
     for (i = 0; msgPtr[i] != MSGCHAR_END && i < len; i++) {
         print = false;
         switch (msgPtr[i]) {
@@ -109,7 +113,7 @@ bool Message_DisplayText(Gfx** gfxPtr, u16* msgPtr, s32 xPos, s32 yPos, s32 len)
             case MSGCHAR_PRI3:
             case MSGCHAR_QSP:
             case MSGCHAR_HSP:
-            case MSGCHAR_NPF:
+            case MSGCHAR_NXT:
                 break;
         }
     }
@@ -117,8 +121,8 @@ bool Message_DisplayText(Gfx** gfxPtr, u16* msgPtr, s32 xPos, s32 yPos, s32 len)
 }
 
 void Message_DisplayScrollingText(Gfx** gfxPtr, u16* msgPtr, s32 xPos, s32 yPos, s32 yRangeHi, s32 yRangeLo, s32 len) {
-    s32 var_s2 = xPos;
-    s32 var_s4 = yPos;
+    s32 x = xPos;
+    s32 y = yPos;
     s32 i;
     msgPtr = LOAD_ASSET(msgPtr);
 
@@ -128,24 +132,29 @@ void Message_DisplayScrollingText(Gfx** gfxPtr, u16* msgPtr, s32 xPos, s32 yPos,
     for (i = 0; msgPtr[i] != 0 && i < len; i++) {
         switch (msgPtr[i]) {
             case MSGCHAR_NWL:
-                var_s2 = xPos;
-                var_s4 += 15;
+                x = xPos;
+                y += 15;
                 break;
+
             case MSGCHAR_QSP:
-                var_s2 += 2;
+                x += 2;
                 break;
+
             case MSGCHAR_HSP:
-                var_s2 += 3;
+                x += 3;
                 break;
+
             case MSGCHAR_SPC:
-                var_s2 += 7;
+                x += 7;
                 break;
+
             default:
-                if ((yRangeLo < var_s4) && (var_s4 < yRangeHi)) {
-                    Message_DisplayChar(gfxPtr, msgPtr[i], var_s2, var_s4);
+                if ((yRangeLo < y) && (y < yRangeHi)) {
+                    Message_DisplayChar(gfxPtr, msgPtr[i], x, y);
                 }
-                var_s2 += 7;
+                x += 7;
                 break;
+
             case MSGCHAR_NP2:
             case MSGCHAR_NP3:
             case MSGCHAR_NP4:
@@ -156,7 +165,7 @@ void Message_DisplayScrollingText(Gfx** gfxPtr, u16* msgPtr, s32 xPos, s32 yPos,
             case MSGCHAR_PRI1:
             case MSGCHAR_PRI2:
             case MSGCHAR_PRI3:
-            case MSGCHAR_NPF:
+            case MSGCHAR_NXT:
                 break;
         }
     }
@@ -164,28 +173,31 @@ void Message_DisplayScrollingText(Gfx** gfxPtr, u16* msgPtr, s32 xPos, s32 yPos,
 
 bool Message_IsPrintingChar(u16* msgPtr, s32 charPos) {
     s32 i;
-    s32 print;
+    bool print;
     msgPtr = LOAD_ASSET(msgPtr);
 
+#ifdef AVOID_UB
+    print = false;
+#endif
     // bug: if the for loop is skipped, print is never initialized
     for (i = 0; msgPtr[i] != 0 && i < charPos; i++) {
         print = false;
         switch (msgPtr[i]) {
-            case 1:
-            case 2:
-            case 3:
-            case 4:
-            case 5:
-            case 6:
-            case 7:
-            case 8:
-            case 9:
-            case 10:
-            case 11:
-            case 12:
-            case 13:
-            case 14:
-            case 15:
+            case MSGCHAR_NWL:
+            case MSGCHAR_NP2:
+            case MSGCHAR_NP3:
+            case MSGCHAR_NP4:
+            case MSGCHAR_NP5:
+            case MSGCHAR_NP6:
+            case MSGCHAR_NP7:
+            case MSGCHAR_PRI0:
+            case MSGCHAR_PRI1:
+            case MSGCHAR_PRI2:
+            case MSGCHAR_PRI3:
+            case MSGCHAR_SPC:
+            case MSGCHAR_QSP:
+            case MSGCHAR_HSP:
+            case MSGCHAR_NXT:
                 break;
             default:
                 print = true;

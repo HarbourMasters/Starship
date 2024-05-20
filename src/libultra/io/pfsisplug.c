@@ -57,8 +57,8 @@ void __osPfsRequestData(u8 cmd) {
     __osContLastCmd = cmd;
 
 #if BUILD_VERSION < VERSION_I
-    for (i = 0; i < 16; i++) {
-        __osPfsPifRam.ramarray[i] = 0;
+    for (i = 0; i < ARRLEN(__osPfsPifRam.raw); i++) {
+        __osPfsPifRam.raw[i] = 0;
     }
     __osPfsPifRam.pifstatus = CONT_CMD_EXE;
 #endif

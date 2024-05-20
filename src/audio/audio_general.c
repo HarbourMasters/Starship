@@ -4,15 +4,15 @@
 #include "audiothread_cmd.h"
 #include "audioseq_cmd.h"
 
-void func_8001D0B4(f32* sfxSource, u32 sfxId, f32 freqMod);
+void Audio_SetModulationAndPlaySfx(f32* sfxSource, u32 sfxId, f32 freqMod);
 s32 Audio_GetCurrentVoice(void);
 void Audio_PlaySequence(u8, u16, u8, u8);
 void Audio_PlayFanfare(u16, u8, u8, u8);
 void Audio_PlaySequenceDistorted(u8, u16, u16, u8, u8);
 
-void func_8001DD40(void);
-void func_8001D6DC(u8);
-void func_8001DE1C(u8);
+void Audio_RestartSeqPlayers(void);
+void Audio_PlayMapMenuSfx(u8);
+void Audio_StartReset(u8);
 
 static const char devstr1[] = "preload start (%d): ";
 static const char devstr2[] = "%d ";
@@ -45,11 +45,11 @@ ActiveSfx sActiveSfx[5][8];
 u8 sCurSfxPlayerChannelIndex;
 u8 sSfxBankMuted[5];
 Modulation sSfxVolumeMods[5];
-f32 D_80149AD8[256];
-f32 D_80149ED8[256];
-f32 D_8014A2D8[384];
-f32 D_8014A8D8[32];
-u8 D_8014A958[32];
+f32 sAudioAnalyzerData[256];
+f32 sAnalyzerBuffer1[256];
+f32 sAnalyzerBuffer2[384];
+f32 sNewFreqAmplitudes[32];
+u8 sFreqAnalyzerBars[32];
 SeqRequest sSeqRequests[4][5];
 u8 sNumSeqRequests[4];
 s32 sAudioSeqCmds[256];
@@ -58,10 +58,10 @@ u16 sDelayedSeqCmdFlags;
 DelayedSeqCmd sDelayedSeqCmds[16];
 SfxChannelState sSfxChannelState[16];
 PlayerNoiseModulation sPlayerNoise[4];
-f32 D_8014BA10[4];
-u8 D_8014BA20[4];
-u8 D_8014BA24[4];
-s32 D_8014BA28[4];
+f32 sBombFreqMod[4];
+u8 sBombType[4];
+u8 sBombState[4];
+s32 sBombStartFrame[4];
 
 u8 sChannelsPerBank[5][5] = {
     { 3, 2, 2, 2, 2 }, { 3, 1, 2, 2, 2 }, { 3, 2, 2, 2, 3 }, { 6, 0, 2, 0, 4 }, { 0, 0, 0, 0, 0 },
@@ -71,7 +71,7 @@ u8 sUsedChannelsPerBank[5][5] = {
 };
 u8 sSfxRequestWriteIndex = 0;
 u8 sSfxRequestReadIndex = 0;
-u8 sSfxChannelLayout = 0;
+u8 sSfxChannelLayout = SFXCHAN_0;
 u16 sChannelMuteFlags = 0;
 f32 gDefaultSfxSource[3] = { 0.0f, 0.0f, 0.0f };
 f32 gDefaultMod = 1.0f;
@@ -82,13 +82,13 @@ u8 sSeqCmdWritePos = 0;
 u8 sSeqCmdReadPos = 0;
 u8 sStartSeqDisabled = 0;
 u8 sSoundModeList[4] = { SOUNDMODE_STEREO, SOUNDMODE_HEADSET, SOUNDMODE_SURROUND, SOUNDMODE_MONO };
-u8 sNewAudioSpecId = 0;
-u8 D_800C5D58 = 0;
+u8 sAudioSpecId = AUDIOSPEC_0;
+u8 sAudioResetStatus = AUDIORESET_READY;
 s32 D_800C5D5C = 0; // unused. file split?
-s8 sBaseReverb = 0;
+s8 sEnvReverb = 0;
 s8 sAudioSpecReverb = 0;
 u8 sVolumeSettings[3] = { 99, 99, 99 };
-u8 D_800C5D6C[29][7] = {
+u8 sAudioSpecInstrumentSets[29][7] = {
     { 0, 3, 4, 80, 12, 21, 255 },    { 17, 18, 15, 96, 20, 22, 255 }, { 0, 3, 5, 80, 16, 255, 0 },
     { 17, 18, 15, 96, 20, 22, 255 }, { 0, 3, 4, 80, 12, 21, 255 },    { 17, 18, 15, 96, 20, 22, 255 },
     { 0, 3, 4, 80, 12, 21, 255 },    { 17, 18, 15, 96, 20, 22, 255 }, { 0, 3, 4, 80, 12, 21, 255 },
@@ -100,10 +100,10 @@ u8 D_800C5D6C[29][7] = {
     { 255, 0, 0, 0, 0, 0, 0 },       { 255, 0, 0, 0, 0, 0, 0 },       { 255, 0, 0, 0, 0, 0, 0 },
     { 255, 0, 0, 0, 0, 0, 0 },       { 0, 3, 4, 80, 12, 21, 255 },
 };
-s8 D_800C5E38[29] = {
+s8 sAudioSpecReverbAdd[29] = {
     10, 0, 25, 0, 25, 0, 10, 0, 10, 35, 0, 10, 40, 0, 25, 64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 };
-u32 D_800C5E58[5] = { 20, 16, 10, 10, 20 };
+u32 sPlayerNoiseTimes[5] = { 20, 16, 10, 10, 20 };
 s32 D_800C5E6C = 0; // unused. file split?
 u8 D_800C5E70 = 0;
 f32 sSfxFreqMod = 1.0f;
@@ -111,175 +111,159 @@ f32 sSfxVolMod = 1.0f; // never modified
 u8 sPlaylistIndex = 255;
 s32 sPlaylistTimer = 0;
 u8 sPlaylistCmdIndex = 0;
-u32 D_800C5E88[] = {
-    0x1903000D, 0x1903000E, 0x19500015, 0x2903A021, 0x4900000C, 0x19122005, 0x1913204A, 0x2900306A,
-    0x29034024, 0x2902306C, 0x19032056, 0x19030057, 0x19033058, 0x19030006, 0x29503032, 0x1903407D,
-    0x4900402E, 0x19038072, 0x1903807E, 0x1903807F, 0x19038080, 0x11032081, 0x19031082,
+u32 sEventSfx[] = {
+    NA_SE_OB_SLIDE_OPEN,        NA_SE_OB_SLIDE_CLOSE,
+    NA_SE_OB_STEELFRAME,        NA_SE_OB_HEAVY_BOUND,
+    NA_SE_ITEM_APPEAR,          NA_SE_OB_BLOCK_APPEAR,
+    NA_SE_OB_ROCKWALL_UP,       NA_SE_EN_UNIT_GATHERING,
+    NA_SE_EN_MOTOR_STOP,        NA_SE_EN_MS_DASH,
+    NA_SE_OB_ROCK_CRASH,        NA_SE_OB_ROCK_EYE_OPEN,
+    NA_SE_OB_SHIP_FALLDOWN,     NA_SE_OB_ROCK_BOUND,
+    NA_SE_OB_SPEAR_PILLAR,      NA_SE_OB_PILLAR_ROLL,
+    NA_SE_SEARCHLIGHT_MISS,     NA_SE_OB_ROUTEGATE_OPEN_Q,
+    NA_SE_OB_ROUTEGATE_CLOSE_Q, NA_SE_OB_ROUTEGATE_OPEN_S,
+    NA_SE_OB_ROUTEGATE_CLOSE_S, NA_SE_OB_LIFT,
+    NA_SE_OB_PLATE_ROLL,
 };
 SoundTestTrack sSoundTestTracks[] = {
-    /*  0 */ { SEQ_ID_OPENING, 22, -1 },
-    /*  1 */ { SEQ_ID_TITLE, 23, -1 },
-    /*  2 */ { SEQ_ID_MENU, 23, -1 },
-    /*  3 */ { SEQ_ID_WORLD_MAP, 280, -1 },
-    /*  4 */ { SEQ_ID_CO_INTRO, 0, -1 },
-    /*  5 */ { SEQ_ID_INTRO_44, 1, -1 },
-    /*  6 */ { SEQ_ID_INTRO_45, 1, -1 },
-    /*  7 */ { SEQ_ID_ME_INTRO, 1, -1 },
-    /*  8 */ { SEQ_ID_INTRO_51, 8, -1 },
-    /*  9 */ { SEQ_ID_CORNERIA | SEQ_FLAG, 0, -1 },
-    /* 10 */ { SEQ_ID_METEO | SEQ_FLAG, 1, -1 },
-    /* 11 */ { SEQ_ID_TITANIA | SEQ_FLAG, 2, -1 },
-    /* 12 */ { SEQ_ID_SECTOR_X | SEQ_FLAG, 3, -1 },
-    /* 13 */ { SEQ_ID_ZONESS | SEQ_FLAG, 4, -1 },
-    /* 14 */ { SEQ_ID_AREA_6 | SEQ_FLAG, 5, -1 },
-    /* 15 */ { SEQ_ID_VENOM_1 | SEQ_FLAG, 6, -1 },
-    /* 16 */ { SEQ_ID_SECTOR_Y | SEQ_FLAG, 7, -1 },
-    /* 17 */ { SEQ_ID_FORTUNA | SEQ_FLAG, 8, -1 },
-    /* 18 */ { SEQ_ID_BOLSE | SEQ_FLAG, 10, -1 },
-    /* 19 */ { SEQ_ID_KATINA | SEQ_FLAG, 11, -1 },
-    /* 20 */ { SEQ_ID_AQUAS, 12, -1 },
-    /* 21 */ { SEQ_ID_WARP_ZONE | SEQ_FLAG, 1, -1 },
-    /* 22 */ { SEQ_ID_KATT, 13, -1 },
-    /* 23 */ { SEQ_ID_BILL, 11, -1 },
-    /* 24 */ { SEQ_ID_CO_BOSS_1 | SEQ_FLAG, 0, -1 },
-    /* 25 */ { SEQ_ID_ME_BOSS | SEQ_FLAG, 1, 0 },
-    /* 26 */ { SEQ_ID_ME_BOSS | SEQ_FLAG, 1, -1 },
-    /* 27 */ { SEQ_ID_BOSS_RESUME | SEQ_FLAG, 7, -1 },
-    /* 28 */ { SEQ_ID_BO_BOSS | SEQ_FLAG, 10, -1 },
-    /* 29 */ { SEQ_ID_STAR_WOLF | SEQ_FLAG, 6, -1 },
-    /* 30 */ { SEQ_ID_GOOD_END, 0, -1 },
-    /* 31 */ { SEQ_ID_BAD_END, 0, -1 },
-    /* 32 */ { SEQ_ID_DEATH, 0, -1 },
-    /* 33 */ { SEQ_ID_GAME_OVER, 25, -1 },
-    /* 34 */ { SEQ_ID_TRAINING | SEQ_FLAG, 28, -1 },
-    /* 35 */ { SEQ_ID_VERSUS | SEQ_FLAG, 784, -1 },
-    /* 36 */ { SEQ_ID_VS_HURRY | SEQ_FLAG, 785, -1 },
-    /* 37 */ { SEQ_ID_VS_MENU, 23, -1 },
-    /* 38 */ { SEQ_ID_TO_ANDROSS | SEQ_FLAG, 6, 0 },
-    /* 39 */ { SEQ_ID_ANDROSS | SEQ_FLAG, 23, -1 },
-    /* 40 */ { SEQ_ID_AND_BOSS | SEQ_FLAG, 6, 0 },
-    /* 41 */ { SEQ_ID_AND_BOSS | SEQ_FLAG, 6, -1 },
-    /* 42 */ { SEQ_ID_AND_BRAIN | SEQ_FLAG, 6, -1 },
-    /* 43 */ { SEQ_ID_VE_CLEAR | SEQ_FLAG, 6, -1 },
-    /* 44 */ { SEQ_ID_ENDING, 27, -1 },
+    /*  0 */ { NA_BGM_OPENING, 22, -1 },
+    /*  1 */ { NA_BGM_TITLE, 23, -1 },
+    /*  2 */ { NA_BGM_SELECT, 23, -1 },
+    /*  3 */ { NA_BGM_MAP, 280, -1 },
+    /*  4 */ { NA_BGM_START_DEMO, 0, -1 },
+    /*  5 */ { NA_BGM_START_DEMO_S, 1, -1 },
+    /*  6 */ { NA_BGM_START_DEMO_M, 1, -1 },
+    /*  7 */ { NA_BGM_ME_START_DEMO, 1, -1 },
+    /*  8 */ { NA_BGM_FO_START_DEMO, 8, -1 },
+    /*  9 */ { NA_BGM_STAGE_CO, 0, -1 },
+    /* 10 */ { NA_BGM_STAGE_ME, 1, -1 },
+    /* 11 */ { NA_BGM_STAGE_TI, 2, -1 },
+    /* 12 */ { NA_BGM_STAGE_SX, 3, -1 },
+    /* 13 */ { NA_BGM_STAGE_ZO, 4, -1 },
+    /* 14 */ { NA_BGM_STAGE_A6, 5, -1 },
+    /* 15 */ { NA_BGM_STAGE_VE1, 6, -1 },
+    /* 16 */ { NA_BGM_STAGE_SY, 7, -1 },
+    /* 17 */ { NA_BGM_STAGE_FO, 8, -1 },
+    /* 18 */ { NA_BGM_STAGE_BO, 10, -1 },
+    /* 19 */ { NA_BGM_STAGE_KA, 11, -1 },
+    /* 20 */ { NA_BGM_STAGE_AQ, 12, -1 },
+    /* 21 */ { NA_BGM_STAGE_WZ, 1, -1 },
+    /* 22 */ { NA_BGM_KATT, 13, -1 },
+    /* 23 */ { NA_BGM_BILL, 11, -1 },
+    /* 24 */ { NA_BGM_BOSS_CO, 0, -1 },
+    /* 25 */ { NA_BGM_BOSS_ME, 1, 0 },
+    /* 26 */ { NA_BGM_BOSS_ME, 1, -1 },
+    /* 27 */ { NA_BGM_REAL_BOSS, 7, -1 },
+    /* 28 */ { NA_BGM_BOSS_BO, 10, -1 },
+    /* 29 */ { NA_BGM_STARWOLF, 6, -1 },
+    /* 30 */ { NA_BGM_COURSE_CLEAR, 0, -1 },
+    /* 31 */ { NA_BGM_COURSE_FAILURE, 0, -1 },
+    /* 32 */ { NA_BGM_PLAYER_DOWN, 0, -1 },
+    /* 33 */ { NA_BGM_GAME_OVER, 25, -1 },
+    /* 34 */ { NA_BGM_TRAINING, 28, -1 },
+    /* 35 */ { NA_BGM_BATTLE, 784, -1 },
+    /* 36 */ { NA_BGM_BATTLE_LAST, 785, -1 },
+    /* 37 */ { NA_BGM_VS_SELECT, 23, -1 },
+    /* 38 */ { NA_BGM_DASH_INTO_BASE, 6, 0 },
+    /* 39 */ { NA_BGM_STAGE_ANDROSS, 23, -1 },
+    /* 40 */ { NA_BGM_BOSS_ANDROSS, 6, 0 },
+    /* 41 */ { NA_BGM_BOSS_ANDROSS, 6, -1 },
+    /* 42 */ { NA_BGM_ANDROSS_BRAIN, 6, -1 },
+    /* 43 */ { NA_BGM_ALL_CLEAR, 6, -1 },
+    /* 44 */ { NA_BGM_STAFF_ROLL, 27, -1 },
 };
 
 PlaylistCmd sPlaylists[][100] = {
     {
-        { 0, 0, SEQ_ID_CO_INTRO, 0, 255, 1620 },
-        { 0, 0, SEQ_ID_CORNERIA | SEQ_FLAG, 0, 255, 2490 },
-        { 1, 0, SEQ_ID_CORNERIA | SEQ_FLAG, 50, 255, 50 },
-        { 0, 0, SEQ_ID_CO_BOSS_1 | SEQ_FLAG, 0, 255, 1600 },
-        { 1, 0, SEQ_ID_CO_BOSS_1 | SEQ_FLAG, 1, 255, 50 },
-        { 0, 0, SEQ_ID_GOOD_END, 0, 255, 1091 },
-        { 1, 0, SEQ_ID_GOOD_END, 100, 255, 100 },
-        { 0, 0, SEQ_ID_ME_INTRO, 0, 255, 838 },
-        { 0, 0, SEQ_ID_METEO | SEQ_FLAG, 0, 255, 1584 },
-        { 1, 0, SEQ_ID_METEO | SEQ_FLAG, 50, 255, 50 },
-        { 0, 0, SEQ_ID_ME_BOSS | SEQ_FLAG, 0, 0, 1620 },
-        { 1, 0, SEQ_ID_ME_BOSS | SEQ_FLAG, 1, 255, 50 },
-        { 0, 0, SEQ_ID_BOSS_RESUME | SEQ_FLAG, 0, 255, 1620 },
-        { 1, 0, SEQ_ID_BOSS_RESUME | SEQ_FLAG, 1, 255, 50 },
-        { 0, 0, SEQ_ID_GOOD_END, 0, 255, 1091 },
-        { 1, 0, SEQ_ID_GOOD_END, 100, 255, 100 },
-        { 0, 0, SEQ_ID_INTRO_51, 0, 255, 241 },
-        { 0, 0, SEQ_ID_FORTUNA | SEQ_FLAG, 0, 255, 1632 },
-        { 1, 0, SEQ_ID_FORTUNA | SEQ_FLAG, 100, 255, 100 },
-        { 0, 0, SEQ_ID_STAR_WOLF | SEQ_FLAG, 0, 255, 2120 },
-        { 0, 0, SEQ_ID_FORTUNA | SEQ_FLAG, 0, 0, 450 },
-        { 1, 0, SEQ_ID_FORTUNA | SEQ_FLAG, 50, 255, 200 },
-        { 0, 0, SEQ_ID_BAD_END, 0, 255, 1604 },
-        { 1, 0, SEQ_ID_BAD_END, 100, 255, 100 },
-        { 0, 0, SEQ_ID_INTRO_44, 0, 255, 242 },
-        { 0, 0, SEQ_ID_SECTOR_X | SEQ_FLAG, 0, 255, 2291 },
-        { 1, 0, SEQ_ID_SECTOR_X | SEQ_FLAG, 50, 255, 100 },
-        { 0, 0, SEQ_ID_SX_BOSS | SEQ_FLAG, 0, 255, 1600 },
-        { 1, 0, SEQ_ID_SX_BOSS | SEQ_FLAG, 1, 255, 50 },
-        { 2, 0, SEQ_ID_SX_BOSS | SEQ_FLAG, 0, 255, 1600 },
-        { 1, 0, SEQ_ID_SX_BOSS | SEQ_FLAG, 1, 255, 50 },
-        { 0, 0, SEQ_ID_GOOD_END, 0, 255, 1091 },
-        { 1, 0, SEQ_ID_GOOD_END, 100, 255, 100 },
-        { 0, 0, SEQ_ID_INTRO_45, 0, 255, 542 },
-        { 0, 0, SEQ_ID_TITANIA | SEQ_FLAG, 0, 255, 1920 },
-        { 1, 0, SEQ_ID_TITANIA | SEQ_FLAG, 50, 255, 50 },
-        { 0, 0, SEQ_ID_TI_BOSS | SEQ_FLAG, 0, 255, 1600 },
-        { 1, 0, SEQ_ID_TI_BOSS | SEQ_FLAG, 1, 255, 50 },
-        { 0, 0, SEQ_ID_GOOD_END, 0, 255, 1091 },
-        { 1, 0, SEQ_ID_GOOD_END, 100, 255, 100 },
-        { 0, 0, SEQ_ID_INTRO_51, 0, 255, 241 },
-        { 0, 0, SEQ_ID_BOLSE | SEQ_FLAG, 0, 255, 1177 },
-        { 1, 0, SEQ_ID_BOLSE | SEQ_FLAG, 100, 255, 100 },
-        { 0, 0, SEQ_ID_BO_BOSS | SEQ_FLAG, 0, 255, 1115 },
-        { 1, 0, SEQ_ID_BO_BOSS | SEQ_FLAG, 50, 255, 50 },
-        { 0, 0, SEQ_ID_STAR_WOLF | SEQ_FLAG, 0, 255, 2120 },
-        { 1, 0, SEQ_ID_STAR_WOLF | SEQ_FLAG, 1, 255, 50 },
-        { 0, 0, SEQ_ID_DEATH, 0, 255, 150 },
-        { 0, 0, SEQ_ID_GAME_OVER, 0, 255, 1020 },
-        { 1, 0, SEQ_ID_GAME_OVER, 100, 255, 100 },
-        { 255, 0, SEQ_ID_CORNERIA | SEQ_FLAG, 50, 255, 50 },
+        { 0, 0, NA_BGM_START_DEMO, 0, 255, 1620 },     { 0, 0, NA_BGM_STAGE_CO, 0, 255, 2490 },
+        { 1, 0, NA_BGM_STAGE_CO, 50, 255, 50 },        { 0, 0, NA_BGM_BOSS_CO, 0, 255, 1600 },
+        { 1, 0, NA_BGM_BOSS_CO, 1, 255, 50 },          { 0, 0, NA_BGM_COURSE_CLEAR, 0, 255, 1091 },
+        { 1, 0, NA_BGM_COURSE_CLEAR, 100, 255, 100 },  { 0, 0, NA_BGM_ME_START_DEMO, 0, 255, 838 },
+        { 0, 0, NA_BGM_STAGE_ME, 0, 255, 1584 },       { 1, 0, NA_BGM_STAGE_ME, 50, 255, 50 },
+        { 0, 0, NA_BGM_BOSS_ME, 0, 0, 1620 },          { 1, 0, NA_BGM_BOSS_ME, 1, 255, 50 },
+        { 0, 0, NA_BGM_REAL_BOSS, 0, 255, 1620 },      { 1, 0, NA_BGM_REAL_BOSS, 1, 255, 50 },
+        { 0, 0, NA_BGM_COURSE_CLEAR, 0, 255, 1091 },   { 1, 0, NA_BGM_COURSE_CLEAR, 100, 255, 100 },
+        { 0, 0, NA_BGM_FO_START_DEMO, 0, 255, 241 },   { 0, 0, NA_BGM_STAGE_FO, 0, 255, 1632 },
+        { 1, 0, NA_BGM_STAGE_FO, 100, 255, 100 },      { 0, 0, NA_BGM_STARWOLF, 0, 255, 2120 },
+        { 0, 0, NA_BGM_STAGE_FO, 0, 0, 450 },          { 1, 0, NA_BGM_STAGE_FO, 50, 255, 200 },
+        { 0, 0, NA_BGM_COURSE_FAILURE, 0, 255, 1604 }, { 1, 0, NA_BGM_COURSE_FAILURE, 100, 255, 100 },
+        { 0, 0, NA_BGM_START_DEMO_S, 0, 255, 242 },    { 0, 0, NA_BGM_STAGE_SX, 0, 255, 2291 },
+        { 1, 0, NA_BGM_STAGE_SX, 50, 255, 100 },       { 0, 0, NA_BGM_BOSS_SX, 0, 255, 1600 },
+        { 1, 0, NA_BGM_BOSS_SX, 1, 255, 50 },          { 2, 0, NA_BGM_BOSS_SX, 0, 255, 1600 },
+        { 1, 0, NA_BGM_BOSS_SX, 1, 255, 50 },          { 0, 0, NA_BGM_COURSE_CLEAR, 0, 255, 1091 },
+        { 1, 0, NA_BGM_COURSE_CLEAR, 100, 255, 100 },  { 0, 0, NA_BGM_START_DEMO_M, 0, 255, 542 },
+        { 0, 0, NA_BGM_STAGE_TI, 0, 255, 1920 },       { 1, 0, NA_BGM_STAGE_TI, 50, 255, 50 },
+        { 0, 0, NA_BGM_BOSS_TI, 0, 255, 1600 },        { 1, 0, NA_BGM_BOSS_TI, 1, 255, 50 },
+        { 0, 0, NA_BGM_COURSE_CLEAR, 0, 255, 1091 },   { 1, 0, NA_BGM_COURSE_CLEAR, 100, 255, 100 },
+        { 0, 0, NA_BGM_BO_START_DEMO, 0, 255, 241 },   { 0, 0, NA_BGM_STAGE_BO, 0, 255, 1177 },
+        { 1, 0, NA_BGM_STAGE_BO, 100, 255, 100 },      { 0, 0, NA_BGM_BOSS_BO, 0, 255, 1115 },
+        { 1, 0, NA_BGM_BOSS_BO, 50, 255, 50 },         { 0, 0, NA_BGM_STARWOLF, 0, 255, 2120 },
+        { 1, 0, NA_BGM_STARWOLF, 1, 255, 50 },         { 0, 0, NA_BGM_PLAYER_DOWN, 0, 255, 150 },
+        { 0, 0, NA_BGM_GAME_OVER, 0, 255, 1020 },      { 1, 0, NA_BGM_GAME_OVER, 100, 255, 100 },
+        { 255, 0, NA_BGM_STAGE_CO, 50, 255, 50 },
     },
     {
-        { 0, 0, SEQ_ID_CO_INTRO, 0, 255, 1620 },
-        { 0, 0, SEQ_ID_CORNERIA | SEQ_FLAG, 0, 255, 2490 },
-        { 1, 0, SEQ_ID_CORNERIA | SEQ_FLAG, 50, 255, 50 },
-        { 0, 0, SEQ_ID_CO_BOSS_2 | SEQ_FLAG, 0, 255, 1620 },
-        { 1, 0, SEQ_ID_CO_BOSS_2 | SEQ_FLAG, 1, 255, 50 },
-        { 0, 0, SEQ_ID_GOOD_END, 0, 255, 1091 },
-        { 1, 0, SEQ_ID_GOOD_END, 100, 255, 100 },
-        { 0, 0, SEQ_ID_INTRO_44, 0, 255, 242 },
-        { 0, 0, SEQ_ID_SECTOR_Y | SEQ_FLAG, 0, 255, 2096 },
-        { 1, 0, SEQ_ID_SECTOR_Y | SEQ_FLAG, 50, 255, 50 },
-        { 0, 0, SEQ_ID_SY_BOSS | SEQ_FLAG, 0, 2, 1600 },
-        { 1, 0, SEQ_ID_SY_BOSS | SEQ_FLAG, 1, 255, 50 },
-        { 0, 0, SEQ_ID_BOSS_RESUME | SEQ_FLAG, 0, 255, 1600 },
-        { 1, 0, SEQ_ID_BOSS_RESUME | SEQ_FLAG, 1, 255, 50 },
-        { 0, 0, SEQ_ID_GOOD_END, 0, 255, 1091 },
-        { 1, 0, SEQ_ID_GOOD_END, 100, 255, 100 },
-        { 0, 0, SEQ_ID_INTRO_51, 0, 255, 241 },
-        { 0, 0, SEQ_ID_KATINA | SEQ_FLAG, 0, 255, 2184 },
-        { 1, 0, SEQ_ID_KATINA | SEQ_FLAG, 1, 255, 100 },
-        { 0, 0, SEQ_ID_KA_BOSS | SEQ_FLAG, 0, 1, 1115 },
-        { 1, 0, SEQ_ID_KA_BOSS | SEQ_FLAG, 50, 255, 100 },
-        { 0, 0, SEQ_ID_GOOD_END, 0, 255, 1091 },
-        { 1, 0, SEQ_ID_GOOD_END, 100, 255, 100 },
-        { 0, 0, SEQ_ID_INTRO_51, 0, 255, 250 },
-        { 0, 0, SEQ_ID_SOLAR | SEQ_FLAG, 0, 255, 1096 },
-        { 3, 0, SEQ_ID_BILL, 0, 255, 1000 },
-        { 1, 0, SEQ_ID_SOLAR | SEQ_FLAG, 50, 255, 50 },
-        { 0, 0, SEQ_ID_SO_BOSS | SEQ_FLAG, 0, 255, 1600 },
-        { 1, 0, SEQ_ID_SO_BOSS | SEQ_FLAG, 1, 255, 50 },
-        { 0, 0, SEQ_ID_GOOD_END, 0, 255, 1091 },
-        { 1, 0, SEQ_ID_GOOD_END, 100, 255, 100 },
-        { 0, 0, SEQ_ID_INTRO_44, 0, 255, 260 },
-        { 0, 0, SEQ_ID_MACBETH | SEQ_FLAG, 0, 255, 1920 },
-        { 1, 0, SEQ_ID_MACBETH | SEQ_FLAG, 50, 255, 50 },
-        { 0, 0, SEQ_ID_MA_BOSS | SEQ_FLAG, 0, 255, 1600 },
-        { 1, 0, SEQ_ID_MA_BOSS | SEQ_FLAG, 1, 255, 50 },
-        { 0, 0, SEQ_ID_GOOD_END, 0, 255, 1091 },
-        { 1, 0, SEQ_ID_GOOD_END, 100, 255, 100 },
-        { 0, 0, SEQ_ID_INTRO_51, 0, 255, 241 },
-        { 0, 0, SEQ_ID_BOLSE | SEQ_FLAG, 0, 255, 1177 },
-        { 1, 0, SEQ_ID_BOLSE | SEQ_FLAG, 100, 255, 100 },
-        { 0, 0, SEQ_ID_BO_BOSS | SEQ_FLAG, 0, 255, 1115 },
-        { 1, 0, SEQ_ID_BO_BOSS | SEQ_FLAG, 50, 255, 50 },
-        { 0, 0, SEQ_ID_STAR_WOLF | SEQ_FLAG, 0, 255, 2120 },
-        { 1, 0, SEQ_ID_STAR_WOLF | SEQ_FLAG, 1, 255, 50 },
-        { 0, 0, SEQ_ID_GOOD_END, 0, 255, 1091 },
-        { 1, 0, SEQ_ID_GOOD_END, 100, 255, 100 },
-        { 0, 0, SEQ_ID_VENOM_1 | SEQ_FLAG, 0, 255, 1671 },
-        { 1, 0, SEQ_ID_VENOM_1 | SEQ_FLAG, 50, 255, 50 },
-        { 0, 0, SEQ_ID_VE_BOSS | SEQ_FLAG, 0, 255, 1600 },
-        { 1, 0, SEQ_ID_VE_BOSS | SEQ_FLAG, 1, 255, 50 },
-        { 0, 0, SEQ_ID_TO_ANDROSS | SEQ_FLAG, 0, 0, 176 },
-        { 0, 0, SEQ_ID_ANDROSS | SEQ_FLAG, 0, 255, 588 },
-        { 0, 0, SEQ_ID_AND_BOSS | SEQ_FLAG, 0, 0, 2420 },
-        { 1, 0, SEQ_ID_AND_BOSS | SEQ_FLAG, 10, 255, 50 },
-        { 0, 0, SEQ_ID_AND_BOSS | SEQ_FLAG, 0, 255, 1200 },
-        { 1, 0, SEQ_ID_AND_BOSS | SEQ_FLAG, 1, 255, 150 },
-        { 0, 0, SEQ_ID_VE_CLEAR | SEQ_FLAG, 0, 255, 1091 },
-        { 1, 0, SEQ_ID_VE_CLEAR | SEQ_FLAG, 80, 255, 160 },
-        { 0, 0, SEQ_ID_ENDING, 0, 255, 9500 },
-        { 255, 0, SEQ_ID_CORNERIA | SEQ_FLAG, 50, 255, 50 },
+        { 0, 0, NA_BGM_START_DEMO, 0, 255, 1620 },
+        { 0, 0, NA_BGM_STAGE_CO, 0, 255, 2490 },
+        { 1, 0, NA_BGM_STAGE_CO, 50, 255, 50 },
+        { 0, 0, NA_BGM_BOSS_A_CARRIER, 0, 255, 1620 },
+        { 1, 0, NA_BGM_BOSS_A_CARRIER, 1, 255, 50 },
+        { 0, 0, NA_BGM_COURSE_CLEAR, 0, 255, 1091 },
+        { 1, 0, NA_BGM_COURSE_CLEAR, 100, 255, 100 },
+        { 0, 0, NA_BGM_START_DEMO_S, 0, 255, 242 },
+        { 0, 0, NA_BGM_STAGE_SY, 0, 255, 2096 },
+        { 1, 0, NA_BGM_STAGE_SY, 50, 255, 50 },
+        { 0, 0, NA_BGM_BOSS_SY, 0, 2, 1600 },
+        { 1, 0, NA_BGM_BOSS_SY, 1, 255, 50 },
+        { 0, 0, NA_BGM_REAL_BOSS, 0, 255, 1600 },
+        { 1, 0, NA_BGM_REAL_BOSS, 1, 255, 50 },
+        { 0, 0, NA_BGM_COURSE_CLEAR, 0, 255, 1091 },
+        { 1, 0, NA_BGM_COURSE_CLEAR, 100, 255, 100 },
+        { 0, 0, NA_BGM_KA_START_DEMO, 0, 255, 241 },
+        { 0, 0, NA_BGM_STAGE_KA, 0, 255, 2184 },
+        { 1, 0, NA_BGM_STAGE_KA, 1, 255, 100 },
+        { 0, 0, NA_BGM_BOSS_KA, 0, 1, 1115 },
+        { 1, 0, NA_BGM_BOSS_KA, 50, 255, 100 },
+        { 0, 0, NA_BGM_COURSE_CLEAR, 0, 255, 1091 },
+        { 1, 0, NA_BGM_COURSE_CLEAR, 100, 255, 100 },
+        { 0, 0, NA_BGM_SO_START_DEMO, 0, 255, 250 },
+        { 0, 0, NA_BGM_STAGE_SO, 0, 255, 1096 },
+        { 3, 0, NA_BGM_BILL, 0, 255, 1000 },
+        { 1, 0, NA_BGM_STAGE_SO, 50, 255, 50 },
+        { 0, 0, NA_BGM_BOSS_SO, 0, 255, 1600 },
+        { 1, 0, NA_BGM_BOSS_SO, 1, 255, 50 },
+        { 0, 0, NA_BGM_COURSE_CLEAR, 0, 255, 1091 },
+        { 1, 0, NA_BGM_COURSE_CLEAR, 100, 255, 100 },
+        { 0, 0, NA_BGM_START_DEMO_S, 0, 255, 260 },
+        { 0, 0, NA_BGM_STAGE_MA, 0, 255, 1920 },
+        { 1, 0, NA_BGM_STAGE_MA, 50, 255, 50 },
+        { 0, 0, NA_BGM_BOSS_MA, 0, 255, 1600 },
+        { 1, 0, NA_BGM_BOSS_MA, 1, 255, 50 },
+        { 0, 0, NA_BGM_COURSE_CLEAR, 0, 255, 1091 },
+        { 1, 0, NA_BGM_COURSE_CLEAR, 100, 255, 100 },
+        { 0, 0, NA_BGM_BO_START_DEMO, 0, 255, 241 },
+        { 0, 0, NA_BGM_STAGE_BO, 0, 255, 1177 },
+        { 1, 0, NA_BGM_STAGE_BO, 100, 255, 100 },
+        { 0, 0, NA_BGM_BOSS_BO, 0, 255, 1115 },
+        { 1, 0, NA_BGM_BOSS_BO, 50, 255, 50 },
+        { 0, 0, NA_BGM_STARWOLF, 0, 255, 2120 },
+        { 1, 0, NA_BGM_STARWOLF, 1, 255, 50 },
+        { 0, 0, NA_BGM_COURSE_CLEAR, 0, 255, 1091 },
+        { 1, 0, NA_BGM_COURSE_CLEAR, 100, 255, 100 },
+        { 0, 0, NA_BGM_STAGE_VE1, 0, 255, 1671 },
+        { 1, 0, NA_BGM_STAGE_VE1, 50, 255, 50 },
+        { 0, 0, NA_BGM_BOSS_VE, 0, 255, 1600 },
+        { 1, 0, NA_BGM_BOSS_VE, 1, 255, 50 },
+        { 0, 0, NA_BGM_DASH_INTO_BASE, 0, 0, 176 },
+        { 0, 0, NA_BGM_STAGE_ANDROSS, 0, 255, 588 },
+        { 0, 0, NA_BGM_BOSS_ANDROSS, 0, 0, 2420 },
+        { 1, 0, NA_BGM_BOSS_ANDROSS, 10, 255, 50 },
+        { 0, 0, NA_BGM_BOSS_ANDROSS, 0, 255, 1200 },
+        { 1, 0, NA_BGM_BOSS_ANDROSS, 1, 255, 150 },
+        { 0, 0, NA_BGM_ALL_CLEAR, 0, 255, 1091 },
+        { 1, 0, NA_BGM_ALL_CLEAR, 80, 255, 160 },
+        { 0, 0, NA_BGM_STAFF_ROLL, 0, 255, 9500 },
+        { 255, 0, NA_BGM_STAGE_CO, 50, 255, 50 },
         { 0 },
         { 0 },
         { 0 },
@@ -321,202 +305,152 @@ PlaylistCmd sPlaylists[][100] = {
         { 0 },
     },
     {
-        { 0, 0, SEQ_ID_CO_INTRO, 0, 255, 1620 },
-        { 0, 0, SEQ_ID_CORNERIA | SEQ_FLAG, 0, 255, 2490 },
-        { 1, 0, SEQ_ID_CORNERIA | SEQ_FLAG, 50, 255, 50 },
-        { 0, 0, SEQ_ID_CO_BOSS_2 | SEQ_FLAG, 0, 255, 1620 },
-        { 1, 0, SEQ_ID_CO_BOSS_2 | SEQ_FLAG, 1, 255, 50 },
-        { 0, 0, SEQ_ID_GOOD_END, 0, 255, 1091 },
-        { 1, 0, SEQ_ID_GOOD_END, 100, 255, 100 },
-        { 0, 0, SEQ_ID_INTRO_44, 0, 255, 260 },
-        { 0, 0, SEQ_ID_SECTOR_Y | SEQ_FLAG, 0, 255, 2096 },
-        { 1, 0, SEQ_ID_SECTOR_Y | SEQ_FLAG, 50, 255, 50 },
-        { 0, 0, SEQ_ID_SY_BOSS | SEQ_FLAG, 0, 2, 1590 },
-        { 1, 0, SEQ_ID_SY_BOSS | SEQ_FLAG, 1, 255, 50 },
-        { 0, 0, SEQ_ID_BOSS_RESUME | SEQ_FLAG, 0, 255, 1600 },
-        { 1, 0, SEQ_ID_BOSS_RESUME | SEQ_FLAG, 1, 255, 50 },
-        { 0, 0, SEQ_ID_GOOD_END, 0, 255, 1091 },
-        { 1, 0, SEQ_ID_GOOD_END, 100, 255, 100 },
-        { 0, 0, SEQ_ID_INTRO_44, 0, 255, 260 },
-        { 0, 0, SEQ_ID_AQUAS, 0, 255, 2400 },
-        { 1, 0, SEQ_ID_AQUAS, 150, 255, 200 },
-        { 0, 0, SEQ_ID_AQ_BOSS | SEQ_FLAG, 0, 1, 1590 },
-        { 1, 0, SEQ_ID_AQ_BOSS | SEQ_FLAG, 1, 255, 50 },
-        { 0, 0, SEQ_ID_GOOD_END, 0, 255, 1091 },
-        { 1, 0, SEQ_ID_GOOD_END, 100, 255, 100 },
-        { 0, 0, SEQ_ID_INTRO_44, 0, 255, 260 },
-        { 0, 0, SEQ_ID_ZONESS | SEQ_FLAG, 0, 255, 1005 },
-        { 3, 0, SEQ_ID_KATT, 0, 255, 1000 },
-        { 1, 0, SEQ_ID_ZONESS | SEQ_FLAG, 50, 255, 100 },
-        { 0, 0, SEQ_ID_ZO_BOSS | SEQ_FLAG, 0, 255, 1600 },
-        { 1, 0, SEQ_ID_ZO_BOSS | SEQ_FLAG, 1, 255, 50 },
-        { 0, 0, SEQ_ID_GOOD_END, 0, 255, 1091 },
-        { 1, 0, SEQ_ID_GOOD_END, 100, 255, 100 },
-        { 0, 0, SEQ_ID_INTRO_51, 0, 255, 241 },
-        { 0, 0, SEQ_ID_SECTOR_Z | SEQ_FLAG, 0, 255, 1632 },
-        { 1, 0, SEQ_ID_SECTOR_Z | SEQ_FLAG, 50, 255, 100 },
-        { 0, 0, SEQ_ID_SZ_BOSS | SEQ_FLAG, 0, 1, 1310 },
-        { 3, 0, SEQ_ID_KATT, 0, 255, 500 },
-        { 1, 0, SEQ_ID_SZ_BOSS | SEQ_FLAG, 1, 255, 50 },
-        { 0, 0, SEQ_ID_GOOD_END, 0, 255, 1091 },
-        { 1, 0, SEQ_ID_GOOD_END, 100, 255, 100 },
-        { 0, 0, SEQ_ID_INTRO_51, 0, 255, 241 },
-        { 0, 0, SEQ_ID_AREA_6 | SEQ_FLAG, 0, 255, 1906 },
-        { 1, 0, SEQ_ID_AREA_6 | SEQ_FLAG, 50, 255, 100 },
-        { 0, 0, SEQ_ID_A6_BOSS | SEQ_FLAG, 0, 1, 1590 },
-        { 1, 0, SEQ_ID_A6_BOSS | SEQ_FLAG, 1, 255, 50 },
-        { 0, 0, SEQ_ID_GOOD_END, 0, 255, 1091 },
-        { 1, 0, SEQ_ID_GOOD_END, 100, 255, 100 },
-        { 0, 0, SEQ_ID_STAR_WOLF | SEQ_FLAG, 0, 255, 2120 },
-        { 1, 0, SEQ_ID_STAR_WOLF | SEQ_FLAG, 30, 255, 150 },
-        { 0, 0, SEQ_ID_TO_ANDROSS | SEQ_FLAG, 0, 0, 176 },
-        { 0, 0, SEQ_ID_ANDROSS | SEQ_FLAG, 0, 255, 588 },
-        { 0, 0, SEQ_ID_AND_BOSS | SEQ_FLAG, 0, 0, 2392 },
-        { 1, 0, SEQ_ID_AND_BOSS | SEQ_FLAG, 10, 255, 50 },
-        { 0, 0, SEQ_ID_AND_BRAIN | SEQ_FLAG, 0, 255, 1700 },
-        { 1, 0, SEQ_ID_AND_BOSS | SEQ_FLAG, 10, 255, 250 },
-        { 0, 0, SEQ_ID_A6_BOSS | SEQ_FLAG, 0, 255, 1600 },
-        { 1, 0, SEQ_ID_A6_BOSS | SEQ_FLAG, 1, 255, 50 },
-        { 0, 0, SEQ_ID_VE_CLEAR | SEQ_FLAG, 0, 255, 1091 },
-        { 1, 0, SEQ_ID_VE_CLEAR | SEQ_FLAG, 80, 255, 160 },
-        { 0, 0, SEQ_ID_ENDING, 0, 255, 9250 },
-        { 255, 0, SEQ_ID_CORNERIA | SEQ_FLAG, 50, 255, 50 },
+        { 0, 0, NA_BGM_START_DEMO, 0, 255, 1620 },    { 0, 0, NA_BGM_STAGE_CO, 0, 255, 2490 },
+        { 1, 0, NA_BGM_STAGE_CO, 50, 255, 50 },       { 0, 0, NA_BGM_BOSS_A_CARRIER, 0, 255, 1620 },
+        { 1, 0, NA_BGM_BOSS_A_CARRIER, 1, 255, 50 },  { 0, 0, NA_BGM_COURSE_CLEAR, 0, 255, 1091 },
+        { 1, 0, NA_BGM_COURSE_CLEAR, 100, 255, 100 }, { 0, 0, NA_BGM_START_DEMO_S, 0, 255, 260 },
+        { 0, 0, NA_BGM_STAGE_SY, 0, 255, 2096 },      { 1, 0, NA_BGM_STAGE_SY, 50, 255, 50 },
+        { 0, 0, NA_BGM_BOSS_SY, 0, 2, 1590 },         { 1, 0, NA_BGM_BOSS_SY, 1, 255, 50 },
+        { 0, 0, NA_BGM_REAL_BOSS, 0, 255, 1600 },     { 1, 0, NA_BGM_REAL_BOSS, 1, 255, 50 },
+        { 0, 0, NA_BGM_COURSE_CLEAR, 0, 255, 1091 },  { 1, 0, NA_BGM_COURSE_CLEAR, 100, 255, 100 },
+        { 0, 0, NA_BGM_START_DEMO_S, 0, 255, 260 },   { 0, 0, NA_BGM_STAGE_AQ, 0, 255, 2400 },
+        { 1, 0, NA_BGM_STAGE_AQ, 150, 255, 200 },     { 0, 0, NA_BGM_BOSS_AQ, 0, 1, 1590 },
+        { 1, 0, NA_BGM_BOSS_AQ, 1, 255, 50 },         { 0, 0, NA_BGM_COURSE_CLEAR, 0, 255, 1091 },
+        { 1, 0, NA_BGM_COURSE_CLEAR, 100, 255, 100 }, { 0, 0, NA_BGM_START_DEMO_S, 0, 255, 260 },
+        { 0, 0, NA_BGM_STAGE_ZO, 0, 255, 1005 },      { 3, 0, NA_BGM_KATT, 0, 255, 1000 },
+        { 1, 0, NA_BGM_STAGE_ZO, 50, 255, 100 },      { 0, 0, NA_BGM_BOSS_ZO, 0, 255, 1600 },
+        { 1, 0, NA_BGM_BOSS_ZO, 1, 255, 50 },         { 0, 0, NA_BGM_COURSE_CLEAR, 0, 255, 1091 },
+        { 1, 0, NA_BGM_COURSE_CLEAR, 100, 255, 100 }, { 0, 0, NA_BGM_SZ_START_DEMO, 0, 255, 241 },
+        { 0, 0, NA_BGM_STAGE_SZ, 0, 255, 1632 },      { 1, 0, NA_BGM_STAGE_SZ, 50, 255, 100 },
+        { 0, 0, NA_BGM_BOSS_SZ, 0, 1, 1310 },         { 3, 0, NA_BGM_KATT, 0, 255, 500 },
+        { 1, 0, NA_BGM_BOSS_SZ, 1, 255, 50 },         { 0, 0, NA_BGM_COURSE_CLEAR, 0, 255, 1091 },
+        { 1, 0, NA_BGM_COURSE_CLEAR, 100, 255, 100 }, { 0, 0, NA_BGM_A6_START_DEMO, 0, 255, 241 },
+        { 0, 0, NA_BGM_STAGE_A6, 0, 255, 1906 },      { 1, 0, NA_BGM_STAGE_A6, 50, 255, 100 },
+        { 0, 0, NA_BGM_BOSS_A6, 0, 1, 1590 },         { 1, 0, NA_BGM_BOSS_A6, 1, 255, 50 },
+        { 0, 0, NA_BGM_COURSE_CLEAR, 0, 255, 1091 },  { 1, 0, NA_BGM_COURSE_CLEAR, 100, 255, 100 },
+        { 0, 0, NA_BGM_STARWOLF, 0, 255, 2120 },      { 1, 0, NA_BGM_STARWOLF, 30, 255, 150 },
+        { 0, 0, NA_BGM_DASH_INTO_BASE, 0, 0, 176 },   { 0, 0, NA_BGM_STAGE_ANDROSS, 0, 255, 588 },
+        { 0, 0, NA_BGM_BOSS_ANDROSS, 0, 0, 2392 },    { 1, 0, NA_BGM_BOSS_ANDROSS, 10, 255, 50 },
+        { 0, 0, NA_BGM_ANDROSS_BRAIN, 0, 255, 1700 }, { 1, 0, NA_BGM_BOSS_ANDROSS, 10, 255, 250 },
+        { 0, 0, NA_BGM_BOSS_A6, 0, 255, 1600 },       { 1, 0, NA_BGM_BOSS_A6, 1, 255, 50 },
+        { 0, 0, NA_BGM_ALL_CLEAR, 0, 255, 1091 },     { 1, 0, NA_BGM_ALL_CLEAR, 80, 255, 160 },
+        { 0, 0, NA_BGM_STAFF_ROLL, 0, 255, 9250 },    { 255, 0, NA_BGM_STAGE_CO, 50, 255, 50 },
     },
     {
-        { 0, 0, SEQ_ID_CO_INTRO, 0, 255, 1620 },
-        { 0, 0, SEQ_ID_CORNERIA | SEQ_FLAG, 0, 255, 2490 },
-        { 1, 0, SEQ_ID_CORNERIA | SEQ_FLAG, 50, 255, 50 },
-        { 0, 0, SEQ_ID_CO_BOSS_1 | SEQ_FLAG, 0, 255, 1600 },
-        { 1, 0, SEQ_ID_CO_BOSS_1 | SEQ_FLAG, 1, 255, 50 },
-        { 0, 0, SEQ_ID_GOOD_END, 0, 255, 1091 },
-        { 1, 0, SEQ_ID_GOOD_END, 100, 255, 100 },
-        { 0, 0, SEQ_ID_ME_INTRO, 0, 255, 838 },
-        { 0, 0, SEQ_ID_METEO | SEQ_FLAG, 0, 255, 1584 },
-        { 1, 0, SEQ_ID_METEO | SEQ_FLAG, 150, 255, 150 },
-        { 0, 0, SEQ_ID_WARP_ZONE | SEQ_FLAG, 0, 255, 1635 },
-        { 1, 0, SEQ_ID_WARP_ZONE | SEQ_FLAG, 150, 255, 150 },
-        { 0, 0, SEQ_ID_INTRO_51, 0, 255, 241 },
-        { 0, 0, SEQ_ID_KATINA | SEQ_FLAG, 0, 255, 2184 },
-        { 1, 0, SEQ_ID_KATINA | SEQ_FLAG, 1, 255, 100 },
-        { 0, 0, SEQ_ID_KA_BOSS | SEQ_FLAG, 0, 1, 1115 },
-        { 1, 0, SEQ_ID_KA_BOSS | SEQ_FLAG, 50, 255, 100 },
-        { 0, 0, SEQ_ID_BAD_END, 0, 255, 1604 },
-        { 1, 0, SEQ_ID_BAD_END, 100, 255, 100 },
-        { 0, 0, SEQ_ID_INTRO_44, 0, 255, 242 },
-        { 0, 0, SEQ_ID_SECTOR_X | SEQ_FLAG, 0, 255, 1291 },
-        { 3, 0, SEQ_ID_BILL, 0, 255, 1000 },
-        { 1, 0, SEQ_ID_SECTOR_X | SEQ_FLAG, 50, 255, 100 },
-        { 0, 0, SEQ_ID_WARP_ZONE | SEQ_FLAG, 0, 255, 1635 },
-        { 1, 0, SEQ_ID_WARP_ZONE | SEQ_FLAG, 150, 255, 150 },
-        { 0, 0, SEQ_ID_INTRO_51, 0, 255, 241 },
-        { 0, 0, SEQ_ID_SECTOR_Z | SEQ_FLAG, 0, 255, 1632 },
-        { 1, 0, SEQ_ID_SECTOR_Z | SEQ_FLAG, 50, 255, 100 },
-        { 0, 0, SEQ_ID_SZ_BOSS | SEQ_FLAG, 0, 1, 1115 },
-        { 1, 0, SEQ_ID_SZ_BOSS | SEQ_FLAG, 1, 255, 50 },
-        { 0, 0, SEQ_ID_GOOD_END, 0, 255, 1091 },
-        { 1, 0, SEQ_ID_GOOD_END, 100, 255, 100 },
-        { 0, 0, SEQ_ID_INTRO_51, 0, 255, 241 },
-        { 0, 0, SEQ_ID_AREA_6 | SEQ_FLAG, 0, 255, 1906 },
-        { 1, 0, SEQ_ID_AREA_6 | SEQ_FLAG, 50, 255, 100 },
-        { 0, 0, SEQ_ID_A6_BOSS | SEQ_FLAG, 0, 1, 1590 },
-        { 1, 0, SEQ_ID_A6_BOSS | SEQ_FLAG, 1, 255, 50 },
-        { 0, 0, SEQ_ID_DEATH, 0, 255, 150 },
-        { 0, 0, SEQ_ID_GAME_OVER, 0, 255, 1020 },
-        { 1, 0, SEQ_ID_GAME_OVER, 100, 255, 100 },
-        { 255, 0, SEQ_ID_CORNERIA | SEQ_FLAG, 50, 255, 50 },
+        { 0, 0, NA_BGM_START_DEMO, 0, 255, 1620 },      { 0, 0, NA_BGM_STAGE_CO, 0, 255, 2490 },
+        { 1, 0, NA_BGM_STAGE_CO, 50, 255, 50 },         { 0, 0, NA_BGM_BOSS_CO, 0, 255, 1600 },
+        { 1, 0, NA_BGM_BOSS_CO, 1, 255, 50 },           { 0, 0, NA_BGM_COURSE_CLEAR, 0, 255, 1091 },
+        { 1, 0, NA_BGM_COURSE_CLEAR, 100, 255, 100 },   { 0, 0, NA_BGM_ME_START_DEMO, 0, 255, 838 },
+        { 0, 0, NA_BGM_STAGE_ME, 0, 255, 1584 },        { 1, 0, NA_BGM_STAGE_ME, 150, 255, 150 },
+        { 0, 0, NA_BGM_STAGE_WZ, 0, 255, 1635 },        { 1, 0, NA_BGM_STAGE_WZ, 150, 255, 150 },
+        { 0, 0, NA_BGM_KA_START_DEMO, 0, 255, 241 },    { 0, 0, NA_BGM_STAGE_KA, 0, 255, 2184 },
+        { 1, 0, NA_BGM_STAGE_KA, 1, 255, 100 },         { 0, 0, NA_BGM_BOSS_KA, 0, 1, 1115 },
+        { 1, 0, NA_BGM_BOSS_KA, 50, 255, 100 },         { 0, 0, NA_BGM_COURSE_FAILURE, 0, 255, 1604 },
+        { 1, 0, NA_BGM_COURSE_FAILURE, 100, 255, 100 }, { 0, 0, NA_BGM_START_DEMO_S, 0, 255, 242 },
+        { 0, 0, NA_BGM_STAGE_SX, 0, 255, 1291 },        { 3, 0, NA_BGM_BILL, 0, 255, 1000 },
+        { 1, 0, NA_BGM_STAGE_SX, 50, 255, 100 },        { 0, 0, NA_BGM_STAGE_WZ, 0, 255, 1635 },
+        { 1, 0, NA_BGM_STAGE_WZ, 150, 255, 150 },       { 0, 0, NA_BGM_SZ_START_DEMO, 0, 255, 241 },
+        { 0, 0, NA_BGM_STAGE_SZ, 0, 255, 1632 },        { 1, 0, NA_BGM_STAGE_SZ, 50, 255, 100 },
+        { 0, 0, NA_BGM_BOSS_SZ, 0, 1, 1115 },           { 1, 0, NA_BGM_BOSS_SZ, 1, 255, 50 },
+        { 0, 0, NA_BGM_COURSE_CLEAR, 0, 255, 1091 },    { 1, 0, NA_BGM_COURSE_CLEAR, 100, 255, 100 },
+        { 0, 0, NA_BGM_A6_START_DEMO, 0, 255, 241 },    { 0, 0, NA_BGM_STAGE_A6, 0, 255, 1906 },
+        { 1, 0, NA_BGM_STAGE_A6, 50, 255, 100 },        { 0, 0, NA_BGM_BOSS_A6, 0, 1, 1590 },
+        { 1, 0, NA_BGM_BOSS_A6, 1, 255, 50 },           { 0, 0, NA_BGM_PLAYER_DOWN, 0, 255, 150 },
+        { 0, 0, NA_BGM_GAME_OVER, 0, 255, 1020 },       { 1, 0, NA_BGM_GAME_OVER, 100, 255, 100 },
+        { 255, 0, NA_BGM_STAGE_CO, 50, 255, 50 },
     },
     {
-        { 0, 0, SEQ_ID_OPENING, 0, 255, 2926 },
-        { 0, 0, SEQ_ID_TITLE, 0, 255, 1251 },
-        { 1, 0, SEQ_ID_TITLE, 200, 255, 200 },
-        { 0, 0, SEQ_ID_MENU, 0, 255, 1636 },
-        { 1, 0, SEQ_ID_MENU, 200, 255, 200 },
-        { 0, 0, SEQ_ID_WORLD_MAP, 0, 255, 1560 },
-        { 1, 0, SEQ_ID_WORLD_MAP, 200, 255, 200 },
-        { 0, 0, SEQ_ID_CO_INTRO, 0, 255, 1618 },
-        { 0, 0, SEQ_ID_INTRO_44, 0, 255, 242 },
-        { 0, 0, SEQ_ID_INTRO_45, 0, 255, 582 },
-        { 0, 0, SEQ_ID_ME_INTRO, 0, 255, 868 },
-        { 0, 0, SEQ_ID_INTRO_51, 0, 255, 281 },
-        { 0, 0, SEQ_ID_CORNERIA | SEQ_FLAG, 0, 255, 2490 },
-        { 1, 0, SEQ_ID_CORNERIA | SEQ_FLAG, 200, 255, 200 },
-        { 0, 0, SEQ_ID_METEO | SEQ_FLAG, 0, 255, 1584 },
-        { 1, 0, SEQ_ID_METEO | SEQ_FLAG, 200, 255, 200 },
-        { 0, 0, SEQ_ID_TITANIA | SEQ_FLAG, 0, 255, 1920 },
-        { 1, 0, SEQ_ID_TITANIA | SEQ_FLAG, 200, 255, 200 },
-        { 0, 0, SEQ_ID_SECTOR_X | SEQ_FLAG, 0, 255, 2290 },
-        { 1, 0, SEQ_ID_SECTOR_X | SEQ_FLAG, 200, 255, 200 },
-        { 0, 0, SEQ_ID_ZONESS | SEQ_FLAG, 0, 255, 2005 },
-        { 1, 0, SEQ_ID_ZONESS | SEQ_FLAG, 200, 255, 200 },
-        { 0, 0, SEQ_ID_AREA_6 | SEQ_FLAG, 0, 255, 1905 },
-        { 1, 0, SEQ_ID_AREA_6 | SEQ_FLAG, 200, 255, 200 },
-        { 0, 0, SEQ_ID_VENOM_1 | SEQ_FLAG, 0, 255, 1671 },
-        { 1, 0, SEQ_ID_VENOM_1 | SEQ_FLAG, 200, 255, 200 },
-        { 0, 0, SEQ_ID_SECTOR_Y | SEQ_FLAG, 0, 255, 2095 },
-        { 1, 0, SEQ_ID_SECTOR_Y | SEQ_FLAG, 200, 255, 200 },
-        { 0, 0, SEQ_ID_FORTUNA | SEQ_FLAG, 0, 255, 1632 },
-        { 1, 0, SEQ_ID_FORTUNA | SEQ_FLAG, 200, 255, 200 },
-        { 0, 0, SEQ_ID_KATINA | SEQ_FLAG, 0, 255, 2184 },
-        { 1, 0, SEQ_ID_KATINA | SEQ_FLAG, 200, 255, 200 },
-        { 0, 0, SEQ_ID_AQUAS, 0, 255, 2400 },
-        { 1, 0, SEQ_ID_AQUAS, 200, 255, 200 },
-        { 0, 0, SEQ_ID_WARP_ZONE | SEQ_FLAG, 0, 255, 1635 },
-        { 1, 0, SEQ_ID_WARP_ZONE | SEQ_FLAG, 200, 255, 200 },
-        { 0, 0, SEQ_ID_KATT, 0, 255, 389 },
-        { 0, 0, SEQ_ID_BILL, 0, 255, 268 },
-        { 0, 0, SEQ_ID_CO_BOSS_1 | SEQ_FLAG, 0, 255, 1598 },
-        { 1, 0, SEQ_ID_CO_BOSS_1 | SEQ_FLAG, 200, 255, 200 },
-        { 0, 0, SEQ_ID_ME_BOSS | SEQ_FLAG, 0, 0, 1470 },
-        { 1, 0, SEQ_ID_ME_BOSS | SEQ_FLAG, 200, 255, 200 },
-        { 0, 0, SEQ_ID_ME_BOSS | SEQ_FLAG, 0, 255, 1470 },
-        { 1, 0, SEQ_ID_ME_BOSS | SEQ_FLAG, 200, 255, 200 },
-        { 0, 0, SEQ_ID_BOSS_RESUME | SEQ_FLAG, 0, 255, 1311 },
-        { 1, 0, SEQ_ID_BOSS_RESUME | SEQ_FLAG, 200, 255, 200 },
-        { 0, 0, SEQ_ID_BO_BOSS | SEQ_FLAG, 0, 255, 1115 },
-        { 1, 0, SEQ_ID_BO_BOSS | SEQ_FLAG, 200, 255, 200 },
-        { 0, 0, SEQ_ID_STAR_WOLF | SEQ_FLAG, 0, 255, 2120 },
-        { 1, 0, SEQ_ID_STAR_WOLF | SEQ_FLAG, 200, 255, 200 },
-        { 0, 0, SEQ_ID_GOOD_END, 0, 255, 1091 },
-        { 1, 0, SEQ_ID_GOOD_END, 200, 255, 200 },
-        { 0, 0, SEQ_ID_BAD_END, 0, 255, 1604 },
-        { 1, 0, SEQ_ID_BAD_END, 200, 255, 200 },
-        { 0, 0, SEQ_ID_DEATH, 0, 255, 200 },
-        { 0, 0, SEQ_ID_GAME_OVER, 0, 255, 1020 },
-        { 1, 0, SEQ_ID_GAME_OVER, 200, 255, 200 },
-        { 0, 0, SEQ_ID_TRAINING | SEQ_FLAG, 0, 255, 900 },
-        { 1, 0, SEQ_ID_TRAINING | SEQ_FLAG, 200, 255, 200 },
-        { 0, 0, SEQ_ID_VS_MENU, 0, 255, 665 },
-        { 1, 0, SEQ_ID_VS_MENU, 200, 255, 200 },
-        { 0, 0, SEQ_ID_VERSUS | SEQ_FLAG, 0, 255, 1647 },
-        { 1, 0, SEQ_ID_VERSUS | SEQ_FLAG, 200, 255, 200 },
-        { 0, 0, SEQ_ID_VS_HURRY | SEQ_FLAG, 0, 255, 1667 },
-        { 1, 0, SEQ_ID_VS_HURRY | SEQ_FLAG, 200, 255, 200 },
-        { 0, 0, SEQ_ID_TO_ANDROSS | SEQ_FLAG, 0, 0, 176 },
-        { 0, 0, SEQ_ID_ANDROSS | SEQ_FLAG, 0, 255, 588 },
-        { 1, 0, SEQ_ID_ANDROSS | SEQ_FLAG, 200, 255, 200 },
-        { 0, 0, SEQ_ID_AND_BOSS | SEQ_FLAG, 0, 0, 2391 },
-        { 1, 0, SEQ_ID_AND_BOSS | SEQ_FLAG, 200, 255, 200 },
-        { 0, 0, SEQ_ID_AND_BOSS | SEQ_FLAG, 0, 255, 2391 },
-        { 1, 0, SEQ_ID_AND_BOSS | SEQ_FLAG, 200, 255, 200 },
-        { 0, 0, SEQ_ID_AND_BRAIN | SEQ_FLAG, 0, 255, 1700 },
-        { 1, 0, SEQ_ID_AND_BRAIN | SEQ_FLAG, 200, 255, 200 },
-        { 0, 0, SEQ_ID_VE_CLEAR | SEQ_FLAG, 0, 255, 1459 },
-        { 1, 0, SEQ_ID_VE_CLEAR | SEQ_FLAG, 200, 255, 200 },
-        { 0, 0, SEQ_ID_ENDING, 0, 255, 9250 },
-        { 1, 0, SEQ_ID_ENDING, 200, 255, 200 },
-        { 255, 0, SEQ_ID_CORNERIA | SEQ_FLAG, 50, 255, 50 },
+        { 0, 0, NA_BGM_OPENING, 0, 255, 2926 },
+        { 0, 0, NA_BGM_TITLE, 0, 255, 1251 },
+        { 1, 0, NA_BGM_TITLE, 200, 255, 200 },
+        { 0, 0, NA_BGM_SELECT, 0, 255, 1636 },
+        { 1, 0, NA_BGM_SELECT, 200, 255, 200 },
+        { 0, 0, NA_BGM_MAP, 0, 255, 1560 },
+        { 1, 0, NA_BGM_MAP, 200, 255, 200 },
+        { 0, 0, NA_BGM_START_DEMO, 0, 255, 1618 },
+        { 0, 0, NA_BGM_START_DEMO_S, 0, 255, 242 },
+        { 0, 0, NA_BGM_START_DEMO_M, 0, 255, 582 },
+        { 0, 0, NA_BGM_ME_START_DEMO, 0, 255, 868 },
+        { 0, 0, NA_BGM_FO_START_DEMO, 0, 255, 281 },
+        { 0, 0, NA_BGM_STAGE_CO, 0, 255, 2490 },
+        { 1, 0, NA_BGM_STAGE_CO, 200, 255, 200 },
+        { 0, 0, NA_BGM_STAGE_ME, 0, 255, 1584 },
+        { 1, 0, NA_BGM_STAGE_ME, 200, 255, 200 },
+        { 0, 0, NA_BGM_STAGE_TI, 0, 255, 1920 },
+        { 1, 0, NA_BGM_STAGE_TI, 200, 255, 200 },
+        { 0, 0, NA_BGM_STAGE_SX, 0, 255, 2290 },
+        { 1, 0, NA_BGM_STAGE_SX, 200, 255, 200 },
+        { 0, 0, NA_BGM_STAGE_ZO, 0, 255, 2005 },
+        { 1, 0, NA_BGM_STAGE_ZO, 200, 255, 200 },
+        { 0, 0, NA_BGM_STAGE_A6, 0, 255, 1905 },
+        { 1, 0, NA_BGM_STAGE_A6, 200, 255, 200 },
+        { 0, 0, NA_BGM_STAGE_VE1, 0, 255, 1671 },
+        { 1, 0, NA_BGM_STAGE_VE1, 200, 255, 200 },
+        { 0, 0, NA_BGM_STAGE_SY, 0, 255, 2095 },
+        { 1, 0, NA_BGM_STAGE_SY, 200, 255, 200 },
+        { 0, 0, NA_BGM_STAGE_FO, 0, 255, 1632 },
+        { 1, 0, NA_BGM_STAGE_FO, 200, 255, 200 },
+        { 0, 0, NA_BGM_STAGE_KA, 0, 255, 2184 },
+        { 1, 0, NA_BGM_STAGE_KA, 200, 255, 200 },
+        { 0, 0, NA_BGM_STAGE_AQ, 0, 255, 2400 },
+        { 1, 0, NA_BGM_STAGE_AQ, 200, 255, 200 },
+        { 0, 0, NA_BGM_STAGE_WZ, 0, 255, 1635 },
+        { 1, 0, NA_BGM_STAGE_WZ, 200, 255, 200 },
+        { 0, 0, NA_BGM_KATT, 0, 255, 389 },
+        { 0, 0, NA_BGM_BILL, 0, 255, 268 },
+        { 0, 0, NA_BGM_BOSS_CO, 0, 255, 1598 },
+        { 1, 0, NA_BGM_BOSS_CO, 200, 255, 200 },
+        { 0, 0, NA_BGM_BOSS_ME, 0, 0, 1470 },
+        { 1, 0, NA_BGM_BOSS_ME, 200, 255, 200 },
+        { 0, 0, NA_BGM_BOSS_ME, 0, 255, 1470 },
+        { 1, 0, NA_BGM_BOSS_ME, 200, 255, 200 },
+        { 0, 0, NA_BGM_REAL_BOSS, 0, 255, 1311 },
+        { 1, 0, NA_BGM_REAL_BOSS, 200, 255, 200 },
+        { 0, 0, NA_BGM_BOSS_BO, 0, 255, 1115 },
+        { 1, 0, NA_BGM_BOSS_BO, 200, 255, 200 },
+        { 0, 0, NA_BGM_STARWOLF, 0, 255, 2120 },
+        { 1, 0, NA_BGM_STARWOLF, 200, 255, 200 },
+        { 0, 0, NA_BGM_COURSE_CLEAR, 0, 255, 1091 },
+        { 1, 0, NA_BGM_COURSE_CLEAR, 200, 255, 200 },
+        { 0, 0, NA_BGM_COURSE_FAILURE, 0, 255, 1604 },
+        { 1, 0, NA_BGM_COURSE_FAILURE, 200, 255, 200 },
+        { 0, 0, NA_BGM_PLAYER_DOWN, 0, 255, 200 },
+        { 0, 0, NA_BGM_GAME_OVER, 0, 255, 1020 },
+        { 1, 0, NA_BGM_GAME_OVER, 200, 255, 200 },
+        { 0, 0, NA_BGM_TRAINING, 0, 255, 900 },
+        { 1, 0, NA_BGM_TRAINING, 200, 255, 200 },
+        { 0, 0, NA_BGM_VS_SELECT, 0, 255, 665 },
+        { 1, 0, NA_BGM_VS_SELECT, 200, 255, 200 },
+        { 0, 0, NA_BGM_BATTLE, 0, 255, 1647 },
+        { 1, 0, NA_BGM_BATTLE, 200, 255, 200 },
+        { 0, 0, NA_BGM_BATTLE_LAST, 0, 255, 1667 },
+        { 1, 0, NA_BGM_BATTLE_LAST, 200, 255, 200 },
+        { 0, 0, NA_BGM_DASH_INTO_BASE, 0, 0, 176 },
+        { 0, 0, NA_BGM_STAGE_ANDROSS, 0, 255, 588 },
+        { 1, 0, NA_BGM_STAGE_ANDROSS, 200, 255, 200 },
+        { 0, 0, NA_BGM_BOSS_ANDROSS, 0, 0, 2391 },
+        { 1, 0, NA_BGM_BOSS_ANDROSS, 200, 255, 200 },
+        { 0, 0, NA_BGM_BOSS_ANDROSS, 0, 255, 2391 },
+        { 1, 0, NA_BGM_BOSS_ANDROSS, 200, 255, 200 },
+        { 0, 0, NA_BGM_ANDROSS_BRAIN, 0, 255, 1700 },
+        { 1, 0, NA_BGM_ANDROSS_BRAIN, 200, 255, 200 },
+        { 0, 0, NA_BGM_ALL_CLEAR, 0, 255, 1459 },
+        { 1, 0, NA_BGM_ALL_CLEAR, 200, 255, 200 },
+        { 0, 0, NA_BGM_STAFF_ROLL, 0, 255, 9250 },
+        { 1, 0, NA_BGM_STAFF_ROLL, 200, 255, 200 },
+        { 255, 0, NA_BGM_STAGE_CO, 50, 255, 50 },
     },
 };
 
-s32 D_800C737C = 0; // unused. file split?
-f32 D_800C7380 = 1.0f;
+s32 D_800C737C = 0;    // unused. file split?
+f32 D_800C7380 = 1.0f; // unused/
 u32 sNextVoiceId = 0;
 u32 sCurrentVoiceId = 0;
 u8 sSetNextVoiceId = 0;
-u8 D_800C7390 = 0;
+u8 sUnkVoiceParam = 0;
 u8 sMuteBgmForVoice = 0;
 
-void func_80016A50(void) {
+void Audio_dummy_80016A50(void) {
 }
 
 f32 Audio_GetSfxFalloff(u8 bankId, u8 entryIndex) {
@@ -527,25 +461,25 @@ f32 Audio_GetSfxFalloff(u8 bankId, u8 entryIndex) {
     f32 midrange;
     f32 range;
 
-    if (SFX_BIT09(sSfxBanks[bankId][entryIndex].sfxId)) {
+    if (sSfxBanks[bankId][entryIndex].sfxId & SFX_FLAG_22) {
         return 1.0f;
     }
     distance = sSfxBanks[bankId][entryIndex].distance;
     if (distance > 33000.0f) {
         falloff = 0.0f;
     } else {
-        switch (SFX_RANGE_MASK(sSfxBanks[bankId][entryIndex].sfxId)) {
+        switch ((sSfxBanks[bankId][entryIndex].sfxId & SFX_RANGE_MASK)) {
             default:
-                range = 1650.0f;
+                range = 33000.0f / 20.0f;
                 break;
-            case 1 << 16:
-                range = 2200.0f;
+            case 1 << SFX_RANGE_SHIFT:
+                range = 33000.0f / 15.0f;
                 break;
-            case 2 << 16:
-                range = 3142.8572f;
+            case 2 << SFX_RANGE_SHIFT:
+                range = 33000.0f / 10.5f;
                 break;
-            case 3 << 16:
-                range = 6346.1543f;
+            case 3 << SFX_RANGE_SHIFT:
+                range = 33000.0f / 5.2f;
                 break;
         }
         cutoff = range / 5.0f;
@@ -568,9 +502,9 @@ s8 Audio_GetSfxReverb(u8 bankId, u8 entryIndex, u8 channelId) {
     s8 distReverb = 0;
     s8 scriptReverb = 0;
 
-    if (!SFX_BIT10(sSfxBanks[bankId][entryIndex].sfxId)) {
-        if (sSfxBanks[bankId][entryIndex].distance < 8250.0f) {
-            distReverb = (sSfxBanks[bankId][entryIndex].distance / 8250.0f) * 40.0f;
+    if (!(sSfxBanks[bankId][entryIndex].sfxId & SFX_FLAG_21)) {
+        if (sSfxBanks[bankId][entryIndex].distance < (33000.0f / 4.0f)) {
+            distReverb = (sSfxBanks[bankId][entryIndex].distance / (33000.0f / 4.0f)) * 40.0f;
         } else {
             distReverb = 40;
         }
@@ -581,13 +515,13 @@ s8 Audio_GetSfxReverb(u8 bankId, u8 entryIndex, u8 channelId) {
     if (scriptReverb == -1) {
         scriptReverb = 0;
     }
-    totalReverb = *sSfxBanks[bankId][entryIndex].reverbAdd + distReverb + scriptReverb + sBaseReverb + sAudioSpecReverb;
+    totalReverb = *sSfxBanks[bankId][entryIndex].reverbAdd + distReverb + scriptReverb + sEnvReverb + sAudioSpecReverb;
     totalReverb = MIN(127, totalReverb);
     return totalReverb;
 }
 
 s8 Audio_GetSfxPan(f32 xPos, f32 zPos, u8 mode) {
-    if (sSfxChannelLayout != 3) {
+    if (sSfxChannelLayout != SFXCHAN_3) {
         f32 absx = ABSF(xPos);
         f32 absz = ABSF(zPos);
         f32 pan;
@@ -618,18 +552,18 @@ f32 Audio_GetSfxFreqMod(u8 bankId, u8 entryIndex) {
     f32 distance;
     f32 freqMod = 1.0f;
 
-    if (SFX_BIT08(sSfxBanks[bankId][entryIndex].sfxId)) {
+    if (sSfxBanks[bankId][entryIndex].sfxId & SFX_FLAG_23) {
         freqMod -= ((gAudioRandom % 16) / 192.0f);
     }
     distance = sSfxBanks[bankId][entryIndex].distance;
-    if (!SFX_BIT09(sSfxBanks[bankId][entryIndex].sfxId)) {
+    if (!(sSfxBanks[bankId][entryIndex].sfxId & SFX_FLAG_22)) {
         if (distance >= 33000.0f) {
             freqMod += 0.2f;
         } else {
             freqMod += 0.2f * (distance / 33000.0f);
         }
     }
-    if ((sSfxChannelLayout != 0) && (sSfxBanks[bankId][entryIndex].token & 2)) {
+    if ((sSfxChannelLayout != SFXCHAN_0) && (sSfxBanks[bankId][entryIndex].token & 2)) {
         freqMod *= 1.1f;
     }
     return freqMod;
@@ -643,28 +577,29 @@ void Audio_SetSfxProperties(u8 bankId, u8 entryIndex, u8 channelId) {
     SfxBankEntry* entry = &sSfxBanks[bankId][entryIndex];
 
     switch (bankId) {
-        case 0:
-        case 1:
-        case 2:
-        case 3:
+        case SFX_BANK_PLAYER:
+        case SFX_BANK_1:
+        case SFX_BANK_2:
+        case SFX_BANK_3:
             if (entry->state == 2) {
                 AUDIOCMD_CHANNEL_SET_IO(SEQ_PLAYER_SFX, channelId, 1, gLevelType);
             }
-            if (SFX_BIT13(entry->sfxId) && (*entry->zPos > 0.0f)) {
+            if ((entry->sfxId & SFX_FLAG_18) && (*entry->zPos > 0.0f)) {
                 f32 yScaled = *entry->yPos / 2.5f;
 
                 entry->distance = SQ(*entry->xPos) + SQ(yScaled);
             }
             entry->distance = sqrtf(entry->distance);
-            volumeMod = (Audio_GetSfxFalloff(bankId, entryIndex) * *entry->volMod) * sSfxVolumeMods[bankId].value;
+            volumeMod = Audio_GetSfxFalloff(bankId, entryIndex) * *entry->volMod * sSfxVolumeMods[bankId].value;
             reverb = Audio_GetSfxReverb(bankId, entryIndex, channelId);
             freqMod = Audio_GetSfxFreqMod(bankId, entryIndex) * *entry->freqMod;
-            if ((bankId != 0) || !(*entry->zPos > -200.0f) || !(*entry->zPos < 200.0f) || (sSfxChannelLayout == 3)) {
+            if (!((bankId == SFX_BANK_PLAYER) && ((-200.0f < *entry->zPos) && (*entry->zPos < 200.0f)) &&
+                  (sSfxChannelLayout != SFXCHAN_3))) {
                 pan = Audio_GetSfxPan(*entry->xPos, *entry->zPos, entry->token);
             }
             break;
-        case 4:
-            if (sSfxChannelLayout == 3) {
+        case SFX_BANK_SYSTEM:
+            if (sSfxChannelLayout == SFXCHAN_3) {
                 if (entry->token != 4) {
                     pan = (entry->token & 1) * 127;
                 }
@@ -704,6 +639,12 @@ f32 Audio_UpdateDopplerShift(f32* srcPos, f32* srcVel, f32 soundSpeed, f32* curD
     f32 targetDopplerShift;
     s32 pad;
 
+#ifdef AVOID_UB
+    if ((srcPos == NULL) || (srcVel == NULL) || (curDopplerShift == NULL)) {
+        return 0.0f;
+    }
+#endif
+
     xPos = srcPos[0];
     zPos = srcPos[2];
     xVel = srcVel[0];
@@ -737,25 +678,25 @@ f32 Audio_UpdateDopplerShift(f32* srcPos, f32* srcVel, f32 soundSpeed, f32* curD
     return newShift;
 }
 
-void func_80017494(void) {
+void Audio_LoadInstruments(void) {
     u8 i;
 
-    for (i = 0; D_800C5D6C[sNewAudioSpecId][i] != 0xFF; i++) {
-        AUDIOCMD_GLOBAL_SYNC_LOAD_INSTRUMENT(0, D_800C5D6C[sNewAudioSpecId][i], 0);
+    for (i = 0; sAudioSpecInstrumentSets[sAudioSpecId][i] != 0xFF; i++) {
+        AUDIOCMD_GLOBAL_SYNC_LOAD_INSTRUMENT(0, sAudioSpecInstrumentSets[sAudioSpecId][i], 0);
     }
 }
 
-void func_80017550(void) {
-    if (sNewAudioSpecId == 12) {
-        AUDIOCMD_GLOBAL_SYNC_LOAD_SEQ_PARTS(14, 0);
+void Audio_LoadAquasSequence(void) {
+    if (sAudioSpecId == AUDIOSPEC_12) {
+        AUDIOCMD_GLOBAL_SYNC_LOAD_SEQ_PARTS(NA_BGM_STAGE_AQ, 0);
     }
 }
 
 void Audio_ResetSfxChannelState(void) {
     u8 i;
 
-    sBaseReverb = 0;
-    sAudioSpecReverb = D_800C5E38[sNewAudioSpecId];
+    sEnvReverb = 0;
+    sAudioSpecReverb = sAudioSpecReverbAdd[sAudioSpecId];
     for (i = 0; i < 16; i++) {
         sSfxChannelState[i].volMod = 1.0f;
         sSfxChannelState[i].freqMod = 1.0f;
@@ -800,7 +741,7 @@ void Audio_ProcessSeqCmd(u32 seqCmd) {
     s32 priority;
     u8 i; // sp63
     u8 specId;
-    u8 sp61;
+    u8 oldSpecId;
     u8 ioPort;
     u8 channel;
     u8 found;
@@ -959,7 +900,6 @@ void Audio_ProcessSeqCmd(u32 seqCmd) {
             val = seqCmd & 0xFF;
             ioPort = ((seqCmd & 0xFF0000) >> 0x10); // may be misnamed
             AUDIOCMD_SEQPLAYER_SET_IO(seqPlayId, ioPort, val);
-            // AudioThread_QueueCmdS8(((seqPlayId & 0xFF) << 0x10) | 0x46000000 | (temp3 << 8), temp4);
             break;
         case SEQCMD_OP_SET_CHANNEL_IO:
             val = seqCmd & 0xFF;
@@ -968,8 +908,6 @@ void Audio_ProcessSeqCmd(u32 seqCmd) {
             ioPort = (seqCmd & 0xFF0000) >> 0x10;
             if (!(sActiveSequences[seqPlayId].channelPortMask & (1 << channel))) {
                 AUDIOCMD_CHANNEL_SET_IO(seqPlayId, (u32) channel, ioPort, val);
-                // AudioThread_QueueCmdS8(((seqPlayId & 0xFF) << 0x10) | 0x06000000 | ((temp_a2_5 & 0xFF) << 8) | temp3,
-                // temp4);
             }
             break;
         case SEQCMD_OP_SET_CHANNEL_IO_DISABLE_MASK:
@@ -1007,7 +945,6 @@ void Audio_ProcessSeqCmd(u32 seqCmd) {
             switch (subOp) {
                 case SEQCMD_SUB_OP_GLOBAL_SET_SOUND_MODE:
                     AUDIOCMD_GLOBAL_SET_SOUND_MODE(sSoundModeList[val]);
-                    // AudioThread_QueueCmdS32(0xF0000000, sSoundModeList[temp11]);
                     break;
                 case SEQCMD_SUB_OP_GLOBAL_DISABLE_NEW_SEQUENCES:
                     sStartSeqDisabled = val & 1;
@@ -1017,12 +954,12 @@ void Audio_ProcessSeqCmd(u32 seqCmd) {
         case SEQCMD_OP_RESET_AUDIO_HEAP:
             specId = seqCmd & 0xFF;
             sSfxChannelLayout = (seqCmd & 0xFF00) >> 8;
-            sp61 = sNewAudioSpecId;
-            sNewAudioSpecId = specId;
+            oldSpecId = sAudioSpecId;
+            sAudioSpecId = specId;
 
-            if (sp61 != specId) {
+            if (oldSpecId != specId) {
                 AudioThread_ResetAudioHeap(specId);
-                func_8001DE1C(sp61);
+                Audio_StartReset(oldSpecId);
                 AUDIOCMD_GLOBAL_STOP_AUDIOCMDS();
 
             } else {
@@ -1081,14 +1018,15 @@ void Audio_ResetSequenceRequests(u8 seqPlayId) {
     sNumSeqRequests[seqPlayId] = 0;
 }
 
-void func_800184EC(u8 seqPlayId, u8 setupOpDisable) {
+// unused
+void Audio_DisableSetupOp(u8 seqPlayId, u8 opcode) {
     u8 i;
 
     for (i = 0; i < sActiveSequences[seqPlayId].setupCmdNum; i++) {
         u8 setupOp = ((sActiveSequences[seqPlayId].setupCmd[i] & 0xF00000) >> 20);
 
-        if (setupOp == setupOpDisable) {
-            sActiveSequences[seqPlayId].setupCmd[i] = 0xFF000000;
+        if (setupOp == opcode) {
+            sActiveSequences[seqPlayId].setupCmd[i] = 0xFF000000; // 0 duration volume reset on SEQ_PLAYER_BGM
         }
     }
 }
@@ -1245,7 +1183,7 @@ void Audio_UpdateActiveSequences(void) {
         if (sActiveSequences[seqPlayId].setupCmdNum == 0) {
             continue;
         }
-        if (!Audio_SeqCmdValueNotQueued(SEQCMD_OP_MASK, SEQCMD_OP_RESET_AUDIO_HEAP << 28)) {
+        if (!Audio_SeqCmdValueNotQueued(SEQCMD_OP_RESET_AUDIO_HEAP << 28, SEQCMD_OP_MASK)) {
             sActiveSequences[seqPlayId].setupCmdNum = 0;
             break;
         }
@@ -1253,9 +1191,9 @@ void Audio_UpdateActiveSequences(void) {
             sActiveSequences[seqPlayId].setupCmdTimer--;
         } else if (!gSeqPlayers[seqPlayId].enabled) {
             for (i = 0; i < sActiveSequences[seqPlayId].setupCmdNum; i++) {
-                setupOp = (sActiveSequences[seqPlayId].setupCmd[i] & 0xF00000) >> 0x14;
+                setupOp = (sActiveSequences[seqPlayId].setupCmd[i] & 0xF00000) >> 20;
 
-                setupSeqPlayId = (sActiveSequences[seqPlayId].setupCmd[i] & 0xF0000) >> 0x10;
+                setupSeqPlayId = (sActiveSequences[seqPlayId].setupCmd[i] & 0xF0000) >> 16;
                 val2 = (sActiveSequences[seqPlayId].setupCmd[i] & 0xFF00) >> 8;
                 val1 = sActiveSequences[seqPlayId].setupCmd[i] & 0xFF;
                 switch (setupOp) {
@@ -1320,24 +1258,24 @@ void Audio_UpdateDelayedSeqCmds(void) {
     }
 }
 
-u8 func_80018FA4(void) {
-    if (D_800C5D58 != 0) {
-        if (D_800C5D58 == 1) {
-            if (func_8001ED34() == 1) {
-                D_800C5D58 = 0;
+u8 Audio_HandleReset(void) {
+    if (sAudioResetStatus != AUDIORESET_READY) {
+        if (sAudioResetStatus == AUDIORESET_WAIT) {
+            if (AudioThread_ResetComplete() == true) {
+                sAudioResetStatus = AUDIORESET_READY;
                 AUDIOCMD_SEQPLAYER_SET_IO(SEQ_PLAYER_SFX, 0, sSfxChannelLayout);
-                func_8001DD40();
+                Audio_RestartSeqPlayers();
             }
-        } else if (D_800C5D58 == 2) {
-            while (func_8001ED34() != 1) {
+        } else if (sAudioResetStatus == AUDIORESET_BLOCK) {
+            while (AudioThread_ResetComplete() != true) {
                 ;
             }
-            D_800C5D58 = 0;
+            sAudioResetStatus = AUDIORESET_READY;
             AUDIOCMD_SEQPLAYER_SET_IO(SEQ_PLAYER_SFX, 0, sSfxChannelLayout);
-            func_8001DD40();
+            Audio_RestartSeqPlayers();
         }
     }
-    return D_800C5D58;
+    return sAudioResetStatus;
 }
 
 void Audio_ResetActiveSequences(void) {
@@ -1390,7 +1328,7 @@ void Audio_ClearBGMMute(u8 channelIndex) {
 }
 
 void Audio_PlaySfx(u32 sfxId, f32* sfxSource, u8 token, f32* freqMod, f32* volMod, s8* reverbAdd) {
-    if (sSfxBankMuted[SFX_BANK_SHIFT(sfxId)] == 0) {
+    if (sSfxBankMuted[SFX_BANK_ALT(sfxId)] == 0) {
         SfxRequest* request = &sSfxRequests[sSfxRequestWriteIndex];
 
         request->sfxId = sfxId;
@@ -1412,12 +1350,13 @@ void Audio_RemoveMatchingSfxRequests(u8 aspect, SfxBankEntry* data) {
 
         switch (aspect) {
             case 0:
-                if (SFX_BANK_MASK(request->sfxId) == SFX_BANK_MASK(data->sfxId)) {
+                if ((request->sfxId & SFX_BANK_MASK) == (data->sfxId & SFX_BANK_MASK)) {
                     found = true;
                 }
                 break;
             case 1:
-                if ((SFX_BANK_MASK(request->sfxId) == SFX_BANK_MASK(data->sfxId)) && (&request->pos[0] == data->xPos)) {
+                if (((request->sfxId & SFX_BANK_MASK) == (data->sfxId & SFX_BANK_MASK)) &&
+                    (&request->pos[0] == data->xPos)) {
                     found = true;
                 }
                 break;
@@ -1443,7 +1382,7 @@ void Audio_RemoveMatchingSfxRequests(u8 aspect, SfxBankEntry* data) {
                 break;
         }
         if (found) {
-            request->sfxId = 0;
+            request->sfxId = NA_SE_NONE;
         }
     }
 }
@@ -1457,7 +1396,7 @@ void Audio_ProcessSfxRequest(void) {
     u8 count;
     SfxBankEntry* entry;
 
-    if (request->sfxId == 0) {
+    if (request->sfxId == NA_SE_NONE) {
         return;
     }
     bankId = SFX_BANK(request->sfxId);
@@ -1471,13 +1410,13 @@ void Audio_ProcessSfxRequest(void) {
                 if (count == 0) {
                     evict = next;
                     sfxId = sSfxBanks[bankId][next].sfxId;
-                } else if (SFX_IMPORTANCE_MASK(sSfxBanks[bankId][next].sfxId) < SFX_IMPORTANCE_MASK(sfxId)) {
+                } else if ((sSfxBanks[bankId][next].sfxId & SFX_IMPORT_MASK) < (sfxId & SFX_IMPORT_MASK)) {
                     evict = next;
                     sfxId = sSfxBanks[bankId][next].sfxId;
                 }
                 count++;
                 if (count == sUsedChannelsPerBank[sSfxChannelLayout][bankId]) {
-                    if (SFX_IMPORTANCE_MASK(request->sfxId) >= SFX_IMPORTANCE_MASK(sfxId)) {
+                    if ((request->sfxId & SFX_IMPORT_MASK) >= (sfxId & SFX_IMPORT_MASK)) {
                         next = evict;
                     } else {
                         next = 0;
@@ -1485,8 +1424,8 @@ void Audio_ProcessSfxRequest(void) {
                 }
             }
             if (count == sUsedChannelsPerBank[sSfxChannelLayout][bankId]) {
-                if (SFX_BIT04(request->sfxId) || SFX_BIT13(request->sfxId) || (next == evict)) {
-                    if (SFX_BIT12(sSfxBanks[bankId][next].sfxId) && (sSfxBanks[bankId][next].state != 1)) {
+                if ((request->sfxId & SFX_FLAG_27) || (request->sfxId & SFX_FLAG_18) || (next == evict)) {
+                    if ((sSfxBanks[bankId][next].sfxId & SFX_FLAG_19) && (sSfxBanks[bankId][next].state != 1)) {
                         Audio_ClearBGMMute(sSfxBanks[bankId][next].channelIndex);
                     }
                     sSfxBanks[bankId][next].token = request->token;
@@ -1533,7 +1472,7 @@ void Audio_RemoveSfxBankEntry(u8 bankId, u8 entryIndex) {
     SfxBankEntry* sfxBank = sSfxBanks[bankId];
     s32 pad;
 
-    if (SFX_BIT12(sfxBank[entryIndex].sfxId)) {
+    if (sfxBank[entryIndex].sfxId & SFX_FLAG_19) {
         Audio_ClearBGMMute(sfxBank[entryIndex].channelIndex);
     }
     if (entryIndex == sSfxBankListEnd[bankId]) {
@@ -1570,11 +1509,11 @@ void Audio_ChooseActiveSfx(u8 bankId) {
         chosenSfx[i].priority = INT32_MAX;
         chosenSfx[i].entryIndex = 0xFF;
     }
-    entryIndex = sSfxBanks[bankId]->next;
+    entryIndex = sSfxBanks[bankId][0].next;
     k = 0;
     while (entryIndex != 0xFF) {
         if ((sSfxBanks[bankId][entryIndex].state == 1) &&
-            (SFX_BIT04(sSfxBanks[bankId][entryIndex].sfxId) == SFX_BIT04(-1))) {
+            ((sSfxBanks[bankId][entryIndex].sfxId & SFX_FLAG_27) == SFX_FLAG_27)) {
             sSfxBanks[bankId][entryIndex].freshness--;
         }
         if (sSfxBanks[bankId][entryIndex].freshness == 0) {
@@ -1588,8 +1527,8 @@ void Audio_ChooseActiveSfx(u8 bankId) {
                 yScaled = *entry->yPos / 2.5f;
                 entry->distance = SQ(*entry->xPos) + SQ(yScaled) + SQ(*entry->zPos);
             }
-            importance = SFX_IMPORTANCE(entry->sfxId);
-            if (SFX_BIT11(entry->sfxId)) {
+            importance = SFX_IMPORT(entry->sfxId);
+            if (entry->sfxId & SFX_FLAG_20) {
                 entry->priority = SQ(0xFF - importance) * SQ(76);
             } else {
                 entry->priority = (u32) entry->distance + SQ(0xFF - importance) * SQ(76);
@@ -1605,7 +1544,7 @@ void Audio_ChooseActiveSfx(u8 bankId) {
             if (entry->distance > maxRangeSq) {
                 if (entry->state == 4) {
                     AUDIOCMD_CHANNEL_SET_IO(2, entry->channelIndex, 0, 0);
-                    if (SFX_BIT04(entry->sfxId)) {
+                    if (entry->sfxId & SFX_FLAG_27) {
                         Audio_RemoveSfxBankEntry(bankId, entryIndex);
                         entryIndex = k;
                     }
@@ -1646,7 +1585,7 @@ void Audio_ChooseActiveSfx(u8 bankId) {
         if (activeSfx->entryIndex == 0xFF) {
             needNewSfx = 1;
         } else if (sSfxBanks[bankId][activeSfx->entryIndex].state == 4) {
-            if (SFX_BIT04(sSfxBanks[bankId][activeSfx->entryIndex].sfxId)) {
+            if (sSfxBanks[bankId][activeSfx->entryIndex].sfxId & SFX_FLAG_27) {
                 Audio_RemoveSfxBankEntry(bankId, activeSfx->entryIndex);
             } else {
                 sSfxBanks[bankId][activeSfx->entryIndex].state = 1;
@@ -1703,7 +1642,7 @@ void Audio_PlayActiveSfx(u8 bankId) {
 
             if (entry->state == 2) {
                 entry->channelIndex = sCurSfxPlayerChannelIndex;
-                if (SFX_BIT12(entry->sfxId)) {
+                if (entry->sfxId & SFX_FLAG_19) {
                     sChannelMuteFlags |= 1 << sCurSfxPlayerChannelIndex;
                     Audio_SetSequenceFade(SEQ_PLAYER_BGM, 2, 64, 15);
                 }
@@ -1742,7 +1681,7 @@ void Audio_KillSfxByBank(u8 bankId) {
         }
         next = sSfxBanks[bankId][0].next;
     }
-    cmp.sfxId = bankId << 28;
+    cmp.sfxId = bankId << SFX_BANK_SHIFT;
     Audio_RemoveMatchingSfxRequests(0, &cmp);
 }
 
@@ -1772,25 +1711,25 @@ void Audio_StopSfxByBankAndSource(u8 bankId, f32* sfxSource) {
 void Audio_KillSfxByBankAndSource(u8 bankId, f32* sfxSource) {
     // LAudioTODO: Stub for now
     return;
-    SfxBankEntry sp18;
+    SfxBankEntry cmp;
 
     Audio_StopSfxByBankAndSource(bankId, sfxSource);
-    sp18.sfxId = bankId << 0x1C;
-    sp18.xPos = sfxSource;
-    Audio_RemoveMatchingSfxRequests(1, &sp18);
+    cmp.sfxId = bankId << SFX_BANK_SHIFT;
+    cmp.xPos = sfxSource;
+    Audio_RemoveMatchingSfxRequests(1, &cmp);
 }
 
 void Audio_KillSfxBySource(f32* sfxSource) {
     // LAudioTODO: Stub for now
     return;
     u8 i;
-    SfxBankEntry sp24;
+    SfxBankEntry cmp;
 
     for (i = 0; i < 5; i++) {
         Audio_StopSfxByBankAndSource(i, sfxSource);
     }
-    sp24.xPos = sfxSource;
-    Audio_RemoveMatchingSfxRequests(2, &sp24);
+    cmp.xPos = sfxSource;
+    Audio_RemoveMatchingSfxRequests(2, &cmp);
 }
 
 void Audio_KillSfxBySourceAndId(f32* sfxSource, u32 sfxId) {
@@ -1913,7 +1852,7 @@ void Audio_PlayAllSfx(void) {
 
     if (IS_SEQUENCE_CHANNEL_VALID(gSeqPlayers[SEQ_PLAYER_SFX].channels[0])) {
         sCurSfxPlayerChannelIndex = 0;
-        for (bankId = 0; bankId < 5; bankId++) {
+        for (bankId = 0; bankId < ARRAY_COUNT(sSfxBanks); bankId++) {
             Audio_ChooseActiveSfx(bankId);
             Audio_PlayActiveSfx(bankId);
             Audio_UpdateSfxVolumeMod(bankId);
@@ -2027,14 +1966,14 @@ s32 Audio_GetCurrentVoiceStatus(void) {
     return 0;
 }
 
-void func_8001AF40(u8 unkVoiceParam) {
-    D_800C7390 = unkVoiceParam;
+void Audio_SetUnkVoiceParam(u8 unkVoiceParam) {
+    sUnkVoiceParam = unkVoiceParam;
 }
 
-void func_8001AF50(void) {
-    if (D_800C7390 != 0xFF) {
-        AUDIOCMD_CHANNEL_SET_IO(SEQ_PLAYER_VOICE, 14, 0, D_800C7390);
-        D_800C7390 = 0xFF;
+void Audio_UpdateUnkVoiceParam(void) {
+    if (sUnkVoiceParam != 0xFF) {
+        AUDIOCMD_CHANNEL_SET_IO(SEQ_PLAYER_VOICE, 14, 0, sUnkVoiceParam);
+        sUnkVoiceParam = 0xFF;
     }
 }
 
@@ -2083,7 +2022,7 @@ void Audio_UpdateArwingNoise(u8 playerId) {
             (sPlayerNoise[playerId].freqMod[2].target - sPlayerNoise[playerId].freqMod[2].value) / 10;
     }
     if (gPlayer[playerId].sfx.roll != 0) {
-        AUDIO_PLAY_SFX(0x09000012, gPlayer[playerId].sfx.srcPos, playerId);
+        AUDIO_PLAY_SFX(NA_SE_ROLLING_AIR, gPlayer[playerId].sfx.srcPos, playerId);
         sPlayerNoise[playerId].freqMod[1].target = 1.65f;
         sPlayerNoise[playerId].freqMod[1].timer = 8;
         sPlayerNoise[playerId].freqMod[1].step =
@@ -2112,9 +2051,9 @@ void Audio_UpdateArwingNoise(u8 playerId) {
             sPlayerNoise[playerId].freqMod[i].value += sPlayerNoise[playerId].freqMod[i].step;
             if ((sPlayerNoise[playerId].freqMod[i].timer == 0) && (sPlayerNoise[playerId].freqMod[i].target != 1.0f)) {
                 sPlayerNoise[playerId].freqMod[i].target = 1.0f;
-                sPlayerNoise[playerId].freqMod[i].timer = D_800C5E58[i];
+                sPlayerNoise[playerId].freqMod[i].timer = sPlayerNoiseTimes[i];
                 sPlayerNoise[playerId].freqMod[i].step =
-                    (1.0f - sPlayerNoise[playerId].freqMod[i].value) / D_800C5E58[i];
+                    (1.0f - sPlayerNoise[playerId].freqMod[i].value) / sPlayerNoiseTimes[i];
             }
         }
     }
@@ -2157,9 +2096,9 @@ void Audio_UpdateLandmasterNoise(u8 playerId) {
             sPlayerNoise[playerId].freqMod[i].value += sPlayerNoise[playerId].freqMod[i].step;
             if ((sPlayerNoise[playerId].freqMod[i].timer == 0) && (sPlayerNoise[playerId].freqMod[i].target != 1.0f)) {
                 sPlayerNoise[playerId].freqMod[i].target = 1.0f;
-                sPlayerNoise[playerId].freqMod[i].timer = D_800C5E58[i];
+                sPlayerNoise[playerId].freqMod[i].timer = sPlayerNoiseTimes[i];
                 sPlayerNoise[playerId].freqMod[i].step =
-                    (1.0f - sPlayerNoise[playerId].freqMod[i].value) / D_800C5E58[i];
+                    (1.0f - sPlayerNoise[playerId].freqMod[i].value) / sPlayerNoiseTimes[i];
             }
         }
     }
@@ -2172,12 +2111,12 @@ void Audio_UpdateLandmasterNoise(u8 playerId) {
     } else {
         freqMod += 1.0f;
     }
-    if (gPlayer[playerId].unk_0D0 > 25.0f) {
+    if (gPlayer[playerId].baseSpeed > 25.0f) {
         freqMod += 0.5f;
-    } else if (gPlayer[playerId].unk_0D0 < 5.0f) {
+    } else if (gPlayer[playerId].baseSpeed < 5.0f) {
         freqMod -= 0.5f;
     } else {
-        freqMod += (gPlayer[playerId].unk_0D0 - 15.0f) * 0.05f;
+        freqMod += (gPlayer[playerId].baseSpeed - 15.0f) * 0.05f;
     }
     if (freqMod > 2.0f) {
         freqMod = 2.0f;
@@ -2195,7 +2134,7 @@ void Audio_UpdateBlueMarineNoise(u8 playerId) {
         sPlayerNoise[playerId].freqMod[2].step = (1.1f - sPlayerNoise[playerId].freqMod[2].value) / 10;
     }
     if (gPlayer[playerId].sfx.roll != 0) {
-        AUDIO_PLAY_SFX(0x09000017, gPlayer[playerId].sfx.srcPos, playerId);
+        AUDIO_PLAY_SFX(NA_SE_MAR_ROLLING_AIR, gPlayer[playerId].sfx.srcPos, playerId);
         sPlayerNoise[playerId].freqMod[1].timer = 8;
         sPlayerNoise[playerId].freqMod[1].target = 1.2f;
         sPlayerNoise[playerId].freqMod[1].step = (1.2f - sPlayerNoise[playerId].freqMod[1].value) / 8;
@@ -2215,9 +2154,9 @@ void Audio_UpdateBlueMarineNoise(u8 playerId) {
             sPlayerNoise[playerId].freqMod[i].value += sPlayerNoise[playerId].freqMod[i].step;
             if ((sPlayerNoise[playerId].freqMod[i].timer == 0) && (sPlayerNoise[playerId].freqMod[i].target != 1.0f)) {
                 sPlayerNoise[playerId].freqMod[i].target = 1.0f;
-                sPlayerNoise[playerId].freqMod[i].timer = D_800C5E58[i];
+                sPlayerNoise[playerId].freqMod[i].timer = sPlayerNoiseTimes[i];
                 sPlayerNoise[playerId].freqMod[i].step =
-                    (1.0f - sPlayerNoise[playerId].freqMod[i].value) / D_800C5E58[i];
+                    (1.0f - sPlayerNoise[playerId].freqMod[i].value) / sPlayerNoiseTimes[i];
             }
         }
     }
@@ -2235,7 +2174,11 @@ void Audio_UpdateBlueMarineNoise(u8 playerId) {
 void Audio_UpdatePlayerFreqMod(void) {
     u8 playerId;
 
+#ifdef AVOID_UB
+    for (playerId = 0; playerId < gCamCount; playerId++) {
+#else
     for (playerId = 0; playerId < 4; playerId++) {
+#endif
         switch (sPlayerNoise[playerId].form) {
             case FORM_ARWING:
                 Audio_UpdateArwingNoise(playerId);
@@ -2283,8 +2226,8 @@ void Audio_ResetVoicesAndPlayers(void) {
         sPlayerNoise[playerId].reverbAdd = 0;
         sPlayerNoise[playerId].totalMod = 1.0f;
         sPlayerNoise[playerId].dopplerShift = 1.0f;
-        D_8014BA24[playerId] = 0;
-        D_8014BA28[playerId] = 0;
+        sBombState[playerId] = 0;
+        sBombStartFrame[playerId] = 0;
     }
     sSfxFreqMod = 1.0f;
     sSfxVolMod = 1.0f;
@@ -2336,7 +2279,7 @@ void Audio_ProcessPlaylist(void) {
     }
 }
 
-void func_8001BFC0(f32* buffer0, f32* buffer1, s32 length, f32* buffer2) {
+void Audio_AnalyzeFrequencies(f32* buffer0, f32* buffer1, s32 length, f32* buffer2) {
     f32 temp_ft0;
     f32 var_fs0;
     f32* buff0fromStart;
@@ -2359,8 +2302,8 @@ void func_8001BFC0(f32* buffer0, f32* buffer1, s32 length, f32* buffer2) {
         var_fs0 = 0.0f;
         temp_ft0 = D_PI / (2 * size);
         for (i = 0; i < half; i++) {
-            *buf2half2++ = (__cosf(var_fs0) - __sinf(var_fs0)) * 0.707107f;
-            *buf2half3++ = (__cosf(var_fs0) + __sinf(var_fs0)) * 0.707107f;
+            *buf2half2++ = (__cosf(var_fs0) - __sinf(var_fs0)) * 0.707107f; // approx 1/sqrt(2)
+            *buf2half3++ = (__cosf(var_fs0) + __sinf(var_fs0)) * 0.707107f; // approx 1/sqrt(2)
             var_fs0 += temp_ft0;
         }
     }
@@ -2414,14 +2357,14 @@ void func_8001BFC0(f32* buffer0, f32* buffer1, s32 length, f32* buffer2) {
 }
 
 u8* Audio_UpdateFrequencyAnalysis(void) {
-    s32 temp2;
-    s32 i;
-    s32 j;
-    s32 k;
-    s32 l;
-    s32 m;
-    s16* temp;
-    f32* test;
+    s32 fmax;
+    s32 i1;
+    s32 fmin;
+    s32 i2;
+    s32 i3;
+    s32 fbin;
+    s16* aiData;
+    s32 pad;
     static s32 sFreqBins[] = {
         0,  1,  2,  3,  4,  6,  7,  8,   9,   10,  11,  12,  14,  16,  19,  22,
         26, 31, 37, 44, 54, 68, 88, 108, 138, 163, 188, 208, 222, 234, 242, 246,
@@ -2434,184 +2377,184 @@ u8* Audio_UpdateFrequencyAnalysis(void) {
 
     Audio_ProcessPlaylist();
     // clang-format off
-    temp = gAiBuffers[gCurAiBuffIndex];\
-    for(l = 0; l < 256; l++) {\
-        D_80149AD8[l] = *temp++;
+    aiData = gAiBuffers[gCurAiBuffIndex];\
+    for(i3 = 0; i3 < 256; i3++) {\
+        sAudioAnalyzerData[i3] = *aiData++;
     }
     // clang-format on
-    func_8001BFC0(D_80149AD8, D_80149ED8, 8, D_8014A2D8);
-    j = 0;
-    for (i = 0; i < 32; i++) {
-        temp2 = sFreqBins[i] + 1;
-        for (m = j; m < temp2; m++) {
-            if (D_80149AD8[m] > 0.0f) {
-                D_8014A8D8[i] += D_80149AD8[m];
+    Audio_AnalyzeFrequencies(sAudioAnalyzerData, sAnalyzerBuffer1, 8, sAnalyzerBuffer2);
+    fmin = 0;
+    for (i1 = 0; i1 < 32; i1++) {
+        fmax = sFreqBins[i1] + 1;
+        for (fbin = fmin; fbin < fmax; fbin++) {
+            if (sAudioAnalyzerData[fbin] > 0.0f) {
+                sNewFreqAmplitudes[i1] += sAudioAnalyzerData[fbin];
             } else {
-                D_8014A8D8[i] -= D_80149AD8[m];
+                sNewFreqAmplitudes[i1] -= sAudioAnalyzerData[fbin];
             }
         }
-        j = m;
+        fmin = fbin;
     }
-    for (k = 0; k < 32; k++) {
-        D_8014A8D8[k] /= 8;
+    for (i2 = 0; i2 < 32; i2++) {
+        sNewFreqAmplitudes[i2] /= 8;
     }
-    for (l = 0; l < 32; l++) {
-        D_8014A8D8[l] = (D_8014A8D8[l] / 32768.0f) * sFreqGain;
-        if (D_8014A8D8[l] > 1.0f) {
-            D_8014A8D8[l] = 1.0f;
+    for (i3 = 0; i3 < 32; i3++) {
+        sNewFreqAmplitudes[i3] = (sNewFreqAmplitudes[i3] / 32768.0f) * sFreqGain;
+        if (sNewFreqAmplitudes[i3] > 1.0f) {
+            sNewFreqAmplitudes[i3] = 1.0f;
         }
-        sFreqAmplitudes[l] = sFreqAmplitudes[l] * 0.75f + 0.25f * D_8014A8D8[l];
-        D_8014A958[l] = sFreqAmplitudes[l] * 255.0f;
+        sFreqAmplitudes[i3] = sFreqAmplitudes[i3] * 0.75f + 0.25f * sNewFreqAmplitudes[i3];
+        sFreqAnalyzerBars[i3] = sFreqAmplitudes[i3] * 255.0f;
     }
-    return D_8014A958;
+    return sFreqAnalyzerBars;
 }
 
-void func_8001C8B8(u8 playerId) {
-    u32 sfxId = 0x00000000;
+void Audio_StartPlayerNoise(u8 playerId) {
+    u32 sfxId = NA_SE_NONE;
 
     sPlayerNoise[playerId].form = gPlayer[playerId].sfx.form;
     Audio_ResetPlayerFreqMods();
     switch (sPlayerNoise[playerId].form) {
         case FORM_ARWING:
             if (gPlayer[playerId].sfx.levelType == LEVELTYPE_SPACE) {
-                sfxId = 0x0100F020;
+                sfxId = NA_SE_ARWING_ENGIN_SPC;
             } else {
-                sfxId = 0x0100F005;
+                sfxId = NA_SE_ARWING_ENGIN_GRD;
             }
             break;
         case FORM_LANDMASTER:
-            sfxId = 0x0100F006;
+            sfxId = NA_SE_TANK_ENGIN;
             break;
         case FORM_BLUE_MARINE:
-            sfxId = 0x0100F022;
-            Audio_PlaySfx(0x1100802C, gPlayer[playerId].sfx.srcPos, playerId, &gDefaultMod, &gDefaultMod,
+            sfxId = NA_SE_MARINE_ENGINE00;
+            Audio_PlaySfx(NA_SE_SUBMARINE_ATM, gPlayer[playerId].sfx.srcPos, playerId, &gDefaultMod, &gDefaultMod,
                           &sPlayerNoise[playerId].reverbAdd);
             break;
     }
-    if (sfxId != 0) {
+    if (sfxId != NA_SE_NONE) {
         Audio_PlaySfx(sfxId, gPlayer[playerId].sfx.srcPos, playerId, &sPlayerNoise[playerId].totalMod, &gDefaultMod,
                       &sPlayerNoise[playerId].reverbAdd);
     }
 }
 
-void func_8001CA24(u8 playerId) {
-    u32 sfxId = 0x00000000;
+void Audio_StopPlayerNoise(u8 playerId) {
+    u32 sfxId = NA_SE_NONE;
 
     switch (sPlayerNoise[playerId].form) {
         case FORM_ARWING:
             if (gPlayer[playerId].sfx.levelType == LEVELTYPE_SPACE) {
-                sfxId = 0x0100F020;
+                sfxId = NA_SE_ARWING_ENGIN_SPC;
             } else {
-                sfxId = 0x0100F005;
+                sfxId = NA_SE_ARWING_ENGIN_GRD;
             }
-            Audio_KillSfxBySourceAndId(gPlayer[playerId].sfx.srcPos, 0x1100000B);
+            Audio_KillSfxBySourceAndId(gPlayer[playerId].sfx.srcPos, NA_SE_SPLASH_LEVEL_S);
             break;
         case FORM_LANDMASTER:
-            sfxId = 0x0100F006;
+            sfxId = NA_SE_TANK_ENGIN;
             break;
         case FORM_BLUE_MARINE:
-            sfxId = 0x0100F022;
-            Audio_KillSfxBySourceAndId(gPlayer[playerId].sfx.srcPos, 0x1100802C);
+            sfxId = NA_SE_MARINE_ENGINE00;
+            Audio_KillSfxBySourceAndId(gPlayer[playerId].sfx.srcPos, NA_SE_SUBMARINE_ATM);
             break;
     }
     sPlayerNoise[playerId].form = FORM_NONE;
-    if (sfxId != 0) {
+    if (sfxId != NA_SE_NONE) {
         Audio_KillSfxBySourceAndId(gPlayer[playerId].sfx.srcPos, sfxId);
     }
 }
 
-void func_8001CB80(u8 playerId, u8 arg1) {
-    D_8014BA28[playerId] = sAudioFrameCounter;
-    switch (arg1) {
+void Audio_InitBombSfx(u8 playerId, u8 type) {
+    sBombStartFrame[playerId] = sAudioFrameCounter;
+    switch (type) {
         case 1:
-            D_8014BA10[playerId] = 1.0f;
-            D_8014BA20[playerId] = 1;
+            sBombFreqMod[playerId] = 1.0f;
+            sBombType[playerId] = 1;
             break;
         case 2:
-            D_8014BA10[playerId] = 1.5f;
-            D_8014BA20[playerId] = 2;
+            sBombFreqMod[playerId] = 1.5f;
+            sBombType[playerId] = 2;
             break;
         default:
         case 0:
-            D_8014BA10[playerId] = 0.75f;
-            D_8014BA20[playerId] = 0;
+            sBombFreqMod[playerId] = 0.75f;
+            sBombType[playerId] = 0;
             break;
     }
-    if (D_8014BA24[playerId] != 1) {
-        Audio_PlaySfx(0x01008008, gPlayer[playerId].sfx.srcPos, playerId, &D_8014BA10[playerId], &gDefaultMod,
+    if (sBombState[playerId] != 1) {
+        Audio_PlaySfx(NA_SE_BOMB_CHARGE, gPlayer[playerId].sfx.srcPos, playerId, &sBombFreqMod[playerId], &gDefaultMod,
                       &sPlayerNoise[playerId].reverbAdd);
-        D_8014BA24[playerId] = 1;
+        sBombState[playerId] = 1;
     }
 }
 
-void func_8001CCDC(u8 playerId, f32* sfxSource) {
-    if (D_8014BA24[playerId] != 0) {
-        switch (D_8014BA20[playerId]) {
+void Audio_PlayBombFlightSfx(u8 playerId, f32* sfxSource) {
+    if (sBombState[playerId] != 0) {
+        switch (sBombType[playerId]) {
             case 1:
-                D_8014BA10[playerId] = 1.2f;
+                sBombFreqMod[playerId] = 1.2f;
                 break;
             case 2:
-                D_8014BA10[playerId] = 1.5f;
+                sBombFreqMod[playerId] = 1.5f;
                 break;
             default:
             case 0:
-                D_8014BA10[playerId] = 1.0f;
+                sBombFreqMod[playerId] = 1.0f;
                 break;
         }
-        Audio_KillSfxBySourceAndId(gPlayer[playerId].sfx.srcPos, 0x01008008);
-        Audio_PlaySfx(0x09001001, sfxSource, playerId, &D_8014BA10[playerId], &gDefaultMod,
+        Audio_KillSfxBySourceAndId(gPlayer[playerId].sfx.srcPos, NA_SE_BOMB_CHARGE);
+        Audio_PlaySfx(NA_SE_SMART_BOMB_SHOT, sfxSource, playerId, &sBombFreqMod[playerId], &gDefaultMod,
                       &sPlayerNoise[playerId].reverbAdd);
-        D_8014BA24[playerId] = 2;
+        sBombState[playerId] = 2;
     }
 }
 
-void func_8001CE28(u8 playerId, f32* sfxSource) {
+void Audio_PlayBombExplodeSfx(u8 playerId, f32* sfxSource) {
     u32 sfxId;
 
-    if (D_8014BA24[playerId] != 0) {
-        switch (D_8014BA20[playerId]) {
+    if (sBombState[playerId] != 0) {
+        switch (sBombType[playerId]) {
             case 1:
-                sfxId = 0x0903A00A;
+                sfxId = NA_SE_BOMB_EXPLODE1;
                 break;
             case 2:
-                sfxId = 0x0901A00B;
+                sfxId = NA_SE_BOMB_EXPLODE2;
                 break;
             default:
             case 0:
-                sfxId = 0x0901A009;
+                sfxId = NA_SE_BOMB_EXPLODE0;
                 break;
         }
-        Audio_KillSfxByTokenAndId(playerId, 0x09001001);
+        Audio_KillSfxByTokenAndId(playerId, NA_SE_SMART_BOMB_SHOT);
         AUDIO_PLAY_SFX(sfxId, sfxSource, playerId);
-        D_8014BA24[playerId] = 0;
+        sBombState[playerId] = 0;
     }
 }
 
-void func_8001CEFC(f32* sfxSource) {
-    u32 sfxId = (gPlayer[0].sfx.levelType == LEVELTYPE_SPACE) ? 0x31000040 : 0x3100000C;
+void Audio_StartEngineNoise(f32* sfxSource) {
+    u32 sfxId = (gPlayer[0].sfx.levelType == LEVELTYPE_SPACE) ? NA_SE_ARWING_ENGINE_FS : NA_SE_ARWING_ENGINE_FG;
 
     AUDIO_PLAY_SFX(sfxId, sfxSource, 0);
 }
 
-void func_8001CF60(f32* sfxSource) {
-    u32 sfxId = (gPlayer[0].sfx.levelType == LEVELTYPE_SPACE) ? 0x31000040 : 0x3100000C;
+void Audio_StopEngineNoise(f32* sfxSource) {
+    u32 sfxId = (gPlayer[0].sfx.levelType == LEVELTYPE_SPACE) ? NA_SE_ARWING_ENGINE_FS : NA_SE_ARWING_ENGINE_FG;
 
     Audio_KillSfxBySourceAndId(sfxSource, sfxId);
 }
 
-void func_8001CFA8(f32 arg0) {
-    f32 var_fv0 = ABS(arg0);
+void Audio_SetSfxSpeedModulation(f32 vel) {
+    f32 speed = ABS(vel);
 
-    if (var_fv0 < 6.0f) {
-        var_fv0 = 6.0f;
-    } else if (var_fv0 > 30.0f) {
-        var_fv0 = 30.0f;
+    if (speed < 6.0f) {
+        speed = 6.0f;
+    } else if (speed > 30.0f) {
+        speed = 30.0f;
     }
 
-    sSfxFreqMod = ((var_fv0 - 18.0f) / 24.0f) + 1.0f;
+    sSfxFreqMod = ((speed - 18.0f) / 24.0f) + 1.0f;
 }
 
-void func_8001D034(f32* sfxSource, u32 sfxId, u8 semitones) {
+void Audio_SetTransposeAndPlaySfx(f32* sfxSource, u32 sfxId, u8 semitones) {
     f32 semitoneMods[] = {
         1.0f, 1.059f, 1.122f, 1.189f, 1.26f, 1.335f, 1.414f, 1.498f, 1.587f, 1.682f, 1.782f, 1.888f, 2.0f,
     };
@@ -2619,64 +2562,69 @@ void func_8001D034(f32* sfxSource, u32 sfxId, u8 semitones) {
     if (semitones > 12) {
         semitones = 12;
     }
-    func_8001D0B4(sfxSource, sfxId, semitoneMods[semitones]);
+    Audio_SetModulationAndPlaySfx(sfxSource, sfxId, semitoneMods[semitones]);
 }
 
-void func_8001D0B4(f32* sfxSource, u32 sfxId, f32 freqMod) {
+void Audio_SetModulationAndPlaySfx(f32* sfxSource, u32 sfxId, f32 freqMod) {
     sSfxFreqMod = freqMod;
     Audio_PlaySfx(sfxId, sfxSource, 0, &sSfxFreqMod, &gDefaultMod, &gDefaultReverb);
 }
 
-void func_8001D10C(f32* sfxSource, u32 sfxId) {
+void Audio_PlaySfxModulated(f32* sfxSource, u32 sfxId) {
     Audio_PlaySfx(sfxId, sfxSource, 0, &sSfxFreqMod, &sSfxVolMod, &gDefaultReverb);
 }
 
-void func_8001D15C(u8 arg0) {
-    if (arg0 < 12) {
-        sSfxFreqMod = (arg0 / 11.0f) + 0.5f;
+void Audio_SetSfxMapModulation(u8 fMod) {
+    if (fMod < 12) {
+        sSfxFreqMod = (fMod / 11.0f) + 0.5f;
     } else {
         sSfxFreqMod = 1.5f;
     }
 }
 
-void func_8001D1C8(u8 arg0, u8 arg1) {
-    u8 temp1;
-    u8 temp2;
+void Audio_SetHeatAlarmParams(u8 shields, u8 heightParam) {
+    // height param is (s32) height / 100 - 1, clamped to [0, 5]
+    u8 alarmVolume;
+    u8 heightVolume;
 
-    AUDIOCMD_CHANNEL_SET_IO(SEQ_PLAYER_SFX, 9, 2, 8 + (arg0 >> 2));
-    AUDIOCMD_CHANNEL_SET_IO(SEQ_PLAYER_SFX, 10, 2, 8 + (arg0 >> 2));
-    AUDIOCMD_CHANNEL_SET_IO(SEQ_PLAYER_SFX, 11, 2, 8 + (arg0 >> 2));
-    AUDIOCMD_CHANNEL_SET_IO(SEQ_PLAYER_SFX, 9, 1, 19 - (arg1 * 3));
-    AUDIOCMD_CHANNEL_SET_IO(SEQ_PLAYER_SFX, 10, 1, 19 - (arg1 * 3));
-    AUDIOCMD_CHANNEL_SET_IO(SEQ_PLAYER_SFX, 11, 1, 19 - (arg1 * 3));
-    temp1 = 68 - (arg0 >> 3);
-    temp2 = 80 - (arg1 * 10);
-    if (temp1 < temp2) {
-        temp1 = temp2;
+    // modifies tempo
+    AUDIOCMD_CHANNEL_SET_IO(SEQ_PLAYER_SFX, 9, 2, 8 + (shields >> 2));
+    AUDIOCMD_CHANNEL_SET_IO(SEQ_PLAYER_SFX, 10, 2, 8 + (shields >> 2));
+    AUDIOCMD_CHANNEL_SET_IO(SEQ_PLAYER_SFX, 11, 2, 8 + (shields >> 2));
+
+    // modifies frequency
+    AUDIOCMD_CHANNEL_SET_IO(SEQ_PLAYER_SFX, 9, 1, 19 - (heightParam * 3));
+    AUDIOCMD_CHANNEL_SET_IO(SEQ_PLAYER_SFX, 10, 1, 19 - (heightParam * 3));
+    AUDIOCMD_CHANNEL_SET_IO(SEQ_PLAYER_SFX, 11, 1, 19 - (heightParam * 3));
+
+    alarmVolume = 68 - (shields >> 3);
+    heightVolume = 80 - (heightParam * 10);
+    if (heightVolume > alarmVolume) {
+        alarmVolume = heightVolume;
     }
-    AUDIOCMD_CHANNEL_SET_IO(SEQ_PLAYER_SFX, 9, 3, temp1);
-    AUDIOCMD_CHANNEL_SET_IO(SEQ_PLAYER_SFX, 10, 3, temp1);
-    AUDIOCMD_CHANNEL_SET_IO(SEQ_PLAYER_SFX, 11, 3, temp1);
+    AUDIOCMD_CHANNEL_SET_IO(SEQ_PLAYER_SFX, 9, 3, alarmVolume);
+    AUDIOCMD_CHANNEL_SET_IO(SEQ_PLAYER_SFX, 10, 3, alarmVolume);
+    AUDIOCMD_CHANNEL_SET_IO(SEQ_PLAYER_SFX, 11, 3, alarmVolume);
 }
 
-void Audio_PlayEventSfx(f32* sfxSource, u16 arg1) {
-    if ((D_800C5E88[arg1] & 0xF0000000) != 0x40000000) {
-        AUDIO_PLAY_SFX(D_800C5E88[arg1], sfxSource, 0);
+void Audio_PlayEventSfx(f32* sfxSource, u16 eventSfxId) {
+    if ((sEventSfx[eventSfxId] & SFX_BANK_MASK) != (SFX_BANK_SYSTEM << SFX_BANK_SHIFT)) {
+        AUDIO_PLAY_SFX(sEventSfx[eventSfxId], sfxSource, 0);
     } else {
-        AUDIO_PLAY_SFX(D_800C5E88[arg1], gDefaultSfxSource, 0);
+        AUDIO_PLAY_SFX(sEventSfx[eventSfxId], gDefaultSfxSource, 0);
     }
 }
 
-void Audio_StopEventSfx(f32* sfxSource, u16 arg1) {
-    if ((D_800C5E88[arg1] & 0xF0000000) != 0x40000000) {
-        Audio_KillSfxBySourceAndId(sfxSource, D_800C5E88[arg1]);
+void Audio_StopEventSfx(f32* sfxSource, u16 eventSfxId) {
+    if ((sEventSfx[eventSfxId] & SFX_BANK_MASK) != (SFX_BANK_SYSTEM << SFX_BANK_SHIFT)) {
+        Audio_KillSfxBySourceAndId(sfxSource, sEventSfx[eventSfxId]);
     } else {
-        Audio_KillSfxBySourceAndId(gDefaultSfxSource, D_800C5E88[arg1]);
+        Audio_KillSfxBySourceAndId(gDefaultSfxSource, sEventSfx[eventSfxId]);
     }
 }
 
-void Audio_SetBaseSfxReverb(s8 reverb) {
-    sBaseReverb = reverb;
+void Audio_SetEnvSfxReverb(s8 reverb) {
+    sEnvReverb = reverb;
 }
 
 void Audio_SetBgmParam(s8 bgmParam) {
@@ -2689,56 +2637,56 @@ void Audio_PlaySequence(u8 seqPlayId, u16 seqId, u8 fadeinTime, u8 bgmParam) {
 }
 
 void Audio_PlayFanfare(u16 seqId, u8 bgmVolume, u8 bgmFadeoutTime, u8 bgmFadeinTime) {
-    if (Audio_GetActiveSeqId(SEQ_PLAYER_BGM) != SEQ_ID_DEATH) {
+    if (Audio_GetActiveSeqId(SEQ_PLAYER_BGM) != NA_BGM_PLAYER_DOWN) {
         Audio_SetSequenceFade(SEQ_PLAYER_BGM, 1, bgmVolume, bgmFadeoutTime);
         SEQCMD_SETUP_RESTORE_SEQPLAYER_VOLUME(SEQ_PLAYER_FANFARE, SEQ_PLAYER_BGM, bgmFadeinTime);
         SEQCMD_PLAY_SEQUENCE(SEQ_PLAYER_FANFARE, 0, 0, seqId);
     }
 }
 
-void func_8001D520(void) {
+void Audio_PlayDeathSequence(void) {
     u8 i;
 
-    if (sNewAudioSpecId == 24) {
+    if (sAudioSpecId == AUDIOSPEC_24) {
         Audio_ClearVoice();
-        func_8001D6DC(0);
-        AUDIO_PLAY_SFX(0x0903F004, gDefaultSfxSource, 4);
+        Audio_PlayMapMenuSfx(0);
+        AUDIO_PLAY_SFX(NA_SE_ARWING_EXPLOSION, gDefaultSfxSource, 4);
         SEQCMD_SET_SEQPLAYER_VOLUME(SEQ_PLAYER_BGM, 5, 30);
         SEQCMD_SETUP_RESTORE_SEQPLAYER_VOLUME(SEQ_PLAYER_FANFARE, SEQ_PLAYER_BGM, 30);
-        SEQCMD_PLAY_SEQUENCE(SEQ_PLAYER_FANFARE, 0, 0, 39);
+        SEQCMD_PLAY_SEQUENCE(SEQ_PLAYER_FANFARE, 0, 0, NA_BGM_PLAYER_DOWN);
     } else {
         for (i = 0; i < 5; i++) {
             Audio_KillSfxByBank(i);
         }
         AUDIOCMD_GLOBAL_UNMUTE(true);
-        AUDIO_PLAY_SFX(0x0903F004, gDefaultSfxSource, 4);
+        AUDIO_PLAY_SFX(NA_SE_ARWING_EXPLOSION, gDefaultSfxSource, 4);
         SEQCMD_STOP_SEQUENCE(SEQ_PLAYER_BGM, 0);
         SEQCMD_STOP_SEQUENCE(SEQ_PLAYER_FANFARE, 0);
-        SEQCMD_PLAY_SEQUENCE(SEQ_PLAYER_BGM, 0, 0, 39);
+        SEQCMD_PLAY_SEQUENCE(SEQ_PLAYER_BGM, 0, 0, NA_BGM_PLAYER_DOWN);
     }
 }
 
-void func_8001D638(u8 arg0) {
-    if (arg0) {
-        AUDIO_PLAY_SFX(0x4900F000, gDefaultSfxSource, 4);
+void Audio_PlayPauseSfx(u8 active) {
+    if (active) {
+        AUDIO_PLAY_SFX(NA_SE_PAUSE_ON, gDefaultSfxSource, 4);
         AUDIOCMD_GLOBAL_MUTE();
     } else {
-        AUDIO_PLAY_SFX(0x4900F000, gDefaultSfxSource, 4);
+        AUDIO_PLAY_SFX(NA_SE_PAUSE_ON, gDefaultSfxSource, 4);
         AUDIOCMD_GLOBAL_UNMUTE(false);
     }
 }
 
-void func_8001D6DC(u8 arg0) {
-    if (arg0) {
-        AUDIO_PLAY_SFX(0x49000019, gDefaultSfxSource, 4);
+void Audio_PlayMapMenuSfx(u8 active) {
+    if (active) {
+        AUDIO_PLAY_SFX(NA_SE_MAP_WINDOW_OPEN, gDefaultSfxSource, 4);
         AUDIOCMD_GLOBAL_MUTE();
     } else {
-        AUDIO_PLAY_SFX(0x4900101A, gDefaultSfxSource, 4);
+        AUDIO_PLAY_SFX(NA_SE_MAP_WINDOW_CLOSE, gDefaultSfxSource, 4);
         AUDIOCMD_GLOBAL_UNMUTE(false);
     }
 }
 
-void func_8001D780(u8 audioType) {
+void Audio_RestoreVolumeSettings(u8 audioType) {
     s8 volume = ((sVolumeSettings[audioType] * 127) / 99) % 128U;
     u8 i;
 
@@ -2758,27 +2706,27 @@ void func_8001D780(u8 audioType) {
     }
 }
 
-void func_8001D8A8(u8 audioType, u8 volume) {
+void Audio_SetVolume(u8 audioType, u8 volume) {
     if (volume > 99) {
         volume = 99;
     }
     sVolumeSettings[audioType] = volume;
-    func_8001D780(audioType);
+    Audio_RestoreVolumeSettings(audioType);
 }
 
 void Audio_PlaySoundTest(u8 enable) {
     switch (enable) {
         case false:
-            AUDIO_PLAY_BGM(SEQ_ID_MENU);
+            AUDIO_PLAY_BGM(NA_BGM_SELECT);
             Audio_PlayVoice(1);
-            Audio_KillSfxById(0x0100001F);
-            Audio_KillSfxById(0x0100F005);
+            Audio_KillSfxById(NA_SE_VOLUME_TEST);
+            Audio_KillSfxById(NA_SE_ARWING_ENGIN_GRD);
             break;
         case true:
-            AUDIO_PLAY_BGM(SEQ_ID_VERSUS);
+            AUDIO_PLAY_BGM(NA_BGM_VOLUME_TEST);
             Audio_PlayVoice(2);
-            AUDIO_PLAY_SFX(0x0100001F, gDefaultSfxSource, 0);
-            AUDIO_PLAY_SFX(0x0100F005, gDefaultSfxSource, 0);
+            AUDIO_PLAY_SFX(NA_SE_VOLUME_TEST, gDefaultSfxSource, 0);
+            AUDIO_PLAY_SFX(NA_SE_ARWING_ENGIN_GRD, gDefaultSfxSource, 0);
             break;
     }
 }
@@ -2786,7 +2734,7 @@ void Audio_PlaySoundTest(u8 enable) {
 void Audio_PlaySequenceDistorted(u8 seqPlayId, u16 seqId, u16 distortion, u8 fadeinTime, u8 unused) {
     u8 tempoDistortion = (distortion / 10);
 
-    Audio_PlaySequence(seqPlayId, seqId & ~0x8000, 0, -1);
+    Audio_PlaySequence(seqPlayId, seqId & ~SEQ_FLAG, 0, -1);
     SEQCMD_SET_SEQPLAYER_FREQ(seqPlayId, fadeinTime, distortion);
     SEQCMD_SCALE_TEMPO(seqPlayId, fadeinTime, tempoDistortion);
 }
@@ -2802,7 +2750,7 @@ void Audio_PlaySoundTestTrack(u8 trackNumber) {
         sPlaylistCmdIndex = 0;
         sPlaylistTimer = 0;
     } else if (trackNumber >= 50) {
-        AUDIO_PLAY_SFX(0x4900100A, gDefaultSfxSource, 4);
+        AUDIO_PLAY_SFX(NA_SE_ERROR, gDefaultSfxSource, 4);
     } else {
         sPlaylistIndex = 0xFF;
         sp26 = sSoundTestTracks[trackNumber].seqId & 0xFF;
@@ -2845,44 +2793,44 @@ void Audio_InitSounds(void) {
     Audio_ResetSfxChannelState();
     Audio_ResetActiveSequencesAndVolume();
     Audio_ResetSfx();
-    Audio_StartSequence(SEQ_PLAYER_VOICE, SEQ_ID_VOICE, 0xFF, 1);
-    Audio_StartSequence(SEQ_PLAYER_SFX, SEQ_ID_SFX, 0xFF, 10);
+    Audio_StartSequence(SEQ_PLAYER_VOICE, NA_BGM_VO, 0xFF, 1);
+    Audio_StartSequence(SEQ_PLAYER_SFX, NA_BGM_SE, 0xFF, 10);
 }
 
-void func_8001DD40(void) {
+void Audio_RestartSeqPlayers(void) {
     s32 pad1;
     s32 pad2;
-    u16 sp1E = 1;
+    u16 fadeIn = 1;
 
-    Audio_StartSequence(SEQ_PLAYER_VOICE, SEQ_ID_VOICE, 0xFF, 1);
-    if (sNewAudioSpecId == 12) {
-        sp1E = 360;
-    } else if (sNewAudioSpecId < 23) {
-        sp1E = 90;
+    Audio_StartSequence(SEQ_PLAYER_VOICE, NA_BGM_VO, 0xFF, 1);
+    if (sAudioSpecId == AUDIOSPEC_12) {
+        fadeIn = 360;
+    } else if (sAudioSpecId < AUDIOSPEC_23) {
+        fadeIn = 90;
     }
-    Audio_StartSequence(SEQ_PLAYER_SFX, SEQ_ID_SFX, 0xFF, sp1E);
-    func_80017494();
-    func_80017550();
+    Audio_StartSequence(SEQ_PLAYER_SFX, NA_BGM_SE, 0xFF, fadeIn);
+    Audio_LoadInstruments();
+    Audio_LoadAquasSequence();
     SEQCMD_SET_SEQPLAYER_VOLUME(SEQ_PLAYER_SFX, 0, 127);
     SEQCMD_SET_SEQPLAYER_VOLUME(SEQ_PLAYER_VOICE, 0, 127);
     AudioThread_ScheduleProcessCmds();
     AUDIOCMD_GLOBAL_STOP_AUDIOCMDS();
     AUDIOCMD_GLOBAL_STOP_AUDIOCMDS();
     AUDIOCMD_GLOBAL_STOP_AUDIOCMDS();
-    func_8001D780(0);
-    func_8001D780(2);
-    func_8001D780(1);
+    Audio_RestoreVolumeSettings(0);
+    Audio_RestoreVolumeSettings(2);
+    Audio_RestoreVolumeSettings(1);
 }
 
-void func_8001DE1C(u8 oldSpecId) {
-    if (oldSpecId == 16) {
-        if ((sNewAudioSpecId == 22) || (sNewAudioSpecId == 23)) {
-            D_800C5D58 = 2;
+void Audio_StartReset(u8 oldSpecId) {
+    if (oldSpecId == AUDIOSPEC_16) {
+        if ((sAudioSpecId == AUDIOSPEC_22) || (sAudioSpecId == AUDIOSPEC_23)) {
+            sAudioResetStatus = AUDIORESET_BLOCK;
         }
-    } else if ((oldSpecId == 28) && (sNewAudioSpecId == 23)) {
-        D_800C5D58 = 2;
+    } else if ((oldSpecId == AUDIOSPEC_28) && (sAudioSpecId == AUDIOSPEC_23)) {
+        sAudioResetStatus = AUDIORESET_BLOCK;
     } else {
-        D_800C5D58 = 1;
+        sAudioResetStatus = AUDIORESET_WAIT;
     }
     AUDIOCMD_GLOBAL_UNMUTE(true);
     Audio_ResetVoicesAndPlayers();
@@ -2892,13 +2840,13 @@ void func_8001DE1C(u8 oldSpecId) {
 }
 
 void Audio_Update(void) {
-    if (func_80018FA4() == 0) {
+    if (Audio_HandleReset() == AUDIORESET_READY) {
         Audio_ProcessSfxRequests();
         Audio_ProcessSeqCmds();
         Audio_PlayAllSfx();
         Audio_UpdatePlayerNoise();
         Audio_UpdateVoice();
-        func_8001AF50();
+        Audio_UpdateUnkVoiceParam();
         Audio_UpdateActiveSequences();
         Audio_UpdateDelayedSeqCmds();
         AudioThread_ScheduleProcessCmds();

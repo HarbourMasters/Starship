@@ -1,0 +1,249 @@
+:config:
+  segments:
+    - [0x08, 0xCA9DE0]
+  header:
+    code:
+      - '#include "assets/ast_option.h"'
+    header:
+      - '#include "gfx.h"'
+      - '#include "sf64object.h"'
+
+# Invoice
+D_OPT_8000000:
+  { type: TEXTURE, ctype: u8, format: CI4, width: 128, height: 26, offset: 0x8000000, symbol: D_OPT_8000000, tlut: 0x8000680 }
+
+D_OPT_8000680:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 16, offset: 0x8000680, symbol: D_OPT_8000680 }
+
+# Cornerian army attn:
+D_OPT_80006A0:
+  { type: TEXTURE, ctype: u8, format: CI4, width: 256, height: 34, offset: 0x80006A0, symbol: D_OPT_80006A0, tlut: 0x80017A0 }
+
+D_OPT_80017A0:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 16, offset: 0x80017A0, symbol: D_OPT_80017A0 }
+
+# Venomian units destroyed
+D_OPT_80017C0:
+  { type: TEXTURE, ctype: u8, format: CI4, width: 256, height: 66, offset: 0x80017C0, symbol: D_OPT_80017C0, tlut: 0x80038C0 }
+
+D_OPT_80038C0:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 16, offset: 0x80038C0, symbol: D_OPT_80038C0 }
+
+# nd
+D_OPT_80038E0:
+  { type: TEXTURE, ctype: u8, format: CI4, width: 16, height: 10, offset: 0x80038E0, symbol: D_OPT_80038E0, tlut: 0x8003930 }
+
+D_OPT_8003930:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 16, offset: 0x8003930, symbol: D_OPT_8003930 }
+
+# rd
+D_OPT_8003950:
+  { type: TEXTURE, ctype: u8, format: CI4, width: 16, height: 11, offset: 0x8003950, symbol: D_OPT_8003950, tlut: 0x80039A8 }
+
+D_OPT_80039A8:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 16, offset: 0x80039A8, symbol: D_OPT_80039A8 }
+
+#
+D_OPT_80039D0:
+  { type: TEXTURE, ctype: u8, format: CI4, width: 16, height: 16, offset: 0x80039D0 , symbol: D_OPT_80039D0, tlut: 0x8003A50 }
+
+D_OPT_8003A50:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 16, offset: 0x8003A50, symbol: D_OPT_8003A50 }
+
+# st
+D_OPT_8003A70:
+  { type: TEXTURE, ctype: u8, format: CI4, width: 16, height: 9, offset: 0x8003A70, symbol: D_OPT_8003A70, tlut: 0x8003AB8 }
+
+D_OPT_8003AB8:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 16, offset: 0x8003AB8, symbol: D_OPT_8003AB8 }
+
+# th
+D_OPT_8003AE0:
+  { type: TEXTURE, ctype: u8, format: CI4, width: 16, height: 9, offset: 0x8003AE0, symbol: D_OPT_8003AE0, tlut: 0x8003B28 }
+
+D_OPT_8003B28:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 16, offset: 0x8003B28, symbol: D_OPT_8003B28 }
+
+# Option Title Cards
+
+# Main Game
+D_OPT_8003B50:
+  { type: TEXTURE, ctype: u8, format: IA8, width: 72, height: 12, offset: 0x8003B50, symbol: D_OPT_8003B50 }
+
+# Training
+D_OPT_8003EB0:
+  { type: TEXTURE, ctype: u8, format: IA8, width: 80, height: 12, offset: 0x8003EB0, symbol: D_OPT_8003EB0 }
+
+# Vs.
+D_OPT_8004270:
+  { type: TEXTURE, ctype: u8, format: IA8, width: 32, height: 10, offset: 0x8004270, symbol: D_OPT_8004270 }
+
+# Ranking
+D_OPT_80043B0:
+  { type: TEXTURE, ctype: u8, format: IA8, width: 64, height: 12, offset: 0x80043B0, symbol: D_OPT_80043B0 }
+
+# Sound
+D_OPT_80046B0:
+  { type: TEXTURE, ctype: u8, format: IA8, width: 64, height: 10, offset: 0x80046B0, symbol: D_OPT_80046B0 }
+
+# Data
+D_OPT_8004930:
+  { type: TEXTURE, ctype: u8, format: IA8, width: 80, height: 10, offset: 0x8004930, symbol: D_OPT_8004930 }
+
+D_OPT_8004C50:
+  { type: TEXTURE, ctype: u8, format: IA8, width: 80, height: 12, offset: 0x8004C50, symbol: D_OPT_8004C50 }
+
+# Option VS Cards
+
+# Point Match
+D_OPT_8005010:
+  { type: TEXTURE, ctype: u8, format: IA8, width: 96, height: 13, offset: 0x8005010, symbol: D_OPT_8005010 }
+
+# Battle Royal
+D_OPT_80054F0:
+  { type: TEXTURE, ctype: u8, format: IA8, width: 96, height: 11, offset: 0x80054F0, symbol: D_OPT_80054F0 }
+
+# Time Trial
+D_OPT_8005910:
+  { type: TEXTURE, ctype: u8, format: IA8, width: 96, height: 10, offset: 0x8005910, symbol: D_OPT_8005910 }
+
+# Sound Options
+
+# Press R to test
+D_OPT_8005CD0:
+  { type: TEXTURE, ctype: u8, format: IA8, width: 112, height: 13, offset: 0x8005CD0, symbol: D_OPT_8005CD0 }
+
+# Mode
+D_OPT_8006280:
+  { type: TEXTURE, ctype: u8, format: IA8, width: 48, height: 13, offset: 0x8006280, symbol: D_OPT_8006280 }
+
+# Music
+D_OPT_80064F0:
+  { type: TEXTURE, ctype: u8, format: IA8, width: 88, height: 14, offset: 0x80064F0, symbol: D_OPT_80064F0 }
+
+# Voice
+D_OPT_80069C0:
+  { type: TEXTURE, ctype: u8, format: IA8, width: 56, height: 15, offset: 0x80069C0, symbol: D_OPT_80069C0 }
+
+# SE
+D_OPT_8006D10:
+  { type: TEXTURE, ctype: u8, format: IA8, width: 24, height: 13, offset: 0x8006D10, symbol: D_OPT_8006D10 }
+
+# B to cancel
+D_OPT_8006E50:
+  { type: TEXTURE, ctype: u8, format: IA8, width: 96, height: 10, offset: 0x8006E50, symbol: D_OPT_8006E50 }
+
+# Headphone
+D_OPT_8007210:
+  { type: TEXTURE, ctype: u8, format: IA8, width: 88, height: 14, offset: 0x8007210, symbol: D_OPT_8007210 }
+
+# Mono
+D_OPT_80076E0:
+  { type: TEXTURE, ctype: u8, format: IA8, width: 56, height: 14, offset: 0x80076E0, symbol: D_OPT_80076E0 }
+
+# Soundtrack
+D_OPT_80079F0:
+  { type: TEXTURE, ctype: u8, format: IA8, width: 128, height: 14, offset: 0x80079F0, symbol: D_OPT_80079F0 }
+
+# A to confirm
+D_OPT_80080F0:
+  { type: TEXTURE, ctype: u8, format: IA8, width: 96, height: 10, offset: 0x80080F0, symbol: D_OPT_80080F0 }
+
+# Clear Saved Data
+D_OPT_80084B0:
+  { type: TEXTURE, ctype: u8, format: IA8, width: 176, height: 13, offset: 0x80084B0, symbol: D_OPT_80084B0 }
+
+# Are you sure?
+D_OPT_8008DA0:
+  { type: TEXTURE, ctype: u8, format: IA8, width: 160, height: 19, offset: 0x8008DA0, symbol: D_OPT_8008DA0 }
+
+# Yes
+D_OPT_8009980:
+  { type: TEXTURE, ctype: u8, format: IA8, width: 32, height: 12, offset: 0x8009980, symbol: D_OPT_8009980 }
+
+# No
+D_OPT_8009B00:
+  { type: TEXTURE, ctype: u8, format: IA8, width: 40, height: 12, offset: 0x8009B00, symbol: D_OPT_8009B00 }
+
+# Are you REALLY sure?
+D_OPT_8009CE0:
+  { type: TEXTURE, ctype: u8, format: IA8, width: 160, height: 41, offset: 0x8009CE0, symbol: D_OPT_8009CE0 }
+
+# Data erased
+D_OPT_800B680:
+  { type: TEXTURE, ctype: u8, format: IA8, width: 144, height: 41, offset: 0x800B680, symbol: D_OPT_800B680 }
+
+# Stereo
+D_OPT_800CD90:
+  { type: TEXTURE, ctype: u8, format: IA8, width: 56, height: 13, offset: 0x800CD90, symbol: D_OPT_800CD90 }
+
+# UNK: Triangle shape, it's mirrored to form a diamond shape
+D_OPT_800D070:
+  { type: TEXTURE, ctype: u8, format: IA8, width: 16, height: 16, offset: 0x800D070, symbol: D_OPT_800D070 }
+
+# UNK:
+D_OPT_800D170:
+  { type: TEXTURE, ctype: u8, format: IA8, width: 8, height: 16, offset: 0x800D170, symbol: D_OPT_800D170 }
+
+# Seal
+D_OPT_800D1F0:
+  { type: TEXTURE, ctype: u8, format: IA8, width: 80, height: 48, offset: 0x800D1F0, symbol: D_OPT_800D1F0 }
+
+# UNK:
+D_OPT_800E0F0:
+  { type: TEXTURE, ctype: u8, format: IA8, width: 8, height: 8, offset: 0x800E0F0, symbol: D_OPT_800E0F0 }
+
+D_OPT_800E130:
+  { type: TEXTURE, ctype: u8, format: IA8, width: 8, height: 8, offset: 0x800E130, symbol: D_OPT_800E130 }
+
+# Mercenary Unit STARFOX Fox Mccloud
+D_OPT_800E170:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 188, height: 60, offset: 0x800E170, symbol: D_OPT_800E170 }
+
+# ScrollBar
+D_OPT_8013990:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 104, height: 10, offset: 0x8013990, symbol: D_OPT_8013990 }
+
+# ScrollBar Indicator
+D_OPT_80141B0:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x80141B0, symbol: D_OPT_80141B0 }
+
+# Speaker
+D_OPT_80143B0:
+  { type: TEXTURE, ctype: u8, format: CI8, width: 32, height: 32, offset: 0x80143B0, symbol: D_OPT_80143B0, tlut: 0x80147B0 }
+
+D_OPT_80147B0:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 32, offset: 0x80147B0, symbol: D_OPT_80147B0 }
+
+D_OPT_80147F0:
+  { type: GFX, offset: 0x80147F0, symbol: D_OPT_80147F0 }
+
+ast_option_seg8_vtx_00014B50:
+  { type: VTX, count: 124, offset: 0x8014B50, symbol: ast_option_seg8_vtx_00014B50 }
+
+D_OPT_8015310:
+  { type: TEXTURE, ctype: u8, format: CI4, width: 16, height: 16, offset: 0x8015310, symbol: D_OPT_8015310, tlut: 0x08015390 }
+
+D_OPT_8015390:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 16, offset: 0x8015390, symbol: D_OPT_8015390 }
+
+D_OPT_80153B0:
+  { type: TEXTURE, ctype: u8, format: CI4, width: 16, height: 16, offset: 0x80153B0, symbol: D_OPT_80153B0, tlut: 0x08015430 }
+
+D_OPT_8015430:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 16, offset: 0x8015430, symbol: D_OPT_8015430 }
+
+D_OPT_8015450:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 8, height: 16, offset: 0x08015450, symbol: D_OPT_8015450 }
+
+D_OPT_8015550:
+  { type: GFX, offset: 0x8015550, symbol: D_OPT_8015550 }
+
+D_OPT_80155E8:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x080155E8, symbol: D_OPT_80155E8 }
+
+D_OPT_8015DF0:
+  { type: GFX, offset: 0x8015DF0, symbol: D_OPT_8015DF0 }
+
+D_OPT_8015E88:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x08015E88, symbol: D_OPT_8015E88 }

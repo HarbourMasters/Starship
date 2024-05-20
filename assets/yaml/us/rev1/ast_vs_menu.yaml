@@ -1,0 +1,207 @@
+:config:
+  segments:
+    - [0x07, 0xCBFE70]
+  header:
+    code:
+      - '#include "assets/ast_vs_menu.h"'
+    header:
+      - '#include "gfx.h"'
+      - '#include "sf64object.h"'
+
+D_VS_MENU_7000000:
+  { type: TEXTURE, ctype: u8, format: IA8, width: 16, height: 13, offset: 0x7000000, symbol: D_VS_MENU_7000000}
+
+D_VS_MENU_70000D0:
+  { type: TEXTURE, ctype: u8, format: IA8, width: 24, height: 13, offset: 0x70000D0, symbol: D_VS_MENU_70000D0}
+
+D_VS_MENU_7000210:
+  { type: TEXTURE, ctype: u8, format: IA8, width: 24, height: 13, offset: 0x7000210, symbol: D_VS_MENU_7000210}
+
+D_VS_MENU_7000350:
+  { type: TEXTURE, ctype: u8, format: IA8, width: 24, height: 13, offset: 0x7000350, symbol: D_VS_MENU_7000350}
+
+D_VS_MENU_7000490:
+  { type: TEXTURE, ctype: u8, format: IA8, width: 64, height: 42, offset: 0x7000490, symbol: D_VS_MENU_7000490}
+
+D_VS_MENU_7000F10:
+  { type: TEXTURE, ctype: u8, format: IA8, width: 40, height: 7, offset: 0x7000F10, symbol: D_VS_MENU_7000F10}
+
+D_VS_MENU_7001030:
+  { type: TEXTURE, ctype: u8, format: IA8, width: 64, height: 9, offset: 0x7001030, symbol: D_VS_MENU_7001030}
+
+D_VS_MENU_7001270:
+  { type: TEXTURE, ctype: u8, format: IA8, width: 112, height: 12, offset: 0x7001270, symbol: D_VS_MENU_7001270}
+
+D_VS_MENU_70017B0:
+  { type: TEXTURE, ctype: u8, format: IA8, width: 56, height: 10, offset: 0x70017B0, symbol: D_VS_MENU_70017B0}
+
+D_VS_MENU_70019E0:
+  { type: TEXTURE, ctype: u8, format: IA8, width: 56, height: 10, offset: 0x70019E0, symbol: D_VS_MENU_70019E0}
+
+D_VS_MENU_7001C10:
+  { type: TEXTURE, ctype: u8, format: IA8, width: 48, height: 10, offset: 0x7001C10, symbol: D_VS_MENU_7001C10}
+
+D_VS_MENU_7001DF0:
+  { type: TEXTURE, ctype: u8, format: IA8, width: 80, height: 10, offset: 0x7001DF0, symbol: D_VS_MENU_7001DF0}
+
+D_VS_MENU_7002110:
+  { type: TEXTURE, ctype: u8, format: IA8, width: 80, height: 12, offset: 0x7002110, symbol: D_VS_MENU_7002110}
+
+D_VS_MENU_70024D0:
+  { type: TEXTURE, ctype: u8, format: IA8, width: 40, height: 15, offset: 0x70024D0, symbol: D_VS_MENU_70024D0}
+
+D_VS_MENU_7002730:
+  { type: TEXTURE, ctype: u8, format: IA8, width: 40, height: 15, offset: 0x7002730, symbol: D_VS_MENU_7002730}
+
+D_VS_MENU_7002990:
+  { type: TEXTURE, ctype: u8, format: IA8, width: 40, height: 15, offset: 0x7002990, symbol: D_VS_MENU_7002990}
+
+D_VS_MENU_7002BF0:
+  { type: TEXTURE, ctype: u8, format: IA8, width: 40, height: 15, offset: 0x7002BF0, symbol: D_VS_MENU_7002BF0}
+
+D_VS_MENU_7002E50:
+  { type: TEXTURE, ctype: u8, format: IA8, width: 40, height: 15, offset: 0x7002E50, symbol: D_VS_MENU_7002E50}
+
+D_VS_MENU_70030B0:
+  { type: TEXTURE, ctype: u8, format: IA8, width: 40, height: 12, offset: 0x70030B0, symbol: D_VS_MENU_70030B0}
+
+D_VS_MENU_7003290:
+  { type: TEXTURE, ctype: u8, format: IA8, width: 40, height: 12, offset: 0x7003290, symbol: D_VS_MENU_7003290}
+
+D_VS_MENU_7003470:
+  { type: TEXTURE, ctype: u8, format: IA8, width: 40, height: 12, offset: 0x7003470, symbol: D_VS_MENU_7003470}
+
+D_VS_MENU_7003650:
+  { type: TEXTURE, ctype: u8, format: IA8, width: 40, height: 12, offset: 0x7003650, symbol: D_VS_MENU_7003650}
+
+D_VS_MENU_7003830:
+  { type: TEXTURE, ctype: u8, format: IA8, width: 64, height: 17, offset: 0x7003830, symbol: D_VS_MENU_7003830}
+
+D_VS_MENU_7003C70:
+  { type: TEXTURE, ctype: u8, format: IA8, width: 16, height: 16, offset: 0x7003C70, symbol: D_VS_MENU_7003C70}
+
+D_VS_MENU_7003D70:
+  { type: TEXTURE, ctype: u8, format: IA8, width: 32, height: 5, offset: 0x7003D70, symbol: D_VS_MENU_7003D70}
+
+D_VS_MENU_7003E10:
+  { type: TEXTURE, ctype: u8, format: IA8, width: 16, height: 16, offset: 0x7003E10, symbol: D_VS_MENU_7003E10}
+
+D_VS_MENU_7003F10:
+  { type: TEXTURE, ctype: u8, format: IA8, width: 16, height: 16, offset: 0x7003F10, symbol: D_VS_MENU_7003F10}
+
+D_VS_MENU_7004010:
+  { type: TEXTURE, ctype: u8, format: IA8, width: 8, height: 8, offset: 0x7004010, symbol: D_VS_MENU_7004010}
+
+D_VS_MENU_7004050:
+  { type: TEXTURE, ctype: u8, format: CI8, width: 16, height: 16, offset: 0x7004050, symbol: D_VS_MENU_7004050, tlut: 0x7004150}
+
+D_VS_MENU_7004150:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 76, offset: 0x7004150, symbol: D_VS_MENU_7004150}
+
+D_VS_MENU_70041F0:
+  { type: TEXTURE, ctype: u8, format: CI8, width: 16, height: 16, offset: 0x70041F0, symbol: D_VS_MENU_70041F0, tlut: 0x70042F0}
+
+D_VS_MENU_70042F0:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 53, offset: 0x70042F0, symbol: D_VS_MENU_70042F0}
+
+D_VS_MENU_7004360:
+  { type: TEXTURE, ctype: u8, format: CI8, width: 16, height: 16, offset: 0x7004360, symbol: D_VS_MENU_7004360, tlut: 0x7004460}
+
+D_VS_MENU_7004460:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 50, offset: 0x7004460, symbol: D_VS_MENU_7004460}
+
+D_VS_MENU_70044D0:
+  { type: TEXTURE, ctype: u8, format: CI8, width: 64, height: 19, offset: 0x70044D0, symbol: D_VS_MENU_70044D0, tlut: 0x7004990}
+
+D_VS_MENU_7004990:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 17, offset: 0x7004990, symbol: D_VS_MENU_7004990}
+
+D_VS_MENU_70049C0:
+  { type: TEXTURE, ctype: u8, format: CI8, width: 56, height: 8, offset: 0x70049C0, symbol: D_VS_MENU_70049C0, tlut: 0x7004B80}
+
+D_VS_MENU_7004B80:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 18, offset: 0x7004B80, symbol: D_VS_MENU_7004B80}
+
+D_VS_MENU_7004BB0:
+  { type: TEXTURE, ctype: u8, format: CI8, width: 48, height: 10, offset: 0x7004BB0, symbol: D_VS_MENU_7004BB0, tlut: 0x7004D90}
+
+D_VS_MENU_7004D90:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 18, offset: 0x7004D90, symbol: D_VS_MENU_7004D90}
+
+D_VS_MENU_7004DC0:
+  { type: TEXTURE, ctype: u8, format: CI8, width: 56, height: 10, offset: 0x7004DC0, symbol: D_VS_MENU_7004DC0, tlut: 0x7004FF0}
+
+D_VS_MENU_7004FF0:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 18, offset: 0x7004FF0, symbol: D_VS_MENU_7004FF0}
+
+D_VS_MENU_7005020:
+  { type: TEXTURE, ctype: u8, format: CI8, width: 48, height: 8, offset: 0x7005020, symbol: D_VS_MENU_7005020, tlut: 0x70051A0}
+
+D_VS_MENU_70051A0:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 18, offset: 0x70051A0, symbol: D_VS_MENU_70051A0}
+
+D_VS_MENU_70051D0:
+  { type: TEXTURE, ctype: u8, format: CI8, width: 32, height: 32, offset: 0x70051D0, symbol: D_VS_MENU_70051D0, tlut: 0x70055D0}
+
+D_VS_MENU_70055D0:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 20, offset: 0x70055D0, symbol: D_VS_MENU_70055D0}
+
+D_VS_MENU_7005600:
+  { type: TEXTURE, ctype: u8, format: CI8, width: 48, height: 38, offset: 0x7005600, symbol: D_VS_MENU_7005600, tlut: 0x7005D20}
+
+D_VS_MENU_7005D20:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 248, offset: 0x7005D20, symbol: D_VS_MENU_7005D20}
+
+D_VS_MENU_7005F10:
+  { type: TEXTURE, ctype: u8, format: CI8, width: 48, height: 38, offset: 0x7005F10, symbol: D_VS_MENU_7005F10, tlut: 0x7006630}
+
+D_VS_MENU_7006630:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 168, offset: 0x7006630, symbol: D_VS_MENU_7006630}
+
+D_VS_MENU_7006780:
+  { type: TEXTURE, ctype: u8, format: CI8, width: 48, height: 38, offset: 0x7006780, symbol: D_VS_MENU_7006780, tlut: 0x7006EA0}
+
+D_VS_MENU_7006EA0:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 256, offset: 0x7006EA0, symbol: D_VS_MENU_7006EA0}
+
+D_VS_MENU_70070A0:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 44, height: 44, offset: 0x70070A0, symbol: D_VS_MENU_70070A0}
+
+D_VS_MENU_7007FC0:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 44, height: 44, offset: 0x7007FC0, symbol: D_VS_MENU_7007FC0}
+
+D_VS_MENU_7008EE0:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 44, height: 44, offset: 0x7008EE0, symbol: D_VS_MENU_7008EE0}
+
+D_VS_MENU_7009E00:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 44, height: 44, offset: 0x7009E00, symbol: D_VS_MENU_7009E00}
+
+D_VS_MENU_700AD20:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 44, height: 44, offset: 0x700AD20, symbol: D_VS_MENU_700AD20}
+
+D_VS_MENU_700BC40:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 44, height: 44, offset: 0x700BC40, symbol: D_VS_MENU_700BC40}
+
+D_VS_MENU_700CB60:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 44, height: 44, offset: 0x700CB60, symbol: D_VS_MENU_700CB60}
+
+D_VS_MENU_700DA80:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 44, height: 44, offset: 0x700DA80, symbol: D_VS_MENU_700DA80}
+
+D_VS_MENU_700E9A0:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 144, height: 42, offset: 0x700E9A0, symbol: D_VS_MENU_700E9A0}
+
+D_VS_MENU_70118E0:
+  { type: TEXTURE, ctype: u8, format: CI4, width: 80, height: 71, offset: 0x70118E0, symbol: D_VS_MENU_70118E0, tlut: 0x70123F8}
+
+D_VS_MENU_70123F8:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 5, offset: 0x70123F8, symbol: D_VS_MENU_70123F8}
+
+D_VS_MENU_7012410:
+  { type: GFX, offset: 0x7012410, symbol: D_VS_MENU_7012410}
+
+D_VS_MENU_70124E8:
+  { type: TEXTURE, ctype: u8, format: CI8, width: 8, height: 16, offset: 0x70124E8, symbol: D_VS_MENU_70124E8, tlut: 0x7012568}
+
+D_VS_MENU_7012568:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 24, offset: 0x7012568, symbol: D_VS_MENU_7012568}

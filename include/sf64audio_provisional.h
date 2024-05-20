@@ -122,6 +122,12 @@ typedef enum {
     /* 5 */ LOAD_STATUS_PERMANENTLY_LOADED // the entry data is loaded in the permanent pool, it won't be discarded
 } AudioLoadStatus;
 
+typedef enum AudioResetStatus {
+    /* 0 */ AUDIORESET_READY,
+    /* 1 */ AUDIORESET_WAIT,
+    /* 2 */ AUDIORESET_BLOCK,
+} AudioResetStatus;
+
 typedef s32 (*DmaHandler)(OSPiHandle* handle, OSIoMesg* mb, s32 direction);
 
 struct Note;
@@ -593,7 +599,7 @@ typedef struct {
  */
 typedef struct {
     /* 0x00 */ u32 samplingFrequency; // Target sampling rate in Hz
-    /* 0x04 */ u8 unk_04;
+    /* 0x04 */ u8 numBuffers;
     /* 0x05 */ u8 numNotes;
     /* 0x06 */ u8 numReverbs;
     /* 0x08 */ ReverbSettings* reverbSettings;
@@ -617,7 +623,7 @@ typedef struct {
  * processing audio commands. This struct parameterizes that buffer.
  */
 typedef struct {
-    /* 0x00 */ s16 specUnk4;
+    /* 0x00 */ s16 count;
     /* 0x02 */ u16 samplingFrequency;   // Target sampling rate in Hz
     /* 0x04 */ u16 aiSamplingFrequency; // True sampling rate of the audio interface (AI), see `osAiSetFrequency`
     /* 0x06 */ s16 samplesPerFrameTarget;
@@ -752,7 +758,7 @@ typedef struct {
     /* 0x14 */ u32 chunkSize;
     /* 0x18 */ OSMesg retMsg;
     /* 0x1C */ OSMesgQueue* retQueue;
-    /* 0x20 */ OSMesgQueue msgQueue;
+    /* 0x20 */ OSMesgQueue mesgQueue;
     /* 0x38 */ OSMesg msg;
     /* 0x3C */ OSIoMesg ioMesg;
 } AudioAsyncLoad; // size = 0x54
@@ -768,7 +774,7 @@ typedef struct {
     /* 0x14 */ s32 bytesRemaining;
     /* 0x18 */ s8* status; // write-only
     /* 0x1C */ Sample sample;
-    /* 0x2C */ OSMesgQueue msgQueue;
+    /* 0x2C */ OSMesgQueue mesgQueue;
     /* 0x44 */ OSMesg msg;
     /* 0x48 */ OSIoMesg ioMesg;
 } AudioSlowLoad; // size = 0x60
@@ -793,7 +799,11 @@ typedef struct {
     /* 0x02 */ s16 unkMediumParam;
     /* 0x04 */ uintptr_t romAddr;
     /* 0x08 */ char pad[0x8];
+    #ifdef AVOID_UB
+    /* 0x10 */ AudioTableEntry entries[]; // (dynamic size)
+    #else
     /* 0x10 */ AudioTableEntry entries[1]; // (dynamic size)
+    #endif
 } AudioTable;                              // size >= 0x20
 
 typedef struct SampleDma {
@@ -808,7 +818,7 @@ typedef struct SampleDma {
 
 typedef struct {
     /* 0x00 */ OSTask task;
-    /* 0x40 */ OSMesgQueue* msgQueue;
+    /* 0x40 */ OSMesgQueue* mesgQueue;
     /* 0x44 */ void* unk_44; // probably a message that gets unused.
     /* 0x48 */ char unk_48[0x8];
 } AudioTask;                 // size = 0x50
@@ -1077,7 +1087,7 @@ void func_800168BC(void);
 void AudioThread_ScheduleProcessCmds(void);
 u32 AudioThread_GetAsyncLoadStatus(u32 *);
 u8* AudioThread_GetFontsForSequence(s32 seqId, u32* outNumFonts);
-s32 func_8001ED34(void);
+bool AudioThread_ResetComplete(void);
 void AudioThread_ResetAudioHeap(s32);
 void AudioThread_Init(void);
 

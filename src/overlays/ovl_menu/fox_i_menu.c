@@ -1,13 +1,13 @@
 #include "global.h"
 
-void Title_80187754(void);
-void Title_801878D8(void);
-void Option_Init(void);
+void Title_Main(void);
+void Title_Draw(void);
+void Option_Main(void);
 void Option_DrawEntry(void);
 void Map_8019E85C(void);
 void Map_8019E8C8(void);
-void Map_8019E8D0(void);
-void Map_801A01A8(void);
+void Map_Main(void);
+void Map_Draw(void);
 
 s32 D_menu_801B7BA0;
 s32 D_menu_801AD9F0 = 0;
@@ -16,35 +16,35 @@ extern void Title_8018F77C(void);
 
 void OvlMenu_CallFunction(u32 mode, void* ptr) {
     switch (mode) {
-        case 103:
-            Title_80187754();
+        case OVLCALL_TITLE_UPDATE:
+            Title_Main();
             break;
 
-        case 104:
-            Title_801878D8();
+        case OVLCALL_TITLE_DRAW:
+            Title_Draw();
             break;
 
-        case 105:
-            Map_8019E8D0();
+        case OVLCALL_MAP_UPDATE:
+            Map_Main();
             break;
 
-        case 106:
-            Map_801A01A8();
+        case OVLCALL_MAP_DRAW:
+            Map_Draw();
             break;
 
-        case 107:
-            Option_Init();
+        case OVLCALL_OPTION_UPDATE:
+            Option_Main();
             break;
 
-        case 108:
+        case OVLCALL_OPTION_DRAW:
             Option_DrawEntry();
             break;
 
-        case 109:
+        case OVLCALL_GAME_OVER_UPDATE:
             Map_8019E85C();
             break;
 
-        case 110:
+        case OVLCALL_UNKMAP_DRAW:
             Map_8019E8C8();
             break;
 

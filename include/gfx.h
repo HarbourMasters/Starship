@@ -77,6 +77,20 @@
 
 #define VTX_T(x,y,z,s,t,cr,cg,cb,a) { { x, y, z }, 0, { s, t }, { cr, cg, cb, a } }
 
+typedef enum WipeMode {
+    WIPE_CIRCULAR,
+    WIPE_HORIZONTAL,
+    WIPE_VERTICAL,
+} WipeMode;
+
+typedef struct {
+    u8 r, g, b;
+} Color_RGB8; // size = 0x3
+
+typedef struct Color_RGBA32 {
+    u8 r, g, b, a;
+} Color_RGBA32; // size = 0x4
+
 typedef union {
     u16 data[SCREEN_HEIGHT * SCREEN_WIDTH];
     u16 array[SCREEN_HEIGHT][SCREEN_WIDTH];
@@ -127,23 +141,23 @@ s32 Animation_GetFrameCount(Animation *animationSegment);
 void Animation_FindBoundingBox(Gfx* dList, s32 len, Vec3f *min, Vec3f *max, s32 *vtxFound, s32 *vtxCount, Vtx* *vtxList);
 void Animation_GetDListBoundingBox(Gfx *dList, s32 len, Vec3f *min, Vec3f *max);
 void Animation_GetSkeletonBoundingBox(Limb** skeletonSegment, Animation *animationSegment, s32 frame, Vec3f *min, Vec3f* max);
-void TextureRect_4bCI(Gfx **gfxPtr, void* texture, void* palette, u32 width, u32 height, f32 xPos, f32 yPos, f32 xScale, f32 yScale);
-void TextureRect_4bCI_Flip(Gfx **gfxPtr, void* texture, void* palette, u32 width, u32 height, f32 xPos, f32 yPos, f32 xScale, f32 yScale);
-void TextureRect_4bCI_MirX(Gfx **gfxPtr, void* texture, void* palette, u32 width, u32 height, f32 xPos, f32 yPos, f32 xScale, f32 yScale);
-void TextureRect_4bCI_MirY(Gfx **gfxPtr, void* texture, void* palette, u32 width, u32 height, f32 xPos, f32 yPos, f32 xScale, f32 yScale);
-void TextureRect_8bCI(Gfx **gfxPtr, void* texture, void* palette, u32 width, u32 height, f32 xPos, f32 yPos, f32 xScale, f32 yScale);
-void TextureRect_16bRGBA(Gfx **gfxPtr, void* texture, u32 width, u32 height, f32 xPos, f32 yPos, f32 xScale, f32 yScale);
-void TextureRect_16bRGBA_MirX(Gfx **gfxPtr, void* texture, u32 width, u32 height, f32 xPos, f32 yPos, f32 xScale, f32 yScale);
-void TextureRect_8bIA(Gfx **gfxPtr, void* texture, u32 width, u32 height, f32 xPos, f32 yPos, f32 xScale, f32 yScale);
-void TextureRect_8bIA_FilpMirX(Gfx **gfxPtr, void* texture, u32 width, u32 height, f32 xPos, f32 yPos, f32 xScale, f32 yScale);
-void TextureRect_8bIA_FilpMirY(Gfx **gfxPtr, void* texture, u32 width, u32 height, f32 xPos, f32 yPos, f32 xScale, f32 yScale);
-void TextureRect_8bIA_MirX(Gfx **gfxPtr, void* texture, u32 width, u32 height, f32 xPos, f32 yPos, f32 xScale, f32 yScale);
-void TextureRect_8bIA_MirY(Gfx **gfxPtr, void* texture, u32 width, u32 height, f32 xPos, f32 yPos, f32 xScale, f32 yScale);
-void TextureRect_16bIA(Gfx **gfxPtr, void* texture, u32 width, u32 height, f32 xPos, f32 yPos, f32 xScale, f32 yScale);
-void TextureRect_16bIA_MirX(Gfx **gfxPtr, void* texture, u32 width, u32 height, f32 xPos, f32 yPos, f32 xScale, f32 yScale);
-void TextureRect_16bIA_MirY(Gfx **gfxPtr, void* texture, u32 width, u32 height, f32 xPos, f32 yPos, f32 xScale, f32 yScale);
-void TextureRect_16bIA_MirXY(Gfx **gfxPtr, void* texture, u32 width, u32 height, f32 xPos, f32 yPos, f32 xScale, f32 yScale);
-void TextureRect_32bRGBA(Gfx **gfxPtr, void* texture, u32 width, u32 height, f32 xPos, f32 yPos, f32 xScale, f32 yScale);
+void TextureRect_CI4(Gfx **gfxPtr, u8* texture, u16* palette, u32 width, u32 height, f32 xPos, f32 yPos, f32 xScale, f32 yScale);
+void TextureRect_CI4_Flip(Gfx **gfxPtr, u8* texture, u16* palette, u32 width, u32 height, f32 xPos, f32 yPos, f32 xScale, f32 yScale);
+void TextureRect_CI4_MirX(Gfx **gfxPtr, u8* texture, u16* palette, u32 width, u32 height, f32 xPos, f32 yPos, f32 xScale, f32 yScale);
+void TextureRect_CI4_MirY(Gfx **gfxPtr, u8* texture, u16* palette, u32 width, u32 height, f32 xPos, f32 yPos, f32 xScale, f32 yScale);
+void TextureRect_CI8(Gfx **gfxPtr, u8* texture, u16* palette, u32 width, u32 height, f32 xPos, f32 yPos, f32 xScale, f32 yScale);
+void TextureRect_RGBA16(Gfx **gfxPtr, u16* texture, u32 width, u32 height, f32 xPos, f32 yPos, f32 xScale, f32 yScale);
+void TextureRect_RGBA16_MirX(Gfx **gfxPtr, u16* texture, u32 width, u32 height, f32 xPos, f32 yPos, f32 xScale, f32 yScale);
+void TextureRect_IA8(Gfx **gfxPtr, u8* texture, u32 width, u32 height, f32 xPos, f32 yPos, f32 xScale, f32 yScale);
+void TextureRect_IA8_FlipMirX(Gfx **gfxPtr, u8* texture, u32 width, u32 height, f32 xPos, f32 yPos, f32 xScale, f32 yScale);
+void TextureRect_IA8_FlipMirY(Gfx **gfxPtr, u8* texture, u32 width, u32 height, f32 xPos, f32 yPos, f32 xScale, f32 yScale);
+void TextureRect_IA8_MirX(Gfx **gfxPtr, u8* texture, u32 width, u32 height, f32 xPos, f32 yPos, f32 xScale, f32 yScale);
+void TextureRect_IA8_MirY(Gfx **gfxPtr, u8* texture, u32 width, u32 height, f32 xPos, f32 yPos, f32 xScale, f32 yScale);
+void TextureRect_IA16(Gfx **gfxPtr, u16* texture, u32 width, u32 height, f32 xPos, f32 yPos, f32 xScale, f32 yScale);
+void TextureRect_IA16_MirX(Gfx **gfxPtr, u16* texture, u32 width, u32 height, f32 xPos, f32 yPos, f32 xScale, f32 yScale);
+void TextureRect_IA16_MirY(Gfx **gfxPtr, u16* texture, u32 width, u32 height, f32 xPos, f32 yPos, f32 xScale, f32 yScale);
+void TextureRect_IA16_MirXY(Gfx **gfxPtr, u16* texture, u32 width, u32 height, f32 xPos, f32 yPos, f32 xScale, f32 yScale);
+void TextureRect_RGBA32(Gfx **gfxPtr, u32* texture, u32 width, u32 height, f32 xPos, f32 yPos, f32 xScale, f32 yScale);
 void Graphics_FillRectangle(Gfx **gfxPtr, s32 ulx, s32 uly, s32 lrx, s32 lry, u8 r, u8 g, u8 b, u8 a);
 u16*  Graphics_SetupTextureRender(Gfx **gfxPtr, u8 width, u8 height);
 void Graphics_DisplayHUDNumber(s32 xPos, s32 yPos, s32 number);

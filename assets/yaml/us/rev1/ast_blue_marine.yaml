@@ -1,0 +1,90 @@
+:config:
+  segments:
+    - [0x03, 0x8E1F80]
+  header:
+    code:
+      - '#include "assets/ast_blue_marine.h"'
+    header:
+      - '#include "gfx.h"'
+      - '#include "sf64object.h"'
+
+D_blue_marine_3000000:
+  { type: TEXTURE, ctype: u8, format: CI4, width: 16, height: 16, offset: 0x3000000, symbol: D_blue_marine_3000000, tlut: 0x3000080 }
+
+D_blue_marine_3000080:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 8, offset: 0x3000080, symbol: D_blue_marine_3000080 }
+
+D_blue_marine_3000090:
+  { type: TEXTURE, ctype: u8, format: CI4, width: 32, height: 9, offset: 0x3000090, symbol: D_blue_marine_3000090, tlut: 0x3000120 }
+
+D_blue_marine_3000120:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 8, offset: 0x3000120, symbol: D_blue_marine_3000120 }
+
+D_blue_marine_3000130:
+  { type: GFX, offset: 0x3000130, symbol: D_blue_marine_3000130 }
+
+ast_blue_marine_seg3_vtx_00000418:
+  { type: VTX, count: 5, offset: 0x3000418, symbol: D_blue_marine_3000418 }
+
+D_blue_marine_3000470:
+  { type: GFX, offset: 0x3000470, symbol: D_blue_marine_3000470 }
+
+D_blue_marine_30005E8:
+  { type: BLOB, size: 24, offset: 0x30005E8, symbol: D_blue_marine_30005E8 }
+
+D_blue_marine_3000600:
+  { type: TEXTURE, ctype: u8, format: CI4, width: 16, height: 8, offset: 0x3000600, symbol: D_blue_marine_3000600, tlut: 0x3000640 }
+
+D_blue_marine_3000640:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 16, offset: 0x3000640, symbol: D_blue_marine_3000640 }
+
+D_blue_marine_3000660:
+  { type: GFX, offset: 0x3000660, symbol: D_blue_marine_3000660 }
+
+D_blue_marine_30006E8:
+  { type: TEXTURE, ctype: u8, format: IA8, width: 32, height: 32, offset: 0x30006E8, symbol: D_blue_marine_30006E8 }
+
+D_blue_marine_3000AF0:
+  { type: GFX, offset: 0x3000AF0, symbol: D_blue_marine_3000AF0 }
+
+D_blue_marine_3000C70:
+  { type: GFX, offset: 0x3000C70, symbol: D_blue_marine_3000C70 }
+
+D_blue_marine_3001900:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 8, height: 8, offset: 0x3001900, symbol: D_blue_marine_3001900 }
+
+D_blue_marine_3001980:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x3001980, symbol: D_blue_marine_3001980 }
+
+D_blue_marine_3002180:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x3002180, symbol: D_blue_marine_3002180 }
+
+D_blue_marine_3002980:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x3002980, symbol: D_blue_marine_3002980 }
+
+D_blue_marine_3003180:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x3003180, symbol: D_blue_marine_3003180 }
+
+D_blue_marine_3003980:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x3003980, symbol: D_blue_marine_3003980 }
+
+D_blue_marine_3004180:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x3004180, symbol: D_blue_marine_3004180 }
+
+D_blue_marine_3004980:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 64, height: 32, offset: 0x3004980, symbol: D_blue_marine_3004980 }
+
+D_blue_marine_3005980:
+  { type: GFX, offset: 0x3005980, symbol: D_blue_marine_3005980 }
+
+D_blue_marine_30062E8:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x30062E8, symbol: D_blue_marine_30062E8 }
+
+D_blue_marine_3006AF0:
+  { type: GFX, offset: 0x3006AF0, symbol: D_blue_marine_3006AF0 }
+
+D_blue_marine_3006C70:
+  { type: GFX, offset: 0x3006C70, symbol: D_blue_marine_3006C70 }
+
+D_blue_marine_3006DE0:
+  { type: GFX, offset: 0x3006DE0, symbol: D_blue_marine_3006DE0 }

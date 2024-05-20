@@ -1,37 +1,37 @@
 #include "sys.h"
 #include "sf64audio_provisional.h"
 
-static char devstr00[] = "Audio: setvol: volume minus %f\n";
-static char devstr01[] = "Audio: setvol: volume overflow %f\n";
-static char devstr02[] = "Audio: setpitch: pitch zero or minus %f\n";
-static char devstr03[] = "Audio: voiceman: No bank error %d\n";
-static char devstr04[] = "Audio: voiceman: progNo. overflow %d,%d\n";
-static char devstr05[] = "ptr2 %x\n";
-static char devstr06[] = "Audio: voiceman: progNo. undefined %d,%d\n";
-static char devstr07[] = "Audio: voiceman: No bank error %d\n";
-static char devstr08[] = "Audio: voiceman: Percussion Overflow %d,%d\n";
-static char devstr09[] = "Audio: voiceman: Percussion table pointer (bank %d) is irregular %x.\n";
-static char devstr10[] = "Audio: voiceman: Percpointer NULL %d,%d\n";
-static char devstr11[] = "--4 %x\n";
-static char devstr12[] = "----------------------Double-Error CH: %x %f\n";
-static char devstr13[] = "----------------------Double-Error NT: %x\n";
-static char devstr14[] = "CAUTION:SUB IS SEPARATED FROM GROUP\n";
-static char devstr15[] = "CAUTION:PAUSE EMERGENCY\n";
-static char devstr16[] = "Error:Wait Track disappear\n";
-static char devstr17[] = "NoteOff Comes during wait release %x (note %x)\n";
-static char devstr18[] = "Slow Release Batting\n";
+static const char devstr00[] = "Audio: setvol: volume minus %f\n";
+static const char devstr01[] = "Audio: setvol: volume overflow %f\n";
+static const char devstr02[] = "Audio: setpitch: pitch zero or minus %f\n";
+static const char devstr03[] = "Audio: voiceman: No bank error %d\n";
+static const char devstr04[] = "Audio: voiceman: progNo. overflow %d,%d\n";
+static const char devstr05[] = "ptr2 %x\n";
+static const char devstr06[] = "Audio: voiceman: progNo. undefined %d,%d\n";
+static const char devstr07[] = "Audio: voiceman: No bank error %d\n";
+static const char devstr08[] = "Audio: voiceman: Percussion Overflow %d,%d\n";
+static const char devstr09[] = "Audio: voiceman: Percussion table pointer (bank %d) is irregular %x.\n";
+static const char devstr10[] = "Audio: voiceman: Percpointer NULL %d,%d\n";
+static const char devstr11[] = "--4 %x\n";
+static const char devstr12[] = "----------------------Double-Error CH: %x %f\n";
+static const char devstr13[] = "----------------------Double-Error NT: %x\n";
+static const char devstr14[] = "CAUTION:SUB IS SEPARATED FROM GROUP\n";
+static const char devstr15[] = "CAUTION:PAUSE EMERGENCY\n";
+static const char devstr16[] = "Error:Wait Track disappear\n";
+static const char devstr17[] = "NoteOff Comes during wait release %x (note %x)\n";
+static const char devstr18[] = "Slow Release Batting\n";
 
 u8 sSamplesPerWavePeriod[] = { 64, 32, 16, 8 };
 
-static char devstr19[] = "Audio:Wavemem: Bad voiceno (%d)\n";
-static char devstr20[] = "Audio: C-Alloc : Dealloc voice is NULL\n";
-static char devstr21[] = "Alloc Error:Dim voice-Alloc %d";
-static char devstr22[] = "Error:Same List Add\n";
-static char devstr23[] = "Already Cut\n";
-static char devstr24[] = "Audio: C-Alloc : lowerPrio is NULL\n";
-static char devstr25[] = "Intterupt UseStop %d (Kill %d)\n";
-static char devstr26[] = "Intterupt RelWait %d (Kill %d)\n";
-static char devstr27[] = "Drop Voice (Prio %x)\n";
+static const char devstr19[] = "Audio:Wavemem: Bad voiceno (%d)\n";
+static const char devstr20[] = "Audio: C-Alloc : Dealloc voice is NULL\n";
+static const char devstr21[] = "Alloc Error:Dim voice-Alloc %d";
+static const char devstr22[] = "Error:Same List Add\n";
+static const char devstr23[] = "Already Cut\n";
+static const char devstr24[] = "Audio: C-Alloc : lowerPrio is NULL\n";
+static const char devstr25[] = "Intterupt UseStop %d (Kill %d)\n";
+static const char devstr26[] = "Intterupt RelWait %d (Kill %d)\n";
+static const char devstr27[] = "Drop Voice (Prio %x)\n";
 
 void func_80011C58(Note* note, f32);
 void func_8001268C(SequenceLayer* layer);
@@ -165,44 +165,44 @@ TunedSample* func_80011D10(Instrument* instrument, s32 arg1) {
     return sample;
 }
 
-Instrument* Audio_GetInstrument(s32 arg0, s32 arg1) {
-    Instrument* temp_v1;
+Instrument* Audio_GetInstrument(s32 fontId, s32 instId) {
+    Instrument* instrument;
 
-    if ((gFontLoadStatus[arg0] < 2) != 0) {
-        D_80155D88 = arg0 + 0x10000000;
+    if ((gFontLoadStatus[fontId] < 2) != 0) {
+        D_80155D88 = fontId + 0x10000000;
         return NULL;
     }
-    if (arg1 >= gSoundFontList[arg0].numInstruments) {
-        D_80155D88 = (arg0 << 8) + arg1 + 0x03000000;
+    if (instId >= gSoundFontList[fontId].numInstruments) {
+        D_80155D88 = (fontId << 8) + instId + 0x03000000;
         return NULL;
     }
-    temp_v1 = gSoundFontList[arg0].instruments[arg1];
-    if (temp_v1 == NULL) {
-        D_80155D88 = (arg0 << 8) + arg1 + 0x01000000;
-        return temp_v1;
+    instrument = gSoundFontList[fontId].instruments[instId];
+    if (instrument == NULL) {
+        D_80155D88 = (fontId << 8) + instId + 0x01000000;
+        return instrument;
     }
-    return temp_v1;
+    return instrument;
 }
 
-Drum* Audio_GetDrum(s32 arg0, s32 arg1) {
-    Drum* temp;
+Drum* Audio_GetDrum(s32 fontId, s32 drumId) {
+    Drum* drum;
 
-    if ((gFontLoadStatus[arg0] < 2) != 0) {
-        D_80155D88 = arg0 + 0x10000000;
+    if ((gFontLoadStatus[fontId] < 2) != 0) {
+        D_80155D88 = fontId + 0x10000000;
         return NULL;
     }
-    if (arg1 >= gSoundFontList[arg0].numDrums) {
-        D_80155D88 = (arg0 << 8) + arg1 + 0x04000000;
+    if (drumId >= gSoundFontList[fontId].numDrums) {
+        D_80155D88 = (fontId << 8) + drumId + 0x04000000;
         return NULL;
     }
-    if ((u32) gSoundFontList[arg0].drums < AUDIO_RELOCATED_ADDRESS_START) {
+    if ((u32) gSoundFontList[fontId].drums < AUDIO_RELOCATED_ADDRESS_START) {
         return NULL;
     }
-    temp = gSoundFontList[arg0].drums[arg1];
-    if (gSoundFontList[arg0].drums[arg1] == NULL) {
-        D_80155D88 = (arg0 << 8) + arg1 + 0x05000000;
+    drum = gSoundFontList[fontId].drums[drumId];
+    if (gSoundFontList[fontId].drums[drumId] == NULL) {
+        D_80155D88 = (fontId << 8) + drumId + 0x05000000;
     }
-    return temp;
+    return drum;
 }
 
 void func_80011EB8(Note* note) {
@@ -411,7 +411,7 @@ void func_80012438(SequenceLayer* layer, s32 arg1) {
                     layer->adsr.decayIndex * gAudioBufferParams.ticksPerUpdateInvScaled;
             }
             temp_v0->playbackState.adsr.sustain =
-                (s32) layer->channel->adsr.sustain * temp_v0->playbackState.adsr.current * 0.00390625f;
+                (s32) layer->channel->adsr.sustain * temp_v0->playbackState.adsr.current / 256.0f;
         }
     }
     if (arg1 == 6) {
@@ -428,35 +428,35 @@ void func_8001268C(SequenceLayer* layer) {
     func_80012438(layer, 7);
 }
 
-s32 func_800126AC(Note* note, SequenceLayer* layer, s32 arg2) {
-    f32 var_fv0;
-    u8 var_v1 = 0;
+s32 func_800126AC(Note* note, SequenceLayer* layer, s32 waveId) {
+    f32 freqMod;
+    u8 harmonicIndex = 0;
 
-    if (arg2 < 128) {
-        arg2 = 128;
+    if (waveId < 128) {
+        waveId = 128;
     }
-    var_fv0 = layer->freqMod;
+    freqMod = layer->freqMod;
     if ((layer->portamento.mode != 0) && (layer->portamento.extent > 0.0f)) {
-        var_fv0 *= layer->portamento.extent + 1.0f;
+        freqMod *= layer->portamento.extent + 1.0f;
     }
-    if (var_fv0 < 1.0f) {
-        var_fv0 = 1.0465f;
-    } else if (var_fv0 < 2.0f) {
-        var_v1 = 1;
-        var_fv0 = 0.52325f;
-    } else if (var_fv0 < 4.0f) {
-        var_v1 = 2;
-        var_fv0 = 0.26263f;
+    if (freqMod < 1.0f) {
+        freqMod = 1.0465f;
+    } else if (freqMod < 2.0f) {
+        harmonicIndex = 1;
+        freqMod = 0.52325f;
+    } else if (freqMod < 4.0f) {
+        harmonicIndex = 2;
+        freqMod = 0.26263f;
     } else {
-        var_v1 = 3;
-        var_fv0 = 0.13081f;
+        harmonicIndex = 3;
+        freqMod = 0.13081f;
     }
 
-    layer->freqMod *= var_fv0;
-    note->playbackState.waveId = arg2;
-    note->playbackState.harmonicIndex = var_v1;
-    note->noteSubEu.waveSampleAddr = &gWaveSamples[arg2 - 128][var_v1 * 64];
-    return var_v1;
+    layer->freqMod *= freqMod;
+    note->playbackState.waveId = waveId;
+    note->playbackState.harmonicIndex = harmonicIndex;
+    note->noteSubEu.waveSampleAddr = &gWaveSamples[waveId - 128][harmonicIndex * 64];
+    return harmonicIndex;
 }
 
 void func_800127B0(Note* note, SequenceLayer* layer) {
@@ -601,7 +601,7 @@ void func_80012C40(Note* note) {
     }
 }
 
-Note* func_80012C6C(AudioListItem* item, s32 arg1) {
+Note* func_80012C6C(AudioListItem* item, s32 priority) {
     AudioListItem* var_v0;
     AudioListItem* var_v1;
     void* temp_a0;
@@ -620,7 +620,7 @@ Note* func_80012C6C(AudioListItem* item, s32 arg1) {
         return NULL;
     }
 
-    if (((Note*) var_v1->u.value)->playbackState.priority >= arg1) {
+    if (((Note*) var_v1->u.value)->playbackState.priority >= priority) {
         return NULL;
     }
     return (Note*) var_v1->u.value;

@@ -1,5 +1,6 @@
 #include "sys.h"
 #include "PR/os_internal.h"
+#include "mods.h"
 
 FaultMgr gFaultMgr;
 
@@ -49,79 +50,79 @@ const char* sFloatExceptions[6] = {
     "Unimplemented operation", "Invalid operation", "Division by zero", "Overflow", "Underflow", "Inexact operation",
 };
 
-void func_800073C0(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
-    u16* var_v0;
+void Fault_FillRectange(s32 xPos, s32 yPos, s32 width, s32 height) {
+    u16* pixel;
     s32 i;
     s32 j;
 
-    var_v0 = gFaultMgr.width * arg1 + gFaultMgr.fb->data + arg0;
-    for (i = 0; i < arg3; i++) {
-        for (j = 0; j < arg2; j++, var_v0++) {
-            *var_v0 = ((*var_v0 & 0xE738) >> 2) | 1;
+    pixel = gFaultMgr.width * yPos + gFaultMgr.fb->data + xPos;
+    for (i = 0; i < height; i++) {
+        for (j = 0; j < width; j++, pixel++) {
+            *pixel = ((*pixel & 0xE738) >> 2) | 1;
         }
-        var_v0 += gFaultMgr.width - arg2;
+        pixel += gFaultMgr.width - width;
     }
 }
 
-void func_800074AC(s32 arg0, s32 arg1, s32 arg2) {
-    s32* var_v0;
-    u16* var_v1;
+void Fault_DisplayChar(s32 xPos, s32 yPos, s32 index) {
+    s32* charPixelFlags;
+    u16* pixel;
     s32 i;
     s32 j;
 
-    var_v0 = &sFaultCharPixelFlags[(arg2 / 5) * 7];
-    var_v1 = gFaultMgr.width * arg1 + gFaultMgr.fb->data + arg0;
+    charPixelFlags = &sFaultCharPixelFlags[(index / 5) * 7];
+    pixel = gFaultMgr.width * yPos + gFaultMgr.fb->data + xPos;
 
     for (i = 0; i < 7; i++) {
-        u32 temp_t1 = 0x80000000 >> ((arg2 % 5) * 6);
-        u32 temp_a3 = *var_v0++;
+        u32 bufferPixelFlag = 0x80000000 >> ((index % 5) * 6);
+        u32 charPixelFlag = *charPixelFlags++;
 
         for (j = 0; j < 6; j++) {
-            if (temp_t1 & temp_a3) {
-                *var_v1 = -1;
+            if (bufferPixelFlag & charPixelFlag) {
+                *pixel = 0xFFFF;
             } else {
-                *var_v1 = 1;
+                *pixel = 0x0001;
             }
-            var_v1++;
-            temp_t1 >>= 1;
+            pixel++;
+            bufferPixelFlag >>= 1;
         }
-        var_v1 += gFaultMgr.width - 6;
+        pixel += gFaultMgr.width - 6;
     }
 }
 
-void* func_80007604(void* arg0, const char* arg1, size_t arg2) {
-    return (char*) memcpy(arg0, arg1, arg2) + arg2;
+char* Fault_PrOut(char* buffer, const char* fmt, size_t size) {
+    return (char*) memcpy(buffer, fmt, size) + size;
 }
 
-void func_8000762C(s32 arg0, s32 arg1, const char* fmt, ...) {
-    u8* var_s0;
+void Fault_Printf(s32 xPos, s32 yPos, const char* fmt, ...) {
+    u8* charPtr;
     s32 i;
-    u8 sp40[0x100];
-    s32 temp_a2;
+    u8 buffer[0x100];
+    s32 charIndex;
     va_list args;
     va_start(args, fmt);
 
     for (i = 0; i < 0x100; i++) {
-        sp40[i] = 0;
+        buffer[i] = 0;
     }
 
-    if (_Printf((outfun*) func_80007604, sp40, fmt, args) <= 0) {
+    if (_Printf(Fault_PrOut, buffer, fmt, args) <= 0) {
         return;
     }
-    for (var_s0 = sp40; *var_s0 != 0; var_s0++) {
-        temp_a2 = sFaultCharIndex[*var_s0 & 0x7F];
+    for (charPtr = buffer; *charPtr != 0; charPtr++) {
+        charIndex = sFaultCharIndex[*charPtr & 0x7F];
 
-        if (temp_a2 != 0xFF) {
-            func_800074AC(arg0, arg1, temp_a2);
+        if (charIndex != 0xFF) {
+            Fault_DisplayChar(xPos, yPos, charIndex);
         }
-        arg0 += 6;
+        xPos += 6;
     label:; // fake, probably
     }
     va_end(args);
 }
 
-void func_8000770C(s32 time) {
-    u64 time64 = MSEC_TO_CYCLES(time);
+void Fault_Wait(s32 msec) {
+    u64 time64 = MSEC_TO_CYCLES(msec);
 
     osSetTime(0);
     while (osGetTime() < time64) {
@@ -129,25 +130,25 @@ void func_8000770C(s32 time) {
     }
 }
 
-void func_800077F8(s32 arg0, s32 arg1, s32 arg2, f32* arg3) {
-    u32 temp_v0 = *(u32*) arg3;
-    s32 temp_v1 = ((temp_v0 & 0x7F800000) >> 0x17) - 0x7F;
+void Fault_DisplayFloatReg(s32 xPos, s32 yPos, s32 regNum, f32* regValue) {
+    u32 regAsInt = *(u32*) regValue;
+    s32 regExp = ((regAsInt & 0x7F800000) >> 0x17) - 0x7F;
 
-    if (((-0x7F < temp_v1) && (temp_v1 < 0x80)) || (temp_v0 == 0)) {
-        func_8000762C(arg0, arg1, "F%02d:%.3e", arg2, *arg3);
+    if (((-0x7F < regExp) && (regExp < 0x80)) || (regAsInt == 0)) {
+        Fault_Printf(xPos, yPos, "F%02d:%.3e", regNum, *regValue);
     } else {
-        func_8000762C(arg0, arg1, "F%02d:---------", arg2);
+        Fault_Printf(xPos, yPos, "F%02d:---------", regNum);
     }
 }
 
-void func_80007880(u32 arg0) {
-    s32 var_v0;
-    u32 var_v1 = 0x20000;
+void Fault_DisplayFloatException(u32 exceptFlags) {
+    s32 i;
+    u32 flag = 0x20000;
 
-    func_8000762C(0x1E, 0xA0, "FPCSR:%08XH", arg0);
-    for (var_v0 = 0; var_v0 < 6; var_v0++, var_v1 >>= 1) {
-        if (arg0 & var_v1) {
-            func_8000762C(0x84, 0xA0, "(%s)", sFloatExceptions[var_v0]);
+    Fault_Printf(30, 160, "FPCSR:%08XH", exceptFlags);
+    for (i = 0; i < 6; i++, flag >>= 1) {
+        if (exceptFlags & flag) {
+            Fault_Printf(132, 160, "(%s)", sFloatExceptions[i]);
             return;
         }
     }
@@ -155,101 +156,101 @@ void func_80007880(u32 arg0) {
 
 #define CAUSE_INDEX(cause) ((cause >> CAUSE_EXCSHIFT) & (CAUSE_EXCMASK >> CAUSE_EXCSHIFT))
 
-void func_80007910(OSThread* thread) {
+void Fault_DisplayDebugInfo(OSThread* thread) {
     __OSThreadContext* context = &thread->context;
-    s16 var_s0 = CAUSE_INDEX(context->cause);
+    s16 causeIndex = CAUSE_INDEX(context->cause);
 
-    if (var_s0 == CAUSE_INDEX(EXC_WATCH)) {
-        var_s0 = 16;
+    if (causeIndex == CAUSE_INDEX(EXC_WATCH)) {
+        causeIndex = 16;
     }
-    if (var_s0 == CAUSE_INDEX(EXC_VCED)) {
-        var_s0 = 17;
+    if (causeIndex == CAUSE_INDEX(EXC_VCED)) {
+        causeIndex = 17;
     }
-    func_8000770C(3000);
-    func_800073C0(15, 15, 290, 210);
-    func_8000762C(30, 40, "THREAD:%d  (%s)", thread->id, sFaultCauses[var_s0]);
-    func_8000762C(30, 50, "PC:%08XH   SR:%08XH\tVA:%08XH", context->pc, context->sr, context->badvaddr);
+    Fault_Wait(3000);
+    Fault_FillRectange(15, 15, SCREEN_WIDTH - 30, SCREEN_HEIGHT - 30);
+    Fault_Printf(30, 40, "THREAD:%d  (%s)", thread->id, sFaultCauses[causeIndex]);
+    Fault_Printf(30, 50, "PC:%08XH   SR:%08XH\tVA:%08XH", context->pc, context->sr, context->badvaddr);
     osWritebackDCacheAll();
-    func_8000762C(30, 60, "AT:%08XH   V0:%08XH\tV1:%08XH", (s32) context->at, (s32) context->v0, (s32) context->v1);
-    func_8000762C(30, 70, "A0:%08XH   A1:%08XH\tA2:%08XH", (s32) context->a0, (s32) context->a1, (s32) context->a2);
-    func_8000762C(30, 80, "A3:%08XH   T0:%08XH\tT1:%08XH", (s32) context->a3, (s32) context->t0, (s32) context->t1);
-    func_8000762C(30, 90, "T2:%08XH   T3:%08XH\tT4:%08XH", (s32) context->t2, (s32) context->t3, (s32) context->t4);
-    func_8000762C(30, 100, "T5:%08XH   T6:%08XH\tT7:%08XH", (s32) context->t5, (s32) context->t6, (s32) context->t7);
-    func_8000762C(30, 110, "S0:%08XH   S1:%08XH\tS2:%08XH", (s32) context->s0, (s32) context->s1, (s32) context->s2);
-    func_8000762C(30, 120, "S3:%08XH   S4:%08XH\tS5:%08XH", (s32) context->s3, (s32) context->s4, (s32) context->s5);
-    func_8000762C(30, 130, "S6:%08XH   S7:%08XH\tT8:%08XH", (s32) context->s6, (s32) context->s7, (s32) context->t8);
-    func_8000762C(30, 140, "T9:%08XH   GP:%08XH\tSP:%08XH", (s32) context->t9, (s32) context->gp, (s32) context->sp);
-    func_8000762C(30, 150, "S8:%08XH   RA:%08XH", (s32) context->s8, (s32) context->ra);
-    func_80007880(context->fpcsr);
+    Fault_Printf(30, 60, "AT:%08XH   V0:%08XH\tV1:%08XH", (s32) context->at, (s32) context->v0, (s32) context->v1);
+    Fault_Printf(30, 70, "A0:%08XH   A1:%08XH\tA2:%08XH", (s32) context->a0, (s32) context->a1, (s32) context->a2);
+    Fault_Printf(30, 80, "A3:%08XH   T0:%08XH\tT1:%08XH", (s32) context->a3, (s32) context->t0, (s32) context->t1);
+    Fault_Printf(30, 90, "T2:%08XH   T3:%08XH\tT4:%08XH", (s32) context->t2, (s32) context->t3, (s32) context->t4);
+    Fault_Printf(30, 100, "T5:%08XH   T6:%08XH\tT7:%08XH", (s32) context->t5, (s32) context->t6, (s32) context->t7);
+    Fault_Printf(30, 110, "S0:%08XH   S1:%08XH\tS2:%08XH", (s32) context->s0, (s32) context->s1, (s32) context->s2);
+    Fault_Printf(30, 120, "S3:%08XH   S4:%08XH\tS5:%08XH", (s32) context->s3, (s32) context->s4, (s32) context->s5);
+    Fault_Printf(30, 130, "S6:%08XH   S7:%08XH\tT8:%08XH", (s32) context->s6, (s32) context->s7, (s32) context->t8);
+    Fault_Printf(30, 140, "T9:%08XH   GP:%08XH\tSP:%08XH", (s32) context->t9, (s32) context->gp, (s32) context->sp);
+    Fault_Printf(30, 150, "S8:%08XH   RA:%08XH", (s32) context->s8, (s32) context->ra);
+    Fault_DisplayFloatException(context->fpcsr);
     osWritebackDCacheAll();
-    func_800077F8(30, 170, 0, &context->fp0.f.f_even);
-    func_800077F8(120, 170, 2, &context->fp2.f.f_even);
-    func_800077F8(210, 170, 4, &context->fp4.f.f_even);
-    func_800077F8(30, 180, 6, &context->fp6.f.f_even);
-    func_800077F8(120, 180, 8, &context->fp8.f.f_even);
-    func_800077F8(210, 180, 10, &context->fp10.f.f_even);
-    func_800077F8(30, 190, 12, &context->fp12.f.f_even);
-    func_800077F8(120, 190, 14, &context->fp14.f.f_even);
-    func_800077F8(210, 190, 16, &context->fp16.f.f_even);
-    func_800077F8(30, 200, 18, &context->fp18.f.f_even);
-    func_800077F8(120, 200, 20, &context->fp20.f.f_even);
-    func_800077F8(210, 200, 22, &context->fp22.f.f_even);
-    func_800077F8(30, 210, 24, &context->fp24.f.f_even);
-    func_800077F8(120, 210, 26, &context->fp26.f.f_even);
-    func_800077F8(210, 210, 28, &context->fp28.f.f_even);
-    func_800077F8(30, 220, 30, &context->fp30.f.f_even);
+    Fault_DisplayFloatReg(30, 170, 0, &context->fp0.f.f_even);
+    Fault_DisplayFloatReg(120, 170, 2, &context->fp2.f.f_even);
+    Fault_DisplayFloatReg(210, 170, 4, &context->fp4.f.f_even);
+    Fault_DisplayFloatReg(30, 180, 6, &context->fp6.f.f_even);
+    Fault_DisplayFloatReg(120, 180, 8, &context->fp8.f.f_even);
+    Fault_DisplayFloatReg(210, 180, 10, &context->fp10.f.f_even);
+    Fault_DisplayFloatReg(30, 190, 12, &context->fp12.f.f_even);
+    Fault_DisplayFloatReg(120, 190, 14, &context->fp14.f.f_even);
+    Fault_DisplayFloatReg(210, 190, 16, &context->fp16.f.f_even);
+    Fault_DisplayFloatReg(30, 200, 18, &context->fp18.f.f_even);
+    Fault_DisplayFloatReg(120, 200, 20, &context->fp20.f.f_even);
+    Fault_DisplayFloatReg(210, 200, 22, &context->fp22.f.f_even);
+    Fault_DisplayFloatReg(30, 210, 24, &context->fp24.f.f_even);
+    Fault_DisplayFloatReg(120, 210, 26, &context->fp26.f.f_even);
+    Fault_DisplayFloatReg(210, 210, 28, &context->fp28.f.f_even);
+    Fault_DisplayFloatReg(30, 220, 30, &context->fp30.f.f_even);
     osWritebackDCacheAll();
-    osViBlack(0);
-    osViRepeatLine(0);
+    osViBlack(false);
+    osViRepeatLine(false);
     osViSwapBuffer(gFaultMgr.fb);
 }
 
 OSThread* func_80007CEC(void) {
-    OSThread* var_v1;
+    OSThread* queue = __osGetActiveQueue();
 
-    var_v1 = __osGetActiveQueue();
-
-    while (var_v1->priority != -1) {
-        if ((var_v1->priority > 0) && (var_v1->priority < 0x7F) && (var_v1->flags & 3)) {
-            return var_v1;
+    while (queue->priority != -1) {
+        if ((queue->priority > 0) && (queue->priority < 0x7F) && (queue->flags & 3)) {
+            return queue;
         }
-        var_v1 = var_v1->tlnext;
+        queue = queue->tlnext;
     }
     return NULL;
 }
 
-void Fault_ThreadEntry(void* arg0) {
-    OSMesg sp44;
-    OSThread* sp40;
-    s32 var_s2;
-    s32 var_s5;
-    u32 var_s0;
+void Fault_ThreadEntry(void* arg) {
+    OSMesg dummy;
+    OSThread* faultedThread;
+    s32 codeTimer;
+    s32 codeComplete;
+    u32 codeInput;
 
-    sp44 = NULL;
-    var_s5 = 0;
-    var_s0 = 0;
-    var_s2 = 0;
+    dummy = NULL;
+    codeComplete = 0;
+    codeInput = 0;
+    codeTimer = 0;
 
-    osSetEventMesg(OS_EVENT_CPU_BREAK, &gFaultMgr.msgQueue, (OSMesg) FAULT_MESG_BREAK);
-    osSetEventMesg(OS_EVENT_FAULT, &gFaultMgr.msgQueue, (OSMesg) FAULT_MESG_FAULT);
+    osSetEventMesg(OS_EVENT_CPU_BREAK, &gFaultMgr.mesgQueue, (OSMesg) FAULT_MESG_BREAK);
+    osSetEventMesg(OS_EVENT_FAULT, &gFaultMgr.mesgQueue, (OSMesg) FAULT_MESG_FAULT);
 
-    sp40 = NULL;
-    while (sp40 == NULL) {
-        osRecvMesg(&gFaultMgr.msgQueue, &sp44, OS_MESG_BLOCK);
-        sp40 = func_80007CEC();
+    faultedThread = NULL;
+    while (faultedThread == NULL) {
+        MQ_WAIT_FOR_MESG(&gFaultMgr.mesgQueue, &dummy);
+        faultedThread = func_80007CEC();
     }
 
-    func_8000762C(300, 10, "-");
-    gControllerPlugged[0] = 1;
-    while (var_s5 == 0) {
-        osSendMesg(&gSerialThreadMsgQueue, OS_MESG_32(SI_READ_CONTROLLER), OS_MESG_PRI_NORMAL);
-        osRecvMesg(&gControllerMsgQueue, NULL, OS_MESG_BLOCK);
+    Fault_Printf(300, 10, "-");
+    gControllerPlugged[0] = true;
+
+#if MODS_AUTO_DEBUGGER == 0 // Instant crash debugger (no button combination needed)
+    while (!codeComplete) {
+        osSendMesg(&gSerialThreadMesgQueue, (OSMesg) SI_READ_CONTROLLER, OS_MESG_NOBLOCK);
+        MQ_WAIT_FOR_MESG(&gControllerMesgQueue, NULL);
         Controller_UpdateInput();
-        switch (var_s0) {
+        switch (codeInput) {
             case 0:
                 if (gControllerHold[0].button == (R_TRIG | D_CBUTTONS | L_CBUTTONS)) {
-                    var_s0++;
-                    var_s2 = 4000;
+                    codeInput++;
+                    codeTimer = 4000;
                 }
                 break;
             case 1:
@@ -257,10 +258,10 @@ void Fault_ThreadEntry(void* arg0) {
             case 7:
                 if (gControllerHold[0].button & R_TRIG) {
                     if (gControllerPress[0].button == A_BUTTON) {
-                        var_s0++;
-                        var_s2 = 3000;
+                        codeInput++;
+                        codeTimer = 3000;
                     } else if (gControllerPress[0].button != 0) {
-                        var_s0 = 0;
+                        codeInput = 0;
                     }
                 }
                 break;
@@ -269,10 +270,10 @@ void Fault_ThreadEntry(void* arg0) {
             case 8:
                 if (gControllerHold[0].button & R_TRIG) {
                     if (gControllerPress[0].button == B_BUTTON) {
-                        var_s0++;
-                        var_s2 = 3000;
+                        codeInput++;
+                        codeTimer = 3000;
                     } else if (gControllerPress[0].button != 0) {
-                        var_s0 = 0;
+                        codeInput = 0;
                     }
                 }
                 break;
@@ -285,50 +286,52 @@ void Fault_ThreadEntry(void* arg0) {
             case 13:
                 if (gControllerHold[0].button & R_TRIG) {
                     if (gControllerPress[0].button == L_CBUTTONS) {
-                        var_s0++;
-                        var_s2 = 3000;
+                        codeInput++;
+                        codeTimer = 3000;
                     } else if (gControllerPress[0].button != 0) {
-                        var_s0 = 0;
+                        codeInput = 0;
                     }
                 }
                 break;
             case 14:
                 if (gControllerHold[0].button & R_TRIG) {
                     if (gControllerPress[0].button == START_BUTTON) {
-                        var_s0++;
-                        var_s2 = 3000;
+                        codeInput++;
+                        codeTimer = 3000;
                     } else if (gControllerPress[0].button != 0) {
-                        var_s0 = 0;
+                        codeInput = 0;
                     }
                 }
                 break;
             case 15:
-                var_s5 = 1;
+                codeComplete = true;
                 break;
         }
-        if (var_s2 != 0) {
-            var_s2 -= 1;
+        if (codeTimer != 0) {
+            codeTimer--;
         } else {
-            var_s0 = 0;
+            codeInput = 0;
         }
     }
-    func_80007910(sp40);
-    while (1) {
+#endif
+
+    Fault_DisplayDebugInfo(faultedThread);
+    while (true) {
         ;
     }
 }
 
-void func_80007FE4(FrameBuffer* arg0, u16 arg1, u16 arg2) {
-    gFaultMgr.fb = arg0;
-    gFaultMgr.width = arg1;
-    gFaultMgr.height = arg2;
+void Fault_SetFrameBuffer(FrameBuffer* buffer, u16 width, u16 height) {
+    gFaultMgr.fb = buffer;
+    gFaultMgr.width = width;
+    gFaultMgr.height = height;
 }
 
 void Fault_Init(void) {
     gFaultMgr.fb = (FrameBuffer*) (PHYS_TO_K0(osMemSize) - sizeof(FrameBuffer));
     gFaultMgr.width = SCREEN_WIDTH;
     gFaultMgr.height = SCREEN_HEIGHT;
-    osCreateMesgQueue(&gFaultMgr.msgQueue, &gFaultMgr.msg, 1);
+    osCreateMesgQueue(&gFaultMgr.mesgQueue, &gFaultMgr.msg, 1);
     osCreateThread(&gFaultMgr.thread, THREAD_ID_FAULT, Fault_ThreadEntry, 0, gFaultMgr.stack + sizeof(gFaultMgr.stack),
                    127);
     osStartThread(&gFaultMgr.thread);

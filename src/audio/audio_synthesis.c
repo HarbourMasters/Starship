@@ -1,7 +1,9 @@
 #include "sys.h"
 #include "sf64audio_provisional.h"
 
-s32 D_80145D40;
+s32 D_80145D40; // unused
+
+// all of these are part of the DFT-related function
 f32 D_80145D48[256];
 f32 D_80146148[256];
 f32 D_80146548[515];
@@ -14,16 +16,16 @@ f32 D_80146D68;
 f32 D_80146D6C;
 f32 D_80146D70;
 
-static char devstr0[] = "Table Remake\n";
-static char devstr1[] = "-------------------Undefined Ctype \n";
-static char devstr2[] = "Error? Limit OVER %d in %d\n";
-static char devstr3[] = "";
-static char devstr4[] = "Get %x  %x\n";
-static char devstr5[] = "Break %x %d %d \n";
-static char devstr6[] = "Terminate-Canceled Channel %d,Phase %d\n";
-static char devstr7[] = "S->W\n";
-static char devstr8[] = "W->S\n";
-static char devstr9[] = "S-Resample Pitch %x (old %d -> delay %d)\n";
+static const char devstr0[] = "Table Remake\n";
+static const char devstr1[] = "-------------------Undefined Ctype \n";
+static const char devstr2[] = "Error? Limit OVER %d in %d\n";
+static const char devstr3[] = "";
+static const char devstr4[] = "Get %x  %x\n";
+static const char devstr5[] = "Break %x %d %d \n";
+static const char devstr6[] = "Terminate-Canceled Channel %d,Phase %d\n";
+static const char devstr7[] = "S->W\n";
+static const char devstr8[] = "W->S\n";
+static const char devstr9[] = "S-Resample Pitch %x (old %d -> delay %d)\n";
 
 void func_80009A2C(s32 updateIndex, s32 noteIndex);
 void func_80009AAC(s32 updateIndex);
@@ -362,7 +364,7 @@ void func_80008780(f32* arg0, s32 arg1, f32* arg2) {
     }
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/audio/audio_synthesis/func_80008780.s")
+#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/audio/audio_synthesis/func_80008780.s")
 #endif
 
 // https://decomp.me/scratch/mYlns
@@ -492,7 +494,7 @@ void func_80009124(s16** arg0) {
 }
 #else
 void func_80009124(s16** arg0);
-#pragma GLOBAL_ASM("asm/us/nonmatchings/audio/audio_synthesis/func_80009124.s")
+#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/audio/audio_synthesis/func_80009124.s")
 #endif
 
 void func_80009504(s16* arg0, UnkStruct_800097A8* arg1) {
@@ -1141,7 +1143,7 @@ Acmd* func_8000A700(s32 noteIndex, NoteSubEu* noteSub, NoteSynthesisState* synth
     return aList;
 }
 #else
-#pragma GLOBAL_ASM("asm/us/nonmatchings/audio/audio_synthesis/func_8000A700.s")
+#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/audio/audio_synthesis/func_8000A700.s")
 #endif
 
 Acmd* func_8000B3F0(Acmd* aList, NoteSubEu* noteSub, NoteSynthesisState* synthState, s32 numSamplesToLoad) {

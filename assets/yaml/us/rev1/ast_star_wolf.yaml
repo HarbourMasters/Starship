@@ -1,0 +1,102 @@
+:config:
+  segments:
+    - [0x0F, 0x940AD0]
+  header:
+    code:
+      - '#include "assets/ast_star_wolf.h"'
+    header:
+      - '#include "gfx.h"'
+      - '#include "sf64object.h"'
+
+D_STAR_WOLF_F000000:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 44, height: 44, offset: 0x0F000000, symbol: D_STAR_WOLF_F000000 }
+
+D_STAR_WOLF_F000F20:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 44, height: 44, offset: 0x0F000F20, symbol: D_STAR_WOLF_F000F20 }
+
+D_STAR_WOLF_F001E40:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 44, height: 44, offset: 0x0F001E40, symbol: D_STAR_WOLF_F001E40 }
+
+D_STAR_WOLF_F002D60:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 44, height: 44, offset: 0x0F002D60, symbol: D_STAR_WOLF_F002D60 }
+
+D_STAR_WOLF_F003C80:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 44, height: 44, offset: 0x0F003C80, symbol: D_STAR_WOLF_F003C80 }
+
+D_STAR_WOLF_F004BA0:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 44, height: 44, offset: 0x0F004BA0, symbol: D_STAR_WOLF_F004BA0 }
+
+D_STAR_WOLF_F005AC0:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 44, height: 44, offset: 0x0F005AC0, symbol: D_STAR_WOLF_F005AC0 }
+
+D_STAR_WOLF_F0069E0:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 44, height: 44, offset: 0x0F0069E0, symbol: D_STAR_WOLF_F0069E0 }
+
+D_STAR_WOLF_F007900:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 44, height: 44, offset: 0x0F007900, symbol: D_STAR_WOLF_F007900 }
+
+D_STAR_WOLF_F008820:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 44, height: 44, offset: 0x0F008820, symbol: D_STAR_WOLF_F008820 }
+
+D_STAR_WOLF_F009740:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 44, height: 44, offset: 0x0F009740, symbol: D_STAR_WOLF_F009740 }
+
+D_STAR_WOLF_F00A660:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 44, height: 44, offset: 0x0F00A660, symbol: D_STAR_WOLF_F00A660 }
+
+D_STAR_WOLF_F00B580:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 44, height: 44, offset: 0x0F00B580, symbol: D_STAR_WOLF_F00B580 }
+
+D_STAR_WOLF_F00C4A0:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 44, height: 44, offset: 0x0F00C4A0, symbol: D_STAR_WOLF_F00C4A0 }
+
+D_STAR_WOLF_F00D3C0:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 44, height: 44, offset: 0x0F00D3C0, symbol: D_STAR_WOLF_F00D3C0 }
+
+D_STAR_WOLF_F00E2E0:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 44, height: 44, offset: 0x0F00E2E0, symbol: D_STAR_WOLF_F00E2E0 }
+
+D_STAR_WOLF_F00F200:
+  { type: GFX, offset: 0xF00F200, symbol: D_STAR_WOLF_F00F200 }
+
+D_STAR_WOLF_F0101D0:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x0F0101D0, symbol: D_STAR_WOLF_F0101D0 }
+
+D_STAR_WOLF_F011E80:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 8, height: 8, offset: 0x0F011E80, symbol: D_STAR_WOLF_F011E80 }
+
+D_STAR_WOLF_F011680: 
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x0F011680, symbol: D_STAR_WOLF_F011680 }
+
+D_STAR_WOLF_F0103D0:
+  { type: GFX, offset: 0xF0103D0, symbol: D_STAR_WOLF_F0103D0 }
+
+D_STAR_WOLF_F011F00:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x0F011F00, symbol: D_STAR_WOLF_F011F00 }
+
+D_STAR_WOLF_F012700:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x0F012700, symbol: D_STAR_WOLF_F012700 }
+
+D_STAR_WOLF_F012F00:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x0F012F00, symbol: D_STAR_WOLF_F012F00 }
+
+D_STAR_WOLF_F013100:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 8, height: 8, offset: 0x0F013100, symbol: D_STAR_WOLF_F013100 }
+
+D_STAR_WOLF_F013180:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x0F013180, symbol: D_STAR_WOLF_F013180 }
+
+D_STAR_WOLF_F013980:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x0F013980, symbol: D_STAR_WOLF_F013980 }
+
+D_STAR_WOLF_F014180:
+  { type: GFX, offset: 0xF014180, symbol: D_STAR_WOLF_F014180 }
+
+D_STAR_WOLF_F014208:
+  { type: TEXTURE, ctype: u8, format: IA8, width: 16, height: 16, offset: 0x0F014208, symbol: D_STAR_WOLF_F014208 }
+
+D_STAR_WOLF_F014310:
+  { type: GFX, offset: 0xF014310, symbol: D_STAR_WOLF_F014310 }
+
+D_STAR_WOLF_F014398:
+  { type: TEXTURE, ctype: u8, format: IA8, width: 32, height: 32, offset: 0x0F014398, symbol: D_STAR_WOLF_F014398 }

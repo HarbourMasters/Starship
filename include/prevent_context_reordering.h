@@ -9,8 +9,8 @@
 // struct Dummy4 {int x;};
 // struct Dummy5 {int x;};
 // struct Dummy6 {int x;};
-struct Dummy7 {int x;};
-struct Dummy8 {int x;};
+// struct Dummy7 {int x;};
+// struct Dummy8 {int x;};
 struct Dummy9 {int x;};
 struct Dummy10 {int x;};
 struct Dummy11 {int x;};

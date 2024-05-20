@@ -2,7 +2,7 @@
 #include "fox_map.h"
 #include "fox_option.h"
 
-extern s32 spectrumAnalizerMode;
+extern s32 spectrumAnalyzerMode;
 extern bool D_menu_801B9320;
 extern s32 D_menu_801B9244;
 extern OptionId D_menu_801B9124;
@@ -79,7 +79,7 @@ void Option_JukeboxSoundUpdate(void) {
     sfx |= sfxId & 0xFF;
 
     if (prevSfx != sfx) {
-        AUDIO_PLAY_SFX(0x49000002, gDefaultSfxSource, 4);
+        AUDIO_PLAY_SFX(NA_SE_CURSOR, gDefaultSfxSource, 4);
         prevSfx = sfx;
     }
 
@@ -94,13 +94,13 @@ void Option_JukeboxSoundUpdate(void) {
 
     if (gControllerPress[gMainController].button & B_BUTTON) {
         if (!D_menu_801B9320) {
-            AUDIO_PLAY_BGM(SEQ_ID_MENU);
+            AUDIO_PLAY_BGM(NA_BGM_SELECT);
             gDrawMode = DRAW_NONE;
             D_menu_801B9124 = 1000;
             D_menu_801B912C = 0;
             D_menu_801B9244 = 1;
         } else {
-            AUDIO_PLAY_SFX(0x4900101D, gDefaultSfxSource, 4);
+            AUDIO_PLAY_SFX(NA_SE_CANCEL, gDefaultSfxSource, 4);
             Audio_KillSfxBySource(gDefaultSfxSource);
             SEQCMD_STOP_SEQUENCE(SEQ_PLAYER_BGM, 1);
             SEQCMD_STOP_SEQUENCE(SEQ_PLAYER_FANFARE, 1);
@@ -108,17 +108,17 @@ void Option_JukeboxSoundUpdate(void) {
         }
     }
 
-    // Spectrum Analizer mode selector
+    // Spectrum Analyzer mode selector
     if (gControllerPress[gMainController].button & R_CBUTTONS) {
-        spectrumAnalizerMode++;
-        if (spectrumAnalizerMode > 2) {
-            spectrumAnalizerMode = 0;
+        spectrumAnalyzerMode++;
+        if (spectrumAnalyzerMode > 2) {
+            spectrumAnalyzerMode = 0;
         }
     }
 
     /* Draw */
 
-    RCP_SetupDL(&gMasterDisp, 0x53);
+    RCP_SetupDL(&gMasterDisp, SETUPDL_83);
     gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 0, 255);
 
     Graphics_DisplaySmallText(20, 50, 1.0f, 1.0f, "SFX ID:");

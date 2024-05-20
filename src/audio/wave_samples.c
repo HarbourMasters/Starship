@@ -1,7 +1,7 @@
 #include "sys.h"
 
 // clang-format off
-s16 gSawtoothWaveSample[] = {
+ALIGNED(16) s16 gSawtoothWaveSample[] = {
     // Frequency of 1
     0,      1023,   2047,   3071,   4095,   5119,   6143,   7167,
     8191,   9215,   10239,  11263,  12287,  13311,  14335,  15359,
@@ -43,7 +43,7 @@ s16 gSawtoothWaveSample[] = {
     0,      8191,   16383,  24575,  -32767, -24575, -16383, -8191,
 };
 
-s16 gTriangleWaveSample[] = {
+ALIGNED(16) s16 gTriangleWaveSample[] = {
     // Frequency of 1
     0,      2047,   4095,   6143,   8191,   10239,  12287,  14335,
     16383,  18431,  20479,  22527,  24575,  26623,  28671,  30719,
@@ -85,7 +85,7 @@ s16 gTriangleWaveSample[] = {
     0,      16383,  32767,  16383,  0,      -16383, -32767, -16383,
 };
 
-s16 gSineWaveSample[] = {
+ALIGNED(16) s16 gSineWaveSample[] = {
     // Frequency of 1
     0,      3211,   6392,   9511,   12539,  15446,  18204,  20787,
     23169,  25329,  27244,  28897,  30272,  31356,  32137,  32609,
@@ -127,7 +127,7 @@ s16 gSineWaveSample[] = {
     0,      23169,  32767,  23169,  0,      -23169, -32767, -23169,
 };
 
-s16 gSquareWaveSample[] = {
+ALIGNED(16) s16 gSquareWaveSample[] = {
     // Frequency of 1
     0,      0,      0,      0,      0,      0,      0,      0,
     0,      0,      0,      0,      0,      0,      0,      0,
@@ -169,7 +169,7 @@ s16 gSquareWaveSample[] = {
     0,      0,      32767,  32767,  0,      0,      -32767, -32767,
 };
 
-s16 gWhiteNoiseSample[] = {
+ALIGNED(16) s16 gWhiteNoiseSample[] = {
     // Frequency of 1
     0,      -25689, -25791, 27803,  -27568, -21030, 22174,  6298,
     27071,  -18531, 28649,  2284,   3380,   6890,   -12682, -21114,
@@ -212,7 +212,7 @@ s16 gWhiteNoiseSample[] = {
 };
 
 // Sine White Noise?
-s16 gUnkSample[] = {
+ALIGNED(16) s16 gUnkSample[] = {
     // Frequency of 1
     0,      16316,  20148,  20257,  27209,  -32657, 29264,  27259,
     -29394, -21494, -26410, 30770,  30033,  29130,  20206,  14129,
@@ -255,6 +255,7 @@ s16 gUnkSample[] = {
 };
 // clang-format on
 
+ALIGNED(16)
 s16* gWaveSamples[] = {
     gSawtoothWaveSample, gTriangleWaveSample, gSineWaveSample, gSquareWaveSample, gWhiteNoiseSample, gUnkSample,
 };

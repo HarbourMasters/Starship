@@ -1,0 +1,101 @@
+:config:
+  segments:
+    - [0x8, 0xDE5D50]
+  tables:
+    gTextCharTextures:
+      range: [0x0, 0x958]
+      mode: APPEND
+  header:
+    code:
+      - '#include "sf64mesg.h"'
+      - ''
+      - '// clang-format off'
+      - 'typedef enum {'
+      - '    END, NWL, NP2, NP3, NP4, NP5, NP6, NP7,'
+      - '    PRI0, PRI1, PRI2, PRI3, SPC, HSP, QSP, NXT,'
+      - '    CLF, CUP, CRT, CDN, AUP, ALF, ADN, ART,'
+      - '    _A, _B, _C, _D, _E, _F, _G, _H,'
+      - '    _I, _J, _K, _L, _M, _N, _O, _P,'
+      - '    _Q, _R, _S, _T, _U, _V, _W, _X,'
+      - '    _Y, _Z, _a, _b, _c, _d, _e, _f,'
+      - '    _g, _h, _i, _j, _k, _l, _m, _n,'
+      - '    _o, _p, _q, _r, _s, _t, _u, _v,'
+      - '    _w, _x, _y, _z, EXM, QST, DSH, CMA,'
+      - '    PRD, _0, _1, _2, _3, _4, _5, _6,'
+      - '    _7, _8, _9, APS, LPR, RPR, CLN, PIP,'
+      - '} CharCode;'
+
+text_char_special_0:
+  { type: TEXTURE, offset: 0x0, width: 16, height: 13, format: CI4, ctype: u8, symbol: gTextCharSpecial0 }
+
+text_char_special_4:
+  { type: TEXTURE, offset: 0x68, width: 16, height: 13, format: CI4, ctype: u8, symbol: gTextCharSpecial4 }
+
+text_char_special_8:
+  { type: TEXTURE, offset: 0xD0, width: 16, height: 13, format: CI4, ctype: u8, symbol: gTextCharSpecial8 }
+
+text_char_special_12:
+  { type: TEXTURE, offset: 0x138, width: 16, height: 13, format: CI4, ctype: u8, symbol: gTextCharSpecial12 }
+
+text_char_cdir:
+  { type: TEXTURE, offset: 0x1A0, width: 16, height: 13, format: CI4, ctype: u8, symbol: gTextCharCDIR }
+
+text_char_adir:
+  { type: TEXTURE, offset: 0x208, width: 16, height: 13, format: CI4, ctype: u8, symbol: gTextCharADIR }
+
+text_char_abcd_upper:
+  { type: TEXTURE, offset: 0x270, width: 16, height: 13, format: CI4, ctype: u8, symbol: gTextCharABCD }
+
+text_char_efgh_upper:
+  { type: TEXTURE, offset: 0x2D8, width: 16, height: 13, format: CI4, ctype: u8, symbol: gTextCharEFGH }
+
+text_char_ijkl_upper:
+  { type: TEXTURE, offset: 0x340, width: 16, height: 13, format: CI4, ctype: u8, symbol: gTextCharIJKL }
+
+text_char_mnop_upper:
+  { type: TEXTURE, offset: 0x3A8, width: 16, height: 13, format: CI4, ctype: u8, symbol: gTextCharMNOP }
+
+text_char_qrst_upper:
+  { type: TEXTURE, offset: 0x410, width: 16, height: 13, format: CI4, ctype: u8, symbol: gTextCharQRST }
+
+text_char_uvwx_upper:
+  { type: TEXTURE, offset: 0x478, width: 16, height: 13, format: CI4, ctype: u8, symbol: gTextCharUVWX }
+
+text_char_yzab_both:
+  { type: TEXTURE, offset: 0x4E0, width: 16, height: 13, format: CI4, ctype: u8, symbol: gTextCharYZABBoth }
+
+text_char_cdef_lower:
+  { type: TEXTURE, offset: 0x548, width: 16, height: 13, format: CI4, ctype: u8, symbol: gTextCharCDEFLower }
+
+text_char_ghij_lower:
+  { type: TEXTURE, offset: 0x5B0, width: 16, height: 13, format: CI4, ctype: u8, symbol: gTextCharGHIJLower }
+
+text_char_klmn_lower:
+  { type: TEXTURE, offset: 0x618, width: 16, height: 13, format: CI4, ctype: u8, symbol: gTextCharKLMNLower }
+
+text_char_opqr_lower:
+  { type: TEXTURE, offset: 0x680, width: 16, height: 13, format: CI4, ctype: u8, symbol: gTextCharOPQRLower }
+
+text_char_stuv_lower:
+  { type: TEXTURE, offset: 0x6E8, width: 16, height: 13, format: CI4, ctype: u8, symbol: gTextCharSTUVLower }
+
+text_char_wxyz_lower:
+  { type: TEXTURE, offset: 0x750, width: 16, height: 13, format: CI4, ctype: u8, symbol: gTextCharWXYZLower }
+
+text_char_pidc:
+  { type: TEXTURE, offset: 0x7B8, width: 16, height: 13, format: CI4, ctype: u8, symbol: gTextCharPIDC }
+
+text_char_p012:
+  { type: TEXTURE, offset: 0x820, width: 16, height: 13, format: CI4, ctype: u8, symbol: gTextCharP012 }
+
+text_char_3456:
+  { type: TEXTURE, offset: 0x888, width: 16, height: 13, format: CI4, ctype: u8, symbol: gTextChar3456 }
+
+text_char_789a:
+  { type: TEXTURE, offset: 0x8F0, width: 16, height: 13, format: CI4, ctype: u8, symbol: gTextChar789A }
+
+text_char_ppdp:
+  { type: TEXTURE, offset: 0x958, width: 16, height: 13, format: CI4, ctype: u8, symbol: gTextCharPPDP }
+
+message_table:
+  { type: SF64:MSG_TABLE, offset: 0xCCAC, vram: 0x80179010, ctype: u8, symbol: gMsgLookup }

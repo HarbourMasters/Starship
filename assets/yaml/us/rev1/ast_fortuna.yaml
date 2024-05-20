@@ -1,0 +1,183 @@
+:config:
+  segments:
+    - [0x6, 0xB1CA50]
+  header:
+    code:
+      - '#include "assets/ast_fortuna.h"'
+    header:
+      - '#include "gfx.h"'
+      - '#include "sf64object.h"'
+      - '#include "sf64level.h"'
+      - '#include "sf64event.h"'
+      - '#include "sf64player.h"'
+      - '#include "sf64audio_external.h"'
+
+# Fortuna
+# Former Defense Post
+D_FO_6000000:
+  { type: TEXTURE, format: IA8, width: 168, height: 28, offset: 0x6000000, ctype: u8, symbol: D_FO_6000000 }
+
+D_FO_6001260:
+  { type: TEXTURE, format: IA8, width: 16, height: 16, offset: 0x6001260, ctype: u8, symbol: D_FO_6001260 }
+
+D_FO_6001360:
+  { type: GFX, offset: 0x6001360, symbol: D_FO_6001360 }
+
+D_FO_6001890:
+  { type: TEXTURE, format: RGBA16, width: 32, height: 32, offset: 0x6001890, ctype: u16, symbol: D_FO_6001890 }
+
+D_FO_6002090:
+  { type: TEXTURE, format: RGBA16, width: 32, height: 32, offset: 0x6002090, ctype: u16, symbol: D_FO_6002090 }
+
+D_FO_6002890:
+  { type: TEXTURE, format: RGBA16, width: 32, height: 32, offset: 0x6002890, ctype: u16, symbol: D_FO_6002890 }
+
+D_FO_6003090:
+  { type: GFX, offset: 0x6003090, symbol: D_FO_6003090 }
+
+D_FO_6003EC0:
+  { type: TEXTURE, format: RGBA16, width: 32, height: 32, offset: 0x6003EC0, ctype: u16, symbol: D_FO_6003EC0 }
+
+D_FO_60046C0:
+  { type: TEXTURE, format: RGBA16, width: 16, height: 16, offset: 0x60046C0, ctype: u16, symbol: D_FO_60046C0 }
+
+D_FO_60048C0:
+  { type: TEXTURE, format: RGBA16, width: 16, height: 16, offset: 0x60048C0, ctype: u16, symbol: D_FO_60048C0 }
+
+D_FO_6004AC0:
+  { type: TEXTURE, format: RGBA16, width: 32, height: 64, offset: 0x6004AC0, ctype: u16, symbol: D_FO_6004AC0 }
+
+D_FO_6005AC0:
+  { type: TEXTURE, format: RGBA16, width: 16, height: 16, offset: 0x6005AC0, ctype: u16, symbol: D_FO_6005AC0 }
+
+D_FO_6005CC0:
+  { type: GFX, offset: 0x6005CC0, symbol: D_FO_6005CC0 }
+
+D_FO_6005F20:
+  { type: TEXTURE, format: RGBA16, width: 16, height: 16, offset: 0x6005F20, ctype: u16, symbol: D_FO_6005F20 }
+
+D_FO_6006120:
+  { type: TEXTURE, format: CI8, width: 16, height: 16, offset: 0x6006120, ctype: u8, symbol: D_FO_6006120 }
+
+D_FO_6006220:
+  { type: TEXTURE, format: TLUT, colors: 120, offset: 0x6006220, ctype: u16, symbol: D_FO_6006220 }
+
+D_FO_6006310:
+  { type: GFX, offset: 0x6006310, symbol: D_FO_6006310 }
+
+D_FO_60066E0:
+  { type: GFX, offset: 0x60066E0, symbol: D_FO_60066E0 }
+
+ast_fortuna_seg6_vtx_6898:
+  { type: VTX, count: 52, offset: 0x6006898, symbol: ast_fortuna_seg6_vtx_6898 }
+
+D_FO_6006BE0:
+  { type: GFX, offset: 0x6006BE0, symbol: D_FO_6006BE0 }
+
+ast_fortuna_seg6_vtx_6D00:
+  { type: VTX, count: 62, offset: 0x6006D00, symbol: ast_fortuna_seg6_vtx_6D00 }
+
+D_FO_60070E0:
+  { type: TEXTURE, format: RGBA16, width: 16, height: 16, offset: 0x60070E0, ctype: u16, symbol: D_FO_60070E0 }
+
+D_FO_60072E0:
+  { type: TEXTURE, format: RGBA16, width: 16, height: 16, offset: 0x60072E0, ctype: u16, symbol: D_FO_60072E0 }
+
+D_FO_60074E0:
+  { type: GFX, offset: 0x60074E0, symbol: D_FO_60074E0 }
+
+D_FO_6007590:
+  { type: GFX, offset: 0x6007590, symbol: D_FO_6007590 }
+
+D_FO_6007730:
+  { type: GFX, offset: 0x6007730, symbol: D_FO_6007730 }
+
+D_FO_6007854:
+  { type: SF64:ANIM, offset: 0x6007854, symbol: D_FO_6007854 }
+
+D_FO_6007980:
+  { type: SF64:SKELETON, offset: 0x6007980, symbol: D_FO_6007980 }
+
+D_FO_60079B0:
+  { type: GFX, offset: 0x60079B0, symbol: D_FO_60079B0 }
+
+D_FO_6007D80:
+  { type: GFX, offset: 0x6007D80, symbol: D_FO_6007D80 }
+
+D_FO_6008150:
+  { type: TEXTURE, format: RGBA16, width: 44, height: 44, offset: 0x6008150, ctype: u16, symbol: D_FO_6008150 }
+
+D_FO_6009070:
+  { type: TEXTURE, format: RGBA16, width: 44, height: 44, offset: 0x6009070, ctype: u16, symbol: D_FO_6009070 }
+
+D_FO_6009F90:
+  { type: GFX, offset: 0x6009F90, symbol: D_FO_6009F90 }
+
+D_FO_600A018:
+  { type: TEXTURE, format: IA8, width: 32, height: 32, offset: 0x600A018, ctype: u8, symbol: D_FO_600A018 }
+
+D_FO_600A420:
+  { type: GFX, offset: 0x600A420, symbol: D_FO_600A420 }
+
+D_FO_600A4A8:
+  { type: TEXTURE, format: RGBA16, width: 32, height: 64, offset: 0x600A4A8, ctype: u16, symbol: D_FO_600A4A8 }
+
+D_FO_600B4B0:
+  { type: GFX, offset: 0x600B4B0, symbol: D_FO_600B4B0 }
+
+D_FO_600B5C0:
+  { type: TEXTURE, format: RGBA16, width: 64, height: 32, offset: 0x600B5C0, ctype: u16, symbol: D_FO_600B5C0 }
+
+D_FO_600C5C0:
+  { type: TEXTURE, format: RGBA16, width: 64, height: 32, offset: 0x600C5C0, ctype: u16, symbol: D_FO_600C5C0 }
+
+D_FO_600D5C0:
+  { type: GFX, offset: 0x600D5C0, symbol: D_FO_600D5C0 }
+
+D_FO_600D7E8:
+  { type: TEXTURE, format: RGBA16, width: 16, height: 16, offset: 0x600D7E8, ctype: u16, symbol: D_FO_600D7E8 }
+
+D_FO_600D9F0:
+  { type: GFX, offset: 0x600D9F0, symbol: D_FO_600D9F0 }
+
+D_FO_600DA88:
+  { type: TEXTURE, format: RGBA16, width: 64, height: 32, offset: 0x600DA88, ctype: u16, symbol: D_FO_600DA88 }
+
+D_FO_600EA90:
+  { type: SF64:ENVIRONMENT, offset: 0x600EA90, symbol: D_FO_600EA90 }
+
+D_FO_600EAD4:
+  { type: SF64:OBJECT_INIT, offset: 0x600EAD4, symbol: D_FO_600EAD4 }
+
+D_FO_600F1DC:
+  { type: SF64:COLPOLY, offset: 0x600F1DC, count: 22, symbol: D_FO_600F1DC, mesh_symbol: D_FO_OFFSET }
+
+D_FO_600F3F4:
+  { type: SF64:COLPOLY, offset: 0x600F3F4, count: 22, symbol: D_FO_600F3F4, mesh_symbol: D_FO_OFFSET }
+
+D_FO_600F60C:
+  { type: SF64:COLPOLY, offset: 0x600F60C, count: 93, symbol: D_FO_600F60C, mesh_symbol: D_FO_OFFSET }
+
+D_FO_600FE9C:
+  { type: SF64:HITBOX, offset: 0x600FE9C, symbol: D_FO_600FE9C }
+
+D_FO_600FEB8:
+  { type: SF64:HITBOX, offset: 0x600FEB8, symbol: D_FO_600FEB8 }
+
+D_FO_600FF30:
+  { type: SF64:HITBOX, offset: 0x600FF30, symbol: D_FO_600FF30 }
+
+D_FO_600FF64:
+  { type: SF64:HITBOX, offset: 0x600FF64, symbol: D_FO_600FF64 }
+
+D_FO_600FF80:
+  { type: SF64:HITBOX, offset: 0x600FF80, symbol: D_FO_600FF80 }
+
+D_FO_600FFA0:
+  { type: SF64:HITBOX, offset: 0x600FFA0, symbol: D_FO_600FFA0 }
+
+D_FO_600FFC0:
+  { type: SF64:HITBOX, offset: 0x600FFC0, symbol: D_FO_600FFC0 }
+
+D_FO_600FFE0:
+  { type: SF64:HITBOX, offset: 0x600FFE0, symbol: D_FO_600FFE0 }

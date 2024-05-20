@@ -27,7 +27,7 @@ void Lib_QuickSort(u8* first, u32 length, u32 size, CompareFunc cFunc) {
     u8* right;
     u8* left;
 
-    while (1) {
+    while (true) {
         last = first + (length - 1) * size;
 
         if (length == 2) {
@@ -40,7 +40,7 @@ void Lib_QuickSort(u8* first, u32 length, u32 size, CompareFunc cFunc) {
         left = first;
         right = last - size;
 
-        while (1) {
+        while (true) {
             while (cFunc(left, last) < 0) {
                 left += size;
             }
@@ -84,8 +84,7 @@ void Lib_QuickSort(u8* first, u32 length, u32 size, CompareFunc cFunc) {
 void Lib_InitPerspective(Gfx** dList) {
     u16 norm;
 
-    guPerspective(gGfxMtx, &norm, D_game_80161A3C, (f32) SCREEN_WIDTH / SCREEN_HEIGHT, D_game_80161A40, D_game_80161A44,
-                  1.0f);
+    guPerspective(gGfxMtx, &norm, gFovY, (f32) SCREEN_WIDTH / SCREEN_HEIGHT, gProjectNear, gProjectFar, 1.0f);
     gSPPerspNormalize((*dList)++, norm);
     gSPMatrix((*dList)++, gGfxMtx++, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
     guLookAt(gGfxMtx, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, -12800.0f, 0.0f, 1.0f, 0.0f);
@@ -94,7 +93,8 @@ void Lib_InitPerspective(Gfx** dList) {
 }
 
 void Lib_InitOrtho(Gfx** dList) {
-    guOrtho(gGfxMtx, -160.0f, 160.0f, -120.0f, 120.0f, D_game_80161A40, D_game_80161A44, 1.0f);
+    guOrtho(gGfxMtx, -SCREEN_WIDTH / 2, SCREEN_WIDTH / 2, -SCREEN_HEIGHT / 2, SCREEN_HEIGHT / 2, gProjectNear,
+            gProjectFar, 1.0f);
     gSPMatrix((*dList)++, gGfxMtx++, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
     guLookAt(gGfxMtx, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, -12800.0f, 0.0f, 1.0f, 0.0f);
     gSPMatrix((*dList)++, gGfxMtx++, G_MTX_NOPUSH | G_MTX_MUL | G_MTX_PROJECTION);
@@ -105,15 +105,15 @@ void Lib_DmaRead(void* src, void* dst, s32 size) {
     osInvalICache(dst, size);
     osInvalDCache(dst, size);
     while (size > 0x100) {
-        osPiStartDma(&gDmaIOMsg, 0, 0, (uintptr_t) src, dst, 0x100, &gDmaMsgQueue);
+        osPiStartDma(&gDmaIOMsg, 0, 0, (uintptr_t) src, dst, 0x100, &gDmaMesgQueue);
         size -= 0x100;
         src = (void*) ((uintptr_t) src + 0x100);
         dst = (void*) ((uintptr_t) dst + 0x100);
-        osRecvMesg(&gDmaMsgQueue, NULL, OS_MESG_BLOCK);
+        MQ_WAIT_FOR_MESG(&gDmaMesgQueue, NULL);
     }
     if (size != 0) {
-        osPiStartDma(&gDmaIOMsg, 0, 0, (uintptr_t) src, dst, size, &gDmaMsgQueue);
-        osRecvMesg(&gDmaMsgQueue, NULL, OS_MESG_BLOCK);
+        osPiStartDma(&gDmaIOMsg, 0, 0, (uintptr_t) src, dst, size, &gDmaMesgQueue);
+        MQ_WAIT_FOR_MESG(&gDmaMesgQueue, NULL);
     }
 }
 

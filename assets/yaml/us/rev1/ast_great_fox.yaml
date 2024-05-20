@@ -1,0 +1,93 @@
+:config:
+  segments:
+    - [0xE, 0x92EC40]
+  header:
+    code:
+      - '#include "assets/ast_great_fox.h"'
+    header:
+      - '#include "gfx.h"'
+      - '#include "sf64object.h"'
+
+# Great Fox Model
+D_GREAT_FOX_E000000:
+  { type: GFX, offset: 0xE000000, symbol: D_GREAT_FOX_E000000 }
+
+D_GREAT_FOX_E0094B0:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x0E0094B0, symbol: D_GREAT_FOX_E0094B0 }
+
+D_GREAT_FOX_E009CB0:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 64, height: 32, offset: 0x0E009CB0, symbol: D_GREAT_FOX_E009CB0 }
+
+# Great Fox Logo
+D_GREAT_FOX_E00ACB0:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x0E00ACB0, symbol: D_GREAT_FOX_E00ACB0 }
+
+D_GREAT_FOX_E00B4B0:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 8, height: 8, offset: 0x0E00B4B0, symbol: D_GREAT_FOX_E00B4B0 }
+
+# Yellow Square
+D_GREAT_FOX_E00B530:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 8, height: 8, offset: 0x0E00B530, symbol: D_GREAT_FOX_E00B530 }
+
+D_GREAT_FOX_E00B5B0:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x0E00B5B0, symbol: D_GREAT_FOX_E00B5B0 }
+
+# Great Fox Starfox Logo
+D_GREAT_FOX_E00BDB0:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 64, height: 32, offset: 0x0E00BDB0, symbol: D_GREAT_FOX_E00BDB0 }
+
+D_GREAT_FOX_E00CDB0:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x0E00CDB0, symbol: D_GREAT_FOX_E00CDB0 }
+
+D_GREAT_FOX_E00CFB0:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x0E00CFB0, symbol: D_GREAT_FOX_E00CFB0 }
+
+D_GREAT_FOX_E00D7B0:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x0E00D7B0, symbol: D_GREAT_FOX_E00D7B0 }
+
+# Black Square
+D_GREAT_FOX_E007430:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 8, height: 8, offset: 0x0E007430, symbol: D_GREAT_FOX_E007430 }
+
+# Great Fox Model (damaged)
+D_GREAT_FOX_E003AB0:
+  { type: GFX, offset: 0xE003AB0, symbol: D_GREAT_FOX_E003AB0 }
+
+D_GREAT_FOX_E0074B0:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 64, height: 32, offset: 0x0E0074B0, symbol: D_GREAT_FOX_E0074B0 }
+
+D_GREAT_FOX_E0084B0:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x0E0084B0, symbol: D_GREAT_FOX_E0084B0 }
+
+D_GREAT_FOX_E008CB0:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x0E008CB0, symbol: D_GREAT_FOX_E008CB0 }
+
+D_GREAT_FOX_E00DFB0:
+  { type: GFX, offset: 0xE00DFB0, symbol: D_GREAT_FOX_E00DFB0 }
+
+D_GREAT_FOX_E00E078:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 8, height: 8, offset: 0x0E00E078, symbol: D_GREAT_FOX_E00E078 }
+
+# Radio Face of ROB64
+D_GREAT_FOX_E00E100:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 44, height: 44, offset: 0x0E00E100, symbol: D_GREAT_FOX_E00E100 }
+
+# Radio Face of ROB64 (talking)
+D_GREAT_FOX_E00F020:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 44, height: 44, offset: 0x0E00F020, symbol: D_GREAT_FOX_E00F020 }
+
+# Radio Face of General Pepper
+D_GREAT_FOX_E00FF40:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 44, height: 44, offset: 0x0E00FF40, symbol: D_GREAT_FOX_E00FF40 }
+
+# Radio Face of General Pepper (talking)
+D_GREAT_FOX_E010E60:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 44, height: 44, offset: 0x0E010E60, symbol: D_GREAT_FOX_E010E60 }
+
+D_GREAT_FOX_E011D80:
+  { type: GFX, offset: 0xE011D80, symbol: D_GREAT_FOX_E011D80 }
+
+D_GREAT_FOX_E011E08:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 8, height: 8, offset: 0x0E011E08, symbol: D_GREAT_FOX_E011E08 }
+
+# size = 0x11E90

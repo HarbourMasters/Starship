@@ -1,0 +1,70 @@
+name: Starfox64 EU REV 0 (v1.0)
+sha1: 09f5d5c14219fc77a36c5a6ad5e63f7abd8b3385
+options:
+  basename: starfox64
+  target_path: baserom.eu.rev0.uncompressed.z64
+  elf_path: build/starfox64.eu.rev0.elf
+  ld_script_path: linker_scripts/eu/rev0/starfox64.ld
+  base_path: .
+  compiler: IDO
+  find_file_boundaries: True
+  header_encoding: ASCII
+  platform: n64
+  undefined_funcs_auto_path: linker_scripts/eu/rev0/auto/undefined_funcs_auto.ld
+  undefined_syms_auto_path: linker_scripts/eu/rev0/auto/undefined_syms_auto.ld
+
+  symbol_addrs_path: 
+  - linker_scripts/eu/rev0/symbol_addrs.txt
+  - linker_scripts/eu/rev0/symbol_addrs_fix.txt
+  - linker_scripts/eu/rev0/symbol_addrs_assets.txt
+
+  asm_path: asm/eu/rev0
+  src_path: srceu
+  asset_path: bin/eu/rev0
+
+  build_path: build
+
+  extensions_path: tools/splat_ext
+  mips_abi_float_regs: o32
+  create_asm_dependencies: True
+  do_c_func_detection: True
+  o_as_suffix: True
+  gfx_ucode: f3dex
+  mnemonic_ljust: 12
+  rom_address_padding: True
+  dump_symbols: True
+  include_macro_inc: False
+  libultra_symbols: True
+  hardware_regs: True
+
+  ld_dependencies: True
+
+
+  use_legacy_include_asm: False
+
+  asm_function_macro: glabel
+  asm_jtbl_label_macro: jlabel
+  asm_data_macro: dlabel
+
+  ld_legacy_generation: True
+  check_consecutive_segment_types: False
+
+  # section_order: [".text", ".data", ".rodata", ".bss"]
+  # auto_all_sections: [".data", ".rodata", ".bss"]
+
+
+
+  
+  mips_abi_float_regs: o32
+
+
+  disasm_unknown: True
+  # string_encoding: ASCII
+  # data_string_encoding: ASCII
+  rodata_string_guesser_level: 2
+  data_string_guesser_level: 2
+  # libultra_symbols: True
+  # hardware_regs: True
+  # gfx_ucode: # one of [f3d, f3db, f3dex, f3dexb, f3dex2]
+segments:
+

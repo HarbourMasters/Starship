@@ -1,0 +1,66 @@
+:config:
+  segments:
+    - [0x08, 0x9EB5E0]
+  header:
+    code:
+      - '#include "assets/ast_8_ti.h"'
+    header:
+      - '#include "gfx.h"'
+      - '#include "sf64object.h"'
+
+D_TI_8000708: { type: SF64:ANIM, offset: 0x8000708, symbol: D_TI_8000708 }
+
+D_TI_8000D80: { type: SF64:ANIM, offset: 0x8000D80, symbol: D_TI_8000D80 }
+
+D_TI_8000D90: { type: GFX, offset: 0x8000D90, symbol: D_TI_8000D90 }
+
+D_TI_8000FC0: { type: TEXTURE, ctype: u16, format: IA16, width: 16, height: 16, offset: 0x8000FC0, symbol: D_TI_8000FC0}
+
+D_TI_80011C0: { type: GFX, offset: 0x80011C0, symbol: D_TI_80011C0 }
+
+D_TI_80012E8: { type: TEXTURE, ctype: u8, format: CI8, width: 16, height: 16, offset: 0x80012E8, symbol: D_TI_80012E8, tlut: 0x80013E8}
+D_TI_80013E8: { type: TEXTURE, ctype: u16, format: TLUT, colors: 88, offset: 0x80013E8, symbol: D_TI_80013E8}
+
+D_TI_80014A0: { type: GFX, offset: 0x80014A0, symbol: D_TI_80014A0 }
+
+D_TI_8001630: { type: GFX, offset: 0x8001630, symbol: D_TI_8001630 }
+
+D_TI_80018D0: { type: GFX, offset: 0x80018D0, symbol: D_TI_80018D0 }
+
+D_TI_8001A80: { type: GFX, offset: 0x8001A80, symbol: D_TI_8001A80 }
+
+D_TI_8001D20: { type: GFX, offset: 0x8001D20, symbol: D_TI_8001D20 }
+
+D_TI_8001E20: { type: GFX, offset: 0x8001E20, symbol: D_TI_8001E20 }
+
+D_TI_8001FB0: { type: GFX, offset: 0x8001FB0, symbol: D_TI_8001FB0 }
+
+D_TI_80020D0: { type: GFX, offset: 0x80020D0, symbol: D_TI_80020D0 }
+
+D_TI_8002360: { type: GFX, offset: 0x8002360, symbol: D_TI_8002360 }
+
+D_TI_8002858: { type: TEXTURE, ctype: u8, format: CI8, width: 32, height: 32, offset: 0x8002858, symbol: D_TI_8002858, tlut: 0x8002C58}
+D_TI_8002C58: { type: TEXTURE, ctype: u16, format: TLUT, colors: 248, offset: 0x8002C58, symbol: D_TI_8002C58}
+
+D_TI_8002E48: { type: TEXTURE, ctype: u8, format: CI8, width: 16, height: 16, offset: 0x8002E48, symbol: D_TI_8002E48, tlut: 0x8002F48}
+D_TI_8002F48: { type: TEXTURE, ctype: u16, format: TLUT, colors: 216, offset: 0x8002F48, symbol: D_TI_8002F48}
+
+D_TI_80030F8: { type: TEXTURE, ctype: u8, format: CI8, width: 16, height: 16, offset: 0x80030F8, symbol: D_TI_80030F8, tlut: 0x80031F8}
+D_TI_80031F8: { type: TEXTURE, ctype: u16, format: TLUT, colors: 192, offset: 0x80031F8, symbol: D_TI_80031F8}
+
+D_TI_8003378: { type: TEXTURE, ctype: u8, format: CI8, width: 16, height: 16, offset: 0x8003378, symbol: D_TI_8003378, tlut: 0x8003478}
+D_TI_8003478: { type: TEXTURE, ctype: u16, format: TLUT, colors: 24, offset: 0x8003478, symbol: D_TI_8003478}
+
+D_TI_80034A8: { type: TEXTURE, ctype: u8, format: CI8, width: 16, height: 16, offset: 0x80034A8, symbol: D_TI_80034A8, tlut: 0x80035A8}
+D_TI_80035A8: { type: TEXTURE, ctype: u16, format: TLUT, colors: 72, offset: 0x80035A8, symbol: D_TI_80035A8}
+
+D_TI_8003640: { type: GFX, offset: 0x8003640, symbol: D_TI_8003640 }
+
+D_TI_8004200: { type: TEXTURE, ctype: u8, format: CI8, width: 32, height: 32, offset: 0x8004200, symbol: D_TI_8004200, tlut: 0x8004600}
+D_TI_8004600: { type: TEXTURE, ctype: u16, format: TLUT, colors: 256, offset: 0x8004600, symbol: D_TI_8004600}
+
+D_TI_8008FE8: { type: SF64:ANIM, offset: 0x8008FE8, symbol: D_TI_8008FE8 }
+
+D_TI_8009000: { type: GFX, offset: 0x8009000, symbol: D_TI_8009000 }
+
+# size: 0x92A0

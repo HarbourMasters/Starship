@@ -1,4 +1,4 @@
-#include "global.h"
+#include "sys.h"
 
 u8 gOSYieldData[OS_YIELD_DATA_SIZE];
 FrameBuffer gZBuffer; // z buffer

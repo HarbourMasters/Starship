@@ -1,0 +1,42 @@
+:config:
+  segments:
+    - [0x07, 0xBFA740]
+  header:
+    code:
+      - '#include "assets/ast_warp_zone.h"'
+    header:
+      - '#include "gfx.h"'
+      - '#include "sf64object.h"'
+
+D_WZ_7000000:
+  { type: GFX, offset: 0x7000000, symbol: D_WZ_7000000 }
+
+D_WZ_7000280:
+  { type: GFX, offset: 0x7000280, symbol: D_WZ_7000280 }
+
+D_WZ_70008F0:
+  { type: GFX, offset: 0x70008F0, symbol: D_WZ_70008F0 }
+
+D_WZ_7000260:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 4, height: 4, offset: 0x7000260, symbol: D_WZ_7000260 }
+
+D_WZ_7000A30:
+  { type: TEXTURE, ctype: u8, format: CI4, width: 32, height: 32, offset: 0x7000A30, symbol: D_WZ_7000A30, tlut: 0x7000C30 }
+
+D_WZ_7000C30:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 8, offset: 0x7000C30, symbol: D_WZ_7000C30 }
+
+D_WZ_7000C40:
+  { type: GFX, offset: 0x7000C40, symbol: D_WZ_7000C40 }
+
+D_WZ_7000E80:
+  { type: GFX, offset: 0x7000E80, symbol: D_WZ_7000E80 }
+
+D_WZ_70010E0:
+  { type: GFX, offset: 0x70010E0, symbol: D_WZ_70010E0 }
+
+D_WZ_7001540:
+  { type: GFX, offset: 0x7001540, symbol: D_WZ_7001540 }
+
+D_WZ_70015D0:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x70015D0, symbol: D_WZ_70015D0 }

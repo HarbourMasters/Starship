@@ -236,13 +236,13 @@ void Title_801914AC(f32 arg0, f32 arg1, f32 arg2, f32* arg3, f32* arg4, f32* arg
 void Title_80191798(f32* arg0, f32* arg1);
 void Title_80191844(f32 arg0, f32 arg1);
 void Title_801918FC(void);
-void Title_801919C4(u16** arg0, s32 arg1);
+void Title_801919C4(u16** msgList, RadioCharacterId character);
 s32 Title_80188010(void);
 void Title_80190C9C(void);
 void Title_8018D2B8(s32);
 void Title_8018EA78(s32);
 void Title_801906A0(void);
-void Title_801877F0(void);
+void Title_UpdateEntry(void);
  s32 Title_80187ABC(void);
 void Title_80187B00(void);
 void Title_80187E28(void);

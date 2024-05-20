@@ -1,0 +1,192 @@
+:config:
+  segments:
+    - [0x3, 0x8BFC00]
+  header:
+    code:
+      - '#include "assets/ast_arwing.h"'
+    header:
+      - '#include "gfx.h"'
+      - '#include "sf64object.h"'
+
+D_arwing_3000000:
+  { type: TEXTURE, format: CI4, offset: 0x3000000, width: 16, height: 16, ctype: u8, tlut: 0x3000080, symbol: D_arwing_3000000 }
+
+D_arwing_3000080:
+  { type: TEXTURE, format: TLUT, offset: 0x3000080, colors: 8, ctype: u16, symbol: D_arwing_3000080 }
+
+D_arwing_3000090:
+  { type: GFX, offset: 0x3000090, symbol: D_arwing_3000090 }
+
+D_arwing_3001C90:
+  { type: GFX, offset: 0x3001C90, symbol: D_arwing_3001C90 }
+
+D_arwing_3003960:
+  { type: TEXTURE, format: RGBA16, offset: 0x3003960, width: 8, height: 8, ctype: u16, symbol: D_arwing_3003960 }
+
+D_arwing_30039E0:
+  { type: TEXTURE, format: RGBA16, offset: 0x30039E0, width: 8, height: 8, ctype: u16, symbol: D_arwing_30039E0 }
+
+D_arwing_3003A60:
+  { type: TEXTURE, format: RGBA16, offset: 0x3003A60, width: 8, height: 8, ctype: u16, symbol: D_arwing_3003A60 }
+
+D_arwing_3003AE0:
+  { type: TEXTURE, format: RGBA16, offset: 0x3003AE0, width: 8, height: 8, ctype: u16, symbol: D_arwing_3003AE0 }
+
+D_arwing_3003B60:
+  { type: TEXTURE, format: RGBA16, offset: 0x3003B60, width: 8, height: 8, ctype: u16, symbol: D_arwing_3003B60 }
+
+D_arwing_3003BE0:
+  { type: TEXTURE, format: RGBA16, offset: 0x3003BE0, width: 8, height: 8, ctype: u16, symbol: D_arwing_3003BE0 }
+
+D_arwing_3003C60:
+  { type: TEXTURE, format: RGBA16, offset: 0x3003C60, width: 8, height: 8, ctype: u16, symbol: D_arwing_3003C60 }
+
+D_arwing_3003CE0:
+  { type: GFX, offset: 0x3003CE0, symbol: D_arwing_3003CE0 }
+
+D_arwing_3005AB0:
+  { type: GFX, offset: 0x3005AB0, symbol: D_arwing_3005AB0 }
+
+D_arwing_30074D0:
+  { type: TEXTURE, format: RGBA16, offset: 0x30074D0, width: 8, height: 8, ctype: u16, symbol: D_arwing_30074D0 }
+
+D_arwing_3007550:
+  { type: TEXTURE, format: RGBA16, offset: 0x3007550, width: 8, height: 8, ctype: u16, symbol: D_arwing_3007550 }
+
+D_arwing_30075D0:
+  { type: TEXTURE, format: RGBA16, offset: 0x30075D0, width: 8, height: 8, ctype: u16, symbol: D_arwing_30075D0 }
+
+D_arwing_3007650:
+  { type: GFX, offset: 0x3007650, symbol: D_arwing_3007650 }
+
+ast_arwing_seg3_vtx_7A20:
+  { type: VTX, offset: 0x3007A20, count: 244, symbol: ast_arwing_seg3_vtx_7A20 }
+
+D_arwing_3008960:
+  { type: TEXTURE, format: RGBA16, offset: 0x3008960, width: 64, height: 32, ctype: u16, symbol: D_arwing_3008960 }
+
+D_arwing_3009960:
+  { type: TEXTURE, format: RGBA16, offset: 0x3009960, width: 16, height: 16, ctype: u16, symbol: D_arwing_3009960 }
+
+D_arwing_3009B60:
+  { type: GFX, offset: 0x3009B60, symbol: D_arwing_3009B60 }
+
+D_arwing_300AC48:
+  { type: TEXTURE, format: RGBA16, offset: 0x300AC48, width: 32, height: 32, ctype: u16, symbol: D_arwing_300AC48 }
+
+D_arwing_300B448:
+  { type: TEXTURE, format: RGBA16, offset: 0x300B448, width: 32, height: 32, ctype: u16, symbol: D_arwing_300B448 }
+
+D_arwing_300BC48:
+  { type: TEXTURE, format: RGBA16, offset: 0x300BC48, width: 32, height: 32, ctype: u16, symbol: D_arwing_300BC48 }
+
+D_arwing_300C448:
+  { type: TEXTURE, format: RGBA16, offset: 0x300C448, width: 32, height: 32, ctype: u16, symbol: D_arwing_300C448 }
+
+D_arwing_300CC48:
+  { type: TEXTURE, format: RGBA16, offset: 0x300CC48, width: 32, height: 32, ctype: u16, symbol: D_arwing_300CC48 }
+
+D_arwing_300D448:
+  { type: TEXTURE, format: RGBA16, offset: 0x300D448, width: 32, height: 32, ctype: u16, symbol: D_arwing_300D448 }
+
+D_arwing_300DC48:
+  { type: TEXTURE, format: RGBA16, offset: 0x300DC48, width: 32, height: 32, ctype: u16, symbol: D_arwing_300DC48 }
+
+D_arwing_300E448:
+  { type: TEXTURE, format: RGBA16, offset: 0x300E448, width: 32, height: 32, ctype: u16, symbol: D_arwing_300E448 }
+
+D_arwing_300EC48:
+  { type: TEXTURE, format: RGBA16, offset: 0x300EC48, width: 32, height: 32, ctype: u16, symbol: D_arwing_300EC48 }
+
+D_arwing_300F448:
+  { type: TEXTURE, format: RGBA16, offset: 0x300F448, width: 64, height: 32, ctype: u16, symbol: D_arwing_300F448 }
+
+D_arwing_3010448:
+  { type: TEXTURE, format: RGBA16, offset: 0x3010448, width: 64, height: 32, ctype: u16, symbol: D_arwing_3010448 }
+
+D_arwing_3011720:
+  { type: GFX, offset: 0x3011720, symbol: D_arwing_3011720 }
+
+D_arwing_30119F0:
+  { type: TEXTURE, format: RGBA16, offset: 0x30119F0, width: 32, height: 32, ctype: u16, symbol: D_arwing_30119F0 }
+
+D_arwing_30121F0:
+  { type: TEXTURE, format: RGBA16, offset: 0x30121F0, width: 32, height: 32, ctype: u16, symbol: D_arwing_30121F0 }
+
+D_arwing_30129F0:
+  { type: TEXTURE, format: RGBA16, offset: 0x30129F0, width: 32, height: 32, ctype: u16, symbol: D_arwing_30129F0 }
+
+D_arwing_30131F0:
+  { type: GFX, offset: 0x30131F0, symbol: D_arwing_30131F0 }
+
+D_arwing_30137E8:
+  { type: TEXTURE, format: RGBA16, offset: 0x30137E8, width: 32, height: 32, ctype: u16, symbol: D_arwing_30137E8 }
+
+D_arwing_3013FE8:
+  { type: TEXTURE, format: RGBA16, offset: 0x3013FE8, width: 32, height: 32, ctype: u16, symbol: D_arwing_3013FE8 }
+
+D_arwing_30147E8:
+  { type: TEXTURE, format: RGBA16, offset: 0x30147E8, width: 16, height: 32, ctype: u16, symbol: D_arwing_30147E8 }
+
+D_arwing_3014BF0:
+  { type: GFX, offset: 0x3014BF0, symbol: D_arwing_3014BF0 }
+
+D_arwing_3014F20:
+  { type: TEXTURE, format: RGBA16, offset: 0x3014F20, width: 16, height: 16, ctype: u16, symbol: D_arwing_3014F20 }
+
+D_arwing_3015120:
+  { type: GFX, offset: 0x3015120, symbol: D_arwing_3015120 }
+
+D_arwing_30155E0:
+  { type: GFX, offset: 0x30155E0, symbol: D_arwing_30155E0}
+
+D_arwing_3015AF4:
+  { type: SF64:ANIM, offset: 0x3015AF4, symbol: D_arwing_3015AF4 }
+
+D_arwing_3015C28:
+  { type: SF64:ANIM, offset: 0x3015C28, symbol: D_arwing_3015C28 }
+
+D_arwing_3015D68:
+  { type: SF64:ANIM, offset: 0x3015D68, symbol: D_arwing_3015D68 }
+
+D_arwing_3015D80:
+  { type: GFX, offset: 0x3015D80, symbol: D_arwing_3015D80 }
+
+D_arwing_30163C4:
+  { type: SF64:ANIM, offset: 0x30163C4, symbol: D_arwing_30163C4 }
+
+D_arwing_3016610:
+  { type: SF64:SKELETON, offset: 0x3016610, symbol: D_arwing_3016610 }
+
+D_arwing_3016660:
+  { type: GFX, offset: 0x3016660, symbol: D_arwing_3016660}
+
+D_arwing_3016B30:
+  { type: GFX, offset: 0x3016B30, symbol: D_arwing_3016B30 }
+
+D_arwing_3016BB8:
+  { type: TEXTURE, format: IA8, offset: 0x3016BB8, width: 16, height: 16, ctype: u8, symbol: D_arwing_3016BB8 }
+
+D_arwing_3016CC0:
+  { type: GFX, offset: 0x3016CC0, symbol: D_arwing_3016CC0 }
+
+D_arwing_30182C8:
+  { type: TEXTURE, format: RGBA16, offset: 0x30182C8, width: 8, height: 8, ctype: u16, symbol: D_arwing_30182C8 }
+
+D_arwing_3018348:
+  { type: TEXTURE, format: RGBA16, offset: 0x3018348, width: 8, height: 8, ctype: u16, symbol: D_arwing_3018348 }
+
+D_arwing_30183D0:
+  { type: GFX, offset: 0x30183D0, symbol: D_arwing_30183D0 }
+
+D_arwing_30184D8:
+  { type: TEXTURE, format: RGBA16, offset: 0x30184D8, width: 32, height: 32, ctype: u16, symbol: D_arwing_30184D8 }
+
+D_arwing_3018CD8:
+  { type: TEXTURE, format: RGBA16, offset: 0x3018CD8, width: 64, height: 16, ctype: u16, symbol: D_arwing_3018CD8 }
+
+D_arwing_30194E0:
+  { type: GFX, offset: 0x30194E0, symbol: D_arwing_30194E0 }
+
+D_arwing_30195E8:
+  { type: TEXTURE, format: RGBA16, offset: 0x30195E8, width: 32, height: 32, ctype: u16, symbol: D_arwing_30195E8 }

@@ -57,7 +57,7 @@ typedef struct {
 } UnkStruct_D_menu_801B9250;
 
 typedef enum OptionId {
-    OPTION_MAIN = 1000,
+    OPTION_MAIN_MENU = 1000,
     OPTION_VERSUS_STAGE = 2000,
     OPTION_MAP = 0,
     OPTION_TRAINING = 1,
@@ -81,7 +81,7 @@ extern u8* D_menu_801B68B0[];
 extern u8* D_menu_801B68D4[];
 
 extern s32 D_menu_801B8220[]; // total hits ranking? see Option_80197DE4
-extern s32 D_menu_801B827C;
+extern s32 D_menu_801B827C; // engine
 extern s32 D_menu_801B8280;
 extern s32 D_menu_801B8284;
 extern s32 D_menu_801B8288;
@@ -97,7 +97,7 @@ extern u8 D_menu_801C6C10[96 * 96];
 extern u8 D_menu_801C9010[96 * 96];
 extern u8 D_menu_801CB410[96 * 96];
 
-void Title_801877F0(void);
+void Title_UpdateEntry(void);
  s32 Title_80187ABC(void);
 void Title_80187B00(void);
 void Title_80187E28(void);
@@ -219,7 +219,7 @@ void Option_8019DF64(void);
 void Option_InvoiceUpdate(void);
 void Option_InvoiceDraw(void);
 
-void Map_8019E8D0(void);
+void Map_Main(void);
 void Map_801A07E8(u8*, u8*, f32*);
 void Map_801AD7EC(s32, s32, s32);
 void Map_801A9FD4(s32);

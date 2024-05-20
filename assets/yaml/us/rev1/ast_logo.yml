@@ -1,0 +1,18 @@
+:config:
+  segments:
+    - [0x0F, 0xD25100]
+  header:
+    code:
+      - '#include "assets/ast_logo.h"'
+    header:
+      - '#include "gfx.h"'
+      - '#include "sf64object.h"'
+
+nintendo_logo:
+  type: TEXTURE
+  offset: 0xF000000
+  format: IA8
+  width: 128
+  height: 74
+  ctype: u8
+  symbol: gNintendoLogo

@@ -42,7 +42,7 @@ typedef struct {
 typedef struct {
     /* 0x000 */ OSThread thread;
     /* 0x1B0 */ char stack[0x800];
-    /* 0x9B0 */ OSMesgQueue msgQueue;
+    /* 0x9B0 */ OSMesgQueue mesgQueue;
     /* 0x9C8 */ OSMesg msg;
     /* 0x9CC */ FrameBuffer* fb;
     /* 0x9D0 */ u16 width;
@@ -59,7 +59,7 @@ typedef enum {
 
 typedef struct {
     /* 0x00 */ OSTask task;
-    /* 0x40 */ OSMesgQueue* msgQueue;
+    /* 0x40 */ OSMesgQueue* mesgQueue;
     /* 0x44 */ OSMesg msg;
     /* 0x48 */ SpTaskState state;
 } SPTask; // size = 0x50, 0x8 aligned
@@ -85,8 +85,8 @@ void Timer_SetValue(s32* address, s32 value);
 void Timer_CompleteTask(TimerTask*);
 void Timer_Wait(u64);
 
-void Fault_ThreadEntry(void*);
-void func_80007FE4(FrameBuffer*, u16, u16);
+void Fault_ThreadEntry(OSMesg);
+void Fault_SetFrameBuffer(FrameBuffer*, u16, u16);
 void Fault_Init(void);
 
 typedef enum {
@@ -103,7 +103,7 @@ extern OSContPad gControllerHold[4];
 extern OSContPad gControllerPress[4];
 extern u8 gControllerPlugged[4];
 extern u32 gControllerLock;
-extern u8 gControllerRumble[4];
+extern u8 gControllerRumbleEnabled[4];
 extern OSContPad sNextController[4];    //
 extern OSContPad sPrevController[4];    //
 extern OSContStatus sControllerStatus[4]; //
@@ -126,33 +126,33 @@ extern u32 gSegments[16]; // 800E1FD0
 extern OSMesgQueue gPiMgrCmdQueue; // 800E2010
 extern OSMesg sPiMgrCmdBuff[50]; // 800E2028
 
-extern OSMesgQueue gDmaMsgQueue;
-extern void* sDmaMsgBuff[1];
+extern OSMesgQueue gDmaMesgQueue;
+extern OSMesg sDmaMsgBuff[1];
 extern OSIoMesg gDmaIOMsg;
 extern OSMesgQueue gSerialEventQueue;
-extern void* sSerialEventBuff[1];
-extern OSMesgQueue gMainThreadMsgQueue;
-extern void* sMainThreadMsgBuff[32];
-extern OSMesgQueue gTaskMsgQueue;
-extern void* sTaskMsgBuff[16];
-extern OSMesgQueue gAudioVImsgQueue;
-extern void* sAudioVImsgBuff[1];
-extern OSMesgQueue gAudioTaskMsgQueue;
-extern void* sAudioTaskMsgBuff[1];
-extern OSMesgQueue gGfxVImsgQueue;
-extern void* sGfxVImsgBuff[4];
-extern OSMesgQueue gGfxTaskMsgQueue;
-extern void* sGfxTaskMsgBuff[2];
-extern OSMesgQueue gSerialThreadMsgQueue;
-extern void* sSerialThreadMsgBuff[8];
-extern OSMesgQueue gControllerMsgQueue;
-extern void* sControllerMsgBuff[1];
-extern OSMesgQueue gSaveMsgQueue;
-extern void* sSaveMsgBuff[1];
-extern OSMesgQueue gTimerTaskMsgQueue;
-extern void* sTimerTaskMsgBuff[16];
-extern OSMesgQueue gTimerWaitMsgQueue;
-extern void* sTimerWaitMsgBuff[1];
+extern OSMesg sSerialEventBuff[1];
+extern OSMesgQueue gMainThreadMesgQueue;
+extern OSMesg sMainThreadMsgBuff[32];
+extern OSMesgQueue gTaskMesgQueue;
+extern OSMesg sTaskMsgBuff[16];
+extern OSMesgQueue gAudioVImesgQueue;
+extern OSMesg sAudioVImsgBuff[1];
+extern OSMesgQueue gAudioTaskMesgQueue;
+extern OSMesg sAudioTaskMsgBuff[1];
+extern OSMesgQueue gGfxVImesgQueue;
+extern OSMesg sGfxVImsgBuff[4];
+extern OSMesgQueue gGfxTaskMesgQueue;
+extern OSMesg sGfxTaskMsgBuff[2];
+extern OSMesgQueue gSerialThreadMesgQueue;
+extern OSMesg sSerialThreadMsgBuff[8];
+extern OSMesgQueue gControllerMesgQueue;
+extern OSMesg sControllerMsgBuff[1];
+extern OSMesgQueue gSaveMesgQueue;
+extern OSMesg sSaveMsgBuff[1];
+extern OSMesgQueue gTimerTaskMesgQueue;
+extern OSMesg sTimerTaskMsgBuff[16];
+extern OSMesgQueue gTimerWaitMesgQueue;
+extern OSMesg sTimerWaitMsgBuff[1];
 
 extern GfxPool gGfxPools[2]; // 800E23B0
 
@@ -167,11 +167,11 @@ extern Lightsn* gLight;
 extern FrameBuffer* gFrameBuffer;
 extern u16* gTextureRender;
 
-extern u8 D_80137E78;
+extern u8 gVIsPerFrame;
 extern u32 gSysFrameCount;
 extern u8 gStartNMI;
 extern u8 gStopTasks;
-extern u8 D_80137E84[4];
+extern u8 gControllerRumbleFlags[4];
 extern u16 gFillScreenColor;
 extern u16 gFillScreen;
 
@@ -182,7 +182,11 @@ extern OSThread gMainThread; // 8013A040
 extern u8 sMainThreadStack[0x1000]; // 8013A1F0
 extern OSThread gAudioThread; //8013B1F0
 
-#define MSG_QUEUE_EMPTY -1
+#define MESG_QUEUE_EMPTY -1
+
+#define MQ_GET_MESG(mq, mesg) (osRecvMesg((mq), (OSMesg*) (mesg), OS_MESG_NOBLOCK) != -1)
+#define MQ_WAIT_FOR_MESG(mq, mesg) osRecvMesg((mq), (OSMesg*) (mesg), OS_MESG_BLOCK)
+#define MQ_CLEAR_QUEUE(mq) do {s32 m1 = -1; s32 mesg; do {} while(osRecvMesg((mq), (OSMesg*) &(mesg), OS_MESG_NOBLOCK) != m1);} while(0)
 
 #define FAULT_MESG_BREAK 1
 #define FAULT_MESG_FAULT 2

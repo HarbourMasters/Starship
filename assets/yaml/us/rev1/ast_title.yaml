@@ -1,0 +1,263 @@
+:config:
+  segments:
+    - [0x06, 0xBFC510]
+  header:
+    code:
+      - '#include "assets/ast_title.h"'
+    header:
+      - '#include "gfx.h"'
+      - '#include "sf64object.h"'
+
+starfox_logo: { type: TEXTURE, ctype: u16, format: RGBA16, width: 236, height: 60, offset: 0x6000000, symbol: gTitleStarfoxLogo }
+
+nintendo64_logo: { type: TEXTURE, ctype: u16, format: RGBA16, width: 128, height: 88, offset: 0x6006EA0, symbol: gTitleNintendo64Logo }
+
+radio_static: { type: TEXTURE, ctype: u16, format: RGBA16, width: 44, height: 44, offset: 0x600C6A0, symbol: gTitleRadioStatic }
+
+sun_beam: { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x600D5C0, symbol: gTitleSunBeam }
+
+nintendo_copyright: { type: TEXTURE, ctype: u8, format: IA8, width: 120, height: 12, offset: 0x600DDC0, symbol: gTitleNintendoCopyright }
+
+press_start: { type: TEXTURE, ctype: u8, format: IA8, width: 120, height: 13, offset: 0x600E360, symbol: gTitlePressStart }
+
+great_fox_card: { type: TEXTURE, ctype: u8, format: IA8, width: 144, height: 28, offset: 0x600E980, symbol: gTitleGreatFoxCard }
+
+slippy_card: { type: TEXTURE, ctype: u8, format: IA8, width: 144, height: 13, offset: 0x600F940, symbol: gTitleSlippyCard }
+
+peppy_card: { type: TEXTURE, ctype: u8, format: IA8, width: 120, height: 13, offset: 0x6010090, symbol: gTitlePeppyCard }
+
+falco_card: { type: TEXTURE, ctype: u8, format: IA8, width: 176, height: 13, offset: 0x60106B0, symbol: gTitleFalcoCard }
+
+fox_card: { type: TEXTURE, ctype: u8, format: IA8, width: 176, height: 13, offset: 0x6010FA0, symbol: gTitleFoxCard }
+
+arwing_card: { type: TEXTURE, ctype: u8, format: IA8, width: 112, height: 26, offset: 0x6011890, symbol: gTitleArwingCard }
+
+no_controller: { type: TEXTURE, ctype: u8, format: IA8, width: 176, height: 24, offset: 0x60123F0, symbol: gTitleNoController }
+
+copyright_symbol: { type: TEXTURE, ctype: u8, format: IA8, width: 16, height: 16, offset: 0x6013470, symbol: gTitleCopyrightSymbol }
+
+unused_nintendo_copyright: { type: TEXTURE, ctype: u8, format: IA8, width: 168, height: 18, offset: 0x6013570, symbol: gTitleUnusedNintendoCopyright }
+
+starfox_text_intro: { type: TEXTURE, ctype: u8, format: CI4, width: 256, height: 13, offset: 0x6014140, tlut: 0x60147C0, symbol: gTextIntroStarfox }
+
+starfox_text_intro_palette: { type: TEXTURE, ctype: u16, format: TLUT, colors: 16, offset: 0x60147C0, symbol: gTextIntroStarfoxPalette }
+
+in_text_intro: { type: TEXTURE, ctype: u8, format: CI4, width: 32, height: 13, offset: 0x60147E0, tlut: 0x60147C0, symbol: gTextIntroIn }
+
+in_text_intro_palette: { type: TEXTURE, ctype: u16, format: TLUT, colors: 16, offset: 0x60148B0, symbol: gTextIntroInPalette }
+
+D_TITLE_60148D0: { type: GFX, offset: 0x60148D0, symbol: D_TITLE_60148D0 }
+
+D_TITLE_6014DE8: { type: TEXTURE, ctype: u8, format: CI8, width: 32, height: 64, offset: 0x6014DE8, tlut: 0x60155E8, symbol: D_TITLE_6014DE8 }
+
+D_TITLE_60155E8: { type: TEXTURE, ctype: u16, format: TLUT, colors: 152, offset: 0x60155E8, symbol: D_TITLE_60155E8 }
+
+D_TITLE_6015718: { type: TEXTURE, ctype: u8, format: CI8, width: 32, height: 63, offset: 0x6015718, tlut: 0x6015EF8, symbol: D_TITLE_6015718 }
+
+D_TITLE_6015EF8: { type: TEXTURE, ctype: u16, format: TLUT, colors: 64, offset: 0x6015EF8, symbol: D_TITLE_6015EF8 }
+
+D_TITLE_6015F78: { type: TEXTURE, ctype: u8, format: CI8, width: 32, height: 64, offset: 0x6015F78, tlut: 0x6016778, symbol: D_TITLE_6015F78 }
+
+D_TITLE_6016778: { type: TEXTURE, ctype: u16, format: TLUT, colors: 200, offset: 0x6016778, symbol: D_TITLE_6016778 }
+
+D_TITLE_6016908: { type: TEXTURE, ctype: u8, format: CI8, width: 32, height: 63, offset: 0x6016908, tlut: 0x60170E8, symbol: D_TITLE_6016908 }
+
+D_TITLE_60170E8: { type: TEXTURE, ctype: u16, format: TLUT, colors: 144, offset: 0x60170E8, symbol: D_TITLE_60170E8 }
+
+D_TITLE_6017208: { type: TEXTURE, ctype: u8, format: CI8, width: 32, height: 64, offset: 0x6017208, tlut: 0x6017A08, symbol: D_TITLE_6017208 }
+
+D_TITLE_6017A08: { type: TEXTURE, ctype: u16, format: TLUT, colors: 136, offset: 0x6017A08, symbol: D_TITLE_6017A08 }
+
+D_TITLE_6017B18: { type: TEXTURE, ctype: u8, format: CI8, width: 32, height: 64, offset: 0x6017B18, tlut: 0x6018318, symbol: D_TITLE_6017B18 }
+
+D_TITLE_6018318: { type: TEXTURE, ctype: u16, format: TLUT, colors: 200, offset: 0x6018318, symbol: D_TITLE_6018318 }
+
+D_TITLE_60184A8: { type: TEXTURE, ctype: u8, format: CI8, width: 32, height: 64, offset: 0x60184A8, tlut: 0x6018CA8, symbol: D_TITLE_60184A8 }
+
+D_TITLE_6018CA8: { type: TEXTURE, ctype: u16, format: TLUT, colors: 76, offset: 0x6018CA8, symbol: D_TITLE_6018CA8 }
+
+D_TITLE_6018D40: { type: GFX, offset: 0x6018D40, symbol: D_TITLE_6018D40 }
+
+D_TITLE_60195C0: { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x60195C0, symbol: D_TITLE_60195C0 }
+
+D_TITLE_6019DC0: { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x6019DC0, symbol: D_TITLE_6019DC0 }
+
+D_TITLE_601A5C0: { type: TEXTURE, ctype: u16, format: RGBA16, width: 64, height: 32, offset: 0x601A5C0, symbol: D_TITLE_601A5C0 }
+
+D_TITLE_601B5C0: { type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x601B5C0, symbol: D_TITLE_601B5C0 }
+
+D_TITLE_601B7C0: { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x601B7C0, symbol: D_TITLE_601B7C0 }
+
+D_TITLE_601BFC0: { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x601BFC0, symbol: D_TITLE_601BFC0 }
+
+D_TITLE_601C7C0: { type: GFX, offset: 0x601C7C0, symbol: D_TITLE_601C7C0 }
+
+D_TITLE_601CCD0: { type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x601CCD0, symbol: D_TITLE_601CCD0 }
+
+D_TITLE_601CED0: { type: TEXTURE, ctype: u16, format: RGBA16, width: 8, height: 8, offset: 0x601CED0, symbol: D_TITLE_601CED0 }
+
+D_TITLE_601CF50: { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x601CF50, symbol: D_TITLE_601CF50 }
+
+D_TITLE_601D750: { type: TEXTURE, ctype: u8, format: CI8, width: 32, height: 32, offset: 0x601D750, tlut: 0x601DB50, symbol: D_TITLE_601D750 }
+
+D_TITLE_601DB50: { type: TEXTURE, ctype: u16, format: TLUT, colors: 8, offset: 0x601DB50, symbol: D_TITLE_601DB50 }
+
+D_TITLE_601E424: { type: SF64:ANIM, offset: 0x601E424, symbol: D_TITLE_601E424 }
+
+D_TITLE_601E430: { type: GFX, offset: 0x601E430, symbol: D_TITLE_601E430 }
+
+D_TITLE_601E720: { type: GFX, offset: 0x601E720, symbol: D_TITLE_601E720 }
+
+D_TITLE_601EA00: { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x601EA00, symbol: D_TITLE_601EA00 }
+
+D_TITLE_601F200: { type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x601F200, symbol: D_TITLE_601F200 }
+
+D_TITLE_601F400: { type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x601F400, symbol: D_TITLE_601F400 }
+
+D_TITLE_601F8E0: { type: SF64:ANIM, offset: 0x601F8E0, symbol: D_TITLE_601F8E0 }
+
+D_TITLE_6020058: { type: SF64:ANIM, offset: 0x6020058, symbol: D_TITLE_6020058 }
+
+D_TITLE_60214F8: { type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x60214F8, symbol: D_TITLE_60214F8 }
+
+D_TITLE_6021D10: { type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x6021D10, symbol: D_TITLE_6021D10 }
+
+D_TITLE_6021F10: { type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x6021F10, symbol: D_TITLE_6021F10 }
+
+D_TITLE_6022B40: { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x6022B40, symbol: D_TITLE_6022B40 }
+
+D_TITLE_6023340: { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x6023340, symbol: D_TITLE_6023340 }
+
+D_TITLE_6023B40: { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x6023B40, symbol: D_TITLE_6023B40 }
+
+D_TITLE_6024340: { type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x6024340, symbol: D_TITLE_6024340 }
+
+D_TITLE_60246F8: { type: SF64:ANIM, offset: 0x60246F8, symbol: D_TITLE_60246F8 }
+
+D_TITLE_60257A8: { type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x60257A8, symbol: D_TITLE_60257A8 }
+
+D_TITLE_60259A8: { type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x60259A8, symbol: D_TITLE_60259A8 }
+
+D_TITLE_6025BA8: { type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x6025BA8, symbol: D_TITLE_6025BA8 }
+
+D_TITLE_6025DA8: { type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x6025DA8, symbol: D_TITLE_6025DA8 }
+
+D_TITLE_6025FA8: { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x6025FA8, symbol: D_TITLE_6025FA8 }
+
+D_TITLE_6026D28: { type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x6026D28, symbol: D_TITLE_6026D28 }
+
+D_TITLE_6026F28: { type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x6026F28, symbol: D_TITLE_6026F28 }
+
+D_TITLE_6028508: { type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x6028508, symbol: D_TITLE_6028508 }
+
+D_TITLE_6028708: { type: TEXTURE, ctype: u16, format: RGBA16, width: 8, height: 8, offset: 0x6028708, symbol: D_TITLE_6028708 }
+
+D_TITLE_6028788: { type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x6028788, symbol: D_TITLE_6028788 }
+
+D_TITLE_6028988: { type: TEXTURE, ctype: u16, format: RGBA16, width: 8, height: 8, offset: 0x6028988, symbol: D_TITLE_6028988 }
+
+D_TITLE_6028A08: { type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x6028A08, symbol: D_TITLE_6028A08 }
+
+D_TITLE_6028C08: { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x6028C08, symbol: D_TITLE_6028C08 }
+
+D_TITLE_6029BE4: { type: SF64:ANIM, offset: 0x6029BE4, symbol: D_TITLE_6029BE4 }
+
+D_TITLE_602A710: { type: SF64:ANIM, offset: 0x602A710, symbol: D_TITLE_602A710 }
+
+D_TITLE_602A720: { type: GFX, offset: 0x602A720, symbol: D_TITLE_602A720 }
+
+D_TITLE_602A8C0: { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x602A8C0, symbol: D_TITLE_602A8C0 }
+
+D_TITLE_602B8C0: { type: GFX, offset: 0x602B8C0, symbol: D_TITLE_602B8C0 }
+
+D_TITLE_602D930: { type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x602D930, symbol: D_TITLE_602D930 }
+
+D_TITLE_602DB30: { type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x602DB30, symbol: D_TITLE_602DB30 }
+
+D_TITLE_602DD30: { type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x602DD30, symbol: D_TITLE_602DD30 }
+
+D_TITLE_602DF30: { type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x602DF30, symbol: D_TITLE_602DF30 }
+
+D_TITLE_602E380: { type: GFX, offset: 0x602E380, symbol: D_TITLE_602E380 }
+
+D_TITLE_602E550: { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x602E550, symbol: D_TITLE_602E550 }
+
+D_TITLE_602F8E0: { type: SF64:ANIM, offset: 0x602F8E0, symbol: D_TITLE_602F8E0 }
+
+D_TITLE_602FBAC: {type: SF64:SKELETON, offset: 0x602FBAC, symbol: D_TITLE_602FBAC}
+
+D_TITLE_60305C0: { type: SF64:ANIM, offset: 0x60305C0, symbol: D_TITLE_60305C0 }
+
+D_TITLE_603088C: {type: SF64:SKELETON, offset: 0x603088C, symbol: D_TITLE_603088C}
+
+D_TITLE_6031120: { type: SF64:ANIM, offset: 0x6031120, symbol: D_TITLE_6031120 }
+
+D_TITLE_60313AC: {type: SF64:SKELETON, offset: 0x60313AC, symbol: D_TITLE_60313AC}
+
+D_TITLE_6031DB8: { type: SF64:ANIM, offset: 0x6031DB8, symbol: D_TITLE_6031DB8 }
+
+D_TITLE_6032084: {type: SF64:SKELETON, offset: 0x6032084, symbol: D_TITLE_6032084}
+
+D_TITLE_60320E0: { type: GFX, offset: 0x60320E0, symbol: D_TITLE_60320E0 }
+
+D_TITLE_6032178: {type: TEXTURE, ctype: u8, format: IA8, width: 32, height: 32, offset: 0x6032178, symbol: D_TITLE_6032178}
+
+D_TITLE_6032580: { type: GFX, offset: 0x6032580, symbol: D_TITLE_6032580 }
+
+D_TITLE_6032608: { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x6032608, symbol: D_TITLE_6032608 }
+
+D_TITLE_60338DC: { type: SF64:ANIM, offset: 0x60338DC, symbol: D_TITLE_60338DC }
+
+D_TITLE_6035024: { type: SF64:ANIM, offset: 0x6035024, symbol: D_TITLE_6035024 }
+
+D_TITLE_603531C: { type: SF64:ANIM, offset: 0x603531C, symbol: D_TITLE_603531C }
+
+D_TITLE_6036278: { type: SF64:ANIM, offset: 0x6036278, symbol: D_TITLE_6036278 }
+
+D_TITLE_6036290: { type: GFX, offset: 0x6036290, symbol: D_TITLE_6036290 }
+
+D_TITLE_6036328: { type: TEXTURE, ctype: u16, format: IA16, width: 32, height: 32, offset: 0x6036328, symbol: D_TITLE_6036328 }
+
+D_TITLE_6036B30: { type: GFX, offset: 0x6036B30, symbol: D_TITLE_6036B30 }
+
+D_TITLE_6036BC8: { type: TEXTURE, ctype: u16, format: IA16, width: 32, height: 32, offset: 0x6036BC8, symbol: D_TITLE_6036BC8 }
+
+D_TITLE_6037CF0: { type: GFX, offset: 0x6037CF0, symbol: D_TITLE_6037CF0 }
+
+D_TITLE_60380D0: {type: TEXTURE, ctype: u16, format: RGBA16, width: 64, height: 32, offset: 0x60380D0, symbol: D_TITLE_60380D0}
+
+D_TITLE_60390D0: {type: TEXTURE, ctype: u16, format: RGBA16, width: 64, height: 32, offset: 0x60390D0, symbol: D_TITLE_60390D0}
+
+D_TITLE_603A0D0: {type: TEXTURE, ctype: u16, format: RGBA16, width: 64, height: 32, offset: 0x603A0D0, symbol: D_TITLE_603A0D0}
+
+D_TITLE_603B0D0: {type: TEXTURE, ctype: u16, format: RGBA16, width: 64, height: 32, offset: 0x603B0D0, symbol: D_TITLE_603B0D0}
+
+D_TITLE_603C0D0: {type: TEXTURE, ctype: u16, format: RGBA16, width: 64, height: 32, offset: 0x603C0D0, symbol: D_TITLE_603C0D0}
+
+D_TITLE_603D0D0: {type: TEXTURE, ctype: u16, format: RGBA16, width: 64, height: 32, offset: 0x603D0D0, symbol: D_TITLE_603D0D0}
+
+D_TITLE_603E0D0: {type: TEXTURE, ctype: u16, format: RGBA16, width: 64, height: 32, offset: 0x603E0D0, symbol: D_TITLE_603E0D0}
+
+D_TITLE_603F0D0: {type: TEXTURE, ctype: u16, format: RGBA16, width: 64, height: 32, offset: 0x603F0D0, symbol: D_TITLE_603F0D0}
+
+D_TITLE_60408C0: { type: GFX, offset: 0x60408C0, symbol: D_TITLE_60408C0 }
+
+D_TITLE_6041070: { type: GFX, offset: 0x6041070, symbol: D_TITLE_6041070 }
+
+D_TITLE_60410F8: {type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x60410F8, symbol: D_TITLE_60410F8}
+
+D_TITLE_6041CF0: { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x6041CF0, symbol: D_TITLE_6041CF0 }
+
+D_TITLE_60426E0: { type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x60426E0, symbol: D_TITLE_60426E0 }
+
+D_TITLE_6043F68: { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x6043F68, symbol: D_TITLE_6043F68 }
+
+D_TITLE_60456C0: { type: GFX, offset: 0x60456C0, symbol: D_TITLE_60456C0 }
+
+D_TITLE_6045A28: { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 64, offset: 0x6045A28, symbol: D_TITLE_6045A28}
+D_TITLE_6046A28: { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 64, offset: 0x6046A28, symbol: D_TITLE_6046A28}
+D_TITLE_6047A28: { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 64, offset: 0x6047A28, symbol: D_TITLE_6047A28}
+D_TITLE_6048A28: { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 64, offset: 0x6048A28, symbol: D_TITLE_6048A28}
+D_TITLE_6049A28: { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 64, offset: 0x6049A28, symbol: D_TITLE_6049A28}
+D_TITLE_604AA28: { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 64, offset: 0x604AA28, symbol: D_TITLE_604AA28}
+D_TITLE_604BA28: { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 64, offset: 0x604BA28, symbol: D_TITLE_604BA28}

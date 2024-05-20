@@ -1,0 +1,170 @@
+// various hallucinated symbols
+D_1 = 0x1; //ignore:true
+D_80120000 = 0x80120000;//ignore:true
+D_80130001 = 0x80130001;//ignore:true
+D_80150000 = 0x80150000;//ignore:true
+D_80000000 = 0x80000000;//ignore:true
+D_80000001 = 0x80000001;//ignore:true
+D_80000002 = 0x80000002;//ignore:true
+D_80000003 = 0x80000003;//ignore:true
+D_80000004 = 0x80000004;//ignore:true
+D_80000005 = 0x80000005;//ignore:true
+D_80000006 = 0x80000006;//ignore:true
+D_80000007 = 0x80000007;//ignore:true
+D_80000008 = 0x80000008;//ignore:true
+D_80000009 = 0x80000009;//ignore:true
+D_8000000A = 0x8000000A;//ignore:true
+D_8000000B = 0x8000000B;//ignore:true
+D_8000000C = 0x8000000C;//ignore:true
+D_8000000D = 0x8000000D;//ignore:true
+D_8000000E = 0x8000000E;//ignore:true
+D_8000000F = 0x8000000F;//ignore:true
+D_80000014 = 0x80000014;//ignore:true
+D_80000018 = 0x80000018;//ignore:true
+D_8000001C = 0x8000001C;//ignore:true
+D_80000024 = 0x80000024;//ignore:true
+D_801D0001 = 0x801D0001;//ignore:true
+D_80180001 = 0x80180001;//ignore:true
+D_80180000 = 0x80180000;//ignore:true
+D_80160000 = 0x80160000;//ignore:true
+D_800D0000 = 0x800D0000;//ignore:true
+D_7FFFFFFE = 0x7FFFFFFE;//ignore:true
+D_1000000 = 0x01000000;//ignore:true
+
+// mirage symbols
+D_A000000 = 0x0A000000;//ignore:true
+D_4000000 = 0x04000000;//ignore:true
+
+// constant for K1 access
+D_TI_A0000000 = 0xA0000000;//ignore:true
+
+// hardcoded addresses in libultra
+D_BFF00000 = 0xBFF00000;//ignore:true
+D_BFF08000 = 0xBFF08000;//ignore:true
+D_BFF08004 = 0xBFF08004;//ignore:true
+
+// RDB regs used only in exceptasm. Also -2.0f
+D_C0000000 = 0xC0000000;//ignore:true
+D_C0000008 = 0xC0000008;//ignore:true
+D_C000000C = 0xC000000C;//ignore:true
+
+D_80151650 = 0x80151650; //ignore:true
+
+// dma symbols
+dma_table_ROM_START = 0xDE480; //defined:true
+audio_seq_ROM_START = 0xDEA20; //defined:true
+audio_bank_ROM_START = 0x119710; //defined:true
+audio_table_ROM_START = 0x137730; //defined:true
+ast_radio_ROM_START = 0xDE5D50; //defined:true
+ast_radio_ROM_END = 0xDF4260; //defined:true
+
+D_800C90F0 = 0x800C90F0;
+D_800C45E0 = 0x800C45E0;
+
+D_edisplay_801615D0 = 0x801615D0;//size:0xC
+sViewPos = 0x801615E0;//size:0xC
+gTeamEventActorIndex = 0x800CFF80;//size:0x10
+
+gLockOnTargetViewPos = 0x80161578;//size:0x30
+D_display_800CA23C = 0x800CA23C;//size:0x18
+D_display_800CA26C = 0x800CA26C;//size:0x20
+D_800CA260 = 0x800CA260;//size:0xC
+D_display_801613E0 = 0x801613E0;//size:0x18
+gObjectInfo = 0x800CC124;//type:u8
+gBossBgms = 0x800C9E90;//size:0x70
+
+gLeveLClearStatus = 0x800D3180; // size:0x20
+gRcpSetupDLs = 0x800D31B0; // size:0x18C0
+
+D_edisplay_800CFCA0 = 0x800CFCA0;
+
+sControllerMotor = 0x800DD900; // size:0x1A0
+
+D_800CBDD4 = 0x800CBDD4; //size:0x98
+
+D_boss_800D55D0 = 0x800D55D0; //type:f32
+
+__libm_qnan_f = 0x800C9570;
+__floorf = 0x8001FE60;
+__floor = 0x8001FE6C;
+__lfloorf = 0x8001FE78;
+__lfloor = 0x8001FE88;
+__ceilf = 0x8001FE98;
+__ceil = 0x8001FEA4;
+__lceilf = 0x8001FEB0;
+__lceil = 0x8001FEC0;
+__truncf = 0x8001FED0;
+__trunc = 0x8001FEDC;
+__ltruncf = 0x8001FEE8;
+__ltrunc = 0x8001FEF8;
+__roundf = 0x8001FF08;
+__round = 0x8001FF14;
+__lroundf = 0x8001FF20;
+__lround = 0x8001FF30;
+__nearbyintf = 0x8001FF40;
+__nearbyint = 0x8001FF5C;
+__lnearbyintf = 0x8001FF7C;
+__lnearbyint = 0x8001FF9C;
+
+__dx1 = 0x80161950;
+__dx2 = 0x80161954;
+__dy1 = 0x80161958;
+__dy2 = 0x8016195C;
+__dz1 = 0x80161960;
+__dz2 = 0x80161964;
+__vtx0_x = 0x80161968;
+__vtx0_y = 0x8016196C;
+__vtx0_z = 0x80161970;
+__vtx1_x = 0x80161974;
+__vtx1_y = 0x80161978;
+__vtx1_z = 0x8016197C;
+__vtx2_x = 0x80161980;
+__vtx2_y = 0x80161984;
+__vtx2_z = 0x80161988;
+__vtx3_x = 0x8016198C;
+__vtx3_y = 0x80161990;
+__vtx3_z = 0x80161994;
+__pos_x = 0x80161998;//type:f32
+__pos_z = 0x8016199C;//type:f32
+
+Save_Checksum = 0x800C2FB0;
+Save_Write = 0x800C3084;
+Save_Read = 0x800C3194;
+
+sOvlUnused_Unk = 0x800CBD3C;
+
+// hardcoded address used in sys_rdram
+D_A0300000 = 0xA0300000;
+
+//hardware addresses. should probably be in hardware_regs
+D_A4000000 = 0xA4000000;
+D_A5000508 = 0xA5000508;
+D_A5000510 = 0xA5000510;
+
+D_edisplay_800CFA54 = 0x800CFA54;
+
+D_800D934C = 0x800D934C; // force_migration:True
+D_800D503C = 0x800D503C; // force_migration:True
+D_800D5248 = 0x800D5248; // force_migration:True
+D_800D525C = 0x800D525C; // force_migration:True
+D_800D8560 = 0x800D8560; // force_migration:True
+D_800D8570 = 0x800D8570; // force_migration:True
+D_800D8594 = 0x800D8594; // force_migration:True
+D_800C93EC = 0x800C93EC; // force_migration:True
+
+D_i1_8019B1EC = 0x8019B1EC; // force_migration:True segment:ovl_i1
+D_i1_8019B6D8 = 0x8019B6D8; // size:0x110 segment:ovl_i1
+D_i3_801C171C = 0x801C171C; // force_migration:True segment:ovl_i3
+D_i3_801C1728 = 0x801C1728; // force_migration:True segment:ovl_i3
+D_i3_801C1730 = 0x801C1730; // force_migration:True segment:ovl_i3
+D_i3_801C1758 = 0x801C1758; // force_migration:True segment:ovl_i3
+D_i5_801BB83C = 0x801BB83C; // force_migration:True segment:ovl_i5
+D_i5_801BB808 = 0x801BB808; // force_migration:True segment:ovl_i5
+D_i5_801BBAD0 = 0x801BBAD0; // force_migration:True segment:ovl_i5
+D_i5_801BBAE4 = 0x801BBAE4; // force_migration:True segment:ovl_i5
+D_ending_80196BF4 = 0x80196BF4; // force_migration:True segment:ovl_ending
+D_ovl_i4_8019FE74 = 0x8019FE74; // force_migration:True segment:ovl_i4
+D_ovl_i4_8019FEFC = 0x8019FEFC; // force_migration:True segment:ovl_i4
+D_i6_801A7560 = 0x801A7560; // force_migration:True segment:ovl_i6
+D_i6_801A792C = 0x801A792C; // force_migration:True segment:ovl_i6
+

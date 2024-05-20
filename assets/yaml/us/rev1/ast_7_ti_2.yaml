@@ -1,0 +1,71 @@
+:config:
+  segments:
+    - [0x07, 0x9DD390]
+  header:
+    code:
+      - '#include "assets/ast_7_ti_2.h"'
+    header:
+      - '#include "gfx.h"'
+      - '#include "sf64object.h"'
+
+D_TI2_7003EE8:
+  { type: SF64:ANIM, offset: 0x7003EE8, symbol: D_TI2_7003EE8 }
+
+D_TI2_7003F00:
+  { type: GFX, offset: 0x7003F00, symbol: D_TI2_7003F00 }
+
+D_TI2_7004270:
+  { type: GFX, offset: 0x7004270, symbol: D_TI2_7004270 }
+
+D_TI2_7004400:
+  { type: GFX, offset: 0x7004400, symbol: D_TI2_7004400 }
+
+D_TI2_70045D0:
+  { type: GFX, offset: 0x70045D0, symbol: D_TI2_70045D0 }
+
+D_TI2_70047B0:
+  { type: TEXTURE, ctype: u8, format: CI8, height: 16, width: 16, offset: 0x70047B0, symbol: D_TI2_70047B0 }
+D_TI2_70048B0:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 136, offset: 0x70048B0, symbol: D_TI2_70048B0 }
+
+D_TI2_70049C0:
+  { type: GFX, offset: 0x70049C0, symbol: D_TI2_70049C0 }
+
+D_TI2_7004AB0:
+  { type: TEXTURE, ctype: u8, format: CI8, width: 32, height: 16, offset: 0x7004AB0, symbol: D_TI2_7004AB0 }
+D_TI2_7004CB0:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 232 , offset: 0x7004CB0, symbol: D_TI2_7004CB0 }
+
+D_TI2_7004E80:
+  { type: GFX, offset: 0x7004E80, symbol: D_TI2_7004E80 }
+
+D_TI2_7005300:
+  { type: GFX, offset: 0x7005300, symbol: D_TI2_7005300 }
+
+D_TI2_70054C0:
+  { type: TEXTURE, ctype: u8, format: IA8, width: 8, height: 8, offset: 0x70054C0, symbol: D_TI2_70054C0 }
+
+D_TI2_70084CC:
+  { type: SF64:ANIM, offset: 0x70084CC, symbol: D_TI2_70084CC }
+
+D_TI2_70096EC:
+  { type: SF64:ANIM, offset: 0x70096EC, symbol: D_TI2_70096EC }
+
+D_TI2_7009700:
+  { type: GFX, offset: 0x7009700, symbol: D_TI2_7009700 }
+
+D_TI2_7009890:
+  { type: GFX, offset: 0x7009890, symbol: D_TI2_7009890 }
+
+D_TI2_7009A80:
+  { type: GFX, offset: 0x7009A80, symbol: D_TI2_7009A80 }
+
+D_TI2_7009B48:
+  { type: TEXTURE, ctype: u8, format: CI8, width: 16, height: 32, offset: 0x7009B48, symbol: D_TI2_7009B48 }
+D_TI2_7009D48:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 56, offset: 0x7009D48, symbol: D_TI2_7009D48 }
+
+D_TI2_700E244:
+  { type: SF64:ANIM, offset: 0x700E244, symbol: D_TI2_700E244 }
+
+# size = 0xE250

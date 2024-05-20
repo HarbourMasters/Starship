@@ -68,13 +68,31 @@
 #define SEGMENT_BSS_END(segment)   (segment ## _BSS_END)
 #define SEGMENT_BSS_SIZE(segment)  ((uintptr_t)SEGMENT_BSS_END(segment) - (uintptr_t)SEGMENT_BSS_START(segment))
 
-u8 Overlay_Load(u8, u8);
-void Overlay_InitDma(void);
+#define NO_SEGMENT \
+    { NULL, NULL }
+
+#define OVERLAY_OFFSETS(file)                                                                                   \
+    NO_OVERLAY
+
+#define NO_OVERLAY                                        \
+    {                                                     \
+        { NULL, NULL }, { NULL, NULL }, { NULL, NULL }, { \
+            NULL, NULL                                    \
+        }                                                 \
+    }
+
+#define ROM_SEGMENT(file) \
+    NO_SEGMENT
+
+u8 Load_SceneSetup(u8 sceneId, u8 sceneSetup);
+void Load_InitDmaAndMsg(void);
 
 typedef struct {
     /* 0x0 */ void* start;
     /* 0x4 */ void* end;
 } SegmentOffset; // size = 0x8
+
+#define SEGMENT_SIZE(segment) ((ptrdiff_t) ((uintptr_t) (segment).end - (uintptr_t) (segment).start))
 
 typedef struct {
     /* 0x00 */ SegmentOffset rom;
@@ -86,44 +104,18 @@ typedef struct {
 typedef struct {
     /* 0x00 */ OverlayOffsets ovl;
     /* 0x20 */ SegmentOffset assets[15];
-} OverlayInit; // size = 0x98
+} Scene; // size = 0x98
 
 typedef struct {
     /* 0x0 */ void* vRomAddress;
-    /* 0x8 */ SegmentOffset pRom;
-    /* 0xC */ s32 compFlag;
+    /* 0x4 */ SegmentOffset pRom;
+    /* 0xC */ bool compFlag;
 } DmaEntry; // size = 0x10;
 
-extern DmaEntry gDmaTable[]; // 178A70
+#define DMA_ENTRY(file) { file##_ROM_START, { file##_ROM_START, file##_ROM_END }, false }
+#define DMA_ENTRY_NONE { NULL, { NULL, NULL }, false }
 
-extern OverlayInit sNoOvl_Logo[1]; // sets segment 15 with no overlay
-extern OverlayInit sOvlending_Ending[6]; // overlay EF0260
-extern OverlayInit sOvlmenu_Title[1]; // EBFBE0
-extern OverlayInit sOvlmenu_Option[1]; // EBFBE0
-extern OverlayInit sOvlmenu_Map[1]; // EBFBE0
-extern OverlayInit sOvlmenu_GameOver[1]; // EBFBE0
-extern OverlayInit sOvli1_Corneria[1]; // fox_i1
-extern OverlayInit sOvli2_Meteo[2]; // fox_i2
-extern OverlayInit sOvli5_Titania[6]; // E6A810
-extern OverlayInit sOvli2_SectorX[2]; // fox_i2
-extern OverlayInit sOvli4_SectorZ[1]; // i4
-extern OverlayInit sOvli3_Aquas[1]; // i3
-extern OverlayInit sOvli3_Area6[1]; // i3
-extern OverlayInit sOvli4_Fortuna[2]; // i4
-extern OverlayInit sOvli3_Unk4[1]; // i3
-extern OverlayInit sOvli6_SectorY[1]; // E9F1D0
-extern OverlayInit sOvli3_Solar[1]; // i3
-extern OverlayInit sOvli3_Zoness[1]; // i3
-extern OverlayInit sOvli1_Venom1[1]; // fox_i1
-extern OverlayInit sOvli6_Andross[1]; // E9F1D0
-extern OverlayInit sOvli6_Venom2[2]; // E9F1D0
-extern OverlayInit sOvli2_Setup20[1]; // fox_i2
-extern OverlayInit sOvli4_Bolse[1]; // i4
-extern OverlayInit sOvli4_Katina[1]; // i4
-extern OverlayInit sOvli5_Macbeth[2]; // E6A810
-extern OverlayInit sOvli1_Training[1]; // fox_i1
-extern OverlayInit sOvli2_Versus[2]; // fox_i2
-extern OverlayInit sUnused_Overlay[1]; // EFFA40
+extern DmaEntry gDmaTable[]; // 178A70
 
 DECLARE_SEGMENT(makerom);
 DECLARE_SEGMENT(main);
@@ -168,9 +160,18 @@ DECLARE_SEGMENT(ast_macbeth);
 DECLARE_SEGMENT(ast_warp_zone);
 DECLARE_SEGMENT(ast_title);
 DECLARE_SEGMENT(ast_map);
+DECLARE_SEGMENT(ast_map_en);
+DECLARE_SEGMENT(ast_map_fr);
+DECLARE_SEGMENT(ast_map_de);
 DECLARE_SEGMENT(ast_option);
+DECLARE_SEGMENT(ast_option_en);
+DECLARE_SEGMENT(ast_option_fr);
+DECLARE_SEGMENT(ast_option_de);
 DECLARE_SEGMENT(ast_vs_menu);
-DECLARE_SEGMENT(ast_font);
+DECLARE_SEGMENT(ast_vs_menu_en);
+DECLARE_SEGMENT(ast_vs_menu_fr);
+DECLARE_SEGMENT(ast_vs_menu_de);
+DECLARE_SEGMENT(ast_text);
 DECLARE_SEGMENT(ast_font_3d);
 DECLARE_SEGMENT(ast_andross);
 DECLARE_SEGMENT(ast_logo);
@@ -180,6 +181,9 @@ DECLARE_SEGMENT(ast_ending_award_back);
 DECLARE_SEGMENT(ast_ending_expert);
 DECLARE_SEGMENT(ast_training);
 DECLARE_SEGMENT(ast_radio);
+DECLARE_SEGMENT(ast_radio_en);
+DECLARE_SEGMENT(ast_radio_fr);
+DECLARE_SEGMENT(ast_radio_de);
 DECLARE_SEGMENT(ovl_i1);
 DECLARE_SEGMENT(ovl_i2);
 DECLARE_SEGMENT(ovl_i3);
@@ -189,5 +193,9 @@ DECLARE_SEGMENT(ovl_i6);
 DECLARE_SEGMENT(ovl_menu);
 DECLARE_SEGMENT(ovl_ending);
 DECLARE_SEGMENT(ovl_unused);
+
+
+
+
 
 #endif

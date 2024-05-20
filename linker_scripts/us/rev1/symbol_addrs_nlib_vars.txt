@@ -1,0 +1,142 @@
+// rsp
+rspbootTextStart = 0x80000450;//name_end:rspbootTextEnd
+aspMainTextStart = 0x80000520;//name_end:aspMainTextEnd
+gspF3DEX_fifoTextStart = 0x80001410;//name_end:gspF3DEX_fifoTextEnd
+gspF3DEX_fifoDataStart = 0x800C3DD0; //name_end:gspF3DEX_fifoDataEnd
+aspMainDataStart = 0x800C32E0; //name_end:aspMainDataEnd
+altIPL3Start = 0x8001EFC0;
+
+// sys_joybus
+gControllerHold = 0x800DD880; // size:0x18
+gControllerPress = 0x800DD898; // size:0x18
+gControllerPlugged = 0x800DD8B0; // size:0x4
+gControllerLock = 0x800DD8B4; // size:0x4
+gControllerRumbleEnabled = 0x800DD8B8; // size:0x4
+D_800DD8BC = 0x800DD8BC; // ignore:true
+sNextController = 0x800DD8C0; // size:0x18
+sPrevController = 0x800DD8D8; // size:0x18
+sControllerStatus = 0x800DD8F0; // size:0x10
+
+// main
+gAudioThreadStack =  0x800DDAA0;
+gGraphicsThread =      0x800DEAA0;
+gGraphicsThreadStack = 0x800DEC50;
+gTimerThread =      0x800DFC50;
+gTimerThreadStack = 0x800DFE00;
+gSerialThread =      0x800E0E00;
+gSerialThreadStack = 0x800E0FB0;
+
+gCurrentTask = 0x800E1FB0;
+sAudioTasks = 0x800E1FB4;
+sGfxTasks = 0x800E1FB8;
+sNewAudioTasks = 0x800E1FC0;
+sNewGfxTasks = 0x800E1FC8;
+gSegments = 0x800E1FD0;
+gPiMgrCmdQueue = 0x800E2010;
+sPiMgrCmdBuff = 0x800E2028;
+
+gDmaMesgQueue = 0x800E20F0;
+
+sDmaMsgBuff = 0x800E2108;
+gDmaIOMsg = 0x800E2110;
+gSerialEventQueue = 0x800E2128;
+sSerialEventBuff = 0x800E2140;
+gMainThreadMesgQueue = 0x800E2148;
+sMainThreadMsgBuff = 0x800E2160;
+gTaskMesgQueue = 0x800E21E0;
+sTaskMsgBuff = 0x800E21F8;
+gAudioVImesgQueue = 0x800E2238;
+gAudioTaskMesgQueue = 0x800E2258;
+gGfxVImesgQueue = 0x800E2278;
+gGfxTaskMesgQueue = 0x800E22A0;
+sAudioVImsgBuff = 0x800E2250;
+sAudioTaskMsgBuff = 0x800E2270;
+sGfxVImsgBuff = 0x800E2290;
+sGfxTaskMsgBuff = 0x800E22B8;
+gSerialThreadMesgQueue = 0x800E22C0;
+sSerialThreadMsgBuff = 0x800E22D8;
+gControllerMesgQueue = 0x800E22F8;
+sControllerMsgBuff = 0x800E2310;
+gSaveMesgQueue = 0x800E2318;
+sSaveMsgBuff = 0x800E2330;
+gTimerTaskMesgQueue = 0x800E2338;
+sTimerTaskMsgBuff = 0x800E2350;
+gTimerWaitMesgQueue = 0x800E2390;
+sTimerWaitMsgBuff = 0x800E23A8;
+
+gGfxPools = 0x800E23B0; // size:0x55AA0
+gGfxPool = 0x80137E50;
+gGfxTask = 0x80137E54;
+gViewport = 0x80137E58;
+gGfxMtx = 0x80137E5C;
+gUnkDisp1 = 0x80137E60;
+gMasterDisp = 0x80137E64;
+gUnkDisp2 = 0x80137E68;
+gLight = 0x80137E6C;
+gFrameBuffer = 0x80137E70;
+gTextureRender = 0x80137E74;
+gVIsPerFrame = 0x80137E78;
+gSysFrameCount = 0x80137E7C;
+gStartNMI = 0x80137E80;
+gStopTasks = 0x80137E81;
+gControllerRumbleFlags = 0x80137E84; // size:0x4
+gFillScreenColor = 0x80137E88;
+gFillScreen = 0x80137E8A;
+
+gUnusedStack = 0x80137E90;
+sIdleThread = 0x80138E90;
+sIdleThreadStack = 0x80139040;
+gMainThread = 0x8013A040;
+sMainThreadStack = 0x8013A1F0;
+gAudioThread = 0x8013B1F0;
+
+// math
+sSeededRandSeed3 = 0x8013B3A0;
+sRandSeed1 = 0x8013B3A4;
+sRandSeed2 = 0x8013B3A8;
+sRandSeed3 = 0x8013B3AC;
+sSeededRandSeed1 = 0x8013B3B0;
+sSeededRandSeed2 = 0x8013B3B4;
+
+// matrix
+gIdentityMtx = 0x800C4620;
+gIdentityMatrix = 0x800C4660;
+gGfxMatrix = 0x8013B3C0;
+sGfxMatrixStack = 0x8013B3C8;
+gCalcMatrix = 0x8013BBC8;
+sCalcMatrixStack = 0x8013BBD0;
+
+// memory
+sMemoryBuffer = 0x8013C3D0; // size:0x8800
+sMemoryPtr = 0x80144BD0;
+
+// thread 7
+sTimerTasks = 0x80144BE0;
+
+// save
+gSaveIOBuffer = 0x80144F60;
+sPrevSaveData = 0x80145160;
+
+// fault
+gFaultMgr = 0x80145360; // size:0x9D8
+sFaultCharIndex = 0x800C46F0;
+sFaultCharPixelFlags = 0x800C4770;
+sFaultCauses = 0x800C4870;
+sFloatExceptions = 0x800C48B8;
+
+// audio
+
+// dma table
+gDmaTable = 0x80178A70; //size:0x5A0
+D_80178A70 = 0x80178A78; //ignore:true
+
+// buffers
+gDramStack = 0x80281000; //size:0x400 segment:buffers defined:true
+gOSYieldData = 0x80281400; //size:0xC00 segment:buffers defined:true
+gZBuffer = 0x80282000; //size:0x25800 segment:buffers defined:true
+gTaskOutputBuffer = 0x802A7800; //size:0x30000 name_end:gTaskOutputBufferEnd segment:buffers defined:true
+gAudioHeap = 0x802D7800; //size:0xB0000 segment:buffers defined:true
+gTextureRenderBuffer = 0x80387800; //size:0x7880 segment:buffers defined:true
+gFillBuffer = 0x8038F080; //size:0x780 segment:buffers defined:true
+gFrameBuffers = 0x8038F800; //size:0x70800 segment:buffers defined:true
+D_8038F300 = 0x8038F300; //ignore:true

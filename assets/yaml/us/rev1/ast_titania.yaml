@@ -1,0 +1,188 @@
+:config:
+  segments:
+    - [0x06, 0x9D2FD0]
+  header:
+    code:
+      - '#include "assets/ast_titania.h"'
+    header:
+      - '#include "gfx.h"'
+      - '#include "sf64object.h"'
+      - '#include "sf64level.h"'
+      - '#include "sf64event.h"'
+      - '#include "sf64player.h"'
+      - '#include "sf64audio_external.h"'
+      - '#include "sf64mesg.h"'
+
+D_TI_6000000:
+  {type: TEXTURE, format: IA8, ctype: u8, width: 96, height: 28, offset: 0x6000000, symbol: D_TI_6000000}
+
+D_TI_6000A80:
+  {type: GFX, offset: 0x6000A80, symbol: D_TI_6000A80}
+
+D_TI_6000B10:
+  {type: TEXTURE, format: RGBA16, ctype: u16, width: 64, height: 32, offset: 0x6000B10, symbol: D_TI_6000B10}
+
+D_TI_6001B10:
+  {type: GFX, offset: 0x6001B10, symbol: D_TI_6001B10}
+
+D_TI_6001BA8:
+  {type: TEXTURE, format: RGBA16, ctype: u16, width: 32, height: 32, offset: 0x6001BA8, symbol: D_TI_6001BA8}
+
+D_TI_60023B0:
+  {type: GFX, offset: 0x60023B0, symbol: D_TI_60023B0}
+
+D_TI_6002438:
+  {type: TEXTURE, format: RGBA16, ctype: u16, width: 32, height: 64, offset: 0x6002438, symbol: D_TI_6002438}
+
+D_TI_6003440:
+  {type: GFX, offset: 0x6003440, symbol: D_TI_6003440}
+
+D_TI_60034E0:
+  {type: GFX, offset: 0x60034E0, symbol: D_TI_60034E0}
+
+D_TI_6003580:
+  {type: GFX, offset: 0x6003580, symbol: D_TI_6003580}
+
+D_TI_6003620:
+  {type: GFX, offset: 0x6003620, symbol: D_TI_6003620}
+
+D_TI_60036C0:
+  {type: GFX, offset: 0x60036C0, symbol: D_TI_60036C0}
+
+D_TI_6003760:
+  {type: GFX, offset: 0x6003760, symbol: D_TI_6003760}
+
+D_TI_6003800:
+  {type: TEXTURE, format: IA8, ctype: u8, width: 32, height: 32, offset: 0x6003800, symbol: D_TI_6003800}
+
+D_TI_6003C00:
+  {type: TEXTURE, format: IA8, ctype: u8, width: 32, height: 32, offset: 0x6003C00, symbol: D_TI_6003C00}
+
+D_TI_6004000:
+  {type: TEXTURE, format: IA8, ctype: u8, width: 32, height: 32, offset: 0x6004000, symbol: D_TI_6004000}
+
+D_TI_6004400:
+  {type: TEXTURE, format: IA8, ctype: u8, width: 32, height: 32, offset: 0x6004400, symbol: D_TI_6004400}
+
+D_TI_6004800:
+  {type: TEXTURE, format: IA8, ctype: u8, width: 32, height: 32, offset: 0x6004800, symbol: D_TI_6004800}
+
+D_TI_6004C00:
+  {type: TEXTURE, format: IA8, ctype: u8, width: 32, height: 32, offset: 0x6004C00, symbol: D_TI_6004C00}
+
+D_TI_6005000:
+  {type: SF64:ENVIRONMENT, offset: 0x6005000, symbol: D_TI_6005000}
+
+D_TI_600631C:
+  {type: SF64:SCRIPT, offset: 0x600631C, symbol: D_TI_600631C}
+
+D_TI_60064AC:
+  {type: SF64:HITBOX, offset: 0x60064AC, symbol: D_TI_60064AC}
+
+D_TI_60064C8:
+  {type: SF64:HITBOX, offset: 0x60064C8, symbol: D_TI_60064C8}
+
+D_TI_60064FC:
+  {type: SF64:HITBOX, offset: 0x60064FC, symbol: D_TI_60064FC}
+
+D_TI_6006518:
+  {type: SF64:HITBOX, offset: 0x6006518, symbol: D_TI_6006518}
+
+D_TI_6006564:
+  {type: SF64:HITBOX, offset: 0x6006564, symbol: D_TI_6006564}
+
+D_TI_60065B0:
+  {type: SF64:HITBOX, offset: 0x60065B0, symbol: D_TI_60065B0}
+
+D_TI_60065FC:
+  {type: SF64:HITBOX, offset: 0x60065FC, symbol: D_TI_60065FC}
+
+D_TI_6006648:
+  {type: SF64:HITBOX, offset: 0x6006648, symbol: D_TI_6006648}
+
+D_TI_6006694:
+  {type: SF64:HITBOX, offset: 0x6006694, symbol: D_TI_6006694}
+
+D_TI_60066E0:
+  {type: SF64:HITBOX, offset: 0x60066E0, symbol: D_TI_60066E0}
+
+D_TI_600672C:
+  {type: SF64:HITBOX, offset: 0x600672C, symbol: D_TI_600672C}
+
+D_TI_6006778:
+  {type: SF64:HITBOX, offset: 0x6006778, symbol: D_TI_6006778}
+
+D_TI_60067C4:
+  {type: SF64:HITBOX, offset: 0x60067C4, symbol: D_TI_60067C4}
+
+D_TI_6006808:
+  {type: SF64:HITBOX, offset: 0x6006808, symbol: D_TI_6006808}
+
+D_TI_6006A3C:
+  {type: SF64:HITBOX, offset: 0x6006A3C, symbol: D_TI_6006A3C}
+
+D_TI_600683C:
+  {type: SF64:HITBOX, offset: 0x600683C, symbol: D_TI_600683C}
+
+D_TI_6006858:
+  {type: SF64:HITBOX, offset: 0x6006858, symbol: D_TI_6006858}
+
+D_TI_6006874:
+  {type: SF64:HITBOX, offset: 0x6006874, symbol: D_TI_6006874}
+
+D_TI_6006890:
+  {type: SF64:HITBOX, offset: 0x6006890, symbol: D_TI_6006890}
+
+D_TI_60068BC:
+  {type: SF64:HITBOX, offset: 0x60068BC, symbol: D_TI_60068BC}
+
+D_TI_60068F0:
+  {type: SF64:HITBOX, offset: 0x60068F0, symbol: D_TI_60068F0}
+
+D_TI_6006940:
+  {type: SF64:HITBOX, offset: 0x6006940, symbol: D_TI_6006940}
+
+D_TI_600695C:
+  {type: SF64:HITBOX, offset: 0x600695C, symbol: D_TI_600695C}
+
+D_TI_6006978:
+  {type: SF64:HITBOX, offset: 0x6006978, symbol: D_TI_6006978}
+
+D_TI_6006994:
+  {type: SF64:HITBOX, offset: 0x6006994, symbol: D_TI_6006994}
+
+D_TI_60069B0:
+  {type: SF64:HITBOX, offset: 0x60069B0, symbol: D_TI_60069B0}
+
+D_TI_60069CC:
+  {type: SF64:HITBOX, offset: 0x60069CC, symbol: D_TI_60069CC}
+
+D_TI_60069E8:
+  {type: SF64:HITBOX, offset: 0x60069E8, symbol: D_TI_60069E8}
+
+D_TI_6006A04:
+  {type: SF64:HITBOX, offset: 0x6006A04, symbol: D_TI_6006A04}
+
+D_TI_6006A20:
+  {type: SF64:HITBOX, offset: 0x6006A20, symbol: D_TI_6006A20}
+
+D_TI_6006BF0:
+  {type: SF64:HITBOX, offset: 0x6006BF0, symbol: D_TI_6006BF0}
+
+D_TI_6006924:
+  {type: SF64:HITBOX, offset: 0x6006924, symbol: D_TI_6006924}
+
+D_TI_6006C0C:
+  {type: SF64:HITBOX, offset: 0x6006C0C, symbol: D_TI_6006C0C}
+
+D_TI_6006C28:
+  {type: SF64:HITBOX, offset: 0x6006C28, symbol: D_TI_6006C28}
+
+D_TI_6006C44:
+  {type: SF64:HITBOX, offset: 0x6006C44, symbol: D_TI_6006C44}
+
+D_TI_6006C60:
+  {type: SF64:OBJECT_INIT, offset: 0x6006C60, symbol: D_TI_6006C60}
+
+D_TI_6009BB8:
+  {type: TEXTURE, format: RGBA16, ctype: u16, width: 32, height: 32, offset: 0x6009BB8, symbol: D_TI_6009BB8}

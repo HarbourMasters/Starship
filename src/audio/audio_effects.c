@@ -1,7 +1,7 @@
 #include "sys.h"
 #include "sf64audio_provisional.h"
 
-static char devstr[] = "Audio:Envp: overflow  %f\n";
+static const char devstr[] = "Audio:Envp: overflow  %f\n";
 
 void func_80013400(SequenceChannel* channel, s32 updateVolume) {
     s32 i;
@@ -17,7 +17,7 @@ void func_80013400(SequenceChannel* channel, s32 updateVolume) {
     if (channel->changes.s.pan) {
         channel->pan = channel->newPan * channel->panChannelWeight;
     }
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < ARRAY_COUNT(channel->layers); i++) {
         SequenceLayer* layer = channel->layers[i];
 
         if ((layer != NULL) && layer->enabled && (layer->note != NULL)) {
@@ -215,8 +215,7 @@ f32 func_80013B90(AdsrState* adsr) {
                     break;
                 default:
                     if (adsr->delay >= 4) {
-                        adsr->delay =
-                            (adsr->delay * gAudioBufferParams.ticksPerUpdate / gAudioBufferParams.specUnk4) / 4;
+                        adsr->delay = (adsr->delay * gAudioBufferParams.ticksPerUpdate / gAudioBufferParams.count) / 4;
                     }
                     if (adsr->delay == 0) {
                         adsr->delay = 1;

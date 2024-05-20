@@ -1,0 +1,179 @@
+:config:
+  segments:
+    - [0x6, 0xBB11D0]
+  header:
+    code:
+      - '#include "assets/ast_katina.h"'
+    header:
+      - '#include "gfx.h"'
+      - '#include "sf64object.h"'
+      - '#include "sf64level.h"'
+      - '#include "sf64event.h"'
+      - '#include "sf64player.h"'
+      - '#include "sf64audio_external.h"'
+
+# Katina
+# Frontline Base
+D_KA_6000000:
+  { type: TEXTURE, format: IA8, width: 168, height: 28, offset: 0x6000000, ctype: u8, symbol: D_KA_6000000 }
+
+D_KA_6001260:
+  { type: TEXTURE, format: IA8, width: 8, height: 8, offset: 0x6001260, ctype: u8, symbol: D_KA_6001260 }
+
+aKaDestroyedHatchDL:
+  { type: GFX, offset: 0x60012A0, symbol: aKaDestroyedHatchDL }
+
+aKaEnemy1DL:
+  { type: GFX, offset: 0x6001530, symbol: aKaEnemy1DL }
+
+D_KA_6001968:
+  { type: TEXTURE, format: RGBA16, width: 32, height: 32, offset: 0x6001968, ctype: u16, symbol: D_KA_6001968 }
+
+# Mothership model
+D_KA_6002170:
+  { type: GFX, offset: 0x6002170, symbol: D_KA_6002170 }
+
+D_KA_6004078:
+  { type: TEXTURE, format: RGBA16, width: 8, height: 8, offset: 0x6004078, ctype: u16, symbol: D_KA_6004078 }
+
+D_KA_60040F8:
+  { type: TEXTURE, format: RGBA16, width: 32, height: 32, offset: 0x60040F8, ctype: u16, symbol: D_KA_60040F8 }
+
+D_KA_60048F8:
+  { type: TEXTURE, format: RGBA16, width: 32, height: 32, offset: 0x60048F8, ctype: u16, symbol: D_KA_60048F8 }
+
+D_KA_60050F8:
+  { type: TEXTURE, format: RGBA16, width: 16, height: 16, offset: 0x60050F8, ctype: u16, symbol: D_KA_60050F8 }
+
+D_KA_60052F8:
+  { type: TEXTURE, format: RGBA16, width: 32, height: 32, offset: 0x60052F8, ctype: u16, symbol: D_KA_60052F8 }
+
+D_KA_6005AF8:
+  { type: TEXTURE, format: RGBA16, width: 32, height: 32, offset: 0x6005AF8, ctype: u16, symbol: D_KA_6005AF8 }
+
+D_KA_60062F8:
+  { type: TEXTURE, format: RGBA16, width: 32, height: 32, offset: 0x60062F8, ctype: u16, symbol: D_KA_60062F8 }
+
+D_KA_6006AF8:
+  { type: TEXTURE, format: RGBA16, width: 32, height: 32, offset: 0x6006AF8, ctype: u16, symbol: D_KA_6006AF8 }
+
+aKaDestroyedSaucererDL:
+  { type: GFX, offset: 0x6007300, symbol: aKaDestroyedSaucererDL }
+
+D_KA_6009250:
+  { type: GFX, offset: 0x6009250, symbol: D_KA_6009250 }
+
+D_KA_60094A8:
+  { type: TEXTURE, format: RGBA16, width: 32, height: 32, offset: 0x60094A8, ctype: u16, symbol: D_KA_60094A8 }
+
+D_KA_6009CB0:
+  { type: TEXTURE, format: RGBA16, width: 44, height: 44, offset: 0x6009CB0, ctype: u16, symbol: D_KA_6009CB0 }
+
+D_KA_600ABD0:
+  { type: TEXTURE, format: RGBA16, width: 44, height: 44, offset: 0x600ABD0, ctype: u16, symbol: D_KA_600ABD0 }
+
+aKaFLBaseDL:
+  { type: GFX, offset: 0x600BAF0, symbol: aKaFLBaseDL }
+
+D_KA_600BDB0:
+  { type: TEXTURE, format: RGBA16, width: 16, height: 16, offset: 0x600BDB0, ctype: u16, symbol: D_KA_600BDB0 }
+
+D_KA_600C2D8:
+  { type: TEXTURE, format: RGBA16, width: 16, height: 16, offset: 0x600C2D8, ctype: u16, symbol: D_KA_600C2D8 }
+
+aKaFLBaseDestroyedDL:
+  { type: GFX, offset: 0x600C4E0, symbol: aKaFLBaseDestroyedDL }
+
+D_KA_600C760:
+  { type: TEXTURE, format: RGBA16, width: 16, height: 16, offset: 0x600C760, ctype: u16, symbol: D_KA_600C760 }
+
+D_KA_600C960:
+  { type: TEXTURE, format: RGBA16, width: 16, height: 16, offset: 0x600C960, ctype: u16, symbol: D_KA_600C960 }
+
+# Mothership Core
+D_KA_600CB60:
+  { type: GFX, offset: 0x600CB60, symbol: D_KA_600CB60 }
+
+D_KA_600BFB0:
+  { type: GFX, offset: 0x600BFB0, symbol: D_KA_600BFB0 }
+
+aDestroyedHatch2DL:
+  { type: GFX, offset: 0x600CDC0, symbol: aDestroyedHatch2DL }
+
+aDestroyedCoreDL:
+  { type: GFX, offset: 0x600D090, symbol: aDestroyedCoreDL }
+
+aDestroyedHatch4DL:
+  { type: GFX, offset: 0x600D290, symbol: aDestroyedHatch4DL }
+
+aDestroyedHatch3DL:
+  { type: GFX, offset: 0x600D4E0, symbol: aDestroyedHatch3DL }
+
+D_KA_600D730:
+  { type: GFX, offset: 0x600D730, symbol: D_KA_600D730 }
+
+D_KA_600D7B8:
+  { type: TEXTURE, format: IA8, width: 32, height: 32, offset: 0x600D7B8, ctype: u8, symbol: D_KA_600D7B8 }
+
+D_KA_600DBC0:
+  { type: GFX, offset: 0x600DBC0, symbol: D_KA_600DBC0 }
+
+D_KA_600DC48:
+  { type: TEXTURE, format: IA8, width: 32, height: 32, offset: 0x600DC48, ctype: u8, symbol: D_KA_600DC48 }
+
+aKaCornerianFighterDL:
+  { type: GFX, offset: 0x600E050, symbol: aKaCornerianFighterDL }
+
+D_KA_600E7E8:
+  { type: TEXTURE, format: RGBA16, width: 16, height: 16, offset: 0x600E7E8, ctype: u16, symbol: D_KA_600E7E8 }
+
+D_KA_600E9E8:
+  { type: TEXTURE, format: RGBA16, width: 16, height: 16, offset: 0x600E9E8, ctype: u16, symbol: D_KA_600E9E8 }
+
+D_KA_600EBE8:
+  { type: TEXTURE, format: RGBA16, width: 16, height: 16, offset: 0x600EBE8, ctype: u16, symbol: D_KA_600EBE8 }
+
+D_KA_600EDE8:
+  { type: TEXTURE, format: RGBA16, width: 16, height: 16, offset: 0x600EDE8, ctype: u16, symbol: D_KA_600EDE8 }
+
+aKaEnemy1LowPolyDL:
+  { type: GFX, offset: 0x600EFF0, symbol: aKaEnemy1LowPolyDL }
+
+D_KA_600F1D0:
+  { type: GFX, offset: 0x600F1D0, symbol: D_KA_600F1D0 }
+
+D_KA_600F260:
+  { type: TEXTURE, format: RGBA16, width: 64, height: 32, offset: 0x600F260, ctype: u16, symbol: D_KA_600F260 }
+
+D_KA_6010260:
+  { type: GFX, offset: 0x6010260, symbol: D_KA_6010260 }
+
+D_KA_60105D8:
+  { type: SF64:ANIM, offset: 0x60105D8, symbol: D_KA_60105D8 }
+
+D_KA_6010A60:
+  { type: GFX, offset: 0x6010A60, symbol: D_KA_6010A60 }
+
+D_KA_6010D20:
+  { type: GFX, offset: 0x6010D20, symbol: D_KA_6010D20 }
+
+D_KA_6010744:
+  { type: SF64:SKELETON, offset: 0x6010744, symbol: D_KA_6010744 }
+
+D_KA_6010780:
+  { type: GFX, offset: 0x6010780, symbol: D_KA_6010780 }
+
+D_KA_6011000:
+  { type: SF64:ENVIRONMENT, offset: 0x6011000, symbol: D_KA_6011000 }
+
+D_KA_6011044:
+  { type: SF64:OBJECT_INIT, offset: 0x6011044, symbol: D_KA_6011044 }
+
+D_KA_6011058:
+  { type: SF64:HITBOX, offset: 0x6011058, symbol: D_KA_6011058 }
+
+D_KA_601115C:
+  { type: SF64:HITBOX, offset: 0x601115C, symbol: D_KA_601115C }
+
+D_KA_60111D8:
+  { type: SF64:HITBOX, offset: 0x60111D8, symbol: D_KA_60111D8 }

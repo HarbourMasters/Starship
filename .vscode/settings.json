@@ -45,7 +45,7 @@
     "cstdlib": "c",
     "typeinfo": "c",
     "sym_addrs_funcs": "c",
-    "*.txt": "c",
+    "*.txt": "plaintext",
     "fox_title.h": "c",
     "prevent_bss_reordering.h": "c",
     "fox_map.h": "c",
@@ -89,7 +89,7 @@
     "tuple": "c",
     "type_traits": "c",
     "ast_allies.h": "c",
-    "ast_font.h": "c",
+    "ast_text.h": "c",
     "fox_std_lib_assets.h": "c",
     "fox_versus_assets.h": "c",
     "guint.h": "c",
@@ -137,7 +137,19 @@
     "sf64mesg.h": "c",
     "sf64audio_external.h": "c",
     "audioseq_cmd.h": "c",
-    "ultralog.h": "c"
+    "ultralog.h": "c",
+    "charconv": "c",
+    "compare": "c",
+    "os_motor.h": "c",
+    "os_pfs.h": "c",
+    "semaphore": "c",
+    "bgm.h": "c",
+    "*.tcc": "c",
+    "object_ram.h": "c",
+    "sf64dma.h": "c",
+    "string": "c",
+    "xmemory": "c",
+    "iosfwd": "c"
   },
   "C_Cpp_Runner.msvcBatchPath": ""
 }

@@ -1,0 +1,444 @@
+  - name: audio_seq
+    type: bin
+    start: 0xE9950
+
+  - name: audio_bank
+    type: bin
+    start: 0x124920
+
+  - name: audio_table
+    type: bin
+    start: 0x143A40
+
+  - name: ast_common
+    exclusive_ram_id: segment_01
+    type: code
+    dir: assets
+    start: 0x844660
+    vram: 0x01000000
+    subsegments:
+      - [0x844660, bin, ast_common/ast_common]
+
+  - name: ast_bg_space
+    exclusive_ram_id: segment_02
+    type: code
+    dir: assets
+    start: 0x8763F0
+    vram: 0x02000000
+    subsegments:
+      - [0x8763F0, bin, ast_bg_space/ast_bg_space]
+
+  - name: ast_bg_planet
+    exclusive_ram_id: segment_02
+    type: code
+    dir: assets
+    start: 0x87DBD0
+    vram: 0x02000000
+    subsegments:
+      - [0x87DBD0, bin, ast_bg_planet/ast_bg_planet]
+
+  - name: ast_arwing
+    exclusive_ram_id: segment_03
+    type: code
+    dir: assets
+    start: 0x88F730
+    vram: 0x03000000
+    subsegments:
+      - [0x88F730, bin, ast_arwing/ast_arwing]
+
+  - name: ast_landmaster
+    exclusive_ram_id: segment_03
+    type: code
+    dir: assets
+    start: 0x8A9520
+    vram: 0x03000000
+    subsegments:
+      - [0x8A9520, bin, ast_landmaster/ast_landmaster]
+
+  - name: ast_blue_marine
+    exclusive_ram_id: segment_03
+    type: code
+    dir: assets
+    start: 0x8B1AB0
+    vram: 0x03000000
+    subsegments:
+      - [0x8B1AB0, bin, ast_blue_marine/ast_blue_marine]
+
+  - name: ast_versus
+    exclusive_ram_id: segment_03
+    type: code
+    dir: assets
+    start: 0x8B8E00
+    vram: 0x03000000
+    subsegments:
+      - [0x8B8E00, bin, ast_versus/ast_versus]
+
+  - name: ast_enmy_planet
+    exclusive_ram_id: segment_04
+    type: code
+    dir: assets
+    start: 0x8E8AE0
+    vram: 0x04000000
+    subsegments:
+      - [0x8E8AE0, bin, ast_enmy_planet/ast_enmy_planet]
+
+  - name: ast_enmy_space
+    exclusive_ram_id: segment_04
+    type: code
+    dir: assets
+    start: 0x8F2DE0
+    vram: 0x04000000
+    subsegments:
+      - [0x8F2DE0, bin, ast_enmy_space/ast_enmy_space]
+
+  - name: ast_great_fox
+    exclusive_ram_id: segment_0E
+    type: code
+    dir: assets
+    start: 0x8FF2F0
+    vram: 0x0E000000
+    subsegments:
+      - [0x8FF2F0, bin, ast_great_fox/ast_great_fox]
+
+  - name: ast_star_wolf
+    exclusive_ram_id: segment_0F
+    type: code
+    dir: assets
+    start: 0x911000
+    vram: 0x0F000000
+    subsegments:
+      - [0x911000, bin, ast_star_wolf/ast_star_wolf]
+
+  - name: ast_allies
+    exclusive_ram_id: segment_0D
+    type: code
+    dir: assets
+    start: 0x9257A0
+    vram: 0x0D000000
+    subsegments:
+      - [0x9257A0, bin, ast_allies/ast_allies]
+
+  - name: ast_corneria
+    exclusive_ram_id: segment_06
+    type: code
+    dir: assets
+    start: 0x932200
+    vram: 0x06000000
+    subsegments:
+      - [0x932200, bin, ast_corneria/ast_corneria]
+
+  - name: ast_meteo
+    exclusive_ram_id: segment_06
+    type: code
+    dir: assets
+    start: 0x971980
+    vram: 0x06000000
+    subsegments:
+      - [0x971980, bin, ast_meteo/ast_meteo]
+
+  - name: ast_titania
+    exclusive_ram_id: segment_06
+    type: code
+    dir: assets
+    vram: 0x06000000
+    start: 0x9A3370
+    subsegments:
+      - [0x9A3370, bin, ast_titania/ast_titania]
+
+  - name: ast_7_ti_2
+    exclusive_ram_id: segment_07
+    type: code
+    dir: assets
+    vram: 0x07000000
+    start: 0x9AD730
+    subsegments:
+      - [0x9AD730, bin, ast_7_ti_2/ast_7_ti_2]
+
+  - name: ast_8_ti
+    exclusive_ram_id: segment_08
+    type: code
+    dir: assets
+    start: 0x9BB980
+    vram: 0x08000000
+    subsegments:
+      - [0x9BB980, bin, ast_8_ti/ast_8_ti]
+
+  - name: ast_9_ti
+    exclusive_ram_id: segment_09
+    type: code
+    dir: assets
+    start: 0x9C4C20
+    vram: 0x09000000
+    subsegments:
+      - [0x9C4C20, bin, ast_9_ti/ast_9_ti]
+
+  - name: ast_A_ti
+    type: code
+    dir: assets
+    exclusive_ram_id: segment_0A
+    start: 0x9D4D40
+    vram: 0x0A000000
+    subsegments:
+      - [0x9D4D40, bin, ast_A_ti/ast_A_ti]
+
+  - name: ast_7_ti_1
+    exclusive_ram_id: segment_07
+    type: code
+    dir: assets
+    start: 0x9DE6E0
+    vram: 0x07000000
+    subsegments:
+      - [0x9DE6E0, bin, ast_7_ti_1/ast_7_ti_1]
+
+  - name: ast_sector_x
+    exclusive_ram_id: segment_06
+    type: code
+    dir: assets
+    start: 0x9ED490
+    vram: 0x06000000
+    subsegments:
+      - [0x9ED490, bin, ast_sector_x/ast_sector_x]
+
+  - name: ast_sector_z
+    exclusive_ram_id: segment_06
+    type: code
+    dir: assets
+    start: 0xA1FCD0
+    vram: 0x06000000
+    subsegments:
+      - [0xA1FCD0, bin, ast_sector_z/ast_sector_z]
+
+  - name: ast_aquas
+    exclusive_ram_id: segment_06
+    type: code
+    dir: assets
+    start: 0xA28E60
+    vram: 0x06000000
+    subsegments:
+     - [0xA28E60, bin, ast_aquas/ast_aquas]
+
+  - name: ast_area_6
+    exclusive_ram_id: segment_06
+    type: code
+    dir: assets
+    start: 0xA5B8F0
+    vram: 0x06000000
+    subsegments:
+     - [0xA5B8F0, bin, ast_area_6/ast_area_6]
+
+  - name: ast_venom_1
+    exclusive_ram_id: segment_06
+    type: code
+    dir: assets
+    start: 0xA84390
+    vram: 0x06000000
+    subsegments:
+      - [0xA84390, bin, ast_venom_1/ast_venom_1]
+
+  - name: ast_venom_2
+    exclusive_ram_id: segment_06
+    type: code
+    dir: assets
+    start: 0xA9E570
+    vram: 0x06000000
+    subsegments:
+      - [0xA9E570, bin, ast_venom_2/ast_venom_2]
+
+  - name: ast_ve1_boss
+    # exclusive_ram_id: segment_06
+    exclusive_ram_id: segment_09
+    type: code
+    dir: assets
+    start: 0xAB36F0
+    vram: 0x09000000
+    subsegments:
+      - [0xAB36F0, bin, ast_ve1_boss/ast_ve1_boss]
+
+  - name: ast_bolse
+    exclusive_ram_id: segment_06
+    type: code
+    dir: assets
+    start: 0xAD8050
+    vram: 0x06000000
+    subsegments:
+      - [0xAD8050, bin, ast_bolse/ast_bolse]
+
+  - name: ast_fortuna
+    exclusive_ram_id: segment_06
+    type: code
+    dir: assets
+    start: 0xAE9DC0
+    vram: 0x06000000
+    subsegments:
+      - [0xAE9DC0, bin, ast_fortuna/ast_fortuna]
+
+  - name: ast_sector_y
+    exclusive_ram_id: segment_06
+    type: code
+    dir: assets
+    start: 0xAF9DC0
+    vram: 0x06000000
+    subsegments:
+      - [0xAF9DC0, bin, ast_sector_y/ast_sector_y]
+
+  - name: ast_solar
+    exclusive_ram_id: segment_06
+    type: code
+    dir: assets
+    start: 0xB2E3F0
+    vram: 0x06000000
+    subsegments:
+      - [0xB2E3F0, bin, ast_solar/ast_solar]
+
+  - name: ast_zoness
+    exclusive_ram_id: segment_06
+    type: code
+    dir: assets
+    start: 0xB51670
+    vram: 0x06000000
+    subsegments:
+      - [0xB51670, bin, ast_zoness/ast_zoness]
+
+  - name: ast_katina
+    exclusive_ram_id: segment_06
+    type: code
+    dir: assets
+    start: 0xB7E0B0
+    vram: 0x06000000
+    subsegments:
+      - [0xB7E0B0, bin, ast_katina/ast_katina]
+
+  - name: ast_macbeth
+    exclusive_ram_id: segment_06
+    type: code
+    dir: assets
+    vram: 0x06000000
+    start: 0xB8F2B0
+    subsegments:
+      - [0xB8F2B0, bin, ast_macbeth/ast_macbeth]
+
+  - name: ast_warp_zone
+    exclusive_ram_id: segment_07
+    type: code
+    dir: assets
+    start: 0xBC7460
+    vram: 0x07000000
+    subsegments:
+      - [0xBC7460, bin, ast_warp_zone/ast_warp_zone]
+
+  - name: ast_title
+    exclusive_ram_id: segment_06
+    type: code
+    dir: assets
+    vram: 0x06000000
+    start: 0xBC9230
+    subsegments:
+      - [0xBC9230, bin, ast_title/ast_title]
+
+  - name: ast_map
+    exclusive_ram_id: segment_06
+    type: code
+    dir: assets
+    start: 0xC12690
+    vram: 0x06000000
+    subsegments:
+      - [0xC12690, bin, ast_map/ast_map]
+
+  - name: ast_option
+    exclusive_ram_id: segment_08
+    type: code
+    dir: assets
+    start: 0xC6FA00
+    vram: 0x08000000
+    subsegments:
+      - [0xC6FA00, bin, ast_option/ast_option]
+
+  - name: ast_vs_menu
+    exclusive_ram_id: segment_07
+    type: code
+    dir: assets
+    start: 0xC83960
+    vram: 0x07000000
+    subsegments:
+      - [0xC83960, bin, ast_vs_menu/ast_vs_menu]
+
+  - name: ast_text
+    exclusive_ram_id: segment_05
+    type: code
+    dir: assets
+    vram: 0x05000000
+    start: 0xC98590
+    subsegments:
+      - [0xC98590, bin, ast_text/ast_text]
+
+  - name: ast_font_3d
+    exclusive_ram_id: segment_09
+    type: code
+    dir: assets
+    vram: 0x09000000
+    start: 0xCA2860
+    subsegments:
+      - [0xCA2860, bin, ast_font_3d/ast_font_3d]
+
+  - name: ast_andross
+    exclusive_ram_id: segment_0C
+    type: code
+    dir: assets
+    vram: 0x0C000000
+    start: 0xCAEA30
+    subsegments:
+      - [0xCAEA30, bin, ast_andross/ast_andross]
+
+  - name: ast_logo
+    exclusive_ram_id: segment_0F
+    type: code
+    dir: assets
+    start: 0xCE8EC0
+    vram: 0x0F000000
+    subsegments:
+      - [0xCE8EC0, bin, ast_logo/ast_logo]
+
+  - name: ast_ending
+    exclusive_ram_id: segment_07
+    type: code
+    dir: assets
+    start: 0xCEB3C0
+    vram: 0x07000000
+    subsegments:
+      - [0xCEB3C0, bin, ast_ending/ast_ending]
+
+  - name: ast_ending_award_front
+    exclusive_ram_id: segment_08
+    type: code
+    dir: assets
+    start: 0xD071C0
+    vram: 0x08000000
+    subsegments:
+      - [0xD071C0, bin, ast_ending_award_front/ast_ending_award_front]
+
+  - name: ast_ending_award_back
+    exclusive_ram_id: segment_08
+    type: code
+    dir: assets
+    start: 0xD2C240
+    vram: 0x08000000
+    subsegments:
+      - [0xD2C240, bin, ast_ending_award_back/ast_ending_award_back]
+
+  - name: ast_ending_expert
+    exclusive_ram_id: segment_08
+    type: code
+    dir: assets
+    start: 0xD55CD0
+    vram: 0x08000000
+    subsegments:
+      - [0xD55CD0, bin, ast_ending_expert/ast_ending_expert]
+
+  - name: ast_training
+    exclusive_ram_id: segment_06
+    type: code
+    dir: assets
+    start: 0xD9FDD0
+    vram: 0x06000000
+    subsegments:
+      - [0xD9FDD0, bin, ast_training/ast_training]

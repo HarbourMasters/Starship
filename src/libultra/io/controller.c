@@ -76,8 +76,8 @@ void __osPackRequestData(u8 cmd) {
     __OSContRequesFormat requestHeader;
     s32 i;
 
-    for (i = 0; i < 16; i++) {
-        __osContPifRam.ramarray[i] = 0;
+    for (i = 0; i < ARRLEN(__osPfsPifRam.raw); i++) {
+        __osContPifRam.raw[i] = 0;
     }
 
     __osContPifRam.pifstatus = CONT_CMD_READ_BUTTON;

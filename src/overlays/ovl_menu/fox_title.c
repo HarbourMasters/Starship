@@ -7,7 +7,7 @@
 #include "global.h"
 #include "fox_title.h"
 #include "assets/ast_title.h"
-#include "assets/ast_font.h"
+#include "assets/ast_text.h"
 
 f32 D_menu_801B7BB0;
 f32 D_menu_801B7BB4;
@@ -161,15 +161,15 @@ u16* D_menu_801ADA30[5] = {
     gMsg_ID_10, gMsg_ID_20, gMsg_ID_30, gMsg_ID_40, gMsg_ID_50,
 };
 
-void Title_801875E0(void) {
-    D_80137E78 = 2;
+void Title_Init(void) {
+    gVIsPerFrame = 2;
 
     gGameFrameCount = 0;
 
-    D_ctx_80177AE0 = 2;
+    gTitleState = 2;
 
-    D_game_80161A34 = 0;
-    D_game_800D2870 = 0;
+    gLastGameState = GSTATE_NONE;
+    D_game_800D2870 = false;
 
     gMainController = Title_80187ABC();
 
@@ -198,56 +198,56 @@ void Title_801875E0(void) {
 
     Memory_FreeAll();
 
-    func_play_800A5D6C();
-    D_ctx_80178420 = 320.0f;
-    D_ctx_80178424 = 240.0f;
+    Play_GenerateStarfield();
+    gStarfieldX = SCREEN_WIDTH;
+    gStarfieldY = SCREEN_HEIGHT;
 
     Title_80188010();
 
     if ((gMainController == -1) || (D_menu_801B827C != 0)) {
-        Audio_SetAudioSpec(0, 0x17);
+        AUDIO_SET_SPEC(SFXCHAN_0, AUDIOSPEC_23);
         D_menu_801B82C4 = 0;
         D_menu_801B827C = 0;
     } else {
-        Audio_SetAudioSpec(0, 0x16);
+        AUDIO_SET_SPEC(SFXCHAN_0, AUDIOSPEC_22);
         D_menu_801B82C4 = 1;
     }
     gControllerLock = 30;
 }
 
-void Title_80187754(void) {
-    switch (D_ctx_80177AE0) {
+void Title_Main(void) {
+    switch (gTitleState) {
         case 0:
             if (gNextGameStateTimer == 0) {
                 gDrawMode = DRAW_NONE;
-                D_ctx_80177AE0 = 1;
+                gTitleState = 1;
             }
             break;
 
         case 1:
             gDrawMode = DRAW_NONE;
-            Title_801875E0();
+            Title_Init();
             break;
 
         case 2:
             gDrawMode = DRAW_TITLE;
-            Title_801877F0();
+            Title_UpdateEntry();
             break;
     }
     gGameFrameCount++;
 }
 
-void Title_801877F0(void) {
+void Title_UpdateEntry(void) {
 
     // LTODO: Verify this is correct
     gMainController = Title_80187ABC();
 
     if (D_menu_801B82A8 > 0) {
-        D_menu_801B82A8 -= 1;
+        D_menu_801B82A8--;
     }
 
     if (D_menu_801B82AC > 0) {
-        D_menu_801B82AC -= 1;
+        D_menu_801B82AC--;
     }
 
     switch (D_menu_801B82C4) {
@@ -277,7 +277,7 @@ void Title_801877F0(void) {
     Title_80190E64();
 }
 
-void Title_801878D8(void) {
+void Title_Draw(void) {
     switch (D_menu_801B82C4) {
         case 7:
             Title_80187CA8();
@@ -301,7 +301,7 @@ void Title_801878D8(void) {
                 Title_801918FC();
                 Title_8018A2F8();
                 Matrix_Pop(&gGfxMatrix);
-                func_radio_800BB5D0();
+                Radio_Draw();
                 Title_80190C9C();
             }
             Title_8018FF74();
@@ -342,7 +342,7 @@ void Title_801878D8(void) {
         gFillScreenRed = 0;
         gFillScreenGreen = 0;
         gFillScreenBlue = 0;
-        func_fade_80084688(2, D_menu_801B8284);
+        Wipe_Draw(WIPE_VERTICAL, D_menu_801B8284);
     }
 }
 
@@ -364,7 +364,7 @@ void Title_80187B00(void) {
     switch (D_menu_801B82C0) {
         case 0:
             D_menu_801B8288 = 0;
-            D_ctx_80178410 = 800;
+            gStarCount = 800;
             D_menu_801B82BC = 450;
             D_menu_801B82C0++;
             D_menu_801B82A8 = 20;
@@ -372,18 +372,18 @@ void Title_80187B00(void) {
 
         case 1:
             if (D_menu_801B82BC != 0) {
-                func_play_800B6F50(gCsCamEyeX, gCsCamEyeY, gCsCamEyeZ, gCsCamAtX, gCsCamAtY, gCsCamAtZ);
-                D_ctx_8017842C -= 1.0f;
+                Camera_SetStarfieldPos(gCsCamEyeX, gCsCamEyeY, gCsCamEyeZ, gCsCamAtX, gCsCamAtY, gCsCamAtZ);
+                gStarfieldScrollX -= 1.0f;
                 if (D_menu_801B82BC == 60) {
                     SEQCMD_STOP_SEQUENCE(SEQ_PLAYER_BGM, 60);
                     SEQCMD_STOP_SEQUENCE(SEQ_PLAYER_FANFARE, 60);
                 }
             } else {
-                D_ctx_80178410 = 0;
+                gStarCount = 0;
                 gRadioState = 0;
                 D_menu_801B82C0 = 0;
                 gDrawMode = DRAW_NONE;
-                Audio_SetAudioSpec(0, 0x16);
+                AUDIO_SET_SPEC(SFXCHAN_0, AUDIOSPEC_22);
                 D_menu_801B82C4 = 1;
             }
 
@@ -402,11 +402,11 @@ void Title_80187CA8(void) {
     static char D_menu_801ADA44[] = "S T A R F O X     R A N K I N G";
 
     // LTodo: [HD-Texture] Is Broken
-    uint8_t* D_5007690_Data = LOAD_ASSET_RAW(D_5007690);
+    uint8_t* aTextKanjiCOMPLETE_Data = LOAD_ASSET_RAW(aTextKanjiCOMPLETE);
     s32 temp = 20;
     s32 temp2 = 36;
 
-    RCP_SetupDL(&gMasterDisp, 0x53);
+    RCP_SetupDL(&gMasterDisp, SETUPDL_83);
 
     gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 0, 255);
 
@@ -414,14 +414,14 @@ void Title_80187CA8(void) {
 
     gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, 255);
 
-    TextureRect_8bIA(&gMasterDisp, D_5000300, 16, 8, 148.0f, temp, 1.0f, 1.0f);
-    TextureRect_8bIA(&gMasterDisp, D_5000200, 16, 8, 164, temp, 1.0f, 1.0f);
+    TextureRect_IA8(&gMasterDisp, aSmallText_6, 16, 8, 148.0f, temp, 1.0f, 1.0f);
+    TextureRect_IA8(&gMasterDisp, aSmallText_4, 16, 8, 164, temp, 1.0f, 1.0f);
 
-    RCP_SetupDL(&gMasterDisp, 0x53);
+    RCP_SetupDL(&gMasterDisp, SETUPDL_83);
 
     gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, 255);
 
-    TextureRect_8bIA(&gMasterDisp, &D_5007690_Data[48 * 6], 16, 2, 36, 32, 15.2f, 1.0f);
+    TextureRect_IA8(&gMasterDisp, &aTextKanjiCOMPLETE_Data[48 * 6], 16, 2, 36, 32, 15.2f, 1.0f);
     Title_80187E28();
 }
 
@@ -429,7 +429,7 @@ void Title_80187E28(void) {
     s32 temp;
     s32 i;
 
-    RCP_SetupDL(&gMasterDisp, 0x53);
+    RCP_SetupDL(&gMasterDisp, SETUPDL_83);
 
     gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 0, 255);
 
@@ -516,7 +516,7 @@ void Title_801881FC(void) {
 
     D_menu_801B869C = 255;
 
-    D_ctx_80178410 = 800;
+    gStarCount = 800;
 
     D_menu_801B9040 = 0;
     D_menu_801B86C8 = 0.0f;
@@ -715,7 +715,7 @@ void Title_801881FC(void) {
     D_menu_801B86A4 = 0;
     D_menu_801B82B0 = 100;
 
-    AUDIO_PLAY_BGM(SEQ_ID_TITLE);
+    AUDIO_PLAY_BGM(NA_BGM_TITLE);
 }
 
 void Title_801888E8(void) {
@@ -800,7 +800,7 @@ void Title_801888E8(void) {
     }
 
     if (D_menu_801B82B0 == 0) {
-        if (gGameFrameCount & 0x80) {
+        if ((gGameFrameCount & 0x80) != 0) {
             if (D_menu_801B8350[1].unk_20 + D_menu_801B8350[1].unk_24 < -20.0f) {
                 D_menu_801B8350[1].unk_24 = 4.0f;
             }
@@ -847,12 +847,12 @@ void Title_801888E8(void) {
 
     Title_80191320(1, &gCsCamEyeX, &gCsCamEyeY, &gCsCamEyeZ, &gCsCamAtX, &gCsCamAtY, &gCsCamAtZ, D_menu_801B86A8,
                    D_menu_801B86AC, D_menu_801B86B0);
-    func_play_800B6F50(gCsCamEyeX, gCsCamEyeY, gCsCamEyeZ, gCsCamAtX, gCsCamAtY, gCsCamAtZ);
+    Camera_SetStarfieldPos(gCsCamEyeX, gCsCamEyeY, gCsCamEyeZ, gCsCamAtX, gCsCamAtY, gCsCamAtZ);
 
-    D_ctx_8017842C -= 0.5f;
+    gStarfieldScrollX -= 0.5f;
 
     if (D_menu_801B82B0 > 0) {
-        D_menu_801B82B0 -= 1;
+        D_menu_801B82B0--;
     }
 
     if (D_menu_801B9040 == 1) {
@@ -860,11 +860,11 @@ void Title_801888E8(void) {
     }
 
     if (D_menu_801B82BC != 0) {
-        D_menu_801B82BC -= 1;
+        D_menu_801B82BC--;
         return;
     }
 
-    D_ctx_80178410 = 0;
+    gStarCount = 0;
 
     D_menu_801B82C0 = 0;
 
@@ -915,7 +915,7 @@ void Title_80189208(void) {
 void Title_801894E8(void) {
     s32 i;
 
-    D_ctx_80178410 = 800;
+    gStarCount = 800;
     D_menu_801B7C98 = 10;
 
     for (i = 0; i < 10; i++) {
@@ -996,7 +996,7 @@ void Title_801894E8(void) {
 
     D_menu_801B7BF0 = 0;
 
-    AUDIO_PLAY_BGM(SEQ_ID_OPENING);
+    AUDIO_PLAY_BGM(NA_BGM_OPENING);
 }
 
 void Title_8018994C(void) {
@@ -1013,8 +1013,8 @@ void Title_8018994C(void) {
             D_menu_801B82B8 = 0;
 
             gRadioState = 0;
-            D_ctx_80178300 = 0;
-            gCurrentMsgPri = 0;
+            gHideRadio = false;
+            gRadioMsgPri = 0;
             break;
 
         case 100:
@@ -1110,8 +1110,8 @@ void Title_8018994C(void) {
             }
 
             if (D_menu_801B82B8 == 638) {
-                AUDIO_PLAY_SFX(0x11030010, D_menu_801B8658.unk_24, 0);
-                AUDIO_PLAY_SFX(0x31024059, D_menu_801B8658.unk_24, 0);
+                AUDIO_PLAY_SFX(NA_SE_GREATFOX_ENGINE, D_menu_801B8658.unk_24, 0);
+                AUDIO_PLAY_SFX(NA_SE_GREATFOX_BURNER, D_menu_801B8658.unk_24, 0);
                 Radio_PlayMessage(gMsg_ID_60, RCID_ROB64_TITLE);
             }
 
@@ -1182,8 +1182,8 @@ void Title_8018994C(void) {
             }
 
             if (gFillScreenAlpha == 255) {
-                Audio_KillSfxBySourceAndId(D_menu_801B8658.unk_24, 0x11030010);
-                Audio_KillSfxBySourceAndId(D_menu_801B8658.unk_24, 0x31024059);
+                Audio_KillSfxBySourceAndId(D_menu_801B8658.unk_24, NA_SE_GREATFOX_ENGINE);
+                Audio_KillSfxBySourceAndId(D_menu_801B8658.unk_24, NA_SE_GREATFOX_BURNER);
 
                 D_menu_801B82C0 = 0;
 
@@ -1199,10 +1199,10 @@ void Title_8018994C(void) {
     Title_80191674(D_menu_801B86C8, D_menu_801B86CC, 100.0f, &D_menu_801B82E0, &D_menu_801B82E4, &D_menu_801B82E8);
 
     if (D_menu_801B7BE8 != 0) {
-        func_play_800B6F50(gCsCamEyeX, gCsCamEyeY, gCsCamEyeZ, gCsCamAtX, gCsCamAtY, gCsCamAtZ);
+        Camera_SetStarfieldPos(gCsCamEyeX, gCsCamEyeY, gCsCamEyeZ, gCsCamAtX, gCsCamAtY, gCsCamAtZ);
     }
 
-    D_ctx_8017842C -= D_menu_801B7BE8;
+    gStarfieldScrollX -= D_menu_801B7BE8;
     D_menu_801B82B8++;
 }
 
@@ -1214,7 +1214,7 @@ void Title_8018A2F8(void) {
 }
 
 void Title_8018A338(void) {
-    D_ctx_80178410 = 0;
+    gStarCount = 0;
 
     D_menu_801B869C = 255;
 
@@ -1335,8 +1335,8 @@ void Title_8018A644(void) {
     switch (D_menu_801B82C0) {
         case 0:
             Title_8018A338();
-            AUDIO_PLAY_SFX(0x49000014, gDefaultSfxSource, 4);
-            AUDIO_PLAY_SFX(0x0140001C, D_menu_801B84D8, 0);
+            AUDIO_PLAY_SFX(NA_SE_DEMO_SIREN, gDefaultSfxSource, 4);
+            AUDIO_PLAY_SFX(NA_SE_DEMO_RUNNING, D_menu_801B84D8, 0);
 
             D_menu_801B82B4 = 0;
             D_menu_801B82C8 = 0.0f;
@@ -1381,8 +1381,8 @@ void Title_8018A644(void) {
             }
 
             if (D_menu_801B7BEC == 795) {
-                Audio_KillSfxById(0x49000014);
-                Audio_KillSfxBySourceAndId(D_menu_801B84D8, 0x0140001C);
+                Audio_KillSfxById(NA_SE_DEMO_SIREN);
+                Audio_KillSfxBySourceAndId(D_menu_801B84D8, NA_SE_DEMO_RUNNING);
 
                 D_menu_801B82C0 = 0;
 
@@ -1458,7 +1458,7 @@ void Title_8018A990(void) {
 }
 
 void Title_8018ABC0(void) {
-    D_ctx_80178410 = 800;
+    gStarCount = 800;
 
     D_menu_801B869C = 255;
 
@@ -1499,8 +1499,8 @@ void Title_8018ACEC(void) {
     switch (D_menu_801B82C0) {
         case 0:
             Title_8018ABC0();
-            AUDIO_PLAY_SFX(0x11030010, D_menu_801B8658.unk_24, 0);
-            AUDIO_PLAY_SFX(0x31024059, D_menu_801B8658.unk_24, 0);
+            AUDIO_PLAY_SFX(NA_SE_GREATFOX_ENGINE, D_menu_801B8658.unk_24, 0);
+            AUDIO_PLAY_SFX(NA_SE_GREATFOX_BURNER, D_menu_801B8658.unk_24, 0);
 
             D_menu_801B82CC = 0.01f;
             D_menu_801B82B4 = 0;
@@ -1520,8 +1520,8 @@ void Title_8018ACEC(void) {
             }
 
             if (gFillScreenAlpha == 255) {
-                Audio_KillSfxBySourceAndId(D_menu_801B8658.unk_24, 0x11030010);
-                Audio_KillSfxBySourceAndId(D_menu_801B8658.unk_24, 0x31024059);
+                Audio_KillSfxBySourceAndId(D_menu_801B8658.unk_24, NA_SE_GREATFOX_ENGINE);
+                Audio_KillSfxBySourceAndId(D_menu_801B8658.unk_24, NA_SE_GREATFOX_BURNER);
 
                 gDrawMode = DRAW_NONE;
 
@@ -1536,10 +1536,10 @@ void Title_8018ACEC(void) {
     Title_80191320(1, &gCsCamEyeX, &gCsCamEyeY, &gCsCamEyeZ, &gCsCamAtX, &gCsCamAtY, &gCsCamAtZ, D_menu_801B86A8,
                    D_menu_801B86AC, D_menu_801B86B0);
     Title_80191674(D_menu_801B86C8, D_menu_801B86CC, 100.0f, &D_menu_801B82E0, &D_menu_801B82E4, &D_menu_801B82E8);
-    func_play_800B6F50(gCsCamEyeX, gCsCamEyeY, gCsCamEyeZ, gCsCamAtX, gCsCamAtY, gCsCamAtZ);
+    Camera_SetStarfieldPos(gCsCamEyeX, gCsCamEyeY, gCsCamEyeZ, gCsCamAtX, gCsCamAtY, gCsCamAtZ);
 
-    D_ctx_8017842C += 2.0f;
-    D_ctx_80178430 += 2.0f;
+    gStarfieldScrollX += 2.0f;
+    gStarfieldScrollY += 2.0f;
 }
 
 void Title_8018B038(void) {
@@ -1581,7 +1581,7 @@ void Title_8018B058(void) {
     gFillScreenRed = 255;
     gFillScreenGreen = 255;
     gFillScreenBlue = 255;
-    D_ctx_80178410 = 0;
+    gStarCount = 0;
 
     D_menu_801B8334 = 0;
     D_menu_801B8338 = 1;
@@ -1658,7 +1658,7 @@ void Title_8018B5C4(void) {
             D_menu_801B7BEC = 0;
 
             Title_8018B058();
-            Audio_SetBaseSfxReverb(0x68);
+            Audio_SetEnvSfxReverb(104);
 
             D_menu_801B82A8 = 30;
 
@@ -1676,7 +1676,7 @@ void Title_8018B5C4(void) {
 
         case 10:
             if (D_menu_801B82A8 == 0) {
-                AUDIO_PLAY_SFX(0x0100001D, gDefaultSfxSource, 4);
+                AUDIO_PLAY_SFX(NA_SE_LIFT_UP, gDefaultSfxSource, 4);
                 D_menu_801B82B4 = 0;
                 D_menu_801B82C0 = 1;
             }
@@ -1691,7 +1691,7 @@ void Title_8018B5C4(void) {
                 D_menu_801B9048 -= 0.41f;
                 if (D_menu_801B9048 < 0.0f) {
                     D_menu_801B9048 = 0.0f;
-                    AUDIO_PLAY_SFX(0x09002013, gDefaultSfxSource, 4);
+                    AUDIO_PLAY_SFX(NA_SE_LIFT_UP_END, gDefaultSfxSource, 4);
                 }
             }
 
@@ -1705,7 +1705,7 @@ void Title_8018B5C4(void) {
                 }
 
                 if (D_menu_801B84E8[i].unk_38 == 1) {
-                    AUDIO_PLAY_SFX(0x1950107A, D_menu_801B84E8[i].unk_50, 0);
+                    AUDIO_PLAY_SFX(NA_SE_ARWING_HATCH, D_menu_801B84E8[i].unk_50, 0);
                 };
 
                 if (D_menu_801B84E8[i].unk_38 == 0) {
@@ -1714,7 +1714,7 @@ void Title_8018B5C4(void) {
                                                  0.01f);
                     D_menu_801B84E8[i].unk_10 *= 1.04f;
                     if (temp[i] == 0.0f) {
-                        Audio_KillSfxBySourceAndId(D_menu_801B84E8[i].unk_50, 0x1950107A);
+                        Audio_KillSfxBySourceAndId(D_menu_801B84E8[i].unk_50, NA_SE_ARWING_HATCH);
                     }
                 }
             }
@@ -1740,7 +1740,7 @@ void Title_8018B5C4(void) {
             if (D_menu_801B82B4 == 226) {
                 D_menu_801B7BF0 = 0;
 
-                AUDIO_PLAY_SFX(0x0100001E, D_menu_801B84E8[3].unk_50, 0);
+                AUDIO_PLAY_SFX(NA_SE_ENGINE_START, D_menu_801B84E8[3].unk_50, 0);
 
                 D_menu_801B86BC = 105.0f;
                 D_menu_801B86C0 = 0.0f;
@@ -1833,8 +1833,8 @@ void Title_8018B5C4(void) {
 
         case 3:
             if (D_menu_801B82A8 == 0) {
-                Audio_KillSfxBySourceAndId(D_menu_801B84E8[3].unk_50, 0x0100001E);
-                AUDIO_PLAY_SFX(0x09000002, D_menu_801B84E8[3].unk_50, 0);
+                Audio_KillSfxBySourceAndId(D_menu_801B84E8[3].unk_50, NA_SE_ENGINE_START);
+                AUDIO_PLAY_SFX(NA_SE_ARWING_BOOST, D_menu_801B84E8[3].unk_50, 0);
 
                 D_menu_801B82A8 = 4;
 
@@ -1847,7 +1847,7 @@ void Title_8018B5C4(void) {
 
                 D_menu_801B82B4 = 0;
 
-                D_ctx_80178410 = 800;
+                gStarCount = 800;
 
                 D_menu_801B82C0++;
             }
@@ -1868,7 +1868,7 @@ void Title_8018B5C4(void) {
                                D_menu_801B86AC);
 
                 if (D_menu_801B82B4 > 8) {
-                    Audio_SetBaseSfxReverb(0);
+                    Audio_SetEnvSfxReverb(0);
                     D_menu_801B82C0 = 0;
                     D_menu_801B82C4 = 5;
                 }
@@ -1905,7 +1905,7 @@ void Title_8018C114(void) {
 void Title_8018C1C0(void) {
     s32 i;
 
-    D_ctx_80178410 = 1;
+    gStarCount = 1;
     D_menu_801B7C98 = 10;
 
     for (i = 0; i < 10; i++) {
@@ -2022,8 +2022,8 @@ void Title_8018C644(void) {
 
     switch (D_menu_801B82C0) {
         case 0:
-            AUDIO_PLAY_SFX(0x11030010, D_menu_801B8658.unk_24, 0);
-            AUDIO_PLAY_SFX(0x31024059, D_menu_801B8658.unk_24, 0);
+            AUDIO_PLAY_SFX(NA_SE_GREATFOX_ENGINE, D_menu_801B8658.unk_24, 0);
+            AUDIO_PLAY_SFX(NA_SE_GREATFOX_BURNER, D_menu_801B8658.unk_24, 0);
 
             Title_8018C1C0();
 
@@ -2050,7 +2050,7 @@ void Title_8018C644(void) {
                     D_menu_801B84E8[i].unk_38--;
                 } else {
                     if (D_menu_801B84E8[i].unk_38 == 0) {
-                        AUDIO_PLAY_SFX(0x19000001, D_menu_801B84E8[i].unk_50, 0);
+                        AUDIO_PLAY_SFX(NA_SE_PASS, D_menu_801B84E8[i].unk_50, 0);
                         D_menu_801B84E8[i].unk_38 = -1;
                         D_menu_801B84E8[i].unk_4C = 1;
                     }
@@ -2086,8 +2086,8 @@ void Title_8018C644(void) {
             }
 
             if (gFillScreenAlpha == 255) {
-                Audio_KillSfxBySourceAndId(D_menu_801B8658.unk_24, 0x11030010);
-                Audio_KillSfxBySourceAndId(D_menu_801B8658.unk_24, 0x31024059);
+                Audio_KillSfxBySourceAndId(D_menu_801B8658.unk_24, NA_SE_GREATFOX_ENGINE);
+                Audio_KillSfxBySourceAndId(D_menu_801B8658.unk_24, NA_SE_GREATFOX_BURNER);
                 D_menu_801B82C0++;
             }
             Title_801912A0();
@@ -2096,7 +2096,7 @@ void Title_8018C644(void) {
 
         case 2:
             gFillScreenAlpha = 0;
-            D_ctx_80178410 = 0;
+            gStarCount = 0;
             D_menu_801B86A0 = 0;
             D_menu_801B82A8 = 20;
             D_menu_801B82C0++;
@@ -2109,7 +2109,7 @@ void Title_8018C644(void) {
             D_menu_801B82C0 = 0;
             gDrawMode = DRAW_NONE;
             D_menu_801B82C4 = 0;
-            Audio_SetAudioSpec(0, 23);
+            AUDIO_SET_SPEC(SFXCHAN_0, AUDIOSPEC_23);
             break;
     }
 
@@ -2117,7 +2117,7 @@ void Title_8018C644(void) {
     Title_80191844(D_menu_801B86A8, D_menu_801B86AC);
     Title_8018CC30(D_menu_801B8294, 9, D_menu_801B8290);
     Title_80191674(D_menu_801B86C8, D_menu_801B86CC, 100.0f, &D_menu_801B82E0, &D_menu_801B82E4, &D_menu_801B82E8);
-    func_play_800B6F50(gCsCamEyeX, gCsCamEyeY, gCsCamEyeZ, gCsCamAtX, gCsCamAtY, gCsCamAtZ);
+    Camera_SetStarfieldPos(gCsCamEyeX, gCsCamEyeY, gCsCamEyeZ, gCsCamAtX, gCsCamAtY, gCsCamAtZ);
 
     D_menu_801B7BEC++;
 }
@@ -2245,19 +2245,19 @@ void Title_8018D2B8(s32 arg0) {
     Lights_SetOneLight(&gMasterDisp, D_menu_801B82E0, D_menu_801B82E4, D_menu_801B82E8, gLight1R, gLight1G, gLight1B,
                        gAmbientR, gAmbientG, gAmbientB);
 
-    RCP_SetupDL(&gMasterDisp, 0x17);
+    RCP_SetupDL(&gMasterDisp, SETUPDL_23);
 
     Matrix_Push(&gGfxMatrix);
 
     Matrix_Translate(gGfxMatrix, D_menu_801B84E8[arg0].unk_00.x, D_menu_801B84E8[arg0].unk_00.y,
-                     D_menu_801B84E8[arg0].unk_00.z, 1);
+                     D_menu_801B84E8[arg0].unk_00.z, MTXF_APPLY);
 
     Matrix_Scale(gGfxMatrix, D_menu_801B84E8[arg0].unk_0C, D_menu_801B84E8[arg0].unk_0C, D_menu_801B84E8[arg0].unk_0C,
-                 1);
+                 MTXF_APPLY);
 
-    Matrix_RotateZ(gGfxMatrix, D_menu_801B84E8[arg0].unk_20 * M_DTOR, 1);
-    Matrix_RotateX(gGfxMatrix, D_menu_801B84E8[arg0].unk_18 * M_DTOR, 1);
-    Matrix_RotateY(gGfxMatrix, D_menu_801B84E8[arg0].unk_1C * M_DTOR, 1);
+    Matrix_RotateZ(gGfxMatrix, D_menu_801B84E8[arg0].unk_20 * M_DTOR, MTXF_APPLY);
+    Matrix_RotateX(gGfxMatrix, D_menu_801B84E8[arg0].unk_18 * M_DTOR, MTXF_APPLY);
+    Matrix_RotateY(gGfxMatrix, D_menu_801B84E8[arg0].unk_1C * M_DTOR, MTXF_APPLY);
 
     Matrix_SetGfxMtx(&gMasterDisp);
 
@@ -2266,14 +2266,14 @@ void Title_8018D2B8(s32 arg0) {
         wings.unk_10 = wings.unk_28 = 0.0f;
 
     wings.unk_14 = D_menu_801B84E8[arg0].unk_28;
-    wings.unk_2C = D_menu_801B84E8[arg0].unk_34;
+    wings.modelId = D_menu_801B84E8[arg0].unk_34;
     wings.unk_30 = D_menu_801B84E8[arg0].unk_2C;
     wings.unk_34 = D_menu_801B84E8[arg0].unk_30;
     wings.unk_38 = D_menu_801B84E8[arg0].unk_24;
 
     func_display_80053658(&wings);
 
-    func_edisplay_8005F1EC(D_menu_801B84E8[arg0].unk_50);
+    Object_UpdateSfxSource(D_menu_801B84E8[arg0].unk_50);
 
     if (D_menu_801B84E8[arg0].unk_40 != 0) {
         Title_8018D80C(arg0);
@@ -2298,7 +2298,7 @@ void Title_8018D510(s32 arg0) {
     f32 var_fa0;
     f32 temp;
 
-    RCP_SetupDL(&gMasterDisp, 0x43);
+    RCP_SetupDL(&gMasterDisp, SETUPDL_67);
     gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, 255);
 
     if (D_menu_801B84E8[arg0].unk_40 == 1) {
@@ -2318,19 +2318,19 @@ void Title_8018D510(s32 arg0) {
     }
 
     Matrix_Push(&gGfxMatrix);
-    Matrix_Translate(gGfxMatrix, 0.0f, 0.0f, var_fa0, 1);
-    Matrix_Scale(gGfxMatrix, var_fv0, var_fv0 * 0.7f, var_fv0, 1);
+    Matrix_Translate(gGfxMatrix, 0.0f, 0.0f, var_fa0, MTXF_APPLY);
+    Matrix_Scale(gGfxMatrix, var_fv0, var_fv0 * 0.7f, var_fv0, MTXF_APPLY);
 
-    Matrix_RotateZ(gGfxMatrix, -D_menu_801B84E8[arg0].unk_20 * M_DTOR, 1);
-    Matrix_RotateX(gGfxMatrix, -D_menu_801B84E8[arg0].unk_18 * M_DTOR, 1);
-    Matrix_RotateY(gGfxMatrix, -D_menu_801B84E8[arg0].unk_1C * M_DTOR, 1);
+    Matrix_RotateZ(gGfxMatrix, -D_menu_801B84E8[arg0].unk_20 * M_DTOR, MTXF_APPLY);
+    Matrix_RotateX(gGfxMatrix, -D_menu_801B84E8[arg0].unk_18 * M_DTOR, MTXF_APPLY);
+    Matrix_RotateY(gGfxMatrix, -D_menu_801B84E8[arg0].unk_1C * M_DTOR, MTXF_APPLY);
 
     sp3C = -Math_Atan2F(gCsCamEyeX - D_menu_801B84E8[arg0].unk_00.x, gCsCamEyeZ - D_menu_801B84E8[arg0].unk_00.z);
     temp = sqrtf(SQ(gCsCamEyeZ - D_menu_801B84E8[arg0].unk_00.z) + SQ(gCsCamEyeX - D_menu_801B84E8[arg0].unk_00.x));
     sp40 = Math_Atan2F(gCsCamEyeY - D_menu_801B84E8[arg0].unk_00.y, temp);
 
-    Matrix_RotateY(gGfxMatrix, -sp3C, 1);
-    Matrix_RotateX(gGfxMatrix, -sp40, 1);
+    Matrix_RotateY(gGfxMatrix, -sp3C, MTXF_APPLY);
+    Matrix_RotateX(gGfxMatrix, -sp40, MTXF_APPLY);
     Matrix_SetGfxMtx(&gMasterDisp);
 
     gSPClearGeometryMode(gMasterDisp++, G_CULL_BACK);
@@ -2385,7 +2385,7 @@ void Title_8018D80C(s32 arg0) {
     temp = sqrtf(SQ(gCsCamEyeZ - D_menu_801B84E8[arg0].unk_00.z) + SQ(gCsCamEyeX - D_menu_801B84E8[arg0].unk_00.x));
     sp70 = Math_Atan2F(gCsCamEyeY - D_menu_801B84E8[arg0].unk_00.y, temp);
 
-    RCP_SetupDL(&gMasterDisp, 0x31);
+    RCP_SetupDL(&gMasterDisp, SETUPDL_49);
 
     gDPSetPrimColor(gMasterDisp++, 0, 0, 253, 253, 255, 255);
     gDPSetEnvColor(gMasterDisp++, 251, 251, 255, 255);
@@ -2397,15 +2397,15 @@ void Title_8018D80C(s32 arg0) {
 
         Matrix_Push(&gGfxMatrix);
 
-        Matrix_Translate(gGfxMatrix, D_menu_801B7D40[i], D_menu_801B7DE0[i], D_menu_801B7E80[i], 1);
-        Matrix_Scale(gGfxMatrix, D_menu_801B7FC0[i], D_menu_801B7FC0[i], D_menu_801B7FC0[i], 1);
+        Matrix_Translate(gGfxMatrix, D_menu_801B7D40[i], D_menu_801B7DE0[i], D_menu_801B7E80[i], MTXF_APPLY);
+        Matrix_Scale(gGfxMatrix, D_menu_801B7FC0[i], D_menu_801B7FC0[i], D_menu_801B7FC0[i], MTXF_APPLY);
 
-        Matrix_RotateZ(gGfxMatrix, -D_menu_801B84E8[arg0].unk_20 * M_DTOR, 1);
-        Matrix_RotateX(gGfxMatrix, -D_menu_801B84E8[arg0].unk_18 * M_DTOR, 1);
-        Matrix_RotateY(gGfxMatrix, -D_menu_801B84E8[arg0].unk_1C * M_DTOR, 1);
+        Matrix_RotateZ(gGfxMatrix, -D_menu_801B84E8[arg0].unk_20 * M_DTOR, MTXF_APPLY);
+        Matrix_RotateX(gGfxMatrix, -D_menu_801B84E8[arg0].unk_18 * M_DTOR, MTXF_APPLY);
+        Matrix_RotateY(gGfxMatrix, -D_menu_801B84E8[arg0].unk_1C * M_DTOR, MTXF_APPLY);
 
-        Matrix_RotateY(gGfxMatrix, -sp6C, 1);
-        Matrix_RotateX(gGfxMatrix, -sp70, 1);
+        Matrix_RotateY(gGfxMatrix, -sp6C, MTXF_APPLY);
+        Matrix_RotateX(gGfxMatrix, -sp70, MTXF_APPLY);
 
         Matrix_SetGfxMtx(&gMasterDisp);
 
@@ -2419,9 +2419,9 @@ void Title_8018DDB8(s32 arg0) {
     Matrix_Push(&gGfxMatrix);
     Matrix_Translate(gGfxMatrix, 0.0f,
                      (D_menu_801B9050 - D_menu_801B84E8[arg0].unk_00.y * 2.05f) + (D_menu_801B9048 - 84.0f) * 1.99f,
-                     0.0f, 1);
-    Matrix_Scale(gGfxMatrix, 1.0f, 1.0f, 1.0f, 1);
-    Matrix_RotateY(gGfxMatrix, M_PI, 1);
+                     0.0f, MTXF_APPLY);
+    Matrix_Scale(gGfxMatrix, 1.0f, 1.0f, 1.0f, MTXF_APPLY);
+    Matrix_RotateY(gGfxMatrix, M_PI, MTXF_APPLY);
     Matrix_SetGfxMtx(&gMasterDisp);
 
     RCP_SetupDL_64();
@@ -2437,17 +2437,17 @@ void Title_8018DF0C(f32 arg0) {
     f32 sp30;
 
     Title_80191798(&sp34, &sp30);
-    RCP_SetupDL(&gMasterDisp, 0x35);
+    RCP_SetupDL(&gMasterDisp, SETUPDL_53);
 
     if (arg0 != 0.0f) {
         D_menu_801B8688.pos.z = gCsCamEyeZ - arg0;
     }
 
     Matrix_Push(&gGfxMatrix);
-    Matrix_Translate(gGfxMatrix, D_menu_801B8688.pos.x, D_menu_801B8688.pos.y, D_menu_801B8688.pos.z, 1);
-    Matrix_RotateY(gGfxMatrix, M_DTOR * sp30, 1);
-    Matrix_RotateX(gGfxMatrix, M_DTOR * sp34, 1);
-    Matrix_Scale(gGfxMatrix, D_menu_801B8688.scale, D_menu_801B8688.scale, D_menu_801B8688.scale, 1);
+    Matrix_Translate(gGfxMatrix, D_menu_801B8688.pos.x, D_menu_801B8688.pos.y, D_menu_801B8688.pos.z, MTXF_APPLY);
+    Matrix_RotateY(gGfxMatrix, M_DTOR * sp30, MTXF_APPLY);
+    Matrix_RotateX(gGfxMatrix, M_DTOR * sp34, MTXF_APPLY);
+    Matrix_Scale(gGfxMatrix, D_menu_801B8688.scale, D_menu_801B8688.scale, D_menu_801B8688.scale, MTXF_APPLY);
     Matrix_SetGfxMtx(&gMasterDisp);
 
     gSPDisplayList(gMasterDisp++, D_TITLE_6037CF0);
@@ -2461,21 +2461,21 @@ void Title_8018E058(void) {
 
     Matrix_Push(&gGfxMatrix);
 
-    Matrix_Translate(gGfxMatrix, D_menu_801B8658.pos.x, D_menu_801B8658.pos.y, D_menu_801B8658.pos.z, 1);
+    Matrix_Translate(gGfxMatrix, D_menu_801B8658.pos.x, D_menu_801B8658.pos.y, D_menu_801B8658.pos.z, MTXF_APPLY);
 
-    Matrix_RotateZ(gGfxMatrix, M_DTOR * D_menu_801B8658.angleZ, 1);
-    Matrix_RotateX(gGfxMatrix, M_DTOR * D_menu_801B8658.angleX, 1);
-    Matrix_RotateY(gGfxMatrix, M_DTOR * D_menu_801B8658.angleY, 1);
+    Matrix_RotateZ(gGfxMatrix, M_DTOR * D_menu_801B8658.angleZ, MTXF_APPLY);
+    Matrix_RotateX(gGfxMatrix, M_DTOR * D_menu_801B8658.angleX, MTXF_APPLY);
+    Matrix_RotateY(gGfxMatrix, M_DTOR * D_menu_801B8658.angleY, MTXF_APPLY);
 
-    Matrix_Scale(gGfxMatrix, D_menu_801B8658.scale, D_menu_801B8658.scale, D_menu_801B8658.scale, 1);
+    Matrix_Scale(gGfxMatrix, D_menu_801B8658.scale, D_menu_801B8658.scale, D_menu_801B8658.scale, MTXF_APPLY);
 
     Matrix_SetGfxMtx(&gMasterDisp);
-    RCP_SetupDL(&gMasterDisp, 0x17);
+    RCP_SetupDL(&gMasterDisp, SETUPDL_23);
 
     gGreatFoxIntact = true;
 
-    func_demo_800515C4();
-    func_edisplay_8005F1EC(D_menu_801B8658.unk_24);
+    Cutscene_DrawGreatFox();
+    Object_UpdateSfxSource(D_menu_801B8658.unk_24);
 
     Matrix_Pop(&gGfxMatrix);
 }
@@ -2528,7 +2528,7 @@ void Title_8018E200(void) {
         }
     }
 
-    RCP_SetupDL(&gMasterDisp, 0x31);
+    RCP_SetupDL(&gMasterDisp, SETUPDL_49);
 
     for (i = 0; i < D_menu_801B7C98; i++) {
         gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 200, 200, D_menu_801B7CC8[i]);
@@ -2538,10 +2538,10 @@ void Title_8018E200(void) {
 
         Matrix_Push(&gGfxMatrix);
 
-        Matrix_Translate(gGfxMatrix, 0.0f, 0.0f, 5.0f, 1);
-        Matrix_RotateZ(gGfxMatrix, D_menu_801B7C20[i] * M_DTOR, 1);
-        Matrix_Translate(gGfxMatrix, 0.0f, D_menu_801B7BF8[i], 0.0f, 1);
-        Matrix_Scale(gGfxMatrix, scale, scale, scale, 1);
+        Matrix_Translate(gGfxMatrix, 0.0f, 0.0f, 5.0f, MTXF_APPLY);
+        Matrix_RotateZ(gGfxMatrix, D_menu_801B7C20[i] * M_DTOR, MTXF_APPLY);
+        Matrix_Translate(gGfxMatrix, 0.0f, D_menu_801B7BF8[i], 0.0f, MTXF_APPLY);
+        Matrix_Scale(gGfxMatrix, scale, scale, scale, MTXF_APPLY);
 
         Matrix_SetGfxMtx(&gMasterDisp);
 
@@ -2566,8 +2566,8 @@ void Title_8018E67C(s32 arg0) {
     Matrix_Push(&gGfxMatrix);
 
     Matrix_Translate(gGfxMatrix, D_menu_801B8350[arg0].unk_00.x, D_menu_801B8350[arg0].unk_00.y,
-                     D_menu_801B8350[arg0].unk_00.z + D_menu_801B84D0, 1);
-    Matrix_Scale(gGfxMatrix, D_menu_801B84D4, D_menu_801B84D4, D_menu_801B84D4, 1);
+                     D_menu_801B8350[arg0].unk_00.z + D_menu_801B84D0, MTXF_APPLY);
+    Matrix_Scale(gGfxMatrix, D_menu_801B84D4, D_menu_801B84D4, D_menu_801B84D4, MTXF_APPLY);
     Matrix_SetGfxMtx(&gMasterDisp);
 
     if (arg0 == 2) {
@@ -2582,17 +2582,17 @@ void Title_8018E67C(s32 arg0) {
     }
 
     if (arg0 == 0) {
-        func_edisplay_8005F1EC(D_menu_801B84D8);
+        Object_UpdateSfxSource(D_menu_801B84D8);
     }
 
     Matrix_Pop(&gGfxMatrix);
     Matrix_Push(&gGfxMatrix);
 
     Matrix_Translate(gGfxMatrix, D_menu_801B8350[arg0].unk_00.x - 5.0f, 5.0f,
-                     D_menu_801B8350[arg0].unk_00.z + 10.0f + D_menu_801B84D0, 1);
+                     D_menu_801B8350[arg0].unk_00.z + 10.0f + D_menu_801B84D0, MTXF_APPLY);
 
     Matrix_Scale(gGfxMatrix, D_menu_801B8350[arg0].unk_10, D_menu_801B8350[arg0].unk_10, D_menu_801B8350[arg0].unk_10,
-                 1);
+                 MTXF_APPLY);
 
     Matrix_SetGfxMtx(&gMasterDisp);
 
@@ -2621,20 +2621,20 @@ void Title_8018EA78(s32 arg0) {
 
     sp44 = D_menu_801B8350[arg0].unk_58 % Animation_GetFrameCount(D_menu_801ADA00[arg0].unk_4);
 
-    RCP_SetupDL(&gMasterDisp, 0x17);
+    RCP_SetupDL(&gMasterDisp, SETUPDL_23);
 
     Lights_SetOneLight(&gMasterDisp, D_menu_801B82E0, D_menu_801B82E4, D_menu_801B82E8, gLight1R, gLight1G, gLight1B,
                        gAmbientR, gAmbientG, gAmbientB);
 
     Matrix_Push(&gGfxMatrix);
 
-    Matrix_RotateX(gGfxMatrix, D_menu_801B8350[arg0].unk_48 * M_DTOR, 1);
-    Matrix_RotateY(gGfxMatrix, D_menu_801B8350[arg0].unk_4C * M_DTOR, 1);
-    Matrix_RotateZ(gGfxMatrix, D_menu_801B8350[arg0].unk_50 * M_DTOR, 1);
+    Matrix_RotateX(gGfxMatrix, D_menu_801B8350[arg0].unk_48 * M_DTOR, MTXF_APPLY);
+    Matrix_RotateY(gGfxMatrix, D_menu_801B8350[arg0].unk_4C * M_DTOR, MTXF_APPLY);
+    Matrix_RotateZ(gGfxMatrix, D_menu_801B8350[arg0].unk_50 * M_DTOR, MTXF_APPLY);
 
     Matrix_Translate(gGfxMatrix, D_menu_801B8350[arg0].unk_00.x, D_menu_801B8350[arg0].unk_00.y,
-                     D_menu_801B8350[arg0].unk_00.z, 1);
-    Matrix_Scale(gGfxMatrix, D_menu_801B84D4, D_menu_801B84D4, D_menu_801B84D4, 1);
+                     D_menu_801B8350[arg0].unk_00.z, MTXF_APPLY);
+    Matrix_Scale(gGfxMatrix, D_menu_801B84D4, D_menu_801B84D4, D_menu_801B84D4, MTXF_APPLY);
 
     Matrix_SetGfxMtx(&gMasterDisp);
 
@@ -2800,18 +2800,18 @@ void Title_8018F438(void) {
 
     Matrix_Push(&gGfxMatrix);
 
-    Matrix_Translate(gGfxMatrix, 0.0f, 0.0f, (3079.2002f * sp54) - D_menu_801B82C8, 1);
-    Matrix_Scale(gGfxMatrix, 0.6f, 0.6f, 0.6f, 1);
+    Matrix_Translate(gGfxMatrix, 0.0f, 0.0f, (3079.2002f * sp54) - D_menu_801B82C8, MTXF_APPLY);
+    Matrix_Scale(gGfxMatrix, 0.6f, 0.6f, 0.6f, MTXF_APPLY);
     Matrix_SetGfxMtx(&gMasterDisp);
 
     gSPDisplayList(gMasterDisp++, D_TITLE_602E380);
 
-    Matrix_Translate(gGfxMatrix, 0.0f, 0.0f, -6836.0f, 1);
+    Matrix_Translate(gGfxMatrix, 0.0f, 0.0f, -6836.0f, MTXF_APPLY);
     Matrix_SetGfxMtx(&gMasterDisp);
 
     gSPDisplayList(gMasterDisp++, D_TITLE_602E380);
 
-    Matrix_Translate(gGfxMatrix, 0.0f, 0.0f, -6836.0f, 1);
+    Matrix_Translate(gGfxMatrix, 0.0f, 0.0f, -6836.0f, MTXF_APPLY);
     Matrix_SetGfxMtx(&gMasterDisp);
 
     gSPDisplayList(gMasterDisp++, D_TITLE_602E380);
@@ -2820,7 +2820,7 @@ void Title_8018F438(void) {
 }
 
 void Title_8018F680(void) {
-    RCP_SetupDL(&gMasterDisp, 0x53);
+    RCP_SetupDL(&gMasterDisp, SETUPDL_83);
     gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, 255);
 
     // LTodo: Validate this
@@ -2828,20 +2828,20 @@ void Title_8018F680(void) {
 }
 
 void Title_8018F77C(void) {
-    RCP_SetupDL(&gMasterDisp, 0x35);
+    RCP_SetupDL(&gMasterDisp, SETUPDL_53);
     Matrix_Push(&gGfxMatrix);
-    Matrix_Translate(gGfxMatrix, D_menu_801B905C, D_menu_801B9060, D_menu_801B9064, 1);
-    Matrix_Scale(gGfxMatrix, D_menu_801B9068, D_menu_801B906C, 1.0f, 1);
-    Matrix_RotateX(gGfxMatrix, M_DTOR * 90, 1);
+    Matrix_Translate(gGfxMatrix, D_menu_801B905C, D_menu_801B9060, D_menu_801B9064, MTXF_APPLY);
+    Matrix_Scale(gGfxMatrix, D_menu_801B9068, D_menu_801B906C, 1.0f, MTXF_APPLY);
+    Matrix_RotateX(gGfxMatrix, M_DTOR * 90, MTXF_APPLY);
     Matrix_SetGfxMtx(&gMasterDisp);
     gSPDisplayList(gMasterDisp++, D_TITLE_60148D0);
     Matrix_Pop(&gGfxMatrix);
 }
 
 void Title_8018F85C(void) {
-    RCP_SetupDL(&gMasterDisp, 0x53);
+    RCP_SetupDL(&gMasterDisp, SETUPDL_83);
     gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, 255);
-    TextureRect_8bIA(&gMasterDisp, gTitleCopyrightSymbol, 16, 16, 234.0f, 20.0f, 1.0f, 1.0f);
+    TextureRect_IA8(&gMasterDisp, gTitleCopyrightSymbol, 16, 16, 234.0f, 20.0f, 1.0f, 1.0f);
 }
 
 void Title_8018F8E4(void) {
@@ -2866,19 +2866,19 @@ void Title_8018F8E4(void) {
         }
 
         if (gMainController < 0) {
-            RCP_SetupDL(&gMasterDisp, 0x55);
+            RCP_SetupDL(&gMasterDisp, SETUPDL_85);
 
             gDPSetPrimColor(gMasterDisp++, 0, 0, 60, 60, 255, 200);
 
             TextureRect_8bCI(&gMasterDisp, D_TITLE_601D750, D_TITLE_601DB50, 32, 32, D_menu_801AE464, D_menu_801AE468,
                              D_menu_801AE46C, D_menu_801AE470);
-            RCP_SetupDL(&gMasterDisp, 0x53);
+            RCP_SetupDL(&gMasterDisp, SETUPDL_83);
 
             gDPSetPrimColor(gMasterDisp++, 0, 0, 255, (s32) D_menu_801B7BC8, (s32) D_menu_801B7BC8, 255);
 
             TextureRect_8bIA(&gMasterDisp, gTitleNoController, 176, 24, D_menu_801AE474, D_menu_801AE478, 1.0f, 1.0f);
         } else {
-            RCP_SetupDL(&gMasterDisp, 0x53);
+            RCP_SetupDL(&gMasterDisp, SETUPDL_83);
             gDPSetPrimColor(gMasterDisp++, 0, 0, 255, (s32) D_menu_801B7BC8, (s32) D_menu_801B7BC8, 255);
 
             TextureRect_8bIA(&gMasterDisp, gTitlePressStart, 120, 13, 101.0f, temp2, 1.0f, 1.0f);
@@ -2889,7 +2889,7 @@ void Title_8018F8E4(void) {
 void Title_8018FC14(void) {
     s32 i;
 
-    RCP_SetupDL(&gMasterDisp, 0x53);
+    RCP_SetupDL(&gMasterDisp, SETUPDL_83);
     gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, 255);
 
     TextureRect_8bIA(&gMasterDisp, gTitleNintendoCopyright, 120, 12, 102.0f, 209.0f, 1.0f, 1.0f);
@@ -2907,17 +2907,17 @@ void Title_8018FD08(void) {
     temp_fs2 = D_menu_801AE47C[D_menu_801B8340];
     temp = 210.0f;
 
-    RCP_SetupDL(&gMasterDisp, 0x53);
+    RCP_SetupDL(&gMasterDisp, SETUPDL_83);
 
     gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, 255);
 
     switch (D_menu_801B8340) {
         case 0:
-            TextureRect_8bIA(&gMasterDisp, gTitleSlippyCard, 144, 13, temp_fs2, temp, 1.0f, 1.0f);
+            TextureRect_IA8(&gMasterDisp, gTitleSlippyCard, 144, 13, temp_fs2, temp, 1.0f, 1.0f);
             break;
 
         case 1:
-            TextureRect_8bIA(&gMasterDisp, gTitlePeppyCard, 120, 13, temp_fs2, temp, 1.0f, 1.0f);
+            TextureRect_IA8(&gMasterDisp, gTitlePeppyCard, 120, 13, temp_fs2, temp, 1.0f, 1.0f);
             break;
 
         case 2:
@@ -2961,7 +2961,7 @@ void Title_8018FF74(void) {
                 D_menu_801B7BD0 -= 2;
             }
 
-            RCP_SetupDL(&gMasterDisp, 0x53);
+            RCP_SetupDL(&gMasterDisp, SETUPDL_83);
 
             gDPSetAlphaDither(gMasterDisp++, G_AD_NOISE);
             gDPSetColorDither(gMasterDisp++, G_CD_NOISE);
@@ -2987,11 +2987,11 @@ void Title_80190144(void) {
         gFillScreenAlpha -= 4;
     }
 
-    D_ctx_801783D0 = D_menu_801B7BB8;
-    D_ctx_801783D4 = D_menu_801B7BBC;
+    gSunViewX = D_menu_801B7BB8;
+    gSunViewY = D_menu_801B7BBC;
 
-    if (D_ctx_801783D0 < 950.0f) {
-        if (D_ctx_801783D0 > -900.0f) {
+    if (gSunViewX < 950.0f) {
+        if (gSunViewX > -900.0f) {
             gFillScreenAlpha += 8;
             if (gFillScreenAlpha > 60) {
                 gFillScreenAlpha = 60;
@@ -3003,18 +3003,18 @@ void Title_80190144(void) {
     }
 
     if (gFillScreenAlpha > 0) {
-        RCP_SetupDL(&gMasterDisp, 0x3E);
+        RCP_SetupDL(&gMasterDisp, SETUPDL_62);
 
         gDPSetAlphaDither(gMasterDisp++, G_AD_NOISE);
         gDPSetColorDither(gMasterDisp++, G_CD_NOISE);
 
         Matrix_Push(&gGfxMatrix);
-        Matrix_Translate(gGfxMatrix, D_ctx_801783D0, D_ctx_801783D4, -200.0f, 1);
+        Matrix_Translate(gGfxMatrix, gSunViewX, gSunViewY, -200.0f, MTXF_APPLY);
 
         for (i = 0; i < 4; i++) {
             Matrix_Push(&gGfxMatrix);
             Matrix_Scale(gGfxMatrix, D_menu_801AE4EC[i] * 0.5f, D_menu_801AE4EC[i] * 0.5f, D_menu_801AE4EC[i] * 0.5f,
-                         1);
+                         MTXF_APPLY);
             Matrix_SetGfxMtx(&gMasterDisp);
 
             gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, D_menu_801AE51C[i], D_menu_801AE528[i]);
@@ -3034,14 +3034,14 @@ void Title_801903B8(void) {
     f32 temp;
     s32 i;
 
-    RCP_SetupDL(&gMasterDisp, 0x3E);
+    RCP_SetupDL(&gMasterDisp, SETUPDL_62);
 
     gDPSetAlphaDither(gMasterDisp++, G_AD_NOISE);
     gDPSetColorDither(gMasterDisp++, G_CD_NOISE);
 
     if (gFillScreenAlpha > 0) {
-        temp_fs3 = D_ctx_801783D0 * -0.03f;
-        temp_fs4 = D_ctx_801783D4 * 0.03f;
+        temp_fs3 = gSunViewX * -0.03f;
+        temp_fs4 = gSunViewY * 0.03f;
 
         var_fs1 = 1.0f;
         if (gFillScreenAlpha < 10) {
@@ -3051,13 +3051,14 @@ void Title_801903B8(void) {
         var_fs1 *= 0.5f;
 
         Matrix_Push(&gGfxMatrix);
-        Matrix_Translate(gGfxMatrix, D_ctx_801783D0, D_ctx_801783D4, -200.0f, 1);
+        Matrix_Translate(gGfxMatrix, gSunViewX, gSunViewY, -200.0f, MTXF_APPLY);
 
         for (i = 4; i < 12; i++) {
             Matrix_Push(&gGfxMatrix);
-            Matrix_Translate(gGfxMatrix, D_menu_801AE4BC[i] * temp_fs3, -D_menu_801AE4BC[i] * temp_fs4, 0.0f, 1);
+            Matrix_Translate(gGfxMatrix, D_menu_801AE4BC[i] * temp_fs3, -D_menu_801AE4BC[i] * temp_fs4, 0.0f,
+                             MTXF_APPLY);
             Matrix_Scale(gGfxMatrix, D_menu_801AE4EC[i] * 0.5f, D_menu_801AE4EC[i] * 0.5f, D_menu_801AE4EC[i] * 0.5f,
-                         1);
+                         MTXF_APPLY);
 
             Matrix_SetGfxMtx(&gMasterDisp);
 
@@ -3080,16 +3081,16 @@ void Title_801906A0(void) {
 
     switch (D_menu_801B7BD4) {
         case 0:
-            RCP_SetupDL(&gMasterDisp, 0x55);
+            RCP_SetupDL(&gMasterDisp, SETUPDL_85);
             gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, (s32) D_menu_801B7BDC);
-            TextureRect_4bCI(&gMasterDisp, gTextIntroStarfox, gTextIntroStarfoxPalette, 256, 13, 90.0f, 110.0f, 1.0f,
-                             1.0f);
+            TextureRect_CI4(&gMasterDisp, gTextIntroStarfox, gTextIntroStarfoxPalette, 256, 13, 90.0f, 110.0f, 1.0f,
+                            1.0f);
             gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, (s32) D_menu_801B7BE0);
-            TextureRect_4bCI(&gMasterDisp, gTextIntroIn, gTextIntroInPalette, 32, 13, 150.0f, 110.0f, 1.0f, 1.0f);
+            TextureRect_CI4(&gMasterDisp, gTextIntroIn, gTextIntroInPalette, 32, 13, 150.0f, 110.0f, 1.0f, 1.0f);
             break;
 
         case 1:
-            RCP_SetupDL(&gMasterDisp, 0x53);
+            RCP_SetupDL(&gMasterDisp, SETUPDL_83);
             gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, (s32) D_menu_801B7BDC);
             TextureRect_16bRGBA(&gMasterDisp, gTitleNintendo64Logo, 128, 88, D_menu_801B9070, D_menu_801B9074,
                                 D_menu_801B9078, D_menu_801B907C);
@@ -3102,11 +3103,11 @@ void Title_801906A0(void) {
 void Title_80190950(void) {
     Lights_SetOneLight(&gMasterDisp, D_menu_801B82E0, D_menu_801B82E4, D_menu_801B82E8, 0, 0, 0, gAmbientR, gAmbientG,
                        gAmbientB);
-    RCP_SetupDL(&gMasterDisp, 0x17);
+    RCP_SetupDL(&gMasterDisp, SETUPDL_23);
 
     Matrix_Push(&gGfxMatrix);
-    Matrix_Translate(gGfxMatrix, 0.0f, D_menu_801B9048, D_menu_801B904C, 1);
-    Matrix_Scale(gGfxMatrix, 0.4f, 0.4f, 0.4f, 1);
+    Matrix_Translate(gGfxMatrix, 0.0f, D_menu_801B9048, D_menu_801B904C, MTXF_APPLY);
+    Matrix_Scale(gGfxMatrix, 0.4f, 0.4f, 0.4f, MTXF_APPLY);
     Matrix_SetGfxMtx(&gMasterDisp);
 
     gSPDisplayList(gMasterDisp++, D_TITLE_6018D40);
@@ -3119,8 +3120,8 @@ void Title_80190950(void) {
 }
 
 void Title_80190A98(void) {
-    Matrix_Translate(gGfxMatrix, 401.0f, -249.0f, -22.0f, 1);
-    Matrix_Scale(gGfxMatrix, 1.0f, 1.0f, 1.0f, 1);
+    Matrix_Translate(gGfxMatrix, 401.0f, -249.0f, -22.0f, MTXF_APPLY);
+    Matrix_Scale(gGfxMatrix, 1.0f, 1.0f, 1.0f, MTXF_APPLY);
     Matrix_SetGfxMtx(&gMasterDisp);
     gSPDisplayList(gMasterDisp++, D_TITLE_602A720);
 }
@@ -3128,11 +3129,11 @@ void Title_80190A98(void) {
 void Title_80190B30(s32 arg0) {
     Lights_SetOneLight(&gMasterDisp, D_menu_801B82E0, D_menu_801B82E4, D_menu_801B82E8, gLight1R, gLight1G, gLight1B,
                        gAmbientR, gAmbientG, gAmbientB);
-    RCP_SetupDL(&gMasterDisp, 0x17);
+    RCP_SetupDL(&gMasterDisp, SETUPDL_23);
 
     Matrix_Push(&gGfxMatrix);
-    Matrix_Translate(gGfxMatrix, D_menu_801B84E8[arg0].unk_00.x, -12.8f, D_menu_801B9044, 1);
-    Matrix_Scale(gGfxMatrix, 0.8f, 0.8f, 0.8f, 1);
+    Matrix_Translate(gGfxMatrix, D_menu_801B84E8[arg0].unk_00.x, -12.8f, D_menu_801B9044, MTXF_APPLY);
+    Matrix_Scale(gGfxMatrix, 0.8f, 0.8f, 0.8f, MTXF_APPLY);
     Matrix_SetGfxMtx(&gMasterDisp);
 
     gSPDisplayList(gMasterDisp++, D_TITLE_601C7C0);
@@ -3152,13 +3153,13 @@ void Title_80190C9C(void) {
             break;
 
         case 1:
-            RCP_SetupDL(&gMasterDisp, 0x53);
+            RCP_SetupDL(&gMasterDisp, SETUPDL_83);
             gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, 255);
-            TextureRect_8bIA(&gMasterDisp, gTitleGreatFoxCard, 144, 28, D_menu_801AE55C, D_menu_801AE560, 1.0f, 1.0f);
+            TextureRect_IA8(&gMasterDisp, gTitleGreatFoxCard, 144, 28, D_menu_801AE55C, D_menu_801AE560, 1.0f, 1.0f);
             break;
 
         case 2:
-            RCP_SetupDL(&gMasterDisp, 0x53);
+            RCP_SetupDL(&gMasterDisp, SETUPDL_83);
             gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, 255);
 
             TextureRect_8bIA(&gMasterDisp, gTitleArwingCard, 112, 26, D_menu_801AE564, D_menu_801AE568, 1.0f, 1.0f);
@@ -3179,7 +3180,7 @@ void Title_80190EA4(void) {
             if (gControllerPress[gMainController].button &
                 (START_BUTTON | A_BUTTON | B_BUTTON | D_CBUTTONS | L_CBUTTONS | U_CBUTTONS |
                  R_CBUTTONS)) { // START, A, B, C-left, C-Down, C-Up, C-Right
-                AUDIO_PLAY_SFX(0x49000003, gDefaultSfxSource, 4);
+                AUDIO_PLAY_SFX(NA_SE_DECIDE, gDefaultSfxSource, 4);
                 D_menu_801B8284 = 0;
                 D_menu_801B8280 = 1;
                 gControllerLock = 30;
@@ -3190,8 +3191,8 @@ void Title_80190EA4(void) {
             if (D_menu_801B8284 < 120) {
                 D_menu_801B8284 += 18;
             } else {
-                Audio_SetAudioSpec(0, 0x17);
-                D_ctx_80178410 = 0;
+                AUDIO_SET_SPEC(SFXCHAN_0, AUDIOSPEC_23);
+                gStarCount = 0;
                 gRadioState = 0;
                 D_menu_801B82C0 = 0;
                 gDrawMode = DRAW_NONE;
@@ -3211,7 +3212,7 @@ void Title_80190FD0(void) {
                 if (((gControllerPress[gMainController].button & START_BUTTON) ||
                      (gControllerPress[gMainController].button & A_BUTTON)) &&
                     (D_menu_801B8280 == 0)) {
-                    AUDIO_PLAY_SFX(0x49000003, gDefaultSfxSource, 4);
+                    AUDIO_PLAY_SFX(NA_SE_DECIDE, gDefaultSfxSource, 4);
                     SEQCMD_STOP_SEQUENCE(SEQ_PLAYER_BGM, 30);
                     SEQCMD_STOP_SEQUENCE(SEQ_PLAYER_FANFARE, 30);
                     D_menu_801B8284 = 0;
@@ -3227,7 +3228,7 @@ void Title_80190FD0(void) {
                     gNextGameStateTimer = 2;
                     gOptionMenuStatus = OPTION_WAIT;
                     gDrawMode = DRAW_NONE;
-                    D_ctx_80178410 = 0;
+                    gStarCount = 0;
                     D_menu_801B8280 = 0;
                     D_menu_801B8284 = 0;
                     gControllerLock = 3;
@@ -3319,9 +3320,9 @@ void Title_80191320(s32 arg0, f32* arg1, f32* arg2, f32* arg3, f32* arg4, f32* a
     sp48.y = 0.0f;
     sp48.z = arg9;
 
-    Matrix_Translate(gCalcMatrix, *var_v0, *var_v1, *var_t0, 0);
-    Matrix_RotateY(gCalcMatrix, M_DTOR * arg8, 1);
-    Matrix_RotateX(gCalcMatrix, M_DTOR * arg7, 1);
+    Matrix_Translate(gCalcMatrix, *var_v0, *var_v1, *var_t0, MTXF_NEW);
+    Matrix_RotateY(gCalcMatrix, M_DTOR * arg8, MTXF_APPLY);
+    Matrix_RotateX(gCalcMatrix, M_DTOR * arg7, MTXF_APPLY);
     Matrix_MultVec3f(gCalcMatrix, &sp48, &sp54);
 
     *sp44 = sp54.x;
@@ -3332,8 +3333,8 @@ void Title_80191320(s32 arg0, f32* arg1, f32* arg2, f32* arg3, f32* arg4, f32* a
     sp48.y = 1.0f;
     sp48.z = 0.0f;
 
-    Matrix_RotateY(gCalcMatrix, M_DTOR * arg8, 0);
-    Matrix_RotateX(gCalcMatrix, M_DTOR * arg7, 1);
+    Matrix_RotateY(gCalcMatrix, M_DTOR * arg8, MTXF_NEW);
+    Matrix_RotateX(gCalcMatrix, M_DTOR * arg7, MTXF_APPLY);
     Matrix_MultVec3f(gCalcMatrix, &sp48, &sp54);
 
     D_menu_801B829C = sp54.x;
@@ -3350,10 +3351,10 @@ void Title_801914AC(f32 arg0, f32 arg1, f32 arg2, f32* arg3, f32* arg4, f32* arg
     sp38.y = 0.0f;
     sp38.z = argA;
 
-    Matrix_Translate(gCalcMatrix, arg0, arg1, arg2, 0);
+    Matrix_Translate(gCalcMatrix, arg0, arg1, arg2, MTXF_NEW);
 
-    Matrix_RotateY(gCalcMatrix, M_DTOR * argC, 1);
-    Matrix_RotateX(gCalcMatrix, M_DTOR * argB, 1);
+    Matrix_RotateY(gCalcMatrix, M_DTOR * argC, MTXF_APPLY);
+    Matrix_RotateX(gCalcMatrix, M_DTOR * argB, MTXF_APPLY);
 
     Matrix_MultVec3f(gCalcMatrix, &sp38, &sp44);
 
@@ -3365,9 +3366,9 @@ void Title_801914AC(f32 arg0, f32 arg1, f32 arg2, f32* arg3, f32* arg4, f32* arg
     sp38.y = 0.0f;
     sp38.z = arg6;
 
-    Matrix_Translate(gCalcMatrix, arg0, arg1, arg2, 0);
-    Matrix_RotateY(gCalcMatrix, M_DTOR * argC, 1);
-    Matrix_RotateX(gCalcMatrix, M_DTOR * argB, 1);
+    Matrix_Translate(gCalcMatrix, arg0, arg1, arg2, MTXF_NEW);
+    Matrix_RotateY(gCalcMatrix, M_DTOR * argC, MTXF_APPLY);
+    Matrix_RotateX(gCalcMatrix, M_DTOR * argB, MTXF_APPLY);
     Matrix_MultVec3f(gCalcMatrix, &sp38, &sp44);
 
     *arg3 = sp44.x;
@@ -3378,8 +3379,8 @@ void Title_801914AC(f32 arg0, f32 arg1, f32 arg2, f32* arg3, f32* arg4, f32* arg
     sp38.y = 1.0f;
     sp38.z = 0.0f;
 
-    Matrix_RotateY(gCalcMatrix, M_DTOR * argC, 0);
-    Matrix_RotateX(gCalcMatrix, M_DTOR * argB, 1);
+    Matrix_RotateY(gCalcMatrix, M_DTOR * argC, MTXF_NEW);
+    Matrix_RotateX(gCalcMatrix, M_DTOR * argB, MTXF_APPLY);
     Matrix_MultVec3f(gCalcMatrix, &sp38, &sp44);
 
     D_menu_801B829C = sp44.x;
@@ -3399,10 +3400,10 @@ void Title_80191674(f32 arg0, f32 arg1, f32 arg2, f32* arg3, f32* arg4, f32* arg
 
     Title_80191798(&sp34, &sp30);
 
-    Matrix_RotateX(gCalcMatrix, M_DTOR * -sp34, 0);
-    Matrix_RotateY(gCalcMatrix, M_DTOR * -sp30, 1);
-    Matrix_RotateY(gCalcMatrix, M_DTOR * arg1, 1);
-    Matrix_RotateX(gCalcMatrix, M_DTOR * arg0, 1);
+    Matrix_RotateX(gCalcMatrix, M_DTOR * -sp34, MTXF_NEW);
+    Matrix_RotateY(gCalcMatrix, M_DTOR * -sp30, MTXF_APPLY);
+    Matrix_RotateY(gCalcMatrix, M_DTOR * arg1, MTXF_APPLY);
+    Matrix_RotateX(gCalcMatrix, M_DTOR * arg0, MTXF_APPLY);
 
     Matrix_MultVec3f(gCalcMatrix, &sp18, &sp24);
 
@@ -3428,8 +3429,8 @@ void Title_80191844(f32 arg0, f32 arg1) {
     sp18.y = 1.0f;
     sp18.z = 0.0f;
 
-    Matrix_RotateY(gCalcMatrix, M_DTOR * arg1, 0);
-    Matrix_RotateX(gCalcMatrix, M_DTOR * arg0, 1);
+    Matrix_RotateY(gCalcMatrix, M_DTOR * arg1, MTXF_NEW);
+    Matrix_RotateX(gCalcMatrix, M_DTOR * arg0, MTXF_APPLY);
 
     Matrix_MultVec3f(gCalcMatrix, &sp18, &sp24);
 
@@ -3441,38 +3442,38 @@ void Title_80191844(f32 arg0, f32 arg1) {
 void Title_801918FC(void) {
     Matrix_Push(&gGfxMatrix);
     Matrix_LookAt(gGfxMatrix, gCsCamEyeX, gCsCamEyeY, gCsCamEyeZ, gCsCamAtX, gCsCamAtY, gCsCamAtZ, D_menu_801B829C,
-                  D_menu_801B82A0, D_menu_801B82A4, 1);
-    Matrix_Translate(gGfxMatrix, 0.0f, 0.0f, 0.0f, 1);
+                  D_menu_801B82A0, D_menu_801B82A4, MTXF_APPLY);
+    Matrix_Translate(gGfxMatrix, 0.0f, 0.0f, 0.0f, MTXF_APPLY);
     Matrix_SetGfxMtx(&gMasterDisp);
 }
 
-void Title_801919C4(u16** arg0, s32 arg1) {
-    D_radio_80178720 = arg0;
-    D_radio_80178724 = 0;
-    D_ctx_80178308 = arg0[D_radio_80178724];
-    D_ctx_80177D68 = arg1;
+void Title_801919C4(u16** msgList, RadioCharacterId character) {
+    gRadioMsgList = msgList;
+    gRadioMsgListIndex = 0;
+    gRadioMsg = msgList[gRadioMsgListIndex];
+    gRadioMsgRadioId = character;
     gRadioState = 100;
 
     switch (gGameState) {
         case GSTATE_TITLE:
-            D_radio_8017872C = 176;
-            D_radio_80178728 = 85;
-            D_radio_80178730 = 80.0f;
-            D_radio_80178734 = 174.0f;
-            D_radio_80178738 = 4.63f;
-            D_radio_8017873C = 32.0f;
-            D_radio_80178740 = 174.0f;
+            gRadioPrintPosY = 176;
+            gRadioPrintPosX = 85;
+            gRadioTextBoxPosX = 80.0f;
+            gRadioTextBoxPosY = 174.0f;
+            gRadioTextBoxScaleX = 4.63f;
+            gRadioPortraitPosX = 32.0f;
+            gRadioPortraitPosY = 174.0f;
             break;
 
         case GSTATE_PLAY:
-            D_radio_8017872C = 179;
-            D_radio_80178728 = 79;
-            D_radio_80178730 = 74.0f;
-            D_radio_80178734 = 178.0f;
-            D_radio_80178738 = 4.53f;
-            D_radio_8017873C = 26.0f;
-            D_radio_80178740 = 178.0f;
+            gRadioPrintPosY = 179;
+            gRadioPrintPosX = 79;
+            gRadioTextBoxPosX = 74.0f;
+            gRadioTextBoxPosY = 178.0f;
+            gRadioTextBoxScaleX = 4.53f;
+            gRadioPortraitPosX = 26.0f;
+            gRadioPortraitPosY = 178.0f;
     }
 
-    Audio_PlayVoice(Message_IdFromPtr(D_ctx_80178308));
+    Audio_PlayVoice(Message_IdFromPtr(gRadioMsg));
 }

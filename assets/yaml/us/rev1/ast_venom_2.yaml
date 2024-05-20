@@ -1,0 +1,205 @@
+:config:
+  segments:
+    - [0x6, 0xACF960]
+  header:
+    code:
+      - '#include "assets/ast_venom_2.h"'
+    header:
+      - '#include "gfx.h"'
+      - '#include "sf64object.h"'
+      - '#include "sf64level.h"'
+      - '#include "sf64event.h"'
+      - '#include "sf64player.h"'
+      - '#include "sf64audio_external.h"'
+
+D_VE2_6000000:
+  { type: TEXTURE, format: IA8, width: 96, height: 28, offset: 0x6000000, ctype: u8, symbol: D_VE2_6000000 }
+
+D_VE2_6000A80:
+  { type: TEXTURE, format: IA8, width: 112, height: 19, offset: 0x6000A80, ctype: u8, symbol: D_VE2_6000A80 }
+
+D_VE2_60012D0:
+  { type: TEXTURE, format: IA8, width: 128, height: 28, offset: 0x60012D0, ctype: u8, symbol: D_VE2_60012D0 }
+
+D_VE2_60020D0:
+  { type: TEXTURE, format: IA8, width: 104, height: 19, offset: 0x60020D0, ctype: u8, symbol: D_VE2_60020D0 }
+
+D_VE2_6002890:
+  { type: TEXTURE, format: IA8, width: 16, height: 16, offset: 0x6002890, ctype: u8, symbol: D_VE2_6002890 }
+
+D_VE2_6002990:
+  { type: GFX, offset: 0x6002990, symbol: D_VE2_6002990 }
+
+D_VE2_6003000:
+  { type: GFX, offset: 0x6003000, symbol: D_VE2_6003000 }
+
+D_VE2_60038E0:
+  { type: GFX, offset: 0x60038E0, symbol: D_VE2_60038E0 }
+
+D_VE2_6003970:
+  { type: TEXTURE, format: RGBA16, width: 32, height: 32, offset: 0x6003970, ctype: u16, symbol: D_VE2_6003970 }
+
+D_VE2_6004170:
+  { type: GFX, offset: 0x6004170, symbol: D_VE2_6004170 }
+
+D_VE2_6004888:
+  { type: TEXTURE, format: RGBA16, width: 32, height: 32, offset: 0x6004888, ctype: u16, symbol: D_VE2_6004888 }
+
+D_VE2_6005088:
+  { type: TEXTURE, format: RGBA16, width: 32, height: 32, offset: 0x6005088, ctype: u16, symbol: D_VE2_6005088 }
+
+D_VE2_6005888:
+  { type: TEXTURE, format: RGBA16, width: 32, height: 32, offset: 0x6005888, ctype: u16, symbol: D_VE2_6005888 }
+
+D_VE2_6006088:
+  { type: TEXTURE, format: RGBA16, width: 32, height: 32, offset: 0x6006088, ctype: u16, symbol: D_VE2_6006088 }
+
+D_VE2_60030D8:
+  { type: TEXTURE, format: RGBA16, width: 32, height: 32, offset: 0x60030D8, ctype: u16, symbol: D_VE2_60030D8 }
+
+D_VE2_6006890:
+  { type: GFX, offset: 0x6006890, symbol: D_VE2_6006890 }
+
+D_VE2_6006E20:
+  { type: GFX, offset: 0x6006E20, symbol: D_VE2_6006E20 }
+
+D_VE2_6007650:
+  { type: GFX, offset: 0x6007650, symbol: D_VE2_6007650 }
+
+D_VE2_6007E20:
+  { type: GFX, offset: 0x6007E20, symbol: D_VE2_6007E20 }
+
+D_VE2_6008170:
+  { type: TEXTURE, format: RGBA16, width: 16, height: 16, offset: 0x6008170, ctype: u16, symbol: D_VE2_6008170 }
+
+D_VE2_6008370:
+  { type: GFX, offset: 0x6008370, symbol: D_VE2_6008370 }
+
+D_VE2_6008AF8:
+  { type: TEXTURE, format: RGBA16, width: 32, height: 32, offset: 0x6008AF8, ctype: u16, symbol: D_VE2_6008AF8 }
+
+D_VE2_6009300:
+  { type: GFX, offset: 0x6009300, symbol: D_VE2_6009300 }
+
+D_VE2_6009390:
+  { type: TEXTURE, format: RGBA16, width: 32, height: 32, offset: 0x6009390, ctype: u16, symbol: D_VE2_6009390 }
+
+D_VE2_6009B90:
+  { type: GFX, offset: 0x6009B90, symbol: D_VE2_6009B90 }
+
+D_VE2_6009E80:
+  { type: TEXTURE, format: RGBA16, width: 32, height: 32, offset: 0x6009E80, ctype: u16, symbol: D_VE2_6009E80 }
+
+D_VE2_600A680:
+  { type: GFX, offset: 0x600A680, symbol: D_VE2_600A680 }
+
+D_VE2_600B708:
+  { type: TEXTURE, format: RGBA16, width: 32, height: 32, offset: 0x600B708, ctype: u16, symbol: D_VE2_600B708 }
+
+D_VE2_600C038:
+  { type: SF64:ANIM, offset: 0x600C038, symbol: D_VE2_600C038 }
+
+D_VE2_600C0A4:
+  { type: SF64:SKELETON, offset: 0x600C0A4, symbol: D_VE2_600C0A4 }
+
+D_VE2_600C200:
+  { type: SF64:ANIM, offset: 0x600C200, symbol: D_VE2_600C200 }
+
+D_VE2_600C2AC:
+  { type: SF64:SKELETON, offset: 0x600C2AC, symbol: D_VE2_600C2AC }
+
+D_VE2_600C2D0:
+  { type: GFX, offset: 0x600C2D0, symbol: D_VE2_600C2D0 }
+
+D_VE2_600C360:
+  { type: TEXTURE, format: RGBA16, width: 16, height: 16, offset: 0x600C360, ctype: u16, symbol: D_VE2_600C360 }
+
+D_VE2_600C560:
+  { type: GFX, offset: 0x600C560, symbol: D_VE2_600C560 }
+
+D_VE2_600C5F0:
+  { type: TEXTURE, format: RGBA16, width: 16, height: 16, offset: 0x600C5F0, ctype: u16, symbol: D_VE2_600C5F0 }
+
+D_VE2_600C7F0:
+  { type: GFX, offset: 0x600C7F0, symbol: D_VE2_600C7F0 }
+
+D_VE2_600C8F0:
+  { type: GFX, offset: 0x600C8F0, symbol: D_VE2_600C8F0 }
+
+D_VE2_600CA50:
+  { type: GFX, offset: 0x600CA50, symbol: D_VE2_600CA50 }
+
+D_VE2_600CBB0:
+  { type: GFX, offset: 0x600CBB0, symbol: D_VE2_600CBB0 }
+
+D_VE2_600D7F0:
+  { type: TEXTURE, format: RGBA16, width: 32, height: 32, offset: 0x600D7F0, ctype: u16, symbol: D_VE2_600D7F0 }
+
+D_VE2_600DFF0:
+  { type: GFX, offset: 0x600DFF0, symbol: D_VE2_600DFF0 }
+
+D_VE2_600E3E0:
+  { type: GFX, offset: 0x600E3E0, symbol: D_VE2_600E3E0 }
+
+D_VE2_600E780:
+  { type: GFX, offset: 0x600E780, symbol: D_VE2_600E780 }
+
+D_VE2_600EB40:
+  { type: GFX, offset: 0x600EB40, symbol: D_VE2_600EB40 }
+
+D_VE2_600EEF0:
+  { type: GFX, offset: 0x600EEF0, symbol: D_VE2_600EEF0 }
+
+D_VE2_600F290:
+  { type: GFX, offset: 0x600F290, symbol: D_VE2_600F290 }
+
+D_VE2_600F670:
+  { type: GFX, offset: 0x600F670, symbol: D_VE2_600F670 }
+
+D_VE2_600F700:
+  { type: TEXTURE, format: RGBA16, width: 64, height: 32, offset: 0x600F700, ctype: u16, symbol: D_VE2_600F700 }
+
+D_VE2_6010700:
+  { type: GFX, offset: 0x6010700, symbol: D_VE2_6010700 }
+
+D_VE2_6010960:
+  { type: GFX, offset: 0x6010960, symbol: D_VE2_6010960 }
+
+D_VE2_6010CA0:
+  { type: TEXTURE, format: RGBA16, width: 32, height: 32, offset: 0x6010CA0, ctype: u16, symbol: D_VE2_6010CA0 }
+
+D_VE2_60114A0:
+  { type: TEXTURE, format: RGBA16, width: 32, height: 32, offset: 0x60114A0, ctype: u16, symbol: D_VE2_60114A0 }
+
+D_VE2_6013AF8:
+  { type: TEXTURE, format: RGBA16, width: 16, height: 16, offset: 0x6013AF8, ctype: u16, symbol: D_VE2_6013AF8 }
+
+D_VE2_6014658:
+  { type: SF64:ANIM, offset: 0x6014658, symbol: D_VE2_6014658 }
+
+D_VE2_6014844:
+  { type: SF64:SKELETON, offset: 0x6014844, symbol: D_VE2_6014844 }
+
+D_VE2_6014904:
+  { type: SF64:ANIM, offset: 0x6014904, symbol: D_VE2_6014904 }
+
+D_VE2_60149D0:
+  { type: SF64:SKELETON, offset: 0x60149D0, symbol: D_VE2_60149D0 }
+
+D_VE2_6014D50:
+  { type: SF64:ENVIRONMENT, offset: 0x6014D50, symbol: D_VE2_6014D50 }
+
+D_VE2_6014D94:
+  { type: SF64:OBJECT_INIT, offset: 0x6014D94, symbol: D_VE2_6014D94 }
+
+D_VE2_6014FEC:
+  { type: SF64:COLPOLY, count: 250, offset: 0x6014FEC, symbol: D_VE2_6014FEC, mesh_symbol: D_VE2_OFFSET }
+
+D_VE2_601668C:
+  { type: SF64:HITBOX, offset: 0x601668C, symbol: D_VE2_601668C }
+
+D_VE2_60166F4:
+  { type: SF64:HITBOX, offset: 0x60166F4, symbol: D_VE2_60166F4 }
+
+D_VE2_6016714:
+  { type: SF64:HITBOX, offset: 0x6016714, symbol: D_VE2_6016714 }

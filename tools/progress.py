@@ -9,9 +9,9 @@ from colour import Color
 
 script_dir = os.path.dirname(os.path.realpath(__file__))
 root_dir = os.path.join(script_dir, "..")
-asm_dir = os.path.join(root_dir, "asm", "us", "nonmatchings")
+asm_dir = os.path.join(root_dir, "asm", "us", "rev1", "nonmatchings")
 build_dir = os.path.join(root_dir, "build")
-elf_path = os.path.join(build_dir, "starfox64.us.elf")
+elf_path = os.path.join(build_dir, "starfox64.us.rev1.elf")
 
 def get_func_sizes():
     try:

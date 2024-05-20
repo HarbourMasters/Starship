@@ -2,101 +2,99 @@
 #define FUNCTIONS_H
 
 #include "sys.h"
-#include "structs.h"
 #include "sf64object.h"
 #include "sf64player.h"
 #include "sf64mesg.h"
 
 // fox_360
-void func_360_8002ED60(Player*);
-void func_360_8002E3E0(Actor*);
-void AllRange_UpdateCountdown(void);
-void func_360_8002E5E0(Boss*);
-void func_360_8002E604(Boss*);
-void func_360_8002E628(Boss*);
-void func_360_8002E64C(Boss*);
-void func_360_8002E670(Actor*);
-void func_360_8002E694(Actor*);
-void func_360_8002E6B8(Actor*);
-void func_360_8002E6DC(Actor*);
-bool func_360_8002E4F8(u16*, RadioCharacterId);
-void func_360_8002E700(Player*);
-void func_360_8002EE34(void);
-void func_360_8002EE64(Actor* actor);
-void func_360_8002F180(void);
-void func_360_8002F5F4(u16* msg, RadioCharacterId character);
-void func_360_8002F69C(Actor*);
-void func_360_8002FC00(Actor*);
-void func_360_8003088C(Actor*);
+void AllRange_FortunaIntro(Player*);
+void AllRange_GetStarWolfHits(Actor*);
+void AllRange_DrawCountdown(void);
+void Boss309_Update(Boss*);
+void Boss309_Draw(Boss*);
+void Boss310_Update(Boss*);
+void Boss310_Draw(Boss*);
+void Actor271_Update(Actor*);
+void Actor271_Draw(Actor*);
+void Actor272_Update(Actor*);
+void Actor272_Draw(Actor*);
+bool AllRange_PlayMessage(u16*, RadioCharacterId);
+void AllRange_GreatFoxRepair(Player*);
+void AllRange_ClearRadio(void);
+void ActorAllRange_SetShadowData(Actor* this);
+void ActorAllRange_SpawnTeam(void);
+void ActorAllRange_PlayMessage(u16* msg, RadioCharacterId character);
+void ActorAllRange_UpdateStarWolfEvents(Actor*);
+void ActorAllRange_UpdateEvemyEvents(Actor*);
+void ActorAllRange_ApplyDamage(Actor*);
 bool func_360_80031900(Actor*);
 void ActorAllRange_Update(Actor* this);
 void ActorAllRange_Draw(Actor* this);
 
 //fox_beam
-void func_beam_80038140(PlayerShot* shot);
-void func_beam_80036318(PlayerShot* shot);
-void func_beam_80035DEC(f32 xPos, f32 yPos, f32 zPos);
+void PlayerShot_CollisionCheck(PlayerShot* shot);
+void PlayerShot_Impact(PlayerShot* shot);
+void PlayerShot_SpawnEffect351(f32 xPos, f32 yPos, f32 zPos);
 void PlayerShot_Initialize(PlayerShot*);
-void func_beam_800365E4(f32, f32, f32, f32, f32, f32, f32, f32, f32, s32, s32);
-void PlayerShot_Update(void);
-void PlayerShot_Draw(void);
+void PlayerShot_SpawnEffect344(f32, f32, f32, f32, f32, f32, f32, f32, f32, s32, s32);
+void PlayerShot_UpdateAll(void);
+void PlayerShot_DrawAll(void);
 
 // fox_bg
-void func_bg_8003DAF0(void);
-void func_bg_8003DE68(s32, s32);
-void func_bg_8003E1E8(void);
-void func_bg_80040450(void);
-void func_bg_80040954(void);
-void func_bg_80040CDC(void);
-void func_bg_80040CE4(void);
-void func_bg_80042D38(void);
+void Background_DrawStarfield(void);
+void Background_DrawPartialStarfield(s32, s32);
+void Background_DrawBackdrop(void);
+void Background_DrawSun(void);
+void Background_DrawLensFlare(void);
+void Background_dummy_80040CDC(void);
+void Background_DrawGround(void);
 
 // fox_boss
-void func_boss_80042EC0(Boss* boss);
+void Boss_AwardBonus(Boss* boss);
 void Boss299_Init(Boss* boss);
 void Boss299_Update(Boss* boss);
 void Boss299_Draw(Boss* boss);
 void Boss300_Init(Boss* boss);
 void Boss300_Update(Boss* boss);
 void Boss300_Draw(Boss* boss);
-void func_boss_800430DC(f32, f32, f32, f32, f32, f32, f32, f32, f32, f32, s32, s32);
-void func_boss_8004319C(Player* player, f32 arg1, f32 arg2, f32 arg3);
+void Boss_SpawnDebris(f32, f32, f32, f32, f32, f32, f32, f32, f32, f32, s32, s32);
+void Boss_CompleteLevel(Player* player, f32 xPos, f32 yPos, f32 zPos);
 
 // fox_tank
-void func_tank_80043468(Player* player);
+void Player_UpdateTankCamOnRails(Player* player);
 void func_tank_800444BC(Player* player);
 void func_tank_80044868(Player*);
 void func_tank_80045130(Player*);
 void func_tank_80045678(Player*);
 void func_tank_80045E7C(Player*);
-void func_tank_80047504(Player* player);
+void Tank_UpdateOnRails(Player* player);
 void func_tank_80046358(Player*);
 
 // fox_demo
-void func_demo_8004D440(Player*);
-void func_demo_80048AC0(s32 teamId);
-void func_demo_80049C0C(Player*);
-void func_demo_8004A52C(Player*);
+void Cutscene_KillPlayer(Player*);
+void func_demo_80048AC0(TeamId teamId);
+void Cutscene_EnterWarpZone(Player*);
+void Cutscene_LevelStart(Player*);
 void func_demo_8004AA84(void);
-void func_demo_8004AAF4(Player*);
-void func_demo_8004C930(Player*);
-void func_demo_8004CCC0(Player*);
-void func_demo_8004D440(Player* player);
-void func_demo_8004E3D8(Player*);
-void func_demo_8004F8AC(Actor*);
-void func_demo_8004FEC0(Actor*);
-void func_demo_800515C4(void);
+void Cutscene_AllRangeMode(Player*);
+void Cutscene_LevelComplete(Player*);
+void Cutscene_UTurn(Player*);
+void Cutscene_KillPlayer(Player* player);
+void Cutscene_PlayerDown(Player*);
+void ActorCutscene_Update(Actor*);
+void ActorCutscene_Draw(Actor*);
+void Cutscene_DrawGreatFox(void);
 
 // fox_display
 void func_display_80053658(WingInfo*);
-void func_display_8005465C(s32);
+void Play_DrawEngineGlow(s32);
 void func_display_80057814(Player*);
 void Play_Draw(void);
 
 // fox_edata
-void func_edata_800594F0(Object_80*);
-void func_edata_800595D0(Object_80*);
-void func_edisplay_800596C0(void);
+void func_edata_800594F0(Scenery*);
+void func_edata_800595D0(Scenery*);
+void Object_ApplyWaterDistortion(void);
 void func_edata_800596B0(Actor*);
 
 // fox_edisplay
@@ -104,17 +102,17 @@ void Graphics_SetScaleMtx(f32);
 void Sprite168_Draw(Sprite*);
 void Actor201_Draw(Actor*);
 void Actor202_Draw(Actor*);
-void Obj39_Draw(Object_80*);
-void func_edisplay_80059B20(Object_80*);
-void Obj42_Draw(Object_80*);
+void MeteoTunnel_Draw(Scenery*);
+void Scenery_DrawTitaniaBones(Scenery*);
+void Scenery42_Draw(Scenery*);
 void Actor196_Draw(Actor*);
 void Sprite167_Draw(Sprite*);
 void FogShadow_Draw(Sprite*);
-void func_edisplay_80059F68(Object_80*);
-void func_edisplay_80059FDC(Object_80*);
-void Actor189_Draw(Actor*);
-void func_edisplay_8005ADAC(Actor*);
-void func_edisplay_8005B1E8(Actor*, s32);
+void func_edisplay_80059F68(Scenery*);
+void func_edisplay_80059FDC(Scenery*);
+void ActorDebris_Draw(Actor*);
+void Actor_DrawEngineAndContrails(Actor*);
+void Actor_DrawEngineGlow(Actor*, s32);
 void func_edisplay_8005B388(Actor*);
 void func_edisplay_8005B6A4(Actor*);
 void func_edisplay_8005B71C(Actor*);
@@ -130,10 +128,10 @@ void ItemBomb_Draw(Item*);
 void ItemLasers_Draw(Item*);
 void ItemMeteoWarp_Draw(Item*);
 void Object_ClampSfxSource(f32*);
-void func_edisplay_8005F0E8(f32*, Vec3f*);
-void func_edisplay_8005F1EC(f32*);
-void func_edisplay_8005F290(f32*, Vec3f*);
-void func_edisplay_8005F670(Vec3f*);
+void Object_SetSfxSourceToPos(f32*, Vec3f*);
+void Object_UpdateSfxSource(f32*);
+void Object_SetSfxSourceToView(f32*, Vec3f*);
+void Display_SetSecondLight(Vec3f*);
 bool func_edisplay_8005F9DC(Vec3f*);
 
 // fox_enmy
@@ -141,11 +139,11 @@ void Object_Draw(s32 );
 void Effect_Draw(u8 );
 void TexturedLine_Draw(void);
 void TexturedLine_DrawPath(s32);
-void func_enmy_80060F30(f32* , u32 , s32 );
+void Object_PlayerSfx(f32* , u32 , s32 );
 void Object_Kill(Object*, f32*);
 bool func_enmy_80060FE4(Vec3f*, f32);
 void Object_SetInfo(ObjectInfo* info, u32 objId);
-void Object_80_Initialize(Object_80*);
+void Scenery_Initialize(Scenery*);
 void Sprite_Initialize(Sprite*);
 void Actor_Initialize(Actor*);
 void Boss_Initialize(Boss*);
@@ -154,16 +152,16 @@ void Effect_Initialize(Effect*);
 void func_enmy_80061B68(void);
 void func_enmy_80061CD0(void);
 void func_enmy_80061E48(Actor* , f32 , f32 , f32 );
-void func_enmy_80061F0C(Actor* , ObjectInit* , s32 );
+void ActorEvent_Load(Actor* , ObjectInit* , s32 );
 void Object_Load(ObjectInit* , f32 , f32 , f32 , f32 );
 void func_enmy_80062568(void);
 void func_enmy_80062B60(f32 xPos, f32 zPos, s32 state, f32 scale);
 void func_enmy_80062C38(f32, f32);
-bool func_enmy_80062DBC(Vec3f* pos, f32* hitboxData, Object* obj, f32 xRot, f32 yRot, f32 zRot);
-bool func_enmy_800631A8(Vec3f*, f32*, Vec3f*);
-bool func_enmy_8006326C(Vec3f* , Vec3f* , ObjectId , Object* );
-s32 func_enmy_8006351C(s32 , Vec3f* , Vec3f* , s32 );
-void func_enmy_800652CC(Object_80*);
+bool Object_CheckHitboxCollision(Vec3f* pos, f32* hitboxData, Object* obj, f32 xRot, f32 yRot, f32 zRot);
+bool Object_CheckSingleHitbox(Vec3f*, f32*, Vec3f*);
+bool Object_CheckPolyCollision(Vec3f* , Vec3f* , ObjectId , Object* );
+s32 Object_CheckCollision(s32 , Vec3f* , Vec3f* , s32 );
+void Scenery_UpdateTitaniaBones(Scenery*);
 void func_enmy_800654E4(Object*);
 void func_enmy_800656D4(Actor*);
 void func_enmy_800660F0(Actor*);
@@ -172,13 +170,13 @@ void func_enmy_8006654C(Actor*);
 void func_enmy_8006684C(Actor*);
 void func_enmy_800669A0(Actor*);
 void func_enmy_80066A80(Actor*);
-void func_enmy_80066C00(Object_80*);
-void func_enmy_80066D5C(Object_80*);
+void func_enmy_80066C00(Scenery*);
+void func_enmy_80066D5C(Scenery*);
 void Sprite167_Update(Sprite*);
-void func_enmy_80066EA8(Object_80*);
-void func_enmy_80066EF0(Item*);
-void func_enmy_800671D0(Item*);
-void func_enmy_800674B4(f32, f32, f32, f32, f32, f32, f32, f32);
+void func_enmy_80066EA8(Scenery*);
+void Item_CheckBounds(Item*);
+void Item_SpinPickup(Item*);
+void Actor_SpawnDebris70(f32, f32, f32, f32, f32, f32, f32, f32);
 void ActorSupplies_Update(Actor*);
 void ActorSupplies_Draw(Actor*);
 void func_enmy_80067A40(void);
@@ -198,12 +196,12 @@ void Object_Dying(s32, ObjectId);
 void Effect_Move(Effect*);
 void Actor_Move(Actor*);
 void Boss_Move(Boss*);
-void Object80_Move(Object_80*);
+void Scenery_Move(Scenery*);
 void Sprite_Move(Sprite*);
 void Item_Move(Item*);
 void Actor_Update(Actor*);
 void Boss_Update(Boss*);
-void Object_80_Update(Object_80*);
+void Scenery_Update(Scenery*);
 void Sprite_Update(Sprite*);
 void Item_Update(Item*);
 void Effect_Update(Effect*);
@@ -214,24 +212,24 @@ void Object_Update(void);
 //fox_enmy2
 void Actor237_Update(Actor*);
 void Actor237_Draw(Actor*);
-void Obj54_Update(Object_80*);
+void Scenery54_Update(Scenery*);
 void Actor201_Update(Actor*);
 void Actor202_Update(Actor*);
 void Actor194_Update(Actor*);
-void Actor194_Init(Actor*);
+void Actor194_Dying(Actor*);
 void Actor194_Draw(Actor*);
-void Obj42_Update(Object_80*);
+void Scenery42_Update(Scenery*);
 void Actor196_Update(Actor*);
-void Actor189_Update(Actor*);
-void Obj39_Update(Object_80*);
-void func_enmy2_8006ECBC(PlayerShotId, PlayerShot*, s32, f32, f32, f32, f32, f32, f32, f32, f32, f32);
-void func_enmy2_8006EEFC(s32, f32, f32, f32, f32, f32, f32, f32, f32, f32);
-void func_enmy2_8006EFA0(s32 unk0E4, f32 xPos, f32 yPos, f32 zPos, f32 arg4, f32 arg5, f32 arg6, f32 xRot, f32 yRot,
+void ActorDebris_Update(Actor*);
+void MeteoTunnel_Update(Scenery*);
+void Actor_SetupPlayerShot(PlayerShotId, PlayerShot*, s32, f32, f32, f32, f32, f32, f32, f32, f32, f32);
+void Actor_SpawnPlayerLaser(s32, f32, f32, f32, f32, f32, f32, f32, f32, f32);
+void Actor_SpawnGreatFoxLaser(s32 actorId, f32 xPos, f32 yPos, f32 zPos, f32 xVel, f32 yVel, f32 zVel, f32 xRot, f32 yRot,
                    f32 zRot);
-void ActorEvent_8006F0D8(f32 xPos, f32 yPos, f32 zPos, f32 arg3);
+void ActorEvent_SpawnEffect347(f32 xPos, f32 yPos, f32 zPos, f32 scale1);
 void ActorEvent_8006F254(Actor*);
 void ActorEvent_Update(Actor*);
-s32 Obj111_Draw(Object_80*);
+s32 Scenery111_Draw(Scenery*);
 void ActorEvent_Draw(Actor*);
 void func_enmy2_800763A4(Actor*);
 void ActorEvent_Dying(Actor*);
@@ -273,7 +271,6 @@ void func_effect_8007953C(f32 xPos, f32 yPos, f32 zPos, f32 scale2);
 void func_effect_800795AC(f32 xPos, f32 yPos, f32 zPos, f32 scale2);
 void func_effect_80079618(f32 xPos, f32 yPos, f32 zPos, f32 scale2);
 void func_effect_8007968C(Effect*);
-bool func_effect_800798C4(s32 , Gfx** , Vec3f* , Vec3f* , void* ); //OverrideLimbDraw
 void func_effect_800798F0(Effect* );
 void func_effect_8007A28C(Effect* );
 void func_effect_8007A3C0(Effect* );
@@ -375,10 +372,7 @@ void func_effect_80083FA8(Effect*);
 void func_effect_80084194(Effect*);
 
 // fox_fade
-void func_fade_80084370(s32);
-void func_fade_800843FC(s32);
-void func_fade_80084488(s32);
-void func_fade_80084688(s32, s32);
+void Wipe_Draw(WipeMode mode, s32 frame);
 
 // fox_hud
 void func_hud_80084B94(s32);
@@ -390,125 +384,122 @@ void func_hud_800869A0(f32, f32, s32, f32, s32, s32);
 void func_hud_80087530(f32, f32, s32);
 void func_hud_800884E4(void);
 void func_hud_80088564(void);
-void func_hud_8008865C(void);
+void HUD_DrawStatusScreens(void);
 s32 func_hud_8008AC54(s32);
 void func_hud_8008AD94(void);
 void func_hud_8008B5B0(f32 x, f32 y);
 s32 func_hud_8008B774(void);
 void func_hud_8008BD00(u8*, s32, s32, u8);
 void func_hud_8008C104(u16*, u16*);
-void func_hud_8008C390(f32, f32, f32, s32);
+void HUD_DisplaySmallNumber(f32, f32, f32, s32);
 void func_hud_8008C5C8(f32, f32, f32, s32);
 void func_hud_8008C6F4(s32, s32);
 s32 func_hud_8008BCBC(s32);
-void func_hud_8008CA44(void);
-s32 func_hud_8008CB8C(void);
+void HUD_DrawEdgeArrows(void);
+s32 HUD_dummy_8008CB8C(void);
 void func_hud_8008D0DC(f32, f32, f32, f32, f32);
-void func_hud_8008DE68(void);
-void func_hud_8008E51C(s32* , f32);
+void HUD_DrawBossHealth(void);
+void HUD_DrawCountdown(s32* , f32);
 void func_hud_8008E9EC(f32, f32);
 void func_hud_8008EA14(f32, f32);
-void func_hud_8008FA84(void);
-void func_hud_8008FE78(Boss*);
+void HUD_Draw(void);
+void HUD_BossFO_Draw(Boss*);
 void func_hud_8008FFF0(Boss*, s32);
 s32 func_hud_80090200(Boss* boss);
 bool func_hud_8009092C(Actor*);
-void func_hud_800907C4(Boss*);
+void HUD_BossFO_Update(Boss*);
 bool func_hud_800915FC(Actor*);
 bool func_hud_800924E0(Actor*);
 
 void ActorTeamBoss_Init(Actor*);
 void ActorTeamBoss_Update(Actor* this);
 void func_hud_80093164(Actor*);
-void func_hud_800935E8(Player*);
+void HUD_AquasStart(Player*);
 void func_hud_800953A0(Actor*, s32);
 void func_hud_8009546C(Actor*, s32);
 void func_hud_80095538(Actor*, s32);
-void func_hud_80095604(Player*);
+void HUD_AquasComplete(Player*);
 void func_hud_80094954(Effect*);
 void func_hud_80094BBC(Effect*);
 void func_hud_80094D20(f32, f32);
 void func_hud_80096A74(Player* player);
 
-// fox_97F80
+// fox_col1
 void func_col1_80098860(PlaneF* plane, Vec3f* point, Vec3f* normal);
 s32 func_col1_800988B4(Vec3f* vec, PlaneF* plane);
-bool func_col1_800998FC(Vec3f*, Vec3f*, Vec3f*, s32, Vec3f*, f32*);
+bool func_col1_800998FC(Vec3f* objPos, Vec3f* colliderPos, Vec3f* objVel, s32 colId, Vec3f* hitPosOut,
+                        f32* hitAnglesOut);
 
-// fox_A4290
-bool func_col2_800A3690(Vec3f*, Vec3f*, s32, Vec3f*);
+// fox_col2
+bool func_col2_800A3690(Vec3f* objPos, Vec3f* colliderPos, s32 colId, Vec3f* hitDataOut);
 
-// fox_A48A0
-void func_800A3CA0(void);
+// fox_pause
+void func_pause_800A3CA0(void);
 
 // fox_play
 bool Play_CheckMedalStatus(u16);
-void func_play_800A3FB0(void);
+void Play_dummy_MuteSfx(void);
 s32 Play_GetMaxShields(void);
-void func_play_800A6028(f32*, u32);
-void func_play_800AC290(Player* player, PlayerShot* shot, f32 arg2, f32 arg3, PlayerShotId shotId, f32 arg5);
+void Play_PlaySfxFirstPlayer(f32*, u32);
+void Player_SetupArwingShot(Player* player, PlayerShot* shot, f32 arg2, f32 arg3, PlayerShotId shotId, f32 speed);
 void Play_Setup(void);
-void func_play_800A594C(void);
-void func_play_800A5D6C(void);
-void func_play_800A5EBC(void);
-void func_play_800A5FA0(f32* , u32 , s32 );
-void func_play_800A6070(f32* , u32 );
-void func_play_800A6148(void);
-void func_play_800A69F8(s32 , f32 , f32 , f32 );
+void Play_InitEnvironment(void);
+void Play_GenerateStarfield(void);
+void Play_SetupStarfield(void);
+void Player_PlaySfx(f32* , u32 , s32 );
+void Play_PlaySfxNoPlayer(f32* , u32 );
+void Play_ClearObjectData(void);
+void Play_SpawnDebris(s32 , f32 , f32 , f32 );
 void Player_ApplyDamage(Player* player, s32 direction, s32 damage);
-bool func_play_800A73E4(f32* , s32* , f32 xPos, f32 yPos, f32 zPos);
-bool func_play_800A78C4(Hitbox* hitbox, f32 , f32 , f32 , f32 , f32 , f32 );
-void func_play_800A8BA4(Player* player);
-void func_play_800AA800(Player* player);
-void func_play_800ACDC0(Player*, PlayerShot*, PlayerShotId );
-void func_play_800B0F50(Player*);
-void func_play_800B44C4(Player*);
-void func_play_800AB334(void);
-void func_play_800ABA08(void);
-void func_play_800AE278(Player*);
-void func_play_800B2130(Player*);
-void func_play_800B2574(Player*);
-void func_play_800B56BC(Player*);
-void func_play_800B5D30(Player*, s32);
-void func_play_800B5FBC(Player*, s32, bool);
-void func_play_800B63BC(Player*, s32);
-void func_play_800B6848(Player*, s32 );
-void func_play_800B6BFC(Player*, s32 );
-void func_play_800B6F50(f32, f32, f32, f32, f32, f32);
-void func_play_800B7184(Player*, s32);
-void func_play_800B73E0(Player*);
-void func_play_800B852C(ObjectId , Item*);
+bool Play_CheckDynaFloorCollision(f32* , s32* , f32 xPos, f32 yPos, f32 zPos);
+bool Play_CheckSingleHitbox(Hitbox* hitbox, f32 , f32 , f32 , f32 , f32 , f32 );
+void Player_CollisionCheck(Player* player);
+void Player_FloorCheck(Player* player);
+void Player_SetupOnFootShot(Player*, PlayerShot*, PlayerShotId );
+void Player_Setup(Player*);
+void Player_Update360(Player*);
+void Play_InitLevel(void);
+void Player_InitVersus(void);
+void Player_CheckBounds360(Player*);
+void Player_UpdateArwingRoll(Player*);
+void Player_ArwingBoost(Player*);
+void Camera_UpdateArwingOnRails(Player*);
+void Camera_UpdateCockpitOnRails(Player*, s32);
+void Camera_FollowPlayer(Player*, s32 , bool );
+void Camera_UpdateArwing360(Player*, s32);
+void Camera_UpdateTank360(Player*, s32 );
+void Camera_UpdateOnFoot360(Player*, s32 );
+void Camera_SetStarfieldPos(f32, f32, f32, f32, f32, f32);
+void Camera_Update360(Player*, s32);
+void Camera_SetupLights(Player*);
+void Play_SpawnVsItem(ObjectId , Item*);
 void Play_Main(void);
-void func_play_800A668C(f32 xPos, f32 yPos, f32 zPos);
-void func_play_800AD7F0(Player* player);
-void func_play_800ADF58(Player* player);
-void func_play_800B415C(Player* player);
-void func_play_800B41E0(Player* player);
-void func_play_800B41EC(Player* player);
-void func_play_800A46A0(Player* player);
-void func_play_800A86E4(Player* player);
-void func_play_800A887C(Player* player);
-s32 func_play_800A7974(Player* player, f32* hitboxData, s32* index, f32 xPos, f32 yPos, f32 zPos, f32 xRot, f32 yRot,
+void Play_SpawnHitmark(f32 xPos, f32 yPos, f32 zPos);
+void Player_Shoot(Player* player);
+void Player_UpdatePath(Player* player);
+void Player_LowHealthAlarm(Player* player);
+void Play_dummy_800B41E0(Player* player);
+void Player_Down(Player* player);
+void Player_DamageEffects(Player* player);
+void Player_CheckItemCollect(Player* player);
+void Player_UpdateHitbox(Player* player);
+s32 Player_CheckHitboxCollision(Player* player, f32* hitboxData, s32* index, f32 xPos, f32 yPos, f32 zPos, f32 xRot, f32 yRot,
                   f32 zRot, f32 arg9, f32 argA, f32 argB);
-bool func_play_800A8054(ObjectId objId, f32 arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5, f32 arg6, Vec3f* arg7, Vec3f* arg8);
-void Object_58_Initialize(Object_58*);
+bool Play_CheckPolyCollision(ObjectId objId, f32 arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5, f32 arg6, Vec3f* arg7, Vec3f* arg8);
+void Scenery360_Initialize(Scenery360*);
 
 // fox_versus
-s32 func_versus_800C1E9C(void);
-void func_versus_800C1ED4(void);
-void func_versus_800C20B0(void);
+s32 Versus_Main(void);
+void Versus_Draw(void);
+void Versus_StartMatch(void);
 void func_versus_800C2190(void);
 void func_versus_800C26C8(void);
 
 void OvlMenu_CallFunction(u32, void*);
-void Map_8019E8D0(void);
+void Map_Main(void);
 
-void Venom1_80198414(void);
-// s32 Venom1_801937F4(s32, Gfx**, Vec3f*, Vec3f*, void*);
-// void Venom1_80193D64(s32, Vec3f*, void*);
-
-void Ending_8018A96C(void);
-void Ending_8018AAC4(void);
+void Ending_Main(void);
+void Ending_Draw(void);
 
 // sf_i5_5
 bool Ground_801B49D0(Actor* actor);

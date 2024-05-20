@@ -46,10 +46,10 @@ def firstDiffMain():
 
     buildFolder = Path("build")
 
-    BUILTROM = Path(buildFolder / f"starfox64.us.uncompressed.z64")
-    BUILTMAP = buildFolder / f"starfox64.us.map"
+    BUILTROM = Path(buildFolder / f"starfox64.us.rev1.uncompressed.z64")
+    BUILTMAP = buildFolder / f"starfox64.us.rev1.map"
 
-    EXPECTEDROM = Path("baserom.us.uncompressed.z64")
+    EXPECTEDROM = Path("baserom.us.rev1.uncompressed.z64")
     EXPECTEDMAP = "expected" / BUILTMAP
 
     mapfile_parser.frontends.first_diff.doFirstDiff(BUILTMAP, EXPECTEDMAP, BUILTROM, EXPECTEDROM, args.count, mismatchSize=True, addColons=args.add_colons, bytesConverterCallback=decodeInstruction)

@@ -186,7 +186,8 @@ def main():
         files = args.files
         extra_files = []
     else:
-        files = glob.glob("src/**/*.c", recursive=True)
+        files = glob.glob("src*/**/*.c", recursive=True)
+        files = [x for x in files if "assets" not in x]
         extra_files = glob.glob("assets/**/*.xml", recursive=True)
 
     format_files(files, extra_files, nb_jobs)

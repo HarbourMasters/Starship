@@ -1,0 +1,227 @@
+:config:
+  segments:
+    - [0x06, 0xB612E0]
+  header:
+    code:
+      - '#include "assets/ast_solar.h"'
+    header:
+      - '#include "gfx.h"'
+      - '#include "sf64object.h"'
+      - '#include "sf64level.h"'
+      - '#include "sf64event.h"'
+      - '#include "sf64player.h"'
+      - '#include "sf64audio_external.h"'
+      - '#include "sf64mesg.h"'
+
+D_SO_6000000:
+  { type: TEXTURE, ctype: u8, format: IA8, width: 112, height: 13, offset: 0x6000000, symbol: D_SO_6000000}
+
+D_SO_60005B0:
+  { type: GFX, offset: 0x60005B0, symbol: D_SO_60005B0}
+
+D_SO_6001C50:
+  { type: VTX, count: 289, offset: 0x6001C50, symbol: D_SO_6001C50}
+
+D_SO_6002E60:
+  { type: GFX, offset: 0x6002E60, symbol: D_SO_6002E60}
+
+D_SO_6004500:
+  { type: VTX, count: 289, offset: 0x6004500, symbol: D_SO_6004500}
+
+D_SO_6005710:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x6005710, symbol: D_SO_6005710}
+
+D_SO_600636C:
+  { type: SF64:ANIM, offset: 0x600636C, symbol: D_SO_600636C}
+
+D_SO_6006558:
+  { type: SF64:SKELETON, offset: 0x6006558, symbol: D_SO_6006558}
+
+D_SO_6006DD8:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x6006DD8, symbol: D_SO_6006DD8}
+
+D_SO_6007C40:
+  { type: GFX, offset: 0x6007C40, symbol: D_SO_6007C40}
+
+D_SO_6007CC0:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x6007CC0, symbol: D_SO_6007CC0}
+
+D_SO_60084C0:
+  { type: GFX, offset: 0x60084C0, symbol: D_SO_60084C0}
+
+D_SO_6008540:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x6008540, symbol: D_SO_6008540}
+
+D_SO_6008D40:
+  { type: GFX, offset: 0x6008D40, symbol: D_SO_6008D40}
+
+D_SO_6008DC0:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x6008DC0, symbol: D_SO_6008DC0}
+
+D_SO_6009D30:
+  { type: SF64:ANIM, offset: 0x6009D30, symbol: D_SO_6009D30}
+
+D_SO_600B1B4:
+  { type: SF64:ANIM, offset: 0x600B1B4, symbol: D_SO_600B1B4}
+
+D_SO_600C15C:
+  { type: SF64:ANIM, offset: 0x600C15C, symbol: D_SO_600C15C}
+
+D_SO_600D3DC:
+  { type: SF64:ANIM, offset: 0x600D3DC, symbol: D_SO_600D3DC}
+
+D_SO_600E2C4:
+  { type: SF64:ANIM, offset: 0x600E2C4, symbol: D_SO_600E2C4}
+
+D_SO_600E470:
+  { type: SF64:SKELETON, offset: 0x600E470, symbol: D_SO_600E470}
+
+D_SO_600F744:
+  { type: SF64:ANIM, offset: 0x600F744, symbol: D_SO_600F744}
+
+D_SO_600F750:
+  { type: GFX, offset: 0x600F750, symbol: D_SO_600F750}
+
+D_SO_6010198:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x6010198, symbol: D_SO_6010198}
+
+D_SO_6010998:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x6010998, symbol: D_SO_6010998}
+
+D_SO_6011198:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x6011198, symbol: D_SO_6011198}
+
+D_SO_6011398:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x6011398, symbol: D_SO_6011398}
+
+D_SO_6012C00:
+  { type: SF64:ANIM, offset: 0x6012C00, symbol: D_SO_6012C00}
+
+D_SO_601388C:
+  { type: SF64:ANIM, offset: 0x601388C, symbol: D_SO_601388C}
+
+D_SO_60138A0:
+  { type: GFX, offset: 0x60138A0, symbol: D_SO_60138A0}
+
+D_SO_6013C70:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x6013C70, symbol: D_SO_6013C70}
+
+D_SO_6014470:
+  { type: GFX, offset: 0x6014470, symbol: D_SO_6014470}
+
+D_SO_60146D0:
+  { type: GFX, offset: 0x60146D0, symbol: D_SO_60146D0}
+
+D_SO_6014930:
+  { type: GFX, offset: 0x6014930, symbol: D_SO_6014930}
+
+D_SO_6014B80:
+  { type: GFX, offset: 0x6014B80, symbol: D_SO_6014B80}
+
+D_SO_6014DB0:
+  { type: GFX, offset: 0x6014DB0, symbol: D_SO_6014DB0}
+
+D_SO_60151A0:
+  { type: GFX, offset: 0x60151A0, symbol: D_SO_60151A0}
+
+D_SO_6015810:
+  { type: GFX, offset: 0x6015810, symbol: D_SO_6015810}
+
+D_SO_6016CF0:
+  { type: GFX, offset: 0x6016CF0, symbol: D_SO_6016CF0}
+
+D_SO_6016F08:
+  { type: TEXTURE, ctype: u8, format: CI8, width: 16, height: 16, offset: 0x6016F08, symbol: D_SO_6016F08}
+
+D_SO_6017008:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 64, offset: 0x6017008, symbol: D_SO_6017008}
+  
+D_SO_6017090:
+  { type: GFX, offset: 0x6017090, symbol: D_SO_6017090}
+
+D_SO_6017200:
+  { type: TEXTURE, ctype: u8, format: CI8, width: 16, height: 16, offset: 0x6017200, symbol: D_SO_6017200}
+
+D_SO_6017300:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 56, offset: 0x6017300, symbol: D_SO_6017300}
+
+D_SO_6017370:
+  { type: GFX, offset: 0x6017370, symbol: D_SO_6017370}
+
+D_SO_60174E0:
+  { type: TEXTURE, ctype: u8, format: CI8, width: 8, height: 8, offset: 0x60174E0, symbol: D_SO_60174E0}
+
+D_SO_6017520:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 24, offset: 0x6017520, symbol: D_SO_6017520}
+
+D_SO_6017550:
+  { type: GFX, offset: 0x6017550, symbol: D_SO_6017550}
+
+D_SO_60175D8:
+  { type: TEXTURE, ctype: u32, format: RGBA32, width: 32, height: 32, offset: 0x60175D8, symbol: D_SO_60175D8}
+
+D_SO_60185E0:
+  { type: GFX, offset: 0x60185E0, symbol: D_SO_60185E0}
+
+D_SO_6018668:
+  { type: TEXTURE, ctype: u32, format: RGBA32, width: 32, height: 32, offset: 0x6018668, symbol: D_SO_6018668}
+
+D_SO_6019670:
+  { type: GFX, offset: 0x6019670, symbol: D_SO_6019670}
+
+D_SO_60196F8:
+  { type: TEXTURE, ctype: u32, format: RGBA32, width: 32, height: 32, offset: 0x60196F8, symbol: D_SO_60196F8}
+
+D_SO_601A700:
+  { type: GFX, offset: 0x601A700, symbol: D_SO_601A700}
+
+D_SO_601A788:
+  { type: TEXTURE, ctype: u32, format: RGBA32, width: 32, height: 32, offset: 0x601A788, symbol: D_SO_601A788}
+
+D_SO_601B790:
+  { type: GFX, offset: 0x601B790, symbol: D_SO_601B790}
+
+D_SO_601B818:
+  { type: TEXTURE, ctype: u32, format: RGBA32, width: 32, height: 32, offset: 0x601B818, symbol: D_SO_601B818}
+
+D_SO_601C820:
+  { type: GFX, offset: 0x601C820, symbol: D_SO_601C820}
+
+D_SO_601C8A8:
+  { type: TEXTURE, ctype: u32, format: RGBA32, width: 32, height: 32, offset: 0x601C8A8, symbol: D_SO_601C8A8}
+
+D_SO_601D8B0:
+  { type: GFX, offset: 0x601D8B0, symbol: D_SO_601D8B0}
+
+D_SO_601D948:
+  { type: TEXTURE, ctype: u16, format: IA16, width: 32, height: 32, offset: 0x601D948, symbol: D_SO_601D948}
+
+D_SO_601E150:
+  { type: GFX, offset: 0x601E150, symbol: D_SO_601E150}
+
+D_SO_601E1E8:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 64, offset: 0x601E1E8, symbol: D_SO_601E1E8}
+
+D_SO_601F1F0:
+  { type: SF64:ENVIRONMENT, offset: 0x601F1F0, symbol: D_SO_601F1F0}
+
+D_SO_601F234:
+  { type: SF64:OBJECT_INIT, offset: 0x601F234, symbol: D_SO_601F234}
+
+D_SO_6020DD0:
+  { type: SF64:SCRIPT, offset: 0x6020DD0, symbol: D_SO_6020DD0}
+
+D_SO_6020F60:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 64, offset: 0x6020F60, symbol: D_SO_6020F60}
+
+D_SO_6021F60:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x6021F60, symbol: D_SO_6021F60}
+
+D_SO_6022760:
+  { type: ARRAY, count: 289, array_type: u16, offset: 0x6022760, symbol: D_SO_6022760}
+
+D_SO_60229A4:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x60229A4, symbol: D_SO_60229A4}
+
+D_SO_60231A4:
+  { type: SF64:HITBOX, offset: 0x60231A4, symbol: D_SO_60231A4}

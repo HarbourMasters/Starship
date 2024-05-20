@@ -1,0 +1,172 @@
+:config:
+  segments:
+    - [0x06, 0xA4FBB0]
+  header:
+    code:
+      - '#include "assets/ast_sector_z.h"'
+    header:
+      - '#include "gfx.h"'
+      - '#include "sf64object.h"'
+      - '#include "sf64level.h"'
+      - '#include "sf64event.h"'
+      - '#include "sf64player.h"'
+      - '#include "sf64audio_external.h"'
+      - '#include "sf64mesg.h"'
+
+# Sector Z: Combat Zone
+D_SZ_6000000:
+  { type: TEXTURE, ctype: u8, format: IA8, width: 176, height: 12, offset: 0x6000000, symbol: D_SZ_6000000 }
+
+# One of the so called "Boss titles", unused in the game. A version of the same thing
+# seems to have been implemented in the 3DS version.
+# The text in japanese translates to:
+
+# Interspace anti-ship missile
+# Macbeth B
+D_SZ_6000840:
+  { type: TEXTURE, ctype: u8, format: IA8, width: 104, height: 26, offset: 0x6000840, symbol: D_SZ_6000840 }
+
+# Great Fox icon showed in the Radar
+D_SZ_60012D0:
+  { type: TEXTURE, ctype: u8, format: IA8, width: 16, height: 9, offset: 0x60012D0, symbol: D_SZ_60012D0 }
+
+D_SZ_6001360:
+  { type: GFX, offset: 0x6001360, symbol: D_SZ_6001360 }
+
+D_SZ_6001A10:
+  { type: GFX, offset: 0x6001A10, symbol: D_SZ_6001A10 }
+
+D_SZ_6001C80:
+  { type: TEXTURE, ctype: u8, format: CI8, width: 16, height: 16, offset: 0x06001C80, symbol: D_SZ_6001C80, tlut: 0x06001D80 }
+
+D_SZ_6001D80:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 16, offset: 0x06001D80, symbol: D_SZ_6001D80 }
+
+D_SZ_6001DA0:
+  { type: GFX, offset: 0x6001DA0, symbol: D_SZ_6001DA0 }
+
+D_SZ_60025F0:
+  { type: TEXTURE, ctype: u8, format: CI8, width: 32, height: 32, offset: 0x60025F0, symbol: D_SZ_60025F0, tlut: 0x060029F0 }
+
+D_SZ_60029F0:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 240, offset: 0x060029F0, symbol: D_SZ_60029F0 }
+
+D_SZ_6002BD0:
+  { type: TEXTURE, ctype: u8, format: CI8, width: 8, height: 8, offset: 0x06002BD0, symbol: D_SZ_6002BD0, tlut: 0x06002C10 }
+
+D_SZ_6002C10:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 16, offset: 0x06002C10, symbol: D_SZ_6002C10 }
+
+D_SZ_6002C30:
+  { type: TEXTURE, ctype: u8, format: CI8, width: 16, height: 16, offset: 0x06002C30, symbol: D_SZ_6002C30, tlut: 0x06002D30 }
+
+D_SZ_6002D30:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 88, offset: 0x06002D30, symbol: D_SZ_6002D30 }
+
+D_SZ_6002DE0:
+  { type: TEXTURE, ctype: u8, format: CI8, width: 16, height: 16, offset: 0x06002DE0, symbol: D_SZ_6002DE0, tlut: 0x06002EE0 }
+
+D_SZ_6002EE0:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 80, offset: 0x06002EE0, symbol: D_SZ_6002EE0 }
+
+D_SZ_6002F80:
+  { type: GFX, offset: 0x6002F80, symbol: D_SZ_6002F80 }
+
+# Sector Z Background
+D_SZ_6003010:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 64, height: 32, offset: 0x06003010, symbol: D_SZ_6003010 }
+
+D_SZ_6004010:
+  { type: GFX, offset: 0x6004010, symbol: D_SZ_6004010 }
+
+D_SZ_60041F8:
+  { type: TEXTURE, ctype: u8, format: CI8, width: 16, height: 16, offset: 0x060041F8, symbol: D_SZ_60041F8, tlut: 0x060042F8 }
+
+D_SZ_60042F8:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 24, offset: 0x060042F8, symbol: D_SZ_60042F8 }
+
+D_SZ_6004330:
+  { type: GFX, offset: 0x6004330, symbol: D_SZ_6004330 }
+
+D_SZ_6004458:
+  { type: TEXTURE, ctype: u8, format: CI8, width: 32, height: 8, offset: 0x06004458, symbol: D_SZ_6004458, tlut: 0x06004558 }
+
+D_SZ_6004558:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 8, offset: 0x06004558, symbol: D_SZ_6004558 }
+
+D_SZ_6004570:
+  { type: GFX, offset: 0x6004570, symbol: D_SZ_6004570 }
+
+D_SZ_60045E0:
+  { type: GFX, offset: 0x60045E0, symbol: D_SZ_60045E0 }
+
+D_SZ_60047E0:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x60047E0, symbol: D_SZ_60047E0 }
+
+D_SZ_6004FE0:
+  { type: GFX, offset: 0x6004FE0, symbol: D_SZ_6004FE0 }
+
+D_SZ_60054E0:
+  { type: TEXTURE, ctype: u8, format: CI8, width: 32, height: 32, offset: 0x060054E0, symbol: D_SZ_60054E0, tlut: 0x060058E0 }
+
+D_SZ_60058E0:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 240, offset: 0x060058E0, symbol: D_SZ_60058E0 }
+
+D_SZ_6005AC0:
+  { type: TEXTURE, ctype: u8, format: CI8, width: 16, height: 16, offset: 0x06005AC0, symbol: D_SZ_6005AC0, tlut: 0x06005BC0 }
+
+D_SZ_6005BC0:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 24, offset: 0x06005BC0, symbol: D_SZ_6005BC0 }
+
+D_SZ_6005BF0:
+  { type: GFX, offset: 0x6005BF0, symbol: D_SZ_6005BF0 }
+
+D_SZ_6006090:
+  { type: TEXTURE, ctype: u8, format: CI8, width: 32, height: 32, offset: 0x06006090, symbol: D_SZ_6006090, tlut: 0x06006490 }
+
+D_SZ_6006490:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 232, offset: 0x06006490, symbol: D_SZ_6006490 }
+
+D_SZ_6006660:
+  { type: GFX, offset: 0x6006660, symbol: D_SZ_6006660 }
+
+D_SZ_6006780:
+  { type: GFX, offset: 0x6006780, symbol: D_SZ_6006780 }
+
+D_SZ_6006A30:
+  { type: GFX, offset: 0x6006A30, symbol: D_SZ_6006A30 }
+
+D_SZ_6006BD8:
+  { type: TEXTURE, ctype: u8, format: CI8, width: 16, height: 16, offset: 0x06006BD8, symbol: D_SZ_6006BD8, tlut: 0x06006CD8 }
+
+D_SZ_6006CD8:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 16, offset: 0x06006CD8, symbol: D_SZ_6006CD8 }
+
+D_SZ_6006D64:
+  { type: SF64:ANIM, offset: 0x6006D64, symbol: D_SZ_6006D64 }
+
+D_SZ_6006E50: 
+  { type: SF64:SKELETON, offset: 0x6006E50, symbol: D_SZ_6006E50 }
+
+D_SZ_6006E70:
+  { type: SF64:ENVIRONMENT, offset: 0x6006E70, symbol: D_SZ_6006E70 }
+
+D_SZ_6006EB4:
+  { type: SF64:OBJECT_INIT, offset: 0x6006EB4, symbol: D_SZ_6006EB4 }
+
+D_SZ_6007558:
+  {type: SF64:COLPOLY, count: 316, offset: 0x6007558, symbol: D_SZ_6007558, mesh_symbol: D_SZ_OFFSET }
+
+D_SZ_6009230:
+  { type: SF64:HITBOX, offset: 0x6009230, symbol: D_SZ_6009230 }
+
+D_SZ_600924C:
+  { type: SF64:HITBOX, offset: 0x600924C, symbol: D_SZ_600924C }
+
+D_SZ_60092E8:
+  { type: SF64:HITBOX, offset: 0x60092E8, symbol: D_SZ_60092E8 }
+
+D_SZ_6009388:
+  { type: SF64:HITBOX, offset: 0x6009388, symbol: D_SZ_6009388 }
+
+# size = 0x93B0

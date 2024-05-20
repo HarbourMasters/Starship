@@ -1,0 +1,253 @@
+:config:
+  segments:
+    - [0x06, 0xA8B470]
+  header:
+    code:
+      - '#include "assets/ast_area_6.h"'
+    header:
+      - '#include "gfx.h"'
+      - '#include "sf64object.h"'
+      - '#include "sf64level.h"'
+      - '#include "sf64event.h"'
+      - '#include "sf64player.h"'
+      - '#include "sf64audio_external.h"'
+      - '#include "sf64mesg.h"'
+D_A6_6000000:
+  { type: TEXTURE, ctype: u8, format: IA8, width: 104, height: 28, offset: 0x6000000, symbol: D_A6_6000000 }
+
+D_A6_6000B60:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 44, height: 44, offset: 0x06000B60, symbol: D_A6_6000B60 }
+
+D_A6_6001A80:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 44, height: 44, offset: 0x06001A80, symbol: D_A6_6001A80 }
+
+D_A6_60029A0:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 44, height: 44, offset: 0x060029A0, symbol: D_A6_60029A0 }
+
+D_A6_60038C0:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 44, height: 44, offset: 0x060038C0, symbol: D_A6_60038C0 }
+
+D_A6_60047E0:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 44, height: 44, offset: 0x060047E0, symbol: D_A6_60047E0 }
+
+D_A6_6005700:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 44, height: 44, offset: 0x06005700, symbol: D_A6_6005700 }
+
+D_A6_6006620:
+  { type: TEXTURE, ctype: u8, format: CI4, width: 48, height: 44, offset: 0x06006620, symbol: D_A6_6006620, tlut: 0x06006A40 }
+
+D_A6_6006A40:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 4, offset: 0x6006A40, symbol: D_A6_6006A40}
+
+D_A6_6008918:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x06008918, symbol: D_A6_6008918 }
+
+D_A6_6008B18:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x06008B18, symbol: D_A6_6008B18 }
+
+D_A6_6008D18:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x06008D18, symbol: D_A6_6008D18 }
+
+D_A6_6008F18:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x06008F18, symbol: D_A6_6008F18 }
+
+D_A6_6009718:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 16, offset: 0x06009718, symbol: D_A6_6009718 }
+
+D_A6_6009B18:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x06009B18, symbol: D_A6_6009B18 }
+
+D_A6_600E0C0:
+  { type: GFX, offset: 0x600E0C0, symbol: D_A6_600E0C0 }
+
+D_A6_600EBE8:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 16, offset: 0x0600EBE8, symbol: D_A6_600EBE8 }
+
+D_A6_600EFE8:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x0600EFE8, symbol: D_A6_600EFE8 }
+
+D_A6_600F1F0:
+  { type: GFX, offset: 0x600F1F0, symbol: D_A6_600F1F0 }
+
+D_A6_600F850:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x0600F850, symbol: D_A6_600F850 }
+
+D_A6_6010A88:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x06010A88, symbol: D_A6_6010A88 }
+
+D_A6_6011288:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 16, offset: 0x06011288, symbol: D_A6_6011288 }
+
+D_A6_6011688:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x06011688, symbol: D_A6_6011688 }
+
+D_A6_6011888:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width:  8, height:  8, offset: 0x06011888, symbol: D_A6_6011888 }
+
+D_A6_6011910:
+  { type: GFX, offset: 0x6011910, symbol: D_A6_6011910 }
+
+D_A6_6011D48:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x06011D48, symbol: D_A6_6011D48 }
+
+D_A6_6012550:
+  { type: GFX, offset: 0x6012550, symbol: D_A6_6012550 }
+
+D_A6_6012840:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x06012840, symbol: D_A6_6012840 }
+
+D_A6_6012A40:
+  { type: GFX, offset: 0x6012A40, symbol: D_A6_6012A40 }
+
+D_A6_6013CD8:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x06013CD8, symbol: D_A6_6013CD8 }
+
+D_A6_60144D8:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x060144D8, symbol: D_A6_60144D8 }
+
+D_A6_6014CD8:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x06014CD8, symbol: D_A6_6014CD8 }
+
+D_A6_60154D8:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x060154D8, symbol: D_A6_60154D8 }
+
+D_A6_6015CD8:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x06015CD8, symbol: D_A6_6015CD8 }
+
+D_A6_6015EE0:
+  { type: GFX, offset: 0x6015EE0, symbol: D_A6_6015EE0 }
+
+D_A6_6016190:
+  { type: GFX, offset: 0x6016190, symbol: D_A6_6016190 }
+
+D_A6_6017120:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x06017120, symbol: D_A6_6017120 }
+
+D_A6_6017920:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x06017920, symbol: D_A6_6017920 }
+
+D_A6_6017B20:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x06017B20, symbol: D_A6_6017B20 }
+
+D_A6_6017D20:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x06017D20, symbol: D_A6_6017D20 }
+
+D_A6_6017F20:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x06017F20, symbol: D_A6_6017F20 }
+
+D_A6_6018720:
+  { type: GFX, offset: 0x6018720, symbol: D_A6_6018720 }
+
+D_A6_60187F8:
+  { type: TEXTURE, ctype: u8, format: CI4, width: 16, height: 16, offset: 0x60187F8, symbol: D_A6_60187F8, tlut: 0x6018878}
+
+D_A6_6018878:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 8, offset: 0x6018878, symbol: D_A6_6018878}
+
+D_A6_6018994:
+  { type: SF64:ANIM, offset: 0x6018994, symbol: D_A6_6018994 }
+
+D_A6_6018BA0:
+  { type: SF64:SKELETON, offset: 0x6018BA0, symbol: D_A6_6018BA0 }
+
+D_A6_6018BF0:
+  { type: GFX, offset: 0x6018BF0, symbol: D_A6_6018BF0 }
+
+D_A6_6019130:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x06019130, symbol: D_A6_6019130 }
+
+D_A6_6019330:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x06019330, symbol: D_A6_6019330 }
+
+D_A6_6019530:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x06019530, symbol: D_A6_6019530 }
+
+D_A6_6019730:
+  { type: GFX, offset: 0x6019730, symbol: D_A6_6019730 }
+
+D_A6_6019B20:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x06019B20, symbol: D_A6_6019B20 }
+
+D_A6_6019D20:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x06019D20, symbol: D_A6_6019D20 }
+
+D_A6_6019F20:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x06019F20, symbol: D_A6_6019F20 }
+
+D_A6_601A120:
+  { type: GFX, offset: 0x601A120, symbol: D_A6_601A120 }
+
+D_A6_601A220:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x0601A220, symbol: D_A6_601A220 }
+
+D_A6_601AA20:
+  { type: GFX, offset: 0x601AA20, symbol: D_A6_601AA20 }
+
+D_A6_601AAA8:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x0601AAA8, symbol: D_A6_601AAA8 }
+
+D_A6_601B2B0:
+  { type: GFX, offset: 0x601B2B0, symbol: D_A6_601B2B0 }
+
+D_A6_601B338:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x0601B338, symbol: D_A6_601B338 }
+
+D_A6_601BB40:
+  { type: GFX, offset: 0x601BB40, symbol: D_A6_601BB40 }
+
+D_A6_601BF20:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 64, height: 32, offset: 0x0601BF20, symbol: D_A6_601BF20 }
+
+D_A6_601CF20:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 64, height: 32, offset: 0x0601CF20, symbol: D_A6_601CF20 }
+
+D_A6_601DF20:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 64, height: 32, offset: 0x0601DF20, symbol: D_A6_601DF20 }
+
+D_A6_601EF20:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 64, height: 32, offset: 0x0601EF20, symbol: D_A6_601EF20 }
+
+D_A6_601FF20:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 64, height: 32, offset: 0x0601FF20, symbol: D_A6_601FF20 }
+
+D_A6_6020F20:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 64, height: 32, offset: 0x06020F20, symbol: D_A6_6020F20 }
+
+D_A6_6021F20:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 64, height: 32, offset: 0x06021F20, symbol: D_A6_6021F20 }
+
+D_A6_6022F20:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 64, height: 32, offset: 0x06022F20, symbol: D_A6_6022F20 }
+
+D_A6_6023F20:
+  { type: SF64:ENVIRONMENT, offset: 0x6023F20, symbol: D_A6_6023F20}
+
+D_A6_6023F64:
+  { type: SF64:OBJECT_INIT, offset: 0x6023F64, symbol: D_A6_6023F64}
+
+D_A6_6027F50:
+  { type: SF64:SCRIPT, offset: 0x6027F50, symbol: D_A6_6027F50}
+
+D_A6_60280E0:
+  { type: SF64:HITBOX, offset: 0x60280E0, symbol: D_A6_60280E0 }
+
+D_A6_6028254:
+  { type: SF64:HITBOX, offset: 0x6028254, symbol: D_A6_6028254 }
+
+D_A6_60282A0:
+  { type: SF64:HITBOX, offset: 0x60282A0, symbol: D_A6_60282A0 }
+
+D_A6_6028454:
+  { type: SF64:HITBOX, offset: 0x6028454, symbol: D_A6_6028454 }
+
+D_A6_6028578:
+  { type: SF64:HITBOX, offset: 0x6028578, symbol: D_A6_6028578 }
+
+D_A6_6028760:
+  { type: SF64:ENVIRONMENT, offset: 0x6028760, symbol: D_A6_6028760}
+
+D_A6_60287A4:
+  { type: SF64:OBJECT_INIT, offset: 0x60287A4, symbol: D_A6_60287A4}
+
+D_A6_60289FC:
+  { type: SF64:SCRIPT, offset: 0x60289FC, symbol: D_A6_60289FC}

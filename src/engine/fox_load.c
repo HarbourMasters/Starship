@@ -1,13 +1,11 @@
 #include "global.h"
 #include "sf64dma.h"
 
-#define SEGMENT_SIZE(segment) ((ptrdiff_t) ((uintptr_t) (segment).end - (uintptr_t) (segment).start))
-
 u8 sFillTimer = 3;
 
 #include "fox_load_inits.c"
 
-OverlayInit sCurrentOverlay = {
+Scene sCurrentScene = {
     NO_OVERLAY,
     { /* 0x1 */ NO_SEGMENT,
       /* 0x2 */ NO_SEGMENT,
@@ -26,168 +24,170 @@ OverlayInit sCurrentOverlay = {
       /* 0xF */ NO_SEGMENT },
 };
 
-void Overlay_LoadSegment(void* vRomAddress, void* dest, ptrdiff_t size) {
+void Load_RomFile(void* vRomAddress, void* dest, ptrdiff_t size) {
     s32 i;
+
     Lib_FillScreen(true);
     sFillTimer = 3;
     D_game_80161A39 = true;
 }
 
-u8 Overlay_Init(OverlayInit* ovlInit) {
-
-    sCurrentOverlay = *ovlInit;
+u8 Load_SceneFiles(Scene* scene) {
+#ifdef 1
+    sCurrentScene = *scene;
     return true;
+#else
+    u8* ramPtr = SEGMENT_VRAM_START(ovl_i1);
+    u8 segment;
+    u8 changeScene = false;
 
-    // u8* ramPtr = SEGMENT_VRAM_START(ovl_i1);
-    // u8 segment;
-    // u8 changeOvl = false;
+    if (scene->ovl.rom.start == (0, sCurrentScene.ovl.rom.start)) { // fake because D_800CBDD4 is probably 2D array
+        ramPtr = ramPtr + SEGMENT_SIZE(scene->ovl.rom);
+        ramPtr = ramPtr + SEGMENT_SIZE(scene->ovl.bss);
+    } else {
+        sCurrentScene.ovl.rom.start = scene->ovl.rom.start;
+        sCurrentScene.ovl.rom.end = ramPtr;
+        if (scene->ovl.rom.start != 0) {
+            changeScene = true;
+            Load_RomFile(scene->ovl.rom.start, ramPtr, SEGMENT_SIZE(scene->ovl.rom));
+            ramPtr = ramPtr + SEGMENT_SIZE(scene->ovl.rom);
+            bzero(scene->ovl.bss.start, SEGMENT_SIZE(scene->ovl.bss));
+            ramPtr = ramPtr + SEGMENT_SIZE(scene->ovl.bss);
+        }
+    }
+    segment = 0;
+    while ((segment < 15) && (scene->assets[segment].start == sCurrentScene.assets[segment].start) &&
+           (changeScene == false)) {
+        if (scene->assets[segment].start != 0) {
+            gSegments[segment + 1] = K0_TO_PHYS(ramPtr);
+            gSPSegment(gUnkDisp1++, segment + 1, K0_TO_PHYS(ramPtr));
+            ramPtr = ramPtr + SEGMENT_SIZE(scene->assets[segment]);
+        }
+        segment += 1; // can't be ++
+    }
+    for (segment; segment < 15; segment += 1) {
+        sCurrentScene.assets[segment].start = scene->assets[segment].start;
+        sCurrentScene.assets[segment].end = ramPtr;
+        if (scene->assets[segment].start != 0) {
+            gSegments[segment + 1] = K0_TO_PHYS(ramPtr);
+            gSPSegment(gUnkDisp1++, segment + 1, K0_TO_PHYS(ramPtr));
+            Load_RomFile(scene->assets[segment].start, ramPtr, SEGMENT_SIZE(scene->assets[segment]));
+            ramPtr = ramPtr + SEGMENT_SIZE(scene->assets[segment]);
+        }
+    }
 
-    // if (ovlInit->ovl.rom.start == (0, sCurrentOverlay.ovl.rom.start)) { // fake because D_800CBDD4 is probably 2D array
-    //     ramPtr = ramPtr + SEGMENT_SIZE(ovlInit->ovl.rom);
-    //     ramPtr = ramPtr + SEGMENT_SIZE(ovlInit->ovl.bss);
-    // } else {
-    //     sCurrentOverlay.ovl.rom.start = ovlInit->ovl.rom.start;
-    //     sCurrentOverlay.ovl.rom.end = ramPtr;
-    //     if (ovlInit->ovl.rom.start != 0) {
-    //         changeOvl = true;
-    //         Overlay_LoadSegment(ovlInit->ovl.rom.start, ramPtr, SEGMENT_SIZE(ovlInit->ovl.rom));
-    //         ramPtr = ramPtr + SEGMENT_SIZE(ovlInit->ovl.rom);
-    //         bzero(ovlInit->ovl.bss.start, SEGMENT_SIZE(ovlInit->ovl.bss));
-    //         ramPtr = ramPtr + SEGMENT_SIZE(ovlInit->ovl.bss);
-    //     }
-    // }
-    // segment = 0;
-    // while ((segment < 15) && (ovlInit->assets[segment].start == sCurrentOverlay.assets[segment].start) &&
-    //        changeOvl == 0) {
-    //     if (ovlInit->assets[segment].start != 0) {
-    //         gSegments[segment + 1] = K0_TO_PHYS(ramPtr);
-    //         gSPSegment(gUnkDisp1++, segment + 1, K0_TO_PHYS(ramPtr));
-    //         ramPtr = ramPtr + SEGMENT_SIZE(ovlInit->assets[segment]);
-    //     }
-    //     segment += 1;
-    // }
-    // for (segment; segment < 15; segment += 1) {
-    //     sCurrentOverlay.assets[segment].start = ovlInit->assets[segment].start;
-    //     sCurrentOverlay.assets[segment].end = ramPtr;
-    //     if (ovlInit->assets[segment].start != 0) {
-    //         gSegments[segment + 1] = K0_TO_PHYS(ramPtr);
-    //         gSPSegment(gUnkDisp1++, segment + 1, K0_TO_PHYS(ramPtr));
-    //         Overlay_LoadSegment(ovlInit->assets[segment].start, ramPtr, SEGMENT_SIZE(ovlInit->assets[segment]));
-    //         ramPtr = ramPtr + SEGMENT_SIZE(ovlInit->assets[segment]);
-    //     }
-    // }
-
-    // if (sFillTimer != 0) {
-    //     sFillTimer--;
-    // } else if (gStartNMI == 0) {
-    //     Lib_FillScreen(false);
-    // }
-    // return changeOvl;
+    if (sFillTimer != 0) {
+        sFillTimer--;
+    } else if (gStartNMI == 0) {
+        Lib_FillScreen(false);
+    }
+    return changeScene;
+#endif
 }
 
-u8 Overlay_Load(u8 ovlSetup, u8 ovlStage) {
-    u8 changeOvl;
+u8 Load_SceneSetup(u8 sceneId, u8 sceneSetup) {
+    u8 changeScene;
 
-    switch (ovlSetup) {
-        case OVL_SETUP_TITLE:
-            changeOvl = Overlay_Init(&sOvlmenu_Title[ovlStage]);
-            if (changeOvl == true) {
-                Audio_SetAudioSpec(0, 0x16);
+    switch (sceneId) {
+        case SCENE_TITLE:
+            changeScene = Load_SceneFiles(&sOvlmenu_Title[sceneSetup]);
+            if (changeScene == true) {
+                AUDIO_SET_SPEC(SFXCHAN_0, AUDIOSPEC_22);
             }
             break;
-        case OVL_SETUP_MENU:
-            changeOvl = Overlay_Init(&sOvlmenu_Option[ovlStage]);
+        case SCENE_MENU:
+            changeScene = Load_SceneFiles(&sOvlmenu_Option[sceneSetup]);
             break;
-        case OVL_SETUP_MAP:
-            changeOvl = Overlay_Init(&sOvlmenu_Map[ovlStage]);
+        case SCENE_MAP:
+            changeScene = Load_SceneFiles(&sOvlmenu_Map[sceneSetup]);
             break;
-        case OVL_SETUP_GAME_OVER:
-            changeOvl = Overlay_Init(&sOvlmenu_GameOver[ovlStage]);
+        case SCENE_GAME_OVER:
+            changeScene = Load_SceneFiles(&sOvlmenu_GameOver[sceneSetup]);
             break;
-        case OVL_SETUP_CORNERIA:
-            changeOvl = Overlay_Init(&sOvli1_Corneria[ovlStage]);
+        case SCENE_CORNERIA:
+            changeScene = Load_SceneFiles(&sOvli1_Corneria[sceneSetup]);
             break;
-        case OVL_SETUP_METEO:
-            changeOvl = Overlay_Init(&sOvli2_Meteo[ovlStage]);
+        case SCENE_METEO:
+            changeScene = Load_SceneFiles(&sOvli2_Meteo[sceneSetup]);
             break;
-        case OVL_SETUP_TITANIA:
-            changeOvl = Overlay_Init(&sOvli5_Titania[ovlStage]);
+        case SCENE_TITANIA:
+            changeScene = Load_SceneFiles(&sOvli5_Titania[sceneSetup]);
             break;
-        case OVL_SETUP_SECTOR_X:
-            changeOvl = Overlay_Init(&sOvli2_SectorX[ovlStage]);
+        case SCENE_SECTOR_X:
+            changeScene = Load_SceneFiles(&sOvli2_SectorX[sceneSetup]);
             break;
-        case OVL_SETUP_SECTOR_Z:
-            changeOvl = Overlay_Init(&sOvli4_SectorZ[ovlStage]);
+        case SCENE_SECTOR_Z:
+            changeScene = Load_SceneFiles(&sOvli4_SectorZ[sceneSetup]);
             break;
-        case OVL_SETUP_AQUAS:
-            changeOvl = Overlay_Init(&sOvli3_Aquas[ovlStage]);
+        case SCENE_AQUAS:
+            changeScene = Load_SceneFiles(&sOvli3_Aquas[sceneSetup]);
             break;
-        case OVL_SETUP_AREA_6:
-            changeOvl = Overlay_Init(&sOvli3_Area6[ovlStage]);
+        case SCENE_AREA_6:
+            changeScene = Load_SceneFiles(&sOvli3_Area6[sceneSetup]);
             break;
-        case OVL_SETUP_FORTUNA:
-            changeOvl = Overlay_Init(&sOvli4_Fortuna[ovlStage]);
+        case SCENE_FORTUNA:
+            changeScene = Load_SceneFiles(&sOvli4_Fortuna[sceneSetup]);
             break;
-        case OVL_SETUP_UNK_4:
-            changeOvl = Overlay_Init(&sOvli3_Unk4[ovlStage]);
+        case SCENE_UNK_4:
+            changeScene = Load_SceneFiles(&sOvli3_Unk4[sceneSetup]);
             break;
-        case OVL_SETUP_SECTOR_Y:
-            changeOvl = Overlay_Init(&sOvli6_SectorY[ovlStage]);
+        case SCENE_SECTOR_Y:
+            changeScene = Load_SceneFiles(&sOvli6_SectorY[sceneSetup]);
             break;
-        case OVL_SETUP_SOLAR:
-            changeOvl = Overlay_Init(&sOvli3_Solar[ovlStage]);
+        case SCENE_SOLAR:
+            changeScene = Load_SceneFiles(&sOvli3_Solar[sceneSetup]);
             break;
-        case OVL_SETUP_ZONESS:
-            changeOvl = Overlay_Init(&sOvli3_Zoness[ovlStage]);
+        case SCENE_ZONESS:
+            changeScene = Load_SceneFiles(&sOvli3_Zoness[sceneSetup]);
             break;
-        case OVL_SETUP_VENOM_ANDROSS:
-            changeOvl = Overlay_Init(&sOvli6_Andross[ovlStage]);
+        case SCENE_VENOM_ANDROSS:
+            changeScene = Load_SceneFiles(&sOvli6_Andross[sceneSetup]);
             break;
-        case OVL_SETUP_TRAINING:
-            changeOvl = Overlay_Init(&sOvli1_Training[ovlStage]);
+        case SCENE_TRAINING:
+            changeScene = Load_SceneFiles(&sOvli1_Training[sceneSetup]);
             break;
-        case OVL_SETUP_VENOM_1:
-            changeOvl = Overlay_Init(&sOvli1_Venom1[ovlStage]);
+        case SCENE_VENOM_1:
+            changeScene = Load_SceneFiles(&sOvli1_Venom1[sceneSetup]);
             break;
-        case OVL_SETUP_VENOM_2:
-            changeOvl = Overlay_Init(&sOvli6_Venom2[ovlStage]);
+        case SCENE_VENOM_2:
+            changeScene = Load_SceneFiles(&sOvli6_Venom2[sceneSetup]);
             break;
-        case OVL_SETUP_20:
-            changeOvl = Overlay_Init(&sOvli2_Setup20[ovlStage]);
+        case SCENE_20:
+            changeScene = Load_SceneFiles(&sOvli2_Setup20[sceneSetup]);
             break;
-        case OVL_SETUP_BOLSE:
-            changeOvl = Overlay_Init(&sOvli4_Bolse[ovlStage]);
+        case SCENE_BOLSE:
+            changeScene = Load_SceneFiles(&sOvli4_Bolse[sceneSetup]);
             break;
-        case OVL_SETUP_KATINA:
-            changeOvl = Overlay_Init(&sOvli4_Katina[ovlStage]);
+        case SCENE_KATINA:
+            changeScene = Load_SceneFiles(&sOvli4_Katina[sceneSetup]);
             break;
-        case OVL_SETUP_MACBETH:
-            changeOvl = Overlay_Init(&sOvli5_Macbeth[ovlStage]);
+        case SCENE_MACBETH:
+            changeScene = Load_SceneFiles(&sOvli5_Macbeth[sceneSetup]);
             break;
-        case OVL_SETUP_VERSUS:
-            changeOvl = Overlay_Init(&sOvli2_Versus[ovlStage]);
-            if (changeOvl == true) {
-                // Audio_SetAudioSpec(3, 0x310);
+        case SCENE_VERSUS:
+            changeScene = Load_SceneFiles(&sOvli2_Versus[sceneSetup]);
+            if (changeScene == true) {
+                AUDIO_SET_SPEC_ALT(SFXCHAN_3, AUDIOSPEC_16);
             }
             break;
-        case OVL_SETUP_LOGO:
-            changeOvl = Overlay_Init(&sNoOvl_Logo[ovlStage]); // Logo does not load an overlay file
-            if (changeOvl == true) {
-                // Audio_SetAudioSpec(0, 0xE);
+        case SCENE_LOGO:
+            changeScene = Load_SceneFiles(&sNoOvl_Logo[sceneSetup]); // Logo does not load an overlay file
+            if (changeScene == true) {
+                AUDIO_SET_SPEC(SFXCHAN_0, AUDIOSPEC_14);
             }
             break;
-        case OVL_SETUP_CREDITS:
-            changeOvl = Overlay_Init(&sOvlending_Ending[ovlStage]);
+        case SCENE_CREDITS:
+            changeScene = Load_SceneFiles(&sOvlending_Ending[sceneSetup]);
             break;
         default:
             (void) "DMA MODE ERROR %d\n";
-            changeOvl = false;
+            changeScene = false;
             break;
     }
-    return changeOvl;
+    return changeScene;
 }
 
-void Overlay_InitDma(void) {
+void Load_InitDmaAndMsg(void) {
     // Lib_DmaRead(SEGMENT_ROM_START(dma_table), SEGMENT_VRAM_START(dma_table), SEGMENT_ROM_SIZE(dma_table));
-    // Overlay_LoadSegment(SEGMENT_ROM_START(ast_radio), SEGMENT_VRAM_START(ast_radio), SEGMENT_ROM_SIZE(ast_radio));
+    // Load_RomFile(SEGMENT_ROM_START(ast_radio), SEGMENT_VRAM_START(ast_radio), SEGMENT_ROM_SIZE(ast_radio));
 }
