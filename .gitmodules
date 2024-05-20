@@ -1,15 +1,6 @@
-[submodule "tools/splat"]
-	path = tools/splat
-	url = https://github.com/ethteck/splat/
-[submodule "tools/asm-processor"]
-	path = tools/asm-processor
-	url = https://github.com/simonlindholm/asm-processor
 [submodule "tools/asm-differ"]
 	path = tools/asm-differ
 	url = https://github.com/simonlindholm/asm-differ
-[submodule "tools/m2c"]
-	path = tools/m2c
-	url = https://github.com/matt-kempster/m2c
 [submodule "tools/Torch"]
 	path = tools/Torch
 	url = https://github.com/HarbourMasters/Torch
