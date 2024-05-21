@@ -5,13 +5,13 @@
 #include "ResourceUtil.h"
 
 namespace SF64 {
-std::shared_ptr<LUS::IResource> ResourceFactoryBinarySkeletonV0::ReadResource(std::shared_ptr<LUS::File> file) {
+std::shared_ptr<Ship::IResource> ResourceFactoryBinarySkeletonV0::ReadResource(std::shared_ptr<Ship::File> file) {
     if (!FileHasValidFormatAndReader(file)) {
         return nullptr;
     }
 
     auto skel = std::make_shared<Skeleton>(file->InitData);
-    auto reader = std::get<std::shared_ptr<LUS::BinaryReader>>(file->Reader);
+    auto reader = std::get<std::shared_ptr<Ship::BinaryReader>>(file->Reader);
 
     auto count = reader->ReadUInt32();
     for(size_t i = 0; i < count; i++) {

@@ -1,6 +1,6 @@
 #include "Engine.h"
 #include "ui/ImguiUI.h"
-#include "ZAPDUtils/Utils/StringHelper.h"
+#include "StringHelper.h"
 #include "libultraship/src/Context.h"
 #include "resource/type/ResourceType.h"
 #include "resource/importers/AnimFactory.h"
@@ -17,6 +17,13 @@
 #include "resource/importers/SkeletonFactory.h"
 #include "resource/importers/Vec3fFactory.h"
 #include "resource/importers/Vec3sFactory.h"
+#include <Fast3D/Fast3dWindow.h>
+#include <DisplayListFactory.h>
+#include <TextureFactory.h>
+#include <MatrixFactory.h>
+#include <ArrayFactory.h>
+#include <BlobFactory.h>
+#include <VertexFactory.h>
 
 #include <Fast3D/gfx_pc.h>
 #include <Fast3D/gfx_rendering_api.h>
@@ -25,6 +32,7 @@
 #include <utility>
 
 extern "C" {
+extern uint16_t gFPS;
 float gInterpolationStep = 0.0f;
 #include <sf64thread.h>
 #include <macros.h>
@@ -34,13 +42,13 @@ GameEngine* GameEngine::Instance;
 
 GameEngine::GameEngine() {
     std::vector<std::string> OTRFiles;
-    if (const std::string cube_path = LUS::Context::GetPathRelativeToAppDirectory("sp.otr"); std::filesystem::exists(cube_path)) {
+    if (const std::string cube_path = Ship::Context::GetPathRelativeToAppDirectory("starship.otr"); std::filesystem::exists(cube_path)) {
         OTRFiles.push_back(cube_path);
     }
-    if (const std::string sm64_otr_path = LUS::Context::GetPathRelativeToAppBundle("sm64.otr"); std::filesystem::exists(sm64_otr_path)) {
+    if (const std::string sm64_otr_path = Ship::Context::GetPathRelativeToAppBundle("sm64.otr"); std::filesystem::exists(sm64_otr_path)) {
         OTRFiles.push_back(sm64_otr_path);
     }
-    if (const std::string patches_path = LUS::Context::GetPathRelativeToAppDirectory("mods"); !patches_path.empty() && std::filesystem::exists(patches_path)) {
+    if (const std::string patches_path = Ship::Context::GetPathRelativeToAppDirectory("mods"); !patches_path.empty() && std::filesystem::exists(patches_path)) {
         if (std::filesystem::is_directory(patches_path)) {
             for (const auto&p: std::filesystem::recursive_directory_iterator(patches_path)) {
                 if (StringHelper::IEquals(p.path().extension().string(), ".otr")) {
@@ -50,7 +58,7 @@ GameEngine::GameEngine() {
         }
     }
 
-    this->context = LUS::Context::CreateInstance("Starship", "ship", "starship.cfg.json", OTRFiles, {}, 3);
+    this->context = Ship::Context::CreateInstance("Starship", "ship", "starship.cfg.json", OTRFiles, {}, 3);
 
     auto loader = context->GetResourceManager()->GetResourceLoader();
     loader->RegisterResourceFactory(std::make_shared<SF64::ResourceFactoryBinaryAnimV0>(), RESOURCE_FORMAT_BINARY, "Animation", static_cast<uint32_t>(SF64::ResourceType::AnimData), 0);
@@ -58,7 +66,7 @@ GameEngine::GameEngine() {
     loader->RegisterResourceFactory(std::make_shared<SF64::ResourceFactoryBinaryLimbV0>(), RESOURCE_FORMAT_BINARY, "Limb", static_cast<uint32_t>(SF64::ResourceType::Limb), 0);
     loader->RegisterResourceFactory(std::make_shared<SF64::ResourceFactoryBinaryMessageV0>(), RESOURCE_FORMAT_BINARY, "Message", static_cast<uint32_t>(SF64::ResourceType::Message), 0);
     loader->RegisterResourceFactory(std::make_shared<SF64::ResourceFactoryBinaryMessageLookupV0>(), RESOURCE_FORMAT_BINARY, "MessageTable", static_cast<uint32_t>(SF64::ResourceType::MessageTable), 0);
-    loader->RegisterResourceFactory(std::make_shared<SF64::ResourceFactoryBinaryEnvSettingsV0>(), RESOURCE_FORMAT_BINARY, "EnvSettings", static_cast<uint32_t>(SF64::ResourceType::EnvSettings), 0);
+    loader->RegisterResourceFactory(std::make_shared<SF64::ResourceFactoryBinaryEnvSettingsV0>(), RESOURCE_FORMAT_BINARY, "EnvSettings", static_cast<uint32_t>(SF64::ResourceType::Environment), 0);
     loader->RegisterResourceFactory(std::make_shared<SF64::ResourceFactoryBinaryObjectInitV0>(), RESOURCE_FORMAT_BINARY, "ObjectInit", static_cast<uint32_t>(SF64::ResourceType::ObjectInit), 0);
     loader->RegisterResourceFactory(std::make_shared<SF64::ResourceFactoryBinaryHitboxV0>(), RESOURCE_FORMAT_BINARY, "Hitbox", static_cast<uint32_t>(SF64::ResourceType::Hitbox), 0);
     loader->RegisterResourceFactory(std::make_shared<SF64::ResourceFactoryBinaryScriptV0>(), RESOURCE_FORMAT_BINARY, "Script", static_cast<uint32_t>(SF64::ResourceType::Script), 0);
@@ -67,6 +75,13 @@ GameEngine::GameEngine() {
     loader->RegisterResourceFactory(std::make_shared<SF64::ResourceFactoryBinaryVec3fV0>(), RESOURCE_FORMAT_BINARY, "Vec3f", static_cast<uint32_t>(SF64::ResourceType::Vec3f), 0);
     loader->RegisterResourceFactory(std::make_shared<SF64::ResourceFactoryBinaryVec3sV0>(), RESOURCE_FORMAT_BINARY, "Vec3s", static_cast<uint32_t>(SF64::ResourceType::Vec3s), 0);
     loader->RegisterResourceFactory(std::make_shared<SF64::ResourceFactoryBinaryGenericArrayV0>(), RESOURCE_FORMAT_BINARY, "GenericArray", static_cast<uint32_t>(SF64::ResourceType::GenericArray), 0);
+    loader->RegisterResourceFactory(std::make_shared<LUS::ResourceFactoryBinaryTextureV0>(), RESOURCE_FORMAT_BINARY, "Texture", static_cast<uint32_t>(LUS::ResourceType::Texture), 0);
+    loader->RegisterResourceFactory(std::make_shared<LUS::ResourceFactoryBinaryTextureV1>(), RESOURCE_FORMAT_BINARY, "Texture", static_cast<uint32_t>(LUS::ResourceType::Texture), 1);
+    loader->RegisterResourceFactory(std::make_shared<LUS::ResourceFactoryBinaryVertexV0>(), RESOURCE_FORMAT_BINARY, "Vertex", static_cast<uint32_t>(LUS::ResourceType::Vertex), 0);
+    loader->RegisterResourceFactory(std::make_shared<LUS::ResourceFactoryBinaryDisplayListV0>(), RESOURCE_FORMAT_BINARY, "DisplayList", static_cast<uint32_t>(LUS::ResourceType::DisplayList), 0);
+    loader->RegisterResourceFactory(std::make_shared<LUS::ResourceFactoryBinaryMatrixV0>(), RESOURCE_FORMAT_BINARY, "Matrix", static_cast<uint32_t>(LUS::ResourceType::Matrix), 0);
+    loader->RegisterResourceFactory(std::make_shared<LUS::ResourceFactoryBinaryArrayV0>(), RESOURCE_FORMAT_BINARY, "Array", static_cast<uint32_t>(LUS::ResourceType::Array), 0);
+    loader->RegisterResourceFactory(std::make_shared<LUS::ResourceFactoryBinaryBlobV0>(), RESOURCE_FORMAT_BINARY, "Blob", static_cast<uint32_t>(LUS::ResourceType::Blob), 0);
 }
 
 void GameEngine::Create(){
@@ -84,7 +99,7 @@ void GameEngine::Destroy(){
 bool ShouldClearTextureCacheAtEndOfFrame = false;
 
 void GameEngine::StartFrame() const{
-    using LUS::KbScancode;
+    using Ship::KbScancode;
     const int32_t dwScancode = this->context->GetWindow()->GetLastScancode();
     this->context->GetWindow()->SetLastScancode(-1);
 
@@ -100,10 +115,6 @@ void GameEngine::StartFrame() const{
     this->context->GetWindow()->StartFrame();
 }
 
-void GameEngine::ProcessFrame(void (*run_one_game_iter)()) const {
-    this->context->GetWindow()->MainLoop(run_one_game_iter);
-}
-
 void GameEngine::RunCommands(Gfx* Commands) {
     gfx_run(Commands, {});
     gfx_end_frame();
@@ -115,13 +126,22 @@ void GameEngine::RunCommands(Gfx* Commands) {
 }
 
 void GameEngine::ProcessGfxCommands(Gfx* commands) {
+    auto wnd = std::dynamic_pointer_cast<Fast::Fast3dWindow>(Ship::Context::GetInstance()->GetWindow());
+
+    if (wnd == nullptr) {
+        return;
+    }
+
+    gFPS = 30;
+    wnd->SetRendererUCode(UcodeHandlers::ucode_f3dex);
+    wnd->SetTargetFps(30);
+    wnd->SetMaximumFrameLatency(1);
+
     RunCommands(commands);
-    Instance->context->GetWindow()->SetTargetFps(30);
-    Instance->context->GetWindow()->SetMaximumFrameLatency(1);
 }
 
 extern "C" uint32_t GameEngine_GetSampleRate() {
-    auto player = LUS::Context::GetInstance()->GetAudio()->GetAudioPlayer();
+    auto player = Ship::Context::GetInstance()->GetAudio()->GetAudioPlayer();
     if (player == nullptr) {
         return 0;
     }

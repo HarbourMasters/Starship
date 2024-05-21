@@ -8,7 +8,7 @@ Vtx D_Vtx_800DAC80[] = {
 Gfx D_Gfx_800DACA0[] = {
     // unused
     gsSPVertex(D_Vtx_800DAC80, 2, 0),
-    gsSPLine3D(0, 1, 0),
+    // gsSPLine3D(0, 1, 0),
     gsSPEndDisplayList(),
 };
 

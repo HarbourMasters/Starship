@@ -4,10 +4,10 @@
 /**
  * Quick Boot:
  * Define this variable to a game state to boot into that
- * state. Two presets (map and main menu) are provided. 
+ * state. Two presets (map and main menu) are provided.
  * For the full list of game states, see sf64thread.h.
 */
-// #define MODS_BOOT_STATE 3  // main menu
+#define MODS_BOOT_STATE 3  // main menu
 // #define MODS_BOOT_STATE 4 // map
 
 /**
@@ -16,7 +16,7 @@
  * an advanced level phase (warp zone or Andross fight).
  * Useful for debugging and speedrunning training.
 */
-#define MODS_LEVEL_SELECT 0
+#define MODS_LEVEL_SELECT 1
 
 /**
  * Sound Effects Jukebox:
@@ -37,17 +37,17 @@
  * FPS Counter:
  * Press L to toggle FPS Display
 */
-#define MODS_FPS_COUNTER 0
+#define MODS_FPS_COUNTER 1
 
 /**
  * RAM modifier:
  * Press C> while paused to cycle modes
- * 
+ *
  * Cheats:
  * Use D-Pad up and down to select a cheat
  * Use D-Pad left and right to set its value
  * Press L to set the value or twice to lock it
- * 
+ *
  * Object Ram Editor:
  * Watch up to seven addresses from the player and object arrays
  * Use D-Pad to move the cursor and change values

@@ -5,7 +5,7 @@ enum class ResourceType {
     // SF64
     AnimData = 0x414E494D,     // ANIM
     ColPoly = 0x43504C59,      // CPLY
-    EnvSettings = 0x454E5653,  // ENVS
+    Environment = 0x454E5653,  // ENVS
     Limb = 0x4C494D42,         // LIMB
     Message = 0x4D534720,      // MSG
     MessageTable = 0x4D534754, // MSGT

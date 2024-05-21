@@ -34,7 +34,7 @@
         G_TX_RENDERTILE, 0, cmt, maskt, shiftt, cms, masks, shifts); \
     gDPSetTileSize(pkt, G_TX_RENDERTILE, dw, dh,                     \
         ((width)-1) << G_TEXTURE_IMAGE_FRAC,                         \
-        ((height)-1) << G_TEXTURE_IMAGE_FRAC)                        \
+        ((height)-1) << G_TEXTURE_IMAGE_FRAC);                       \
 }
 
 #define gsDPSetupTile(fmt, siz, width, height, dw, dh,               \
@@ -82,10 +82,6 @@ typedef enum WipeMode {
     WIPE_HORIZONTAL,
     WIPE_VERTICAL,
 } WipeMode;
-
-typedef struct {
-    u8 r, g, b;
-} Color_RGB8; // size = 0x3
 
 typedef struct Color_RGBA32 {
     u8 r, g, b, a;

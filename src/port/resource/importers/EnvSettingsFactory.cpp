@@ -6,13 +6,13 @@
 
 namespace SF64 {
 
-std::shared_ptr<LUS::IResource> ResourceFactoryBinaryEnvSettingsV0::ReadResource(std::shared_ptr<LUS::File> file) {
+std::shared_ptr<Ship::IResource> ResourceFactoryBinaryEnvSettingsV0::ReadResource(std::shared_ptr<Ship::File> file) {
     if (!FileHasValidFormatAndReader(file)) {
         return nullptr;
     }
 
     auto env = std::make_shared<EnvSettings>(file->InitData);
-    auto reader = std::get<std::shared_ptr<LUS::BinaryReader>>(file->Reader);
+    auto reader = std::get<std::shared_ptr<Ship::BinaryReader>>(file->Reader);
 
     env->mSettings.type = reader->ReadInt32();
     env->mSettings.unk_04 = reader->ReadInt32();

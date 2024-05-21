@@ -44,7 +44,7 @@ s32 Message_GetCharCount(u16* msgPtr) {
     s32 count = 0;
     u16* msgChar = LOAD_ASSET(msgPtr);
 
-    if (CVarGetInteger("gLevelSelector", 0) && gCurrentPlanet == 6) {
+    if (CVarGetInteger("gLevelSelector", 0) && gCurrentLevel == 6) {
         return 0;
     }
 

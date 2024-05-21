@@ -2,7 +2,6 @@
 #define I4_H
 
 #include "stdbool.h"
-#include "structs.h"
 #include "sf64object.h"
 #include "sf64thread.h"
 #include "sf64player.h"

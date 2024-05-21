@@ -1,6 +1,6 @@
 #include "sys.h"
 
-#define qs1616(e) ((s32) ((e) * 0x00010000))
+#define qs1616(e) ((s32) ((e) *0x00010000))
 
 #define IPART(x) ((qs1616(x) >> 16) & 0xFFFF)
 #define FPART(x) (qs1616(x) & 0xFFFF)
@@ -17,12 +17,8 @@
         }                                                                                                          \
     }
 
-Mtx gIdentityMtx = gdSPDefMtx(
-    1.0f, 0.0f, 0.0f, 0.0f,
-    0.0f, 1.0f, 0.0f, 0.0f,
-    0.0f, 0.0f, 1.0f, 0.0f,
-    0.0f, 0.0f, 0.0f, 1.0f
-);
+Mtx gIdentityMtx =
+    gdSPDefMtx(1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f);
 
 Matrix gIdentityMatrix = { {
     { 1.0f, 0.0f, 0.0f, 0.0f },
@@ -32,9 +28,9 @@ Matrix gIdentityMatrix = { {
 } };
 
 Matrix* gGfxMatrix;
-Matrix sGfxMatrixStack[0x150];
+Matrix sGfxMatrixStack[0x20];
 Matrix* gCalcMatrix;
-Matrix sCalcMatrixStack[0x150];
+Matrix sCalcMatrixStack[0x20];
 
 // Copies src Matrix into dst
 void Matrix_Copy(Matrix* dst, Matrix* src) {
@@ -65,211 +61,72 @@ void Matrix_Mult(Matrix* mtx, Matrix* tf, u8 mode) {
     f32 ry;
     f32 rz;
     f32 rw;
-
-    //---COL1---
-    f32 cx = mfB->xx;
-    f32 cy = mfB->xy;
-    f32 cz = mfB->xz;
-    f32 cw = mfB->xw;
-    //--------
-
-    rx = mfA->xx;
-    ry = mfA->yx;
-    rz = mfA->zx;
-    rw = mfA->wx;
-    dest->xx = (cx * rx) + (cy * ry) + (cz * rz) + (cw * rw);
-
-    rx = mfA->xy;
-    ry = mfA->yy;
-    rz = mfA->zy;
-    rw = mfA->wy;
-    dest->xy = (cx * rx) + (cy * ry) + (cz * rz) + (cw * rw);
-
-    rx = mfA->xz;
-    ry = mfA->yz;
-    rz = mfA->zz;
-    rw = mfA->wz;
-    dest->xz = (cx * rx) + (cy * ry) + (cz * rz) + (cw * rw);
-
-    rx = mfA->xw;
-    ry = mfA->yw;
-    rz = mfA->zw;
-    rw = mfA->ww;
-    dest->xw = (cx * rx) + (cy * ry) + (cz * rz) + (cw * rw);
-
-    //---2Col---
-    cx = mfB->yx;
-    cy = mfB->yy;
-    cz = mfB->yz;
-    cw = mfB->yw;
-    //--------
-    rx = mfA->xx;
-    ry = mfA->yx;
-    rz = mfA->zx;
-    rw = mfA->wx;
-    dest->yx = (cx * rx) + (cy * ry) + (cz * rz) + (cw * rw);
-
-    rx = mfA->xy;
-    ry = mfA->yy;
-    rz = mfA->zy;
-    rw = mfA->wy;
-    dest->yy = (cx * rx) + (cy * ry) + (cz * rz) + (cw * rw);
-
-    rx = mfA->xz;
-    ry = mfA->yz;
-    rz = mfA->zz;
-    rw = mfA->wz;
-    dest->yz = (cx * rx) + (cy * ry) + (cz * rz) + (cw * rw);
-
-    rx = mfA->xw;
-    ry = mfA->yw;
-    rz = mfA->zw;
-    rw = mfA->ww;
-    dest->yw = (cx * rx) + (cy * ry) + (cz * rz) + (cw * rw);
-
-    //---3Col---
-    cx = mfB->zx;
-    cy = mfB->zy;
-    cz = mfB->zz;
-    cw = mfB->zw;
-    //--------
-    rx = mfA->xx;
-    ry = mfA->yx;
-    rz = mfA->zx;
-    rw = mfA->wx;
-    dest->zx = (cx * rx) + (cy * ry) + (cz * rz) + (cw * rw);
-
-    rx = mfA->xy;
-    ry = mfA->yy;
-    rz = mfA->zy;
-    rw = mfA->wy;
-    dest->zy = (cx * rx) + (cy * ry) + (cz * rz) + (cw * rw);
-
-    rx = mfA->xz;
-    ry = mfA->yz;
-    rz = mfA->zz;
-    rw = mfA->wz;
-    dest->zz = (cx * rx) + (cy * ry) + (cz * rz) + (cw * rw);
-
-    rx = mfA->xw;
-    ry = mfA->yw;
-    rz = mfA->zw;
-    rw = mfA->ww;
-    dest->zw = (cx * rx) + (cy * ry) + (cz * rz) + (cw * rw);
-
-    //---4Col---
-    cx = mfB->wx;
-    cy = mfB->wy;
-    cz = mfB->wz;
-    cw = mfB->ww;
-    //--------
-    rx = mfA->xx;
-    ry = mfA->yx;
-    rz = mfA->zx;
-    rw = mfA->wx;
-    dest->wx = (cx * rx) + (cy * ry) + (cz * rz) + (cw * rw);
-
-    rx = mfA->xy;
-    ry = mfA->yy;
-    rz = mfA->zy;
-    rw = mfA->wy;
-    dest->wy = (cx * rx) + (cy * ry) + (cz * rz) + (cw * rw);
-
-    rx = mfA->xz;
-    ry = mfA->yz;
-    rz = mfA->zz;
-    rw = mfA->wz;
-    dest->wz = (cx * rx) + (cy * ry) + (cz * rz) + (cw * rw);
-
-    rx = mfA->xw;
-    ry = mfA->yw;
-    rz = mfA->zw;
-    rw = mfA->ww;
-    dest->ww = (cx * rx) + (cy * ry) + (cz * rz) + (cw * rw);
-}
-
-void Matrix_MtxFCopy(MtxF* dest, MtxF* src) {
-    dest->xx = src->xx;
-    dest->yx = src->yx;
-    dest->zx = src->zx;
-    dest->wx = src->wx;
-    dest->xy = src->xy;
-    dest->yy = src->yy;
-    dest->zy = src->zy;
-    dest->wy = src->wy;
-    dest->xx = src->xx;
-    dest->yx = src->yx;
-    dest->zx = src->zx;
-    dest->wx = src->wx;
-    dest->xy = src->xy;
-    dest->yy = src->yy;
-    dest->zy = src->zy;
-    dest->wy = src->wy;
-    dest->xz = src->xz;
-    dest->yz = src->yz;
-    dest->zz = src->zz;
-    dest->wz = src->wz;
-    dest->xw = src->xw;
-    dest->yw = src->yw;
-    dest->zw = src->zw;
-    dest->ww = src->ww;
-    dest->xz = src->xz;
-    dest->yz = src->yz;
-    dest->zz = src->zz;
-    dest->wz = src->wz;
-    dest->xw = src->xw;
-    dest->yw = src->yw;
-    dest->zw = src->zw;
-    dest->ww = src->ww;
-}
-
-// Copies tf into mtx (MTXMODE_NEW) or applies it to mtx (MTXMODE_APPLY)
-void Matrix_Mult(Matrix* mtx, Matrix* tf, u8 mode) {
-    MtxF* cmf = mtx->m;
+    s32 i0;
+    s32 i1;
+    s32 i2;
+    s32 i3;
 
     if (mode == 1) {
-        MtxFMtxFMult(cmf, tf->m, cmf);
+        rx = mtx->m[0][0];
+        ry = mtx->m[1][0];
+        rz = mtx->m[2][0];
+        rw = mtx->m[3][0];
+
+        for (i0 = 0; i0 < 4; i0++) {
+            mtx->m[i0][0] = (rx * tf->m[i0][0]) + (ry * tf->m[i0][1]) + (rz * tf->m[i0][2]) + (rw * tf->m[i0][3]);
+        }
+
+        rx = mtx->m[0][1];
+        ry = mtx->m[1][1];
+        rz = mtx->m[2][1];
+        rw = mtx->m[3][1];
+
+        for (i1 = 0; i1 < 4; i1++) {
+            mtx->m[i1][1] = (rx * tf->m[i1][0]) + (ry * tf->m[i1][1]) + (rz * tf->m[i1][2]) + (rw * tf->m[i1][3]);
+        }
+
+        rx = mtx->m[0][2];
+        ry = mtx->m[1][2];
+        rz = mtx->m[2][2];
+        rw = mtx->m[3][2];
+
+        for (i2 = 0; i2 < 4; i2++) {
+            mtx->m[i2][2] = (rx * tf->m[i2][0]) + (ry * tf->m[i2][1]) + (rz * tf->m[i2][2]) + (rw * tf->m[i2][3]);
+        }
+
+        rx = mtx->m[0][3];
+        ry = mtx->m[1][3];
+        rz = mtx->m[2][3];
+        rw = mtx->m[3][3];
+
+        for (i3 = 0; i3 < 4; i3++) {
+            mtx->m[i3][3] = (rx * tf->m[i3][0]) + (ry * tf->m[i3][1]) + (rz * tf->m[i3][2]) + (rw * tf->m[i3][3]);
+        }
     } else {
-        Matrix_MtxFCopy(cmf, tf->m);
+        Matrix_Copy(mtx, tf);
     }
 }
 
 // Creates a translation matrix in mtx (MTXF_NEW) or applies one to mtx (MTXF_APPLY)
 void Matrix_Translate(Matrix* mtx, f32 x, f32 y, f32 z, u8 mode) {
-    MtxF* cmf = mtx->m;
-    f32 tempX;
-    f32 tempY;
+    f32 rx;
+    f32 ry;
+    s32 i;
 
     if (mode == 1) {
-        tempX = cmf->xx;
-        tempY = cmf->xy;
-        cmf->xw += tempX * x + tempY * y + cmf->xz * z;
-        tempX = cmf->yx;
-        tempY = cmf->yy;
-        cmf->yw += tempX * x + tempY * y + cmf->yz * z;
-        tempX = cmf->zx;
-        tempY = cmf->zy;
-        cmf->zw += tempX * x + tempY * y + cmf->zz * z;
-        tempX = cmf->wx;
-        tempY = cmf->wy;
-        cmf->ww += tempX * x + tempY * y + cmf->wz * z;
+        for (i = 0; i < 4; i++) {
+            rx = mtx->m[0][i];
+            ry = mtx->m[1][i];
+
+            mtx->m[3][i] += (rx * x) + (ry * y) + (mtx->m[2][i] * z);
+        }
     } else {
-        cmf->yx = 0.0f;
-        cmf->zx = 0.0f;
-        cmf->wx = 0.0f;
-        cmf->xy = 0.0f;
-        cmf->zy = 0.0f;
-        cmf->wy = 0.0f;
-        cmf->xz = 0.0f;
-        cmf->yz = 0.0f;
-        cmf->wz = 0.0f;
-        cmf->xx = 1.0f;
-        cmf->yy = 1.0f;
-        cmf->zz = 1.0f;
-        cmf->ww = 1.0f;
-        cmf->xw = x;
-        cmf->yw = y;
-        cmf->zw = z;
+        mtx->m[3][0] = x;
+        mtx->m[3][1] = y;
+        mtx->m[3][2] = z;
+        mtx->m[0][1] = mtx->m[0][2] = mtx->m[0][3] = mtx->m[1][0] = mtx->m[1][2] = mtx->m[1][3] = mtx->m[2][0] =
+            mtx->m[2][1] = mtx->m[2][3] = 0.0f;
+        mtx->m[0][0] = mtx->m[1][1] = mtx->m[2][2] = mtx->m[3][3] = 1.0f;
     }
 }
 
@@ -280,35 +137,21 @@ void Matrix_Scale(Matrix* mtx, f32 xScale, f32 yScale, f32 zScale, u8 mode) {
     s32 i;
 
     if (mode == 1) {
-        cmf->xx *= x;
-        cmf->yx *= x;
-        cmf->zx *= x;
-        cmf->xy *= y;
-        cmf->yy *= y;
-        cmf->zy *= y;
-        cmf->xz *= z;
-        cmf->yz *= z;
-        cmf->zz *= z;
-        cmf->wx *= x;
-        cmf->wy *= y;
-        cmf->wz *= z;
+        for (i = 0; i < 4; i++) {
+            rx = mtx->m[0][i];
+            ry = mtx->m[1][i];
+
+            mtx->m[0][i] = rx * xScale;
+            mtx->m[1][i] = ry * yScale;
+            mtx->m[2][i] *= zScale;
+        }
     } else {
-        cmf->yx = 0.0f;
-        cmf->zx = 0.0f;
-        cmf->wx = 0.0f;
-        cmf->xy = 0.0f;
-        cmf->zy = 0.0f;
-        cmf->wy = 0.0f;
-        cmf->xz = 0.0f;
-        cmf->yz = 0.0f;
-        cmf->wz = 0.0f;
-        cmf->xw = 0.0f;
-        cmf->yw = 0.0f;
-        cmf->zw = 0.0f;
-        cmf->ww = 1.0f;
-        cmf->xx = x;
-        cmf->yy = y;
-        cmf->zz = z;
+        mtx->m[0][0] = xScale;
+        mtx->m[1][1] = yScale;
+        mtx->m[2][2] = zScale;
+        mtx->m[0][1] = mtx->m[0][2] = mtx->m[0][3] = mtx->m[1][0] = mtx->m[1][2] = mtx->m[1][3] = mtx->m[2][0] =
+            mtx->m[2][1] = mtx->m[2][3] = mtx->m[3][0] = mtx->m[3][1] = mtx->m[3][2] = 0.0f;
+        mtx->m[3][3] = 1.0f;
     }
 }
 
@@ -320,60 +163,23 @@ void Matrix_RotateX(Matrix* mtx, f32 angle, u8 mode) {
     f32 rz;
     s32 i;
 
+    sn = __sinf(angle);
+    cs = __cosf(angle);
     if (mode == 1) {
-        if (x != 0) {
-            cmf = mtx->m;
+        for (i = 0; i < 4; i++) {
+            ry = mtx->m[1][i];
+            rz = mtx->m[2][i];
 
-            sin = __sinf(x);
-            cos = __cosf(x);
-
-            tempY = cmf->xy;
-            tempZ = cmf->xz;
-            cmf->xy = tempY * cos + tempZ * sin;
-            cmf->xz = tempZ * cos - tempY * sin;
-
-            tempY = cmf->yy;
-            tempZ = cmf->yz;
-            cmf->yy = tempY * cos + tempZ * sin;
-            cmf->yz = tempZ * cos - tempY * sin;
-
-            tempY = cmf->zy;
-            tempZ = cmf->zz;
-            cmf->zy = tempY * cos + tempZ * sin;
-            cmf->zz = tempZ * cos - tempY * sin;
-
-            tempY = cmf->wy;
-            tempZ = cmf->wz;
-            cmf->wy = tempY * cos + tempZ * sin;
-            cmf->wz = tempZ * cos - tempY * sin;
+            mtx->m[1][i] = (ry * cs) + (rz * sn);
+            mtx->m[2][i] = (rz * cs) - (ry * sn);
         }
     } else {
-        cmf = mtx->m;
-
-        if (x != 0) {
-            sin = __sinf(x);
-            cos = __cosf(x);
-        } else {
-            sin = zero;
-            cos = one;
-        }
-
-        cmf->xx = one;
-        cmf->yx = zero;
-        cmf->zx = zero;
-        cmf->wx = zero;
-        cmf->xy = zero;
-        cmf->yy = cos;
-        cmf->zy = sin;
-        cmf->wy = zero;
-        cmf->xz = zero;
-        cmf->yz = -sin;
-        cmf->zz = cos;
-        cmf->wz = zero;
-        cmf->xw = zero;
-        cmf->yw = zero;
-        cmf->zw = zero;
-        cmf->ww = one;
+        mtx->m[1][1] = mtx->m[2][2] = cs;
+        mtx->m[1][2] = sn;
+        mtx->m[2][1] = -sn;
+        mtx->m[0][0] = mtx->m[3][3] = 1.0f;
+        mtx->m[0][1] = mtx->m[0][2] = mtx->m[0][3] = mtx->m[1][0] = mtx->m[1][3] = mtx->m[2][0] = mtx->m[2][3] =
+            mtx->m[3][0] = mtx->m[3][1] = mtx->m[3][2] = 0.0f;
     }
 }
 
@@ -385,60 +191,23 @@ void Matrix_RotateY(Matrix* mtx, f32 angle, u8 mode) {
     f32 rz;
     s32 i;
 
+    sn = __sinf(angle);
+    cs = __cosf(angle);
     if (mode == 1) {
-        if (y != 0.0f) {
-            cmf = mtx->m;
+        for (i = 0; i < 4; i++) {
+            rx = mtx->m[0][i];
+            rz = mtx->m[2][i];
 
-            sin = __sinf(y);
-            cos = __cosf(y);
-
-            tempX = cmf->xx;
-            tempZ = cmf->xz;
-            cmf->xx = tempX * cos - tempZ * sin;
-            cmf->xz = tempX * sin + tempZ * cos;
-
-            tempX = cmf->yx;
-            tempZ = cmf->yz;
-            cmf->yx = tempX * cos - tempZ * sin;
-            cmf->yz = tempX * sin + tempZ * cos;
-
-            tempX = cmf->zx;
-            tempZ = cmf->zz;
-            cmf->zx = tempX * cos - tempZ * sin;
-            cmf->zz = tempX * sin + tempZ * cos;
-
-            tempX = cmf->wx;
-            tempZ = cmf->wz;
-            cmf->wx = tempX * cos - tempZ * sin;
-            cmf->wz = tempX * sin + tempZ * cos;
+            mtx->m[0][i] = (rx * cs) - (rz * sn);
+            mtx->m[2][i] = (rx * sn) + (rz * cs);
         }
     } else {
-        cmf = mtx->m;
-
-        if (y != 0.0f) {
-            sin = __sinf(y);
-            cos = __cosf(y);
-        } else {
-            cos = one;
-            sin = zero;
-        }
-
-        cmf->yx = zero;
-        cmf->wx = zero;
-        cmf->xy = zero;
-        cmf->zy = zero;
-        cmf->wy = zero;
-        cmf->yz = zero;
-        cmf->wz = zero;
-        cmf->xw = zero;
-        cmf->yw = zero;
-        cmf->zw = zero;
-        cmf->yy = one;
-        cmf->ww = one;
-        cmf->xx = cos;
-        cmf->zz = cos;
-        cmf->zx = -sin;
-        cmf->xz = sin;
+        mtx->m[0][0] = mtx->m[2][2] = cs;
+        mtx->m[0][2] = -sn;
+        mtx->m[2][0] = sn;
+        mtx->m[1][1] = mtx->m[3][3] = 1.0f;
+        mtx->m[0][1] = mtx->m[0][3] = mtx->m[1][0] = mtx->m[1][2] = mtx->m[1][3] = mtx->m[2][1] = mtx->m[2][3] =
+            mtx->m[3][0] = mtx->m[3][1] = mtx->m[3][2] = 0.0f;
     }
 }
 
@@ -450,154 +219,117 @@ void Matrix_RotateZ(Matrix* mtx, f32 angle, u8 mode) {
     f32 ry;
     s32 i;
 
+    sn = __sinf(angle);
+    cs = __cosf(angle);
     if (mode == 1) {
-        if (z != 0) {
-            cmf = mtx->m;
+        for (i = 0; i < 4; i++) {
+            rx = mtx->m[0][i];
+            ry = mtx->m[1][i];
 
-            sin = __sinf(z);
-            cos = __cosf(z);
-
-            tempX = cmf->xx;
-            tempY = cmf->xy;
-            cmf->xx = tempX * cos + tempY * sin;
-            cmf->xy = tempY * cos - tempX * sin;
-
-            tempX = cmf->yx;
-            tempY = cmf->yy;
-            cmf->yx = tempX * cos + tempY * sin;
-            cmf->yy = tempY * cos - tempX * sin;
-
-            tempX = cmf->zx;
-            tempY = cmf->zy;
-            cmf->zx = tempX * cos + tempY * sin;
-            cmf->zy = tempY * cos - tempX * sin;
-
-            tempX = cmf->wx;
-            tempY = cmf->wy;
-            cmf->wx = tempX * cos + tempY * sin;
-            cmf->wy = tempY * cos - tempX * sin;
+            mtx->m[0][i] = (rx * cs) + (ry * sn);
+            mtx->m[1][i] = (ry * cs) - (rx * sn);
         }
     } else {
-        cmf = mtx->m;
-
-        if (z != 0) {
-            sin = __sinf(z);
-            cos = __cosf(z);
-        } else {
-            sin = 0.0f;
-            cos = 1.0f;
-        }
-
-        cmf->zx = 0.0f;
-        cmf->wx = 0.0f;
-        cmf->zy = 0.0f;
-        cmf->wy = 0.0f;
-        cmf->xz = 0.0f;
-        cmf->yz = 0.0f;
-        cmf->wz = 0.0f;
-        cmf->xw = 0.0f;
-        cmf->yw = 0.0f;
-        cmf->zw = 0.0f;
-        cmf->zz = 1.0f;
-        cmf->ww = 1.0f;
-        cmf->xx = cos;
-        cmf->yy = cos;
-        cmf->yx = sin;
-        cmf->xy = -sin;
+        mtx->m[0][0] = mtx->m[1][1] = cs;
+        mtx->m[0][1] = sn;
+        mtx->m[1][0] = -sn;
+        mtx->m[2][2] = mtx->m[3][3] = 1.0f;
+        mtx->m[0][2] = mtx->m[0][3] = mtx->m[1][2] = mtx->m[1][3] = mtx->m[2][0] = mtx->m[2][1] = mtx->m[2][3] =
+            mtx->m[3][0] = mtx->m[3][1] = mtx->m[3][2] = 0.0f;
     }
 }
 
 // Creates rotation matrix about a given vector axis in mtx (MTXF_NEW) or applies one to mtx (MTXF_APPLY).
 // The vector specifying the axis does not need to be a unit vector.
-void Matrix_RotateAxis(Matrix* mtx, f32 angle, f32 x, f32 y, f32 z, u8 mode) {
-    MtxF* cmf;
-    f32 sin;
-    f32 cos;
-    f32 versin;
-    f32 temp1;
-    f32 temp2;
-    f32 temp3;
-    f32 temp4;
+void Matrix_RotateAxis(Matrix* mtx, f32 angle, f32 axisX, f32 axisY, f32 axisZ, u8 mode) {
+    f32 rx;
+    f32 ry;
+    f32 rz;
+    f32 norm;
+    f32 cxx;
+    f32 cyx;
+    f32 czx;
+    f32 cxy;
+    f32 cyy;
+    f32 czy;
+    f32 cxz;
+    f32 cyz;
+    f32 czz;
+    f32 xx;
+    f32 yy;
+    f32 zz;
+    f32 xy;
+    f32 yz;
+    f32 xz;
+    f32 sinA;
+    f32 cosA;
 
-    if (mode == 1) {
-        if (angle != 0) {
-            cmf = mtx->m;
+    norm = sqrtf((axisX * axisX) + (axisY * axisY) + (axisZ * axisZ));
+    if (norm != 0.0) {
+        axisX /= norm;
+        axisY /= norm;
+        axisZ /= norm;
+        sinA = __sinf(angle);
+        cosA = __cosf(angle);
+        xx = axisX * axisX;
+        yy = axisY * axisY;
+        zz = axisZ * axisZ;
+        xy = axisX * axisY;
+        yz = axisY * axisZ;
+        xz = axisX * axisZ;
 
-            sin = __sinf(angle);
-            cos = __cosf(angle);
+        if (mode == 1) {
+            cxx = (1.0f - xx) * cosA + xx;
+            cyx = (1.0f - cosA) * xy + axisZ * sinA;
+            czx = (1.0f - cosA) * xz - axisY * sinA;
 
-            temp1 = cmf->xx;
-            temp2 = cmf->xy;
-            temp3 = cmf->xz;
-            temp4 = (x * temp1 + y * temp2 + z * temp3) * (1.0f - cos);
-            cmf->xx = temp1 * cos + x * temp4 + sin * (temp2 * z - temp3 * y);
-            cmf->xy = temp2 * cos + y * temp4 + sin * (temp3 * x - temp1 * z);
-            cmf->xz = temp3 * cos + z * temp4 + sin * (temp1 * y - temp2 * x);
+            cxy = (1.0f - cosA) * xy - axisZ * sinA;
+            cyy = (1.0f - yy) * cosA + yy;
+            czy = (1.0f - cosA) * yz + axisX * sinA;
 
-            temp1 = cmf->yx;
-            temp2 = cmf->yy;
-            temp3 = cmf->yz;
-            temp4 = (x * temp1 + y * temp2 + z * temp3) * (1.0f - cos);
-            cmf->yx = temp1 * cos + x * temp4 + sin * (temp2 * z - temp3 * y);
-            cmf->yy = temp2 * cos + y * temp4 + sin * (temp3 * x - temp1 * z);
-            cmf->yz = temp3 * cos + z * temp4 + sin * (temp1 * y - temp2 * x);
+            cxz = (1.0f - cosA) * xz + axisY * sinA;
+            cyz = (1.0f - cosA) * yz - axisX * sinA;
+            czz = (1.0f - zz) * cosA + zz;
 
-            temp1 = cmf->zx;
-            temp2 = cmf->zy;
-            temp3 = cmf->zz;
-            temp4 = (x * temp1 + y * temp2 + z * temp3) * (1.0f - cos);
-            cmf->zx = temp1 * cos + x * temp4 + sin * (temp2 * z - temp3 * y);
-            cmf->zy = temp2 * cos + y * temp4 + sin * (temp3 * x - temp1 * z);
-            cmf->zz = temp3 * cos + z * temp4 + sin * (temp1 * y - temp2 * x);
-        }
-    } else {
-        cmf = mtx->m;
+            // loop doesn't seem to work here.
+            rx = mtx->m[0][0];
+            ry = mtx->m[0][1];
+            rz = mtx->m[0][2];
+            mtx->m[0][0] = (rx * cxx) + (ry * cxy) + (rz * cxz);
+            mtx->m[0][1] = (rx * cyx) + (ry * cyy) + (rz * cyz);
+            mtx->m[0][2] = (rx * czx) + (ry * czy) + (rz * czz);
 
-        if (angle != 0) {
-            sin = __sinf(angle);
-            cos = __cosf(angle);
-            versin = 1.0f - cos;
+            rx = mtx->m[1][0];
+            ry = mtx->m[1][1];
+            rz = mtx->m[1][2];
+            mtx->m[1][0] = (rx * cxx) + (ry * cxy) + (rz * cxz);
+            mtx->m[1][1] = (rx * cyx) + (ry * cyy) + (rz * cyz);
+            mtx->m[1][2] = (rx * czx) + (ry * czy) + (rz * czz);
 
-            cmf->xx = x * x * versin + cos;
-            cmf->yy = y * y * versin + cos;
-            cmf->zz = z * z * versin + cos;
-
-            if (0) {}
-
-            temp2 = x * versin * y;
-            temp3 = z * sin;
-            cmf->yx = temp2 + temp3;
-            cmf->xy = temp2 - temp3;
-
-            temp2 = x * versin * z;
-            temp3 = y * sin;
-            cmf->zx = temp2 - temp3;
-            cmf->xz = temp2 + temp3;
-
-            temp2 = y * versin * z;
-            temp3 = x * sin;
-            cmf->zy = temp2 + temp3;
-            cmf->yz = temp2 - temp3;
-
-            cmf->wx = cmf->wy = cmf->wz = cmf->xw = cmf->yw = cmf->zw = 0.0f;
-            cmf->ww = 1.0f;
+            rx = mtx->m[2][0];
+            ry = mtx->m[2][1];
+            rz = mtx->m[2][2];
+            mtx->m[2][0] = (rx * cxx) + (ry * cxy) + (rz * cxz);
+            mtx->m[2][1] = (rx * cyx) + (ry * cyy) + (rz * cyz);
+            mtx->m[2][2] = (rx * czx) + (ry * czy) + (rz * czz);
         } else {
-            cmf->xx = 1.0f;
-            cmf->yx = 0.0f;
-            cmf->zx = 0.0f;
-            cmf->wx = 0.0f;
-            cmf->xy = 0.0f;
-            cmf->yy = 1.0f;
-            cmf->zy = 0.0f;
-            cmf->wy = 0.0f;
-            cmf->xz = 0.0f;
-            cmf->yz = 0.0f;
-            cmf->zz = 1.0f;
-            cmf->wz = 0.0f;
-            cmf->xw = 0.0f;
-            cmf->yw = 0.0f;
-            cmf->zw = 0.0f;
-            cmf->ww = 1.0f;
+            mtx->m[0][0] = (1.0f - xx) * cosA + xx;
+            mtx->m[0][1] = (1.0f - cosA) * xy + axisZ * sinA;
+            mtx->m[0][2] = (1.0f - cosA) * xz - axisY * sinA;
+            mtx->m[0][3] = 0.0f;
+
+            mtx->m[1][0] = (1.0f - cosA) * xy - axisZ * sinA;
+            mtx->m[1][1] = (1.0f - yy) * cosA + yy;
+            mtx->m[1][2] = (1.0f - cosA) * yz + axisX * sinA;
+            mtx->m[1][3] = 0.0f;
+
+            mtx->m[2][0] = (1.0f - cosA) * xz + axisY * sinA;
+            mtx->m[2][1] = (1.0f - cosA) * yz - axisX * sinA;
+            mtx->m[2][2] = (1.0f - zz) * cosA + zz;
+            mtx->m[2][3] = 0.0f;
+
+            mtx->m[3][0] = mtx->m[3][1] = mtx->m[3][2] = 0.0f;
+            mtx->m[3][3] = 1.0f;
         }
     }
 }

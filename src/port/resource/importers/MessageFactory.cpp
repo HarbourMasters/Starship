@@ -3,13 +3,13 @@
 #include "spdlog/spdlog.h"
 
 namespace SF64 {
-std::shared_ptr<LUS::IResource> ResourceFactoryBinaryMessageV0::ReadResource(std::shared_ptr<LUS::File> file) {
+std::shared_ptr<Ship::IResource> ResourceFactoryBinaryMessageV0::ReadResource(std::shared_ptr<Ship::File> file) {
     if (!FileHasValidFormatAndReader(file)) {
         return nullptr;
     }
 
     auto msg = std::make_shared<Message>(file->InitData);
-    auto reader = std::get<std::shared_ptr<LUS::BinaryReader>>(file->Reader);
+    auto reader = std::get<std::shared_ptr<Ship::BinaryReader>>(file->Reader);
 
     auto size = reader->ReadUInt32();
 

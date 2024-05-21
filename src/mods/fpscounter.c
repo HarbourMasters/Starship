@@ -14,7 +14,7 @@
 static OSTime gLastOSTime = 0;
 static float gFrameTime = 0.0f;
 static u16 gFrames = 0;
-static u16 gFPS = 0;
+u16 gFPS = 0;
 static u8 gRenderFPS = false;
 
 static void CalculateFrameTimeFromOSTime(OSTime diff) {
@@ -28,20 +28,20 @@ static void Play_RenderFps(void) {
         gRenderFPS ^= 1;
     }
     if (gRenderFPS) {
-        OSTime newTime = osGetTime();
-        CalculateFrameTimeFromOSTime(newTime - gLastOSTime);
-        // If frame time is longer or equal to a second, update FPS counter.
-        if (gFrameTime >= 1.0f) {
-            gFPS = gFrames;
-            gFrames = 0;
-            gFrameTime -= 1.0f;
-        }
+        // OSTime newTime = osGetTime();
+        // CalculateFrameTimeFromOSTime(newTime - gLastOSTime);
+        // // If frame time is longer or equal to a second, update FPS counter.
+        // if (gFrameTime >= 1.0f) {
+        //     gFPS = gFrames;
+        //     gFrames = 0;
+        //     gFrameTime -= 1.0f;
+        // }
 
         /* Draw */
         RCP_SetupDL(&gMasterDisp, SETUPDL_83);
         gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 0, 255);
         Graphics_DisplaySmallText(FPS_COUNTER_X_POS, FPS_COUNTER_Y_POS, 1.0f, 1.0f, "FPS:");
         Graphics_DisplaySmallNumber(FPS_COUNTER_X_POS + 35, FPS_COUNTER_Y_POS, gFPS);
-        gLastOSTime = newTime;
+        // gLastOSTime = newTime;
     }
 }

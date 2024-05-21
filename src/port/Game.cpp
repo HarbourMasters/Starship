@@ -41,7 +41,9 @@ int main(int argc, char *argv[]) {
     Lib_FillScreen(1);
     Main_Initialize();
     Main_ThreadEntry(NULL);
-    GameEngine::Instance->ProcessFrame(push_frame);
+    while (WindowIsRunning()) {
+        push_frame();
+    }
     GameEngine::Instance->Destroy();
     return 0;
 }

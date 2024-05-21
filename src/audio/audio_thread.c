@@ -71,7 +71,7 @@ SPTask* AudioThread_CreateTask(void) {
     gCurAudioFrameDmaCount = 0;
     AudioLoad_DecreaseSampleDmaTtls();
     AudioLoad_ProcessLoads(gResetStatus);
-    if (osRecvMesg(gAudioUnkQueue, &sp38, 0) != -1) {
+    if (osRecvMesg(&gAudioTaskMesgQueue, &sp38, 0) != -1) {
         if (gResetStatus == 0) {
             gResetStatus = 5;
         }
@@ -110,8 +110,7 @@ SPTask* AudioThread_CreateTask(void) {
     gAudioRandom = gAiBuffers[sp4C][gAudioTaskCountQ & 0xFF] + gAudioRandom;
 
     sp4C = gAudioTaskIndexQ;
-
-    gAudioCurTask->msgQueue = NULL;
+    
     gAudioCurTask->msg = OS_MESG_PTR(NULL);
 
     task = &gAudioCurTask->task.t;
@@ -418,7 +417,7 @@ void AudioThread_ResetAudioHeap(s32 specId) {
     MQ_CLEAR_QUEUE(gAudioResetQueue);
 
     AudioThread_ResetCmdQueue();
-    osSendMesg(gAudioUnkQueue, OS_MESG_32(specId), 0);
+    osSendMesg(gAudioSpecQueue, OS_MESG_32(specId), 0);
 }
 
 void AudioThread_PreNMIReset(void) {

@@ -2783,7 +2783,7 @@ void Option_80199820(s32 arg0) {
 
     gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, 255);
 
-    TextureRect_4bCI(&gMasterDisp, D_VS_MENU_70118E0, D_VS_MENU_70123F8, 80, 71, D_menu_801AF148[arg0],
+    TextureRect_CI4(&gMasterDisp, D_VS_MENU_70118E0, D_VS_MENU_70123F8, 80, 71, D_menu_801AF148[arg0],
                      D_menu_801AF158[arg0], 1.0f, 1.0f);
 
     gDPSetPrimColor(gMasterDisp++, 0, 0, D_menu_801AF22C[arg0], D_menu_801AF23C[arg0], D_menu_801AF24C[arg0], 255);
@@ -2827,7 +2827,7 @@ void Option_80199820(s32 arg0) {
 
     gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, 255);
 
-    TextureRect_16bRGBA(&gMasterDisp, D_menu_801AF20C[arg0], 44, 44, D_menu_801AF148[arg0] + D_menu_801AF1B4,
+    TextureRect_RGBA16(&gMasterDisp, D_menu_801AF20C[arg0], 44, 44, D_menu_801AF148[arg0] + D_menu_801AF1B4,
                         D_menu_801AF158[arg0] + D_menu_801AF1B8, 0.7f, 0.7f);
 
     var_a2 = 24;
@@ -2847,7 +2847,7 @@ void Option_80199EA8(void) {
     RCP_SetupDL_76();
 
     gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, 255);
-    TextureRect_16bRGBA(&gMasterDisp, D_VS_MENU_700E9A0, 144, 42, 87.0f, 84, 1.0f, 1.0f);
+    TextureRect_RGBA16(&gMasterDisp, D_VS_MENU_700E9A0, 144, 42, 87.0f, 84, 1.0f, 1.0f);
 }
 
 void Option_VersusStageInit(void) {

@@ -583,7 +583,7 @@ void func_hud_80086444(void) {
         RCP_SetupDL(&gMasterDisp, SETUPDL_76);
         gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, 255);
 
-        TextureRect_8bIA(&gMasterDisp, D_800D1C9C[i], D_800D1CA4[i], 19, D_800D1CB4[i], D_800D1CBC[i] - 28.0f, 1.0f,
+        TextureRect_IA8(&gMasterDisp, D_800D1C9C[i], D_800D1CA4[i], 19, D_800D1CB4[i], D_800D1CBC[i] - 28.0f, 1.0f,
                          1.0f);
     }
 }
@@ -662,7 +662,7 @@ void func_hud_80086664(f32 x, f32 y) {
         func_hud_80086444();
     }
 
-    TextureRect_8bIA(&gMasterDisp, D_800D1AEC[j].unk_0C, D_800D1AEC[j].unk_10, D_800D1AEC[j].unk_14, x2, y2, 1.0f,
+    TextureRect_IA8(&gMasterDisp, D_800D1AEC[j].unk_0C, D_800D1AEC[j].unk_10, D_800D1AEC[j].unk_14, x2, y2, 1.0f,
                      1.0f);
 
     if ((gSavedObjectLoadIndex == 0) && (gAllRangeCheckpoint == 0) && (gCurrentLevel != LEVEL_VENOM_ANDROSS) &&
@@ -859,16 +859,16 @@ void HUD_DrawLevelClearScreen(void) {
     switch (temp) {
         case 1:
             if (boolTemp) {
-                TextureRect_8bIA(&gMasterDisp, aTextPLISHED, 136, 23, x + 50.0f, y + 50.0f, 1.0f, 1.0f);
+                TextureRect_IA8(&gMasterDisp, aTextPLISHED, 136, 23, x + 50.0f, y + 50.0f, 1.0f, 1.0f);
             } else {
-                TextureRect_8bIA(&gMasterDisp, aTextLETE, 80, 21, x + 66.0f, y + 50.0f, 1.0f, 1.0f);
+                TextureRect_IA8(&gMasterDisp, aTextLETE, 80, 21, x + 66.0f, y + 50.0f, 1.0f, 1.0f);
             }
 
         case 2:
             if (boolTemp) {
-                TextureRect_8bIA(&gMasterDisp, aTextACCOM, 120, 23, x - 62.0f, y + 50.0f, 1.0f, 1.0f);
+                TextureRect_IA8(&gMasterDisp, aTextACCOM, 120, 23, x - 62.0f, y + 50.0f, 1.0f, 1.0f);
             } else {
-                TextureRect_8bIA(&gMasterDisp, aTextCOMP, 96, 23, x - 22.0f, y + 50.0f, 1.0f, 1.0f);
+                TextureRect_IA8(&gMasterDisp, aTextCOMP, 96, 23, x - 22.0f, y + 50.0f, 1.0f, 1.0f);
             }
 
         case 3:
@@ -999,7 +999,7 @@ void func_hud_80087788(void) {
             gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, 255);
         }
 
-        TextureRect_16bRGBA(&gMasterDisp, D_800D1D18[j + 1], 44, 44, x[j][0], y[j][0], 1.0f, 1.0f);
+        TextureRect_RGBA16(&gMasterDisp, D_800D1D18[j + 1], 44, 44, x[j][0], y[j][0], 1.0f, 1.0f);
 
         func_hud_80086110(x[j][2], y[j][2], shield);
     }
@@ -1611,7 +1611,7 @@ void func_hud_80088970(void) {
                 RCP_SetupDL(&gMasterDisp, SETUPDL_76);
                 gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, 255);
 
-                TextureRect_8bIA(&gMasterDisp, D_800D1AEC[j].unk_0C, D_800D1AEC[j].unk_10, D_800D1AEC[j].unk_14, x2,
+                TextureRect_IA8(&gMasterDisp, D_800D1AEC[j].unk_0C, D_800D1AEC[j].unk_10, D_800D1AEC[j].unk_14, x2,
                                  y2 + i, 1.0f, 1.0f);
 
                 func_hud_80086C08(x1 - 10.0f, y0 - 4.0f, 4.7f, 2.8f);
@@ -2691,7 +2691,7 @@ void func_hud_8008C5C8(f32 arg0, f32 arg1, f32 arg2, s32 arg3) {
     };
     s32 i;
 
-    TextureRect_16bRGBA(&gMasterDisp, D_800D1EE8[arg3], 44, 44, arg0, arg1, arg2, arg2);
+    TextureRect_RGBA16(&gMasterDisp, D_800D1EE8[arg3], 44, 44, arg0, arg1, arg2, arg2);
 }
 
 void func_hud_8008C6F4(s32 idx, s32 arg1) {
@@ -2842,7 +2842,7 @@ void func_hud_8008CFB8(f32 arg0, f32 arg1, f32 arg2, f32 arg3) {
 
     // LTodo: [HD-Texture] Is broken
     u8* texture = (u8*) LOAD_ASSET(D_versus_3000BC0);
-    TextureRect_8bIA(&gMasterDisp, texture + 2 * ((640 * i) / 2), 80, 8, arg0, (8 * i * arg3) + arg1, arg2, arg3);
+    TextureRect_IA8(&gMasterDisp, texture + 2 * ((640 * i) / 2), 80, 8, arg0, (8 * i * arg3) + arg1, arg2, arg3);
 }
 
 void func_hud_8008D0DC(f32 arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4) {

@@ -34,7 +34,7 @@ set(VCPKG_TARGET_TRIPLET x64-mingw-static)
 endif()
 
 vcpkg_bootstrap()
-vcpkg_install_packages(fontconfig sdl2 zlib bzip2 libzip libpng getopt dirent libusb pthread glew glfw3)
+vcpkg_install_packages(fontconfig sdl2 zlib bzip2 libzip libpng getopt dirent libusb pthread glew glfw3 nlohmann-json tinyxml2 spdlog)
 endif()
 
 if (MSVC)
@@ -111,7 +111,7 @@ file(GLOB_RECURSE ALL_FILES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
 # Exclude specific files from the ALL_FILES list
 list(FILTER ALL_FILES EXCLUDE REGEX ".*.inc.c")
 
-list(FILTER ALL_FILES EXCLUDE REGEX "src/engine/fox_A4290_colheaders.c")
+list(FILTER ALL_FILES EXCLUDE REGEX "src/engine/fox_colheaders.c")
 list(FILTER ALL_FILES EXCLUDE REGEX "src/engine/fox_edata_info.c")
 list(FILTER ALL_FILES EXCLUDE REGEX "src/engine/fox_rcp_setup.c")
 list(FILTER ALL_FILES EXCLUDE REGEX "src/engine/fox_load_inits.c")

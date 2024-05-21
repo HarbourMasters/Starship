@@ -599,7 +599,7 @@ void TextureRect_CI8(Gfx** gfxPtr, u8* texture, u16* palette, u32 width, u32 hei
                         (s32) (1.0f / yScale * 1024.0f));
 }
 
-void TextureRect_16bRGBA(Gfx** gfxPtr, void* texture, u32 width, u32 height, f32 xPos, f32 yPos, f32 xScale,
+void TextureRect_RGBA16(Gfx** gfxPtr, void* texture, u32 width, u32 height, f32 xPos, f32 yPos, f32 xScale,
                          f32 yScale) {
     gDPSetTileCustom((*gfxPtr)++, G_IM_FMT_RGBA, G_IM_SIZ_16b, width, height, 0, G_TX_NOMIRROR | G_TX_CLAMP,
                      G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
@@ -613,7 +613,7 @@ void TextureRect_16bRGBA(Gfx** gfxPtr, void* texture, u32 width, u32 height, f32
                         (s32) (1.0f / yScale * 1024.0f));
 }
 
-void TextureRect_16bRGBA_MirX(Gfx** gfxPtr, void* texture, u32 width, u32 height, f32 xPos, f32 yPos, f32 xScale,
+void TextureRect_RGBA16_MirX(Gfx** gfxPtr, void* texture, u32 width, u32 height, f32 xPos, f32 yPos, f32 xScale,
                               f32 yScale) {
     gDPSetTileCustom((*gfxPtr)++, G_IM_FMT_RGBA, G_IM_SIZ_16b, width, height, 0, G_TX_NOMIRROR | G_TX_CLAMP,
                      G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
@@ -627,7 +627,7 @@ void TextureRect_16bRGBA_MirX(Gfx** gfxPtr, void* texture, u32 width, u32 height
                         (u16) (s32) (-1.0f / xScale * 1024.0f), (s32) (1.0f / yScale * 1024.0f));
 }
 
-void TextureRect_8bIA(Gfx** gfxPtr, void* texture, u32 width, u32 height, f32 xPos, f32 yPos, f32 xScale, f32 yScale) {
+void TextureRect_IA8(Gfx** gfxPtr, void* texture, u32 width, u32 height, f32 xPos, f32 yPos, f32 xScale, f32 yScale) {
     gDPSetTileCustom((*gfxPtr)++, G_IM_FMT_IA, G_IM_SIZ_8b, width, height, 0, G_TX_NOMIRROR | G_TX_CLAMP,
                      G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
 

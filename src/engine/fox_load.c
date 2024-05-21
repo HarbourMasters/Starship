@@ -29,11 +29,11 @@ void Load_RomFile(void* vRomAddress, void* dest, ptrdiff_t size) {
 
     Lib_FillScreen(true);
     sFillTimer = 3;
-    D_game_80161A39 = true;
+    // D_game_80161A39 = true;
 }
 
 u8 Load_SceneFiles(Scene* scene) {
-#ifdef 1
+#if 1
     sCurrentScene = *scene;
     return true;
 #else

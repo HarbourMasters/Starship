@@ -3,13 +3,13 @@
 #include "spdlog/spdlog.h"
 
 namespace SF64 {
-std::shared_ptr<LUS::IResource> ResourceFactoryBinaryAnimV0::ReadResource(std::shared_ptr<LUS::File> file) {
+std::shared_ptr<Ship::IResource> ResourceFactoryBinaryAnimV0::ReadResource(std::shared_ptr<Ship::File> file) {
     if (!FileHasValidFormatAndReader(file)) {
         return nullptr;
     }
 
     auto anim = std::make_shared<Animation>(file->InitData);
-    auto reader = std::get<std::shared_ptr<LUS::BinaryReader>>(file->Reader);
+    auto reader = std::get<std::shared_ptr<Ship::BinaryReader>>(file->Reader);
 
     int16_t frameCount = reader->ReadInt16();
     int16_t limbCount  = reader->ReadInt16();
