@@ -31,3 +31,7 @@ torch.hash.yml
 cmake-build-*/
 .idea/
 build*
+logs/
+starship.cfg.json
+default.sav
+imgui.ini
