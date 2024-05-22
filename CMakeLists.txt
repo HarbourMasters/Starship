@@ -118,6 +118,7 @@ list(FILTER ALL_FILES EXCLUDE REGEX "src/engine/fox_load_inits.c")
 list(FILTER ALL_FILES EXCLUDE REGEX "src/overlays/ovl_ending/fox_end2_data.c")
 list(FILTER ALL_FILES EXCLUDE REGEX "src/sys/sys_timer.c")
 list(FILTER ALL_FILES EXCLUDE REGEX "src/sys/sys_fault.c")
+list(FILTER ALL_FILES EXCLUDE REGEX "src/mods/object_ram.c")
 
 if (CMAKE_SYSTEM_NAME STREQUAL "iOS")
     set(IOS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/libultraship/ios)
@@ -173,7 +174,7 @@ if (MSVC)
 endif()
 
 #==============================================================================#
-# Libultraship Integration                                                            #
+# Libultraship Integration                                                     #
 #==============================================================================#
 
 include_directories(
@@ -209,6 +210,10 @@ include_directories(
   ${SDL2_INCLUDE_DIRS}
   ${GLEW_INCLUDE_DIRS}
 )
+
+add_subdirectory(libultraship ${CMAKE_CURRENT_SOURCE_DIR}/libultraship)
+add_dependencies(${PROJECT_NAME} libultraship)
+target_link_libraries(${PROJECT_NAME} PRIVATE libultraship)
 
 if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
 	if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
@@ -277,10 +282,7 @@ elseif ("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU|Clang|AppleClang")
 	)
 endif()
 
-add_subdirectory(libultraship ${CMAKE_CURRENT_SOURCE_DIR}/libultraship)
 
-add_dependencies(${PROJECT_NAME} libultraship)
-target_link_libraries(${PROJECT_NAME} PRIVATE libultraship)
 if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
 	set(ADDITIONAL_LIBRARY_DEPENDENCIES
         "$<$<BOOL:${USE_NETWORKING}>:SDL2_net::SDL2_net-static>"

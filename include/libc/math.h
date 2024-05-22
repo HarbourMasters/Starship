@@ -4,7 +4,7 @@
 #include <libultra/types.h>
 #include <math.h>
 
-#define M_PI    3.14159265358979323846264338327950288f
+#define M_PI    3.14159265358979323846f
 #define M_DTOR	(M_PI / 180.0f)
 #define M_RTOD	(180.0f / M_PI)
 #define M_SQRT2 1.41421356237309504880f
@@ -12,6 +12,20 @@
 #define FLT_MAX 340282346638528859811704183484516925440.0f
 #define SHT_MAX 32767.0f
 #define SHT_MINV (1.0f / SHT_MAX)
+
+typedef union {
+    struct {
+        u32 hi;
+        u32 lo;
+    } word;
+
+    f64 d;
+} du;
+
+typedef union {
+    u32 i;
+    f32 f;
+} fu;
 
 #define __floorf floorf
 #define __floor floor
