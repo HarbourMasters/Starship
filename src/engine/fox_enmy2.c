@@ -3300,7 +3300,7 @@ void ActorEvent_Update(ActorEvent* this) {
             }
 
             if (var_s0 == 3) {
-                this->info.hitbox = SEGMENTED_TO_VIRTUAL(D_ME_602F638);
+                this->info.hitbox = LOAD_ASSET(D_ME_602F638);
                 ActorEvent_ProcessScript(this);
             }
             break;
