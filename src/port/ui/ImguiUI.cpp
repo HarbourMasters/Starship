@@ -387,7 +387,7 @@ void DrawMenuBarIcon() {
 }
 
 void DrawGameMenu() {
-    if (UIWidgets::BeginMenu("Lylat64")) {
+    if (UIWidgets::BeginMenu("Starship")) {
         if (UIWidgets::MenuItem("Reset",
 #ifdef __APPLE__
                 "Command-R"
