@@ -156,12 +156,10 @@ void Ending_8018D638(u32 arg0, AssetInfo* asset) {
     gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, 255);
 
     if (gExpertMode != 0) {
-        for (i = 0; i < 240; i += 4) {
-            if (gVenomHardClear == 0) {
-                TextureRect_RGBA16(&gMasterDisp, gEndingNormalReward + 316 * i, 316, 4, 0.0f, i, 1.0f, 1.0f);
-            } else {
-                TextureRect_RGBA16(&gMasterDisp, gEndingExpertReward + 316 * i, 316, 4, 0.0f, i, 1.0f, 1.0f);
-            }
+        if (gVenomHardClear == 0) {
+            TextureRect_RGBA16(&gMasterDisp, gEndingNormalReward, 316, 240, 0.0f, 0.0f, 1.0f, 1.0f);
+        } else {
+            TextureRect_RGBA16(&gMasterDisp, gEndingExpertReward, 316, 240, 0.0f, 0.0f, 1.0f, 1.0f);
         }
     } else {
         D_ending_80192E70 = 7200;
