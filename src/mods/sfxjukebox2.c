@@ -42,7 +42,7 @@ void Jukebox_SelectWrap(u32* option, s32 range) {
     *option = (*option + range) % range;
 }
 
-Jukebox_SelectClamp(s32* option, s32 range, s32 skip) {
+void Jukebox_SelectClamp(s32* option, s32 range, s32 skip) {
     OSContPad* contPress = &gControllerPress[gMainController];
     OSContPad* contHold = &gControllerHold[gMainController];
 

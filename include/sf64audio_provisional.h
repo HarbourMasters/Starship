@@ -1011,8 +1011,8 @@ uintptr_t AudioHeap_SearchCaches(s32 tableType, s32 cache, s32 id);
 s32 AudioHeap_ResetStep(void);
 void* AudioHeap_SearchPermanentCache(s32 tableType, s32 id);
 u8* AudioHeap_AllocPermanent(s32 tableType, s32 id, u32 size);
-void* AudioHeap_AllocTemporarySampleCache(s32 size, s32 fontId, s32 sampleAddr, s8 medium);
-void* AudioHeap_AllocPersistentSampleCache(s32 size, s32 fontId, s32 sampleAddr, s8 medium);
+void* AudioHeap_AllocTemporarySampleCache(s32 size, s32 fontId, uintptr_t sampleAddr, s8 medium);
+void* AudioHeap_AllocPersistentSampleCache(s32 size, s32 fontId, uintptr_t sampleAddr, s8 medium);
 
 // audio_load
 void AudioLoad_DecreaseSampleDmaTtls(void);
