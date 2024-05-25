@@ -26,7 +26,6 @@ s32 Graphics_Printf(const char* fmt, ...) {
 }
 
 void Texture_Scroll(u16* texture, s32 width, s32 height, u8 mode) {
-    return;
     // LTodo: [HD-Textures] This is broken
     u16* pixel = LOAD_ASSET(texture);
     u16 tempPxl;
@@ -77,7 +76,6 @@ void Texture_Scroll(u16* texture, s32 width, s32 height, u8 mode) {
 }
 
 void Texture_Mottle(u16* dst, u16* src, u8 mode) {
-    return;
     s32 u;
     s32 v;
     u8* dst8;
@@ -98,7 +96,7 @@ void Texture_Mottle(u16* dst, u16* src, u8 mode) {
             break;
 
         case 3:
-            for (v = 0; v < 22 * 64; v += 64) { // should be 32 * 64?
+            for (v = 0; v < 32 * 64; v += 64) { // should be 32 * 64?
                 offset = __sinf((s32) (((v / 64) + (gGameFrameCount / 4)) % 32U) * (2 * M_PI / 8));
                 for (u = 0; u < 64; u++) {
                     dst[v + (offset + u) % 64U] = src[v + u];
