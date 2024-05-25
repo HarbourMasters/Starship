@@ -2618,7 +2618,7 @@ void func_hud_8008BD00(u8* texturePtr, s32 xPos, s32 yPos, u8 arg3) {
 
 void func_hud_8008C104(u16* srcTexture, u16* dstTexture) {
     u16 *src, *dst;
-    u16 buffer[1024];
+    u16 buffer[2048];
     f32 rowPhase;
     f32 angle;
     s32 j;
@@ -2631,7 +2631,7 @@ void func_hud_8008C104(u16* srcTexture, u16* dstTexture) {
     src = LOAD_ASSET(srcTexture);
     dst = LOAD_ASSET(dstTexture);
 
-    Texture_Scroll(srcTexture, width, height, 1);
+    Texture_Scroll(src, width, height, 1);
 
     halfHeight = height / 2;
 
