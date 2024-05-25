@@ -7,7 +7,9 @@
     header:
       - '#include "gfx.h"'
       - '#include "sf64object.h"'
-      
+  external_files:
+    - "assets/yaml/us/rev1/ast_8_ti.yaml"
+
 D_TI_A000000:
   {type: GFX, offset: 0xA000000, symbol: D_TI_A000000}
 
@@ -58,4 +60,3 @@ D_TI_A002170:
 
 D_TI_A009990:
   {type: SF64:ANIM, offset: 0xA009990, symbol: D_TI_A009990}
-

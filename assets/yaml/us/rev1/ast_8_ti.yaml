@@ -7,6 +7,9 @@
     header:
       - '#include "gfx.h"'
       - '#include "sf64object.h"'
+  external_files:
+    - "assets/yaml/us/rev1/ast_7_ti_2.yaml"
+    - "assets/yaml/us/rev1/ast_9_ti.yaml"
 
 D_TI_8000708: { type: SF64:ANIM, offset: 0x8000708, symbol: D_TI_8000708 }
 
@@ -19,6 +22,7 @@ D_TI_8000FC0: { type: TEXTURE, ctype: u16, format: IA16, width: 16, height: 16, 
 D_TI_80011C0: { type: GFX, offset: 0x80011C0, symbol: D_TI_80011C0 }
 
 D_TI_80012E8: { type: TEXTURE, ctype: u8, format: CI8, width: 16, height: 16, offset: 0x80012E8, symbol: D_TI_80012E8, tlut: 0x80013E8}
+
 D_TI_80013E8: { type: TEXTURE, ctype: u16, format: TLUT, colors: 88, offset: 0x80013E8, symbol: D_TI_80013E8}
 
 D_TI_80014A0: { type: GFX, offset: 0x80014A0, symbol: D_TI_80014A0 }
@@ -57,6 +61,7 @@ D_TI_80035A8: { type: TEXTURE, ctype: u16, format: TLUT, colors: 72, offset: 0x8
 D_TI_8003640: { type: GFX, offset: 0x8003640, symbol: D_TI_8003640 }
 
 D_TI_8004200: { type: TEXTURE, ctype: u8, format: CI8, width: 32, height: 32, offset: 0x8004200, symbol: D_TI_8004200, tlut: 0x8004600}
+
 D_TI_8004600: { type: TEXTURE, ctype: u16, format: TLUT, colors: 256, offset: 0x8004600, symbol: D_TI_8004600}
 
 D_TI_8008FE8: { type: SF64:ANIM, offset: 0x8008FE8, symbol: D_TI_8008FE8 }
