@@ -3045,7 +3045,7 @@ void Zoness_801986FC(Boss* bossZO, s32 arg1, f32 xOff, f32 yOff, f32 zOff, f32 y
             }
         }
     }
-    if (sp50 >= ARRAY_COUNT(gActors)) {
+    if (sp50 < ARRAY_COUNT(gActors)) {
         newActor->obj.status = OBJ_FREE;
     }
 }
