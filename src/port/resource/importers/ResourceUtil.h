@@ -13,6 +13,6 @@ template <typename T> T LoadChild(uint64_t crc) {
         return nullptr;
     }
     auto asset = Ship::Context::GetInstance()->GetResourceManager()->LoadResourceProcess(path);
-    return asset ? static_cast<T>(asset->GetRawPointer()) : nullptr;
+    return asset != nullptr ? static_cast<T>(asset->GetRawPointer()) : nullptr;
 }
 }
