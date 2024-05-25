@@ -275,7 +275,7 @@ typedef struct {
     /* 0x04A */ s16 unk_04A;
     /* 0x04C */ s16 timer_04C;
     /* 0x04E */ s16 counter_04E;
-    /* 0x050 */ s32 iwork[25];
+    /* 0x050 */ uintptr_t iwork[25];
     /* 0x0B4 */ s16 eventType;
     /* 0x0B6 */ s16 animFrame; // used for model type in ActorAllRange and ActorCutscene
     /* 0x0B8 */ s16 state;
