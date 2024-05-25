@@ -7,8 +7,6 @@
     header:
       - '#include "gfx.h"'
       - '#include "sf64object.h"'
-  external_files:
-    - "assets/yaml/us/rev1/ast_8_ti.yaml"
 
 D_AST_7_TI_1_7000000:
   { type: TEXTURE, ctype: u8, format: IA8, width: 96, height: 28, offset: 0x07000000, symbol: D_AST_7_TI_1_7000000, tlut: 0x07001108 }
