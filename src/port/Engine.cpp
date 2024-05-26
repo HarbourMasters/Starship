@@ -45,17 +45,9 @@ GameEngine::GameEngine() {
     const std::string main_path = Ship::Context::GetPathRelativeToAppDirectory("starship.otr");
     const std::string ship_otr_path = Ship::Context::GetPathRelativeToAppDirectory("sm64.otr");
 
-    std::vector<std::string> OTRFiles;
-
-    if (std::filesystem::exists(main_path)) {
-        OTRFiles.push_back(main_path);
-    } else {
-        GenAssetFile();
-        OTRFiles.push_back(main_path);
-    }
-    if (std::filesystem::exists(ship_otr_path)) {
-        OTRFiles.push_back(ship_otr_path);
-    }
+    std::vector<std::string> OTRFiles = {
+        main_path, ship_otr_path
+    };
 
     if (const std::string patches_path = Ship::Context::GetPathRelativeToAppDirectory("mods"); !patches_path.empty() && std::filesystem::exists(patches_path)) {
         if (std::filesystem::is_directory(patches_path)) {
@@ -65,6 +57,11 @@ GameEngine::GameEngine() {
                 }
             }
         }
+    }
+
+    AllocConsole();
+    if (!std::filesystem::exists(main_path)) {
+        GenAssetFile();
     }
 
     this->context = Ship::Context::CreateInstance("Starship", "ship", "starship.cfg.json", OTRFiles, {}, 3);
