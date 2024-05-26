@@ -5,6 +5,7 @@
 #include "Context.h"
 #include "spdlog/spdlog.h"
 #include "portable-file-dialogs.h"
+#include <port/Engine.h>
 
 std::unordered_map<std::string, GameEntry> mGameList = {
     { "f7475fb11e7e6830f82883412638e8390791ab87", { "Star Fox 64 (U) (V1.1)", false } },
@@ -53,7 +54,7 @@ bool GameExtractor::GenerateOTR() const {
     try {
         Companion::Instance->Init(ExportType::Binary);
     } catch (const std::exception& e) {
-        SPDLOG_ERROR("Failed to generate OTR: {}", e.what());
+        GameEngine::ShowMessage("Failed to generate OTR", e.what());
         exit(1);
     }
 

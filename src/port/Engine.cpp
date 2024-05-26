@@ -98,18 +98,18 @@ void GameEngine::GenAssetFile() {
     auto extractor = GameExtractor();
 
     if (!extractor.SelectGameFromUI()) {
-        // TODO: Show error message
+        ShowMessage("Extractor", "No game selected.");
         return;
     }
     if (!extractor.ValidateChecksum()) {
-        // TODO: Show error message
+        ShowMessage("Extractor", "Invalid checksum.");
         return;
     }
 
     extractor.DecompressGame();
 
     if (!extractor.GenerateOTR()) {
-        // TODO: Show error message
+        ShowMessage("Extractor", "Failed to generate OTR.");
     }
 }
 
@@ -169,6 +169,15 @@ void GameEngine::ProcessGfxCommands(Gfx* commands) {
     wnd->SetMaximumFrameLatency(1);
 
     RunCommands(commands);
+}
+
+void GameEngine::ShowMessage(const char* title, const char* message) {
+#if defined(__SWITCH__)
+    SPDLOG_ERROR(message);
+#else
+    SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, title, message, nullptr);
+    SPDLOG_ERROR(message);
+#endif
 }
 
 extern "C" uint32_t GameEngine_GetSampleRate() {

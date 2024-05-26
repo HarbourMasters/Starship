@@ -28,7 +28,8 @@ class GameEngine {
     static void RunCommands(Gfx* Commands);
     void ProcessFrame(void (*run_one_game_iter)()) const;
     static void Destroy();
-    static void ProcessGfxCommands(Gfx* commands);
+    static void ProcessGfxCommands(Gfx* commands);    
+    static void ShowMessage(const char* title, const char* message);
 };
 #else
 void GameEngine_ProcessGfxCommands(Gfx* commands);
