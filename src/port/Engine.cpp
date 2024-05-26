@@ -59,7 +59,10 @@ GameEngine::GameEngine() {
         }
     }
 
+#ifdef _WIN32
     AllocConsole();
+#endif
+
     if (!std::filesystem::exists(main_path)) {
         GenAssetFile();
     }
