@@ -73,19 +73,6 @@ set(VERSION us)
 set(USE_NETWORKING OFF)
 set(SKIP_XCODE_VERSION_CHECK ON)
 
-# Add compile definitions for the target
-add_compile_definitions(
-    VERSION_US=1
-    ENABLE_RUMBLE=1
-    F3DEX_GBI=1
-    _LANGUAGE_C
-    _USE_MATH_DEFINES
-    CIMGUI_DEFINE_ENUMS_AND_STRUCTS
-    NON_MATCHING=1
-    NON_EQUIVALENT=1
-	AVOID_UB=1
-)
-
 # Find necessary libraries
 if (UNIX AND NOT APPLE)
 find_package(OpenGL REQUIRED)
@@ -188,6 +175,31 @@ if (MSVC)
   endif()
 endif()
 
+#=======================================================================#
+# Torch Integration                                                     #
+#=======================================================================#
+
+set(USE_STANDALONE OFF)
+set(BUILD_STORMLIB OFF)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/tools/Torch)
+add_dependencies(${PROJECT_NAME} torch)
+
+#=======================================================================#
+# Set Compile Definitions                                               #
+#=======================================================================#
+
+add_compile_definitions(
+    VERSION_US=1
+    ENABLE_RUMBLE=1
+    F3DEX_GBI=1
+    _LANGUAGE_C
+    _USE_MATH_DEFINES
+    CIMGUI_DEFINE_ENUMS_AND_STRUCTS
+    NON_MATCHING=1
+    NON_EQUIVALENT=1
+	AVOID_UB=1
+)
+
 #==============================================================================#
 # Libultraship Integration                                                     #
 #==============================================================================#
@@ -228,7 +240,9 @@ include_directories(
 
 add_subdirectory(libultraship ${CMAKE_CURRENT_SOURCE_DIR}/libultraship)
 add_dependencies(${PROJECT_NAME} libultraship)
+target_link_libraries(torch PRIVATE storm)
 target_link_libraries(${PROJECT_NAME} PRIVATE libultraship)
+target_link_libraries(${PROJECT_NAME} PRIVATE torch)
 
 if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
 	if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")

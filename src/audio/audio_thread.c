@@ -248,6 +248,7 @@ void AudioThread_InitQueues(void) {
 }
 
 void AudioThread_QueueCmd(u32 opArgs, void** data) {
+    return;
     AudioCmd* audioCmd = &gThreadCmdBuffer[gThreadCmdWritePos & 0xFF];
 
     audioCmd->opArgs = opArgs;

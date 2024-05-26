@@ -21,7 +21,9 @@ class GameEngine {
     std::shared_ptr<Ship::Context> context;
 
     GameEngine();
+    static void GenAssetFile();
     static void Create();
+    void Init();
     void StartFrame() const;
     static void RunCommands(Gfx* Commands);
     void ProcessFrame(void (*run_one_game_iter)()) const;

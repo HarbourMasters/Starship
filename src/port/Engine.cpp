@@ -1,6 +1,7 @@
 #include "Engine.h"
 #include "ui/ImguiUI.h"
 #include "StringHelper.h"
+#include "extractor/GameExtractor.h"
 #include "libultraship/src/Context.h"
 #include "resource/type/ResourceType.h"
 #include "resource/importers/AnimFactory.h"
@@ -41,13 +42,21 @@ float gInterpolationStep = 0.0f;
 GameEngine* GameEngine::Instance;
 
 GameEngine::GameEngine() {
+    const std::string main_path = Ship::Context::GetPathRelativeToAppDirectory("starship.otr");
+    const std::string ship_otr_path = Ship::Context::GetPathRelativeToAppDirectory("sm64.otr");
+
     std::vector<std::string> OTRFiles;
-    if (const std::string cube_path = Ship::Context::GetPathRelativeToAppDirectory("starship.otr"); std::filesystem::exists(cube_path)) {
-        OTRFiles.push_back(cube_path);
+
+    if (std::filesystem::exists(main_path)) {
+        OTRFiles.push_back(main_path);
+    } else {
+        GenAssetFile();
+        OTRFiles.push_back(main_path);
     }
-    if (const std::string sm64_otr_path = Ship::Context::GetPathRelativeToAppBundle("sm64.otr"); std::filesystem::exists(sm64_otr_path)) {
-        OTRFiles.push_back(sm64_otr_path);
+    if (std::filesystem::exists(ship_otr_path)) {
+        OTRFiles.push_back(ship_otr_path);
     }
+
     if (const std::string patches_path = Ship::Context::GetPathRelativeToAppDirectory("mods"); !patches_path.empty() && std::filesystem::exists(patches_path)) {
         if (std::filesystem::is_directory(patches_path)) {
             for (const auto&p: std::filesystem::recursive_directory_iterator(patches_path)) {
@@ -82,11 +91,33 @@ GameEngine::GameEngine() {
     loader->RegisterResourceFactory(std::make_shared<LUS::ResourceFactoryBinaryMatrixV0>(), RESOURCE_FORMAT_BINARY, "Matrix", static_cast<uint32_t>(LUS::ResourceType::Matrix), 0);
     loader->RegisterResourceFactory(std::make_shared<LUS::ResourceFactoryBinaryArrayV0>(), RESOURCE_FORMAT_BINARY, "Array", static_cast<uint32_t>(LUS::ResourceType::Array), 0);
     loader->RegisterResourceFactory(std::make_shared<LUS::ResourceFactoryBinaryBlobV0>(), RESOURCE_FORMAT_BINARY, "Blob", static_cast<uint32_t>(LUS::ResourceType::Blob), 0);
+    GameUI::SetupGuiElements();
+}
+
+void GameEngine::GenAssetFile() {
+    auto extractor = GameExtractor();
+
+    if (!extractor.SelectGameFromUI()) {
+        // TODO: Show error message
+        return;
+    }
+    if (!extractor.ValidateChecksum()) {
+        // TODO: Show error message
+        return;
+    }
+
+    extractor.DecompressGame();
+
+    if (!extractor.GenerateOTR()) {
+        // TODO: Show error message
+    }
 }
 
 void GameEngine::Create(){
-    const auto instance = Instance = new GameEngine();
-    GameUI::SetupGuiElements();
+
+
+    Instance = new GameEngine();
+
 #if defined(__SWITCH__) || defined(__WIIU__)
     CVarRegisterInteger("gControlNav", 1); // always enable controller nav on switch/wii u
 #endif
