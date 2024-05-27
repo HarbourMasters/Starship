@@ -154,16 +154,19 @@ bool Game_ChangeScene(void) {
     return false;
 }
 
+#define LEFT_MARGIN OTRGetRectDimensionFromLeftEdge(SCREEN_MARGIN)
+#define RIGHT_MARGIN OTRGetRectDimensionFromRightEdge(SCREEN_WIDTH - SCREEN_MARGIN)
+
 void Game_InitMasterDL(Gfx** dList) {
     gSPDisplayList((*dList)++, gRcpInitDL);
     gDPSetScissor((*dList)++, G_SC_NON_INTERLACE, SCREEN_MARGIN, SCREEN_MARGIN, SCREEN_WIDTH - SCREEN_MARGIN,
                   SCREEN_HEIGHT - SCREEN_MARGIN);
     gDPSetDepthImage((*dList)++, &gZBuffer);
-    gDPSetColorImage((*dList)++, G_IM_FMT_RGBA, G_IM_SIZ_16b, SCREEN_WIDTH, &gZBuffer);
+    gDPSetColorImage((*dList)++, G_IM_FMT_RGBA, G_IM_SIZ_16b, RIGHT_MARGIN, &gZBuffer);
     gDPSetFillColor((*dList)++, FILL_COLOR(GPACK_ZDZ(G_MAXFBZ, 0)));
-    gDPFillRectangle((*dList)++, SCREEN_MARGIN, SCREEN_MARGIN, SCREEN_WIDTH - SCREEN_MARGIN - 1,
-                     SCREEN_HEIGHT - SCREEN_MARGIN - 1);
-    gDPSetColorImage((*dList)++, G_IM_FMT_RGBA, G_IM_SIZ_16b, SCREEN_WIDTH, gFrameBuffer);
+    gDPFillWideRectangle((*dList)++, LEFT_MARGIN, SCREEN_MARGIN, RIGHT_MARGIN,
+                     SCREEN_HEIGHT - SCREEN_MARGIN);
+    gDPSetColorImage((*dList)++, G_IM_FMT_RGBA, G_IM_SIZ_16b, RIGHT_MARGIN, gFrameBuffer);
 
     if (gBlurAlpha < 255) {
         gDPPipeSync((*dList)++);
@@ -175,7 +178,7 @@ void Game_InitMasterDL(Gfx** dList) {
     } else {
         gDPSetFillColor((*dList)++, FILL_COLOR(gBgColor | 1));
     }
-    gDPFillRectangle((*dList)++, SCREEN_MARGIN, SCREEN_MARGIN, SCREEN_WIDTH - SCREEN_MARGIN - 1,
+    gDPFillWideRectangle((*dList)++, LEFT_MARGIN, SCREEN_MARGIN, RIGHT_MARGIN,
                      SCREEN_HEIGHT - SCREEN_MARGIN);
     gDPPipeSync((*dList)++);
     gDPSetColorDither((*dList)++, G_CD_MAGICSQ);
@@ -185,8 +188,8 @@ void Game_InitStandbyDL(Gfx** dList) {
     gSPDisplayList((*dList)++, gRcpInitDL);
     gDPSetScissor((*dList)++, G_SC_NON_INTERLACE, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT * 3);
     gDPSetFillColor((*dList)++, FILL_COLOR(0x0001));
-    gDPSetColorImage((*dList)++, G_IM_FMT_RGBA, G_IM_SIZ_16b, SCREEN_WIDTH, gFrameBuffers[0].data);
-    gDPFillRectangle((*dList)++, 0, 0, SCREEN_WIDTH - 1, SCREEN_HEIGHT * 3 - 1);
+    gDPSetColorImage((*dList)++, G_IM_FMT_RGBA, G_IM_SIZ_16b, RIGHT_MARGIN, gFrameBuffers[0].data);
+    gDPFillWideRectangle((*dList)++, OTRGetDimensionFromLeftEdge(0), 0, OTRGetRectDimensionFromRightEdge(0), SCREEN_HEIGHT * 3 - 1);
     gDPPipeSync((*dList)++);
     gDPSetColorDither((*dList)++, G_CD_MAGICSQ);
 }

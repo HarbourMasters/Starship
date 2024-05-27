@@ -250,3 +250,44 @@ extern "C" void Timer_Update() {
         }
     }
 }
+
+// Gets the width of the main ImGui window
+extern "C" uint32_t OTRGetCurrentWidth() {
+    return GameEngine::Instance->context->GetWindow()->GetWidth();
+}
+
+// Gets the height of the main ImGui window
+extern "C" uint32_t OTRGetCurrentHeight() {
+    return GameEngine::Instance->context->GetWindow()->GetHeight();
+}
+
+extern "C" float OTRGetAspectRatio() {
+    return gfx_current_dimensions.aspect_ratio;
+}
+
+extern "C" float OTRGetDimensionFromLeftEdge(float v) {
+    return (gfx_native_dimensions.width / 2 - gfx_native_dimensions.height / 2 * OTRGetAspectRatio() + (v));
+}
+
+extern "C" float OTRGetDimensionFromRightEdge(float v) {
+    return (gfx_native_dimensions.width / 2 + gfx_native_dimensions.height / 2 * OTRGetAspectRatio() -
+            (gfx_native_dimensions.width - v));
+}
+
+// Gets the width of the current render target area
+extern "C" uint32_t OTRGetGameRenderWidth() {
+    return gfx_current_dimensions.width;
+}
+
+// Gets the height of the current render target area
+extern "C" uint32_t OTRGetGameRenderHeight() {
+    return gfx_current_dimensions.height;
+}
+
+extern "C" int16_t OTRGetRectDimensionFromLeftEdge(float v) {
+    return ((int)floorf(OTRGetDimensionFromLeftEdge(v)));
+}
+
+extern "C" int16_t OTRGetRectDimensionFromRightEdge(float v) {
+    return ((int)ceilf(OTRGetDimensionFromRightEdge(v)));
+}
