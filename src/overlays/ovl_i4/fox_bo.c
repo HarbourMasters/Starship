@@ -196,7 +196,7 @@ void Bolse_SpawnEnemies(Actor* this, s32 count) {
 }
 
 void Bolse_UpdateEventHandler(Actor* this) {
-    s32 i;
+    s32 i = 0;
     Player* player = &gPlayer[0];
     s32 pad;
     Actor* actor;
