@@ -367,10 +367,10 @@ D_MAP_6047E70:
   { type: GFX, offset: 0x6047E70, symbol: D_MAP_6047E70 }
 
 D_MAP_6047F80:
-  { type: TEXTURE, format: IA8, offset: 0x06047F80, width: 64, height: 64, ctype: u8, symbol: D_MAP_6047F80 }
+  { type: TEXTURE, format: IA8, offset: 0x06047F80, width: 64, height: 32, ctype: u8, symbol: D_MAP_6047F80 }
 
-D_MAP_6048F80:
-  { type: TEXTURE, format: IA8, offset: 0x06048F80, width: 64, height: 64, ctype: u8, symbol: D_MAP_6048F80 }
+D_MAP_6048780:
+  { type: TEXTURE, format: IA8, offset: 0x06048780, width: 64, height: 32, ctype: u8, symbol: D_MAP_6048780 }
 
 D_MAP_6049F80:
   { type: GFX, offset: 0x6049F80, symbol: D_MAP_6049F80 }
