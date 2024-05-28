@@ -35,3 +35,4 @@ logs/
 starship.cfg.json
 default.sav
 imgui.ini
+.vs
