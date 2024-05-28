@@ -134,7 +134,7 @@ void GameEngine::ProcessGfxCommands(Gfx* commands) {
 
     gFPS = 30;
     wnd->SetRendererUCode(UcodeHandlers::ucode_f3dex);
-    wnd->SetTargetFps(30);
+    wnd->SetTargetFps(60 / gVIsPerFrame);
     wnd->SetMaximumFrameLatency(1);
 
     RunCommands(commands);
