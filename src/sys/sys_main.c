@@ -80,7 +80,7 @@ u8 gSerialThreadStack[0x1000];   // 800E0FB0
 void Main_Initialize(void) {
     u8 i;
 
-    gVIsPerFrame = 0;
+    gVIsPerFrame = 2;
     gSysFrameCount = 0;
     gStartNMI = false;
     gStopTasks = false;
