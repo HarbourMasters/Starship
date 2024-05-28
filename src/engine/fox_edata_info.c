@@ -228,7 +228,7 @@ ObjectInfo gObjectInfo[] = {
   /* OBJ_SCENERY_132  */  {(void*) Andross_8019350C, 1, (ObjectFunc) Andross_80193380,        D_ANDROSS_C038A48,   500.0f,  0, 0, 41, 0,   0.0f,  0 },
   /* OBJ_SCENERY_133  */  {(void*)     D_TR_60030F0, 0, (ObjectFunc)          NULL,        D_TR_6009CC4,  1000.0f,  0, 0, 20, 0,   0.0f,  0 },
   /* OBJ_SCENERY_134  */  {(void*)     D_VE2_6003000, 0, (ObjectFunc)          NULL,        D_ANDROSS_C038BA4,     0.0f,  0, 0, 41, 1,   0.0f,  0 },
-  /* OBJ_SCENERY_135  */  {(void*) D_TI_6006890, 0, (ObjectFunc)          NULL,        D_ANDROSS_C038B40,     0.0f,  0, 0, 41, 1,   0.0f,  0 },
+  /* OBJ_SCENERY_135  */  {(void*) D_VE2_6006890, 0, (ObjectFunc)          NULL,        D_ANDROSS_C038B40,     0.0f,  0, 0, 41, 1,   0.0f,  0 },
   /* OBJ_SCENERY_136  */  {(void*)     D_VE2_6002990, 0, (ObjectFunc)          NULL,        D_ANDROSS_C038B40,     0.0f,  0, 0, 41, 1,   0.0f,  0 },
   /* OBJ_SCENERY_137  */  {(void*)     D_VE2_6004170, 0, (ObjectFunc)          NULL,       gNoHitbox,     0.0f,  0, 0,  0, 1,   0.0f,  0 },
   /* OBJ_SCENERY_138  */  {(void*)     D_versus_3017600, 0, (ObjectFunc)          NULL,        D_versus_302EE64,     0.0f,  0, 0, 40, 0,   0.0f,  0 },
