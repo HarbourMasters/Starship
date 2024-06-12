@@ -42,7 +42,7 @@ struct Vec4s {
 };
 
 enum class ArrayType {
-    u8, s8, u16, s16, u32, s32, u64, f32, f64, Vec2f, Vec3f, Vec3s, Vec3i, Vec4f, Vec4s,
+    u8, s8, u16, s16, u32, s32, u64, f32, f64, Vec2f, Vec3f, Vec3s, Vec3i, Vec3iu, Vec4f, Vec4s,
 };
 
 class GenericArray : public Ship::Resource<uint8_t> {
