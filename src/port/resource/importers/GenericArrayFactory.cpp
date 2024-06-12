@@ -86,6 +86,11 @@ std::shared_ptr<Ship::IResource> ResourceFactoryBinaryGenericArrayV0::ReadResour
                 std::copy_n(reinterpret_cast<uint8_t*>(&vec), sizeof(Vec3i), std::back_inserter(arr->mData));
                 break;
             }
+            case ArrayType::Vec3iu: {
+                Vec3iu vec(reader->ReadUInt32(), reader->ReadUInt32(), reader->ReadUInt32());
+                std::copy_n(reinterpret_cast<uint8_t*>(&vec), sizeof(Vec3iu), std::back_inserter(arr->mData));
+                break;
+            }
             case ArrayType::Vec4f: {
                 Vec4f vec(reader->ReadFloat(), reader->ReadFloat(), reader->ReadFloat(), reader->ReadFloat());
                 std::copy_n(reinterpret_cast<uint8_t*>(&vec), sizeof(Vec4f), std::back_inserter(arr->mData));
