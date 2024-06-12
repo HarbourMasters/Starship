@@ -26,6 +26,11 @@ struct Vec3i {
     Vec3i(int32_t x, int32_t y, int32_t z) : x(x), y(y), z(z) {}
 };
 
+struct Vec3iu {
+    uint32_t x, y, z;
+    Vec3iu(uint32_t x, uint32_t y, uint32_t z) : x(x), y(y), z(z) {}
+};
+
 struct Vec4f {
     float x, y, z, w;
     Vec4f(float x, float y, float z, float w) : x(x), y(y), z(z), w(w) {}
