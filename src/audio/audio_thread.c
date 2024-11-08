@@ -347,7 +347,7 @@ void AudioThread_ScheduleProcessCmds(void) {
         D_800C7C70 = (u8) (gThreadCmdWritePos - gThreadCmdReadPos + 0x100);
     }
     msg = (((gThreadCmdReadPos & 0xFF) << 8) | (gThreadCmdWritePos & 0xFF));
-    osSendMesg32(gThreadCmdProcQueue, msg, OS_MESG_NOBLOCK);
+    osSendMesg(gThreadCmdProcQueue, OS_MESG_32(msg), OS_MESG_NOBLOCK);
     gThreadCmdReadPos = gThreadCmdWritePos;
 }
 
@@ -366,6 +366,7 @@ void AudioThread_ProcessCmds(u32 msg) {
     if (!gThreadCmdQueueFinished) {
         gCurCmdReadPos = (msg >> 8) & 0xFF;
     }
+    writePos = msg & 0xFF;
 
     while (true) {
         if (gCurCmdReadPos == writePos) {
@@ -374,7 +375,6 @@ void AudioThread_ProcessCmds(u32 msg) {
         }
         cmd = &gThreadCmdBuffer[gCurCmdReadPos & 0xFF];
         gCurCmdReadPos++;
-
         if (cmd->op == AUDIOCMD_OP_GLOBAL_STOP_AUDIOCMDS) {
             gThreadCmdQueueFinished = true;
             break;
