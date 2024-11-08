@@ -1003,9 +1003,6 @@ Acmd* func_8000A700(s32 noteIndex, NoteSubEu* noteSub, NoteSynthesisState* synth
                 aligned = ALIGN16(nFramesToDecode * frameSize + SAMPLES_PER_FRAME);
                 addr = 0x990 - aligned;
                 if (nFramesToDecode != 0) {
-                    // LTODO: Validate this
-                    // bookSample->medium = 0;
-
                     frameIndex = (synthState->samplePosInt + skipInitialSamples - nFirstFrameSamplesToIgnore) / SAMPLES_PER_FRAME;
                     sampleDataOffset = frameIndex * frameSize;
                     if (bookSample->medium == 0) {

@@ -717,16 +717,16 @@ s32 AudioLoad_Dma(OSIoMesg* mesg, u32 priority, s32 direction, uintptr_t devAddr
                   OSMesgQueue* retQueue, s32 medium, const char* dmaType) {
     OSPiHandle* handle;
 
-    // switch (medium) {
-    //     case MEDIUM_CART:
-    //         handle = osCartRomInit();
-    //         break;
-    //     case MEDIUM_DISK_DRIVE:
-    //         // handle = osDriveRomInit();
-    //         break;
-    //     default:
-    //         return 0;
-    // }
+    switch (medium) {
+        case MEDIUM_CART:
+            handle = osCartRomInit();
+            break;
+        case MEDIUM_DISK_DRIVE:
+            handle = osDriveRomInit();
+            break;
+        default:
+            return 0;
+    }
 
     if (size % 16) {
         size = ALIGN16(size);
@@ -738,9 +738,8 @@ s32 AudioLoad_Dma(OSIoMesg* mesg, u32 priority, s32 direction, uintptr_t devAddr
     mesg->devAddr = devAddr;
     mesg->size = size;
 
-    // handle->transferInfo.cmdType = 2;
-    // osEPiStartDma(handle, mesg, direction);
-    memcpy(ramAddr, (void*) devAddr, size);
+    handle->transferInfo.cmdType = 2;
+    osEPiStartDma(handle, mesg, direction);
 
     return 0;
 }
@@ -790,7 +789,7 @@ void* AudioLoad_AsyncLoadInner(s32 tableType, s32 id, s32 nChunks, s32 retData, 
     ramAddr = AudioLoad_SearchCaches(tableType, id);
     if (ramAddr != NULL) {
         loadStatus = LOAD_STATUS_COMPLETE;
-        osSendMesg(retQueue, (OSMesg) (retData << 0x18), OS_MESG_NOBLOCK);
+        osSendMesg(retQueue, OS_MESG_32(retData << 0x18), OS_MESG_NOBLOCK);
     } else {
         table = AudioLoad_GetLoadTable(tableType);
         size = table->entries[id].size;

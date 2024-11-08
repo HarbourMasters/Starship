@@ -169,11 +169,6 @@ TunedSample* func_80011D10(Instrument* instrument, s32 arg1) {
 Instrument* Audio_GetInstrument(s32 fontId, s32 instId) {
     Instrument* instrument;
 
-    // LTODO: Remove this
-    if(gSoundFontList[fontId].instruments == NULL){
-        gSoundFontList[fontId] = *Audio_LoadFont(gSoundFontTable->entries[fontId]);
-    }
-
     if ((gFontLoadStatus[fontId] < 2) != 0) {
         D_80155D88 = fontId + 0x10000000;
         return NULL;
@@ -192,11 +187,6 @@ Instrument* Audio_GetInstrument(s32 fontId, s32 instId) {
 
 Drum* Audio_GetDrum(s32 fontId, s32 drumId) {
     Drum* drum;
-
-    // LTODO: Remove this
-    if(gSoundFontList[fontId].drums == NULL){
-        gSoundFontList[fontId] = *Audio_LoadFont(gSoundFontTable->entries[fontId]);
-    }
 
     if ((gFontLoadStatus[fontId] < 2) != 0) {
         D_80155D88 = fontId + 0x10000000;
