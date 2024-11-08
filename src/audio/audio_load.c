@@ -722,7 +722,7 @@ s32 AudioLoad_Dma(OSIoMesg* mesg, u32 priority, s32 direction, uintptr_t devAddr
             handle = osCartRomInit();
             break;
         case MEDIUM_DISK_DRIVE:
-            handle = osDriveRomInit();
+            // handle = osDriveRomInit();
             break;
         default:
             return 0;

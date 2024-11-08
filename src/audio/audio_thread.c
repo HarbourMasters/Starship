@@ -364,18 +364,16 @@ void AudioThread_ProcessCmds(u32 msg) {
     u8 writePos;
 
     if (!gThreadCmdQueueFinished) {
-        gCurCmdReadPos = msg >> 8;
+        gCurCmdReadPos = (msg >> 8) & 0xFF;
     }
 
     while (true) {
-        writePos = msg & 0xFF;
-
         if (gCurCmdReadPos == writePos) {
             gThreadCmdQueueFinished = 0;
             break;
         }
-
-        cmd = &gThreadCmdBuffer[gCurCmdReadPos++ & 0xFF];
+        cmd = &gThreadCmdBuffer[gCurCmdReadPos & 0xFF];
+        gCurCmdReadPos++;
 
         if (cmd->op == AUDIOCMD_OP_GLOBAL_STOP_AUDIOCMDS) {
             gThreadCmdQueueFinished = true;
