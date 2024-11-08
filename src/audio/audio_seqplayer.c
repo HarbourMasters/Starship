@@ -1111,7 +1111,6 @@ void func_80015FD4(SequencePlayer* seqPlayer) {
     s8 pad;
     u8* pad2;
     s32 pad3;
-    gSeqLoadStatus[seqPlayer->seqId] = 2;
 
     if (!seqPlayer->enabled) {
         return;

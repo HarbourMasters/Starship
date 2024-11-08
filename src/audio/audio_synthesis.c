@@ -632,7 +632,7 @@ void func_80009AAC(s32 updateIndex) {
 
 Acmd* func_80009B64(Acmd* aList, s32* cmdCount, s16* aiBufStart, s32 aiBufLen) {
     Acmd* aCmdPtr;
-    s32* aiBufPtr;
+    s16* aiBufPtr;
     s32 chunkLen;
     s32 i;
     s32 j;
@@ -643,7 +643,7 @@ Acmd* func_80009B64(Acmd* aList, s32* cmdCount, s16* aiBufStart, s32 aiBufLen) {
         func_80009AAC(gAudioBufferParams.ticksPerUpdate - i);
     }
 
-    aiBufPtr = (s32*) aiBufStart;
+    aiBufPtr = aiBufStart;
     for (i = gAudioBufferParams.ticksPerUpdate; i > 0; i--) {
         if (i == 1) {
             chunkLen = aiBufLen;
@@ -661,7 +661,7 @@ Acmd* func_80009B64(Acmd* aList, s32* cmdCount, s16* aiBufStart, s32 aiBufLen) {
             }
         }
 
-        aCmdPtr = func_8000A25C((s16*) aiBufPtr, chunkLen, aCmdPtr, gAudioBufferParams.ticksPerUpdate - i);
+        aCmdPtr = func_8000A25C(aiBufPtr, chunkLen, aCmdPtr, gAudioBufferParams.ticksPerUpdate - i);
         aiBufLen -= chunkLen;
         aiBufPtr += chunkLen;
     }
@@ -1009,9 +1009,10 @@ Acmd* func_8000A700(s32 noteIndex, NoteSubEu* noteSub, NoteSynthesisState* synth
                     frameIndex = (synthState->samplePosInt + skipInitialSamples - nFirstFrameSamplesToIgnore) / SAMPLES_PER_FRAME;
                     sampleDataOffset = frameIndex * frameSize;
                     if (bookSample->medium == 0) {
-                        sampleData = sampleDataOffset + sampleAddr;
+                        sampleData = sampleDmaStart + sampleDataOffset + sampleAddr;
                     } else {
-                        sampleData = sampleDataOffset + sampleAddr;
+                        sampleData = AudioLoad_DmaSampleData(sampleDmaStart + sampleDataOffset + sampleAddr, aligned,
+                                                             flags, &synthState->sampleDmaIndex, bookSample->medium);
                     }
                     // if (1){}
                     sampleDataStartPad = (uintptr_t) sampleData & 0xF;

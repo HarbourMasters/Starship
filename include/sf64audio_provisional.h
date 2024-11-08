@@ -1139,9 +1139,9 @@ extern AudioCommonPoolSplit gPersistentCommonPoolSplit;
 // 0x4
 extern AudioCommonPoolSplit gTemporaryCommonPoolSplit;
 // 0x4
-extern u8 gSampleFontLoadStatus[2048];
-extern u8 gFontLoadStatus[2048];
-extern u8 gSeqLoadStatus[2048];
+extern u8 gSampleFontLoadStatus[64];
+extern u8 gFontLoadStatus[64];
+extern u8 gSeqLoadStatus[256];
 extern volatile u8 gAudioResetStep;
 extern u8 gAudioSpecId;
 extern s32 gResetFadeoutFramesLeft;
@@ -1154,7 +1154,7 @@ extern SequenceLayer gSeqLayers[64];
 extern SequenceChannel gSeqChannelNone;
 extern AudioListItem gLayerFreeList;
 extern NotePool gNoteFreeLists;
-extern Sample* gUsedSamples[2048];
+extern Sample* gUsedSamples[128];
 extern AudioPreloadReq gPreloadSampleStack[128];
 extern s32 gNumUsedSamples;
 extern s32 gPreloadSampleStackTop;

@@ -31,9 +31,9 @@ AudioCommonPoolSplit gPersistentCommonPoolSplit;
 // 0x4
 AudioCommonPoolSplit gTemporaryCommonPoolSplit;
 // 0x4
-u8 gSampleFontLoadStatus[2048];
-u8 gFontLoadStatus[2048];
-u8 gSeqLoadStatus[2048];
+u8 gSampleFontLoadStatus[64];
+u8 gFontLoadStatus[64];
+u8 gSeqLoadStatus[256];
 volatile u8 gAudioResetStep;
 u8 gAudioSpecId;
 s32 gResetFadeoutFramesLeft;
@@ -46,7 +46,7 @@ SequenceLayer gSeqLayers[64];
 SequenceChannel gSeqChannelNone;
 AudioListItem gLayerFreeList;
 NotePool gNoteFreeLists;
-Sample* gUsedSamples[2048];
+Sample* gUsedSamples[128];
 AudioPreloadReq gPreloadSampleStack[128];
 s32 gNumUsedSamples;
 s32 gPreloadSampleStackTop;
@@ -233,9 +233,9 @@ AudioSpec gAudioSpecs[] = {
 };
 s32 D_800C7C28 = 0x20000000; // unused?
 s16 gSeqTicksPerBeat = 0x30;
-s32 gAudioHeapSize = 0xAFE00 * 2;
-s32 gInitPoolSize = 0x26000 * 2;
-u32 gPermanentPoolSize = 0x21000 * 2;
+s32 gAudioHeapSize = 0xAFE00;
+s32 gInitPoolSize = 0x26000;
+u32 gPermanentPoolSize = 0x21000;
 u16 gSequenceMedium = 0;
 u16 gSoundFontMedium = 0;
 u16 gSampleBankMedium = 0;

@@ -134,7 +134,7 @@ Sample* Audio_LoadSample(uint32_t sampleAddr, AudioTableEntry entry, uint32_t sa
     sample->size = flags;
     sample->loop = Audio_LoadLoop(entry.romAddr + reader.ReadUInt32());
     sample->book = Audio_LoadBook(entry.romAddr + reader.ReadUInt32());
-    sample->sampleAddr = (uint8_t*) Audio_LoadBlob(gAudioTable, gSampleBankTable->entries[sampleBankID].romAddr + addr);
+    sample->sampleAddr = (uint8_t*) gSampleBankTable->entries[sampleBankID].romAddr + addr;
 
     sample->isRelocated = 1;
     sample->medium = MEDIUM_RAM;
