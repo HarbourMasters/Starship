@@ -138,6 +138,7 @@ void GameEngine::HandleAudioThread(){
         int samples_left = AudioPlayerBuffered();
         u32 num_audio_samples = samples_left < AudioPlayerGetDesiredBuffered() ? SAMPLES_HIGH : SAMPLES_LOW;
         s16 audio_buffer[SAMPLES_PER_FRAME] = {0};
+        memset(audio_buffer, 0, sizeof(audio_buffer));
         for (int i = 0; i < NUM_AUDIO_CHANNELS; i++) {
             AudioThread_CreateNextAudioBuffer(audio_buffer + i * (num_audio_samples * 2), num_audio_samples);
         }

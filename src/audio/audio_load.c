@@ -621,7 +621,7 @@ AudioTable* AudioLoad_GetLoadTable(s32 tableType) {
     return table;
 }
 
-void AudioLoad_RelocateFont(s32 fontId, uintptr_t _, void* relocData) {
+void AudioLoad_RelocateFont(s32 fontId, uintptr_t x, void* relocData) {
     s32 numDrums;
     Drum* drum;
     Instrument* instrument;
@@ -1312,7 +1312,7 @@ s32 AudioLoad_RelocateFontAndPreloadSamples(s32 fontId, uintptr_t* fontDataAddr,
 
     gNumUsedSamples = 0;
     SoundFont* font = Audio_LoadFont(gSoundFontTable->entries[fontId]);
-    *fontDataAddr = font;
+    *fontDataAddr = &font->instruments[0];
 
     gSoundFontList[fontId].instruments = font->instruments;
     gSoundFontList[fontId].drums = font->drums;
@@ -1335,20 +1335,20 @@ s32 AudioLoad_RelocateFontAndPreloadSamples(s32 fontId, uintptr_t* fontDataAddr,
         //! @bug Those are assignments, not equality checks.
         switch (isAsync) {
             case AUDIOLOAD_SYNC:
-                if (sample->medium = relocData->medium1) {
+                if (sample->medium == relocData->medium1) {
                     sampleRamAddr = AudioHeap_AllocPersistentSampleCache(sample->size, relocData->sampleBankId1,
                                                                          sample->sampleAddr, sample->medium);
-                } else if (sample->medium = relocData->medium2) {
+                } else if (sample->medium == relocData->medium2) {
                     sampleRamAddr = AudioHeap_AllocPersistentSampleCache(sample->size, relocData->sampleBankId2,
                                                                          sample->sampleAddr, sample->medium);
                 }
                 break;
 
             case AUDIOLOAD_ASYNC:
-                if (sample->medium = relocData->medium1) {
+                if (sample->medium == relocData->medium1) {
                     sampleRamAddr = AudioHeap_AllocTemporarySampleCache(sample->size, relocData->sampleBankId1,
                                                                         sample->sampleAddr, sample->medium);
-                } else if (sample->medium = relocData->medium2) {
+                } else if (sample->medium == relocData->medium2) {
                     sampleRamAddr = AudioHeap_AllocTemporarySampleCache(sample->size, relocData->sampleBankId2,
                                                                         sample->sampleAddr, sample->medium);
                 }
