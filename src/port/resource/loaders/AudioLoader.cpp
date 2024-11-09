@@ -10,13 +10,14 @@
 
 namespace fs = std::filesystem;
 
-Ship::BinaryReader Audio_MakeReader(const char* resource, u32 offset){
-    auto data = (char*)ResourceGetDataByName(resource);
-    auto size = ResourceGetSizeByName(resource);
-
-    Ship::BinaryReader reader(data, size);
+Ship::BinaryReader Audio_MakeReader(uintptr_t data, size_t size = 0){
+    if(size == 0){
+        auto ptr = (uintptr_t) ResourceGetDataByName(gAudioBank);
+        auto sz = ResourceGetSizeByName(gAudioBank);
+        size = sz - (ptr - data);
+    }
+    Ship::BinaryReader reader((char*) data, size);
     reader.SetEndianness(Ship::Endianness::Big);
-    reader.Seek(offset, Ship::SeekOffsetType::Start);
 
     return reader;
 }
@@ -27,8 +28,8 @@ char* Audio_LoadBlob(const char* resource, u32 offset){
     return data + offset;
 }
 
-EnvelopePoint* Audio_LoadEnvelope(uint32_t addr) {
-    auto reader = Audio_MakeReader(gAudioBank, addr);
+EnvelopePoint* Audio_LoadEnvelope(uintptr_t addr) {
+    auto reader = Audio_MakeReader(addr);
 
     std::vector<EnvelopePoint> temp;
     while(true) {
@@ -49,7 +50,7 @@ EnvelopePoint* Audio_LoadEnvelope(uint32_t addr) {
 }
 
 extern "C" SoundFont* Audio_LoadFont(AudioTableEntry entry) {
-    auto reader = Audio_MakeReader(gAudioBank, entry.romAddr);
+    auto reader = Audio_MakeReader(entry.romAddr);
 
     SoundFont* font = memalloc(SoundFont);
 
@@ -64,27 +65,25 @@ extern "C" SoundFont* Audio_LoadFont(AudioTableEntry entry) {
     uint32_t instBaseAddr = 4;
 
     if(font->drums != nullptr && drumBaseAddr != 0){
-        reader.Seek(entry.romAddr + drumBaseAddr, Ship::SeekOffsetType::Start);
+        reader.Seek(drumBaseAddr, Ship::SeekOffsetType::Start);
         for(size_t i = 0; i < font->numDrums; i++){
             font->drums[i] = Audio_LoadDrum(reader.ReadUInt32(), entry, font->sampleBankId1);
         }
     }
 
     if(font->instruments != nullptr){
-        reader.Seek(entry.romAddr + instBaseAddr, Ship::SeekOffsetType::Start);
+        reader.Seek(instBaseAddr, Ship::SeekOffsetType::Start);
         for(size_t i = 0; i < font->numInstruments; i++){
             u32 instAddr = reader.ReadUInt32();
             font->instruments[i] = Audio_LoadInstrument(instAddr, entry, font->sampleBankId1);
         }
     }
 
-    gSampleFontLoadStatus[font->sampleBankId1] = 2;
-
     return font;
 }
 
-extern "C" AdpcmLoop* Audio_LoadLoop(uint32_t addr) {
-    auto reader = Audio_MakeReader(gAudioBank, addr);
+extern "C" AdpcmLoop* Audio_LoadLoop(uintptr_t addr) {
+    auto reader = Audio_MakeReader(addr);
     AdpcmLoop* loop = memalloc(AdpcmLoop);
 
     loop->start = reader.ReadInt32();
@@ -100,8 +99,8 @@ extern "C" AdpcmLoop* Audio_LoadLoop(uint32_t addr) {
     return loop;
 }
 
-extern "C" AdpcmBook* Audio_LoadBook(uint32_t addr) {
-    auto reader = Audio_MakeReader(gAudioBank, addr);
+extern "C" AdpcmBook* Audio_LoadBook(uintptr_t addr) {
+    auto reader = Audio_MakeReader(addr);
 
     AdpcmBook* book = memalloc(AdpcmBook);
     book->order = reader.ReadInt32();
@@ -122,11 +121,11 @@ extern "C" AdpcmBook* Audio_LoadBook(uint32_t addr) {
 }
 
 Sample* Audio_LoadSample(uint32_t sampleAddr, AudioTableEntry entry, uint32_t sampleBankID) {
-    auto reader = Audio_MakeReader(gAudioBank, entry.romAddr + sampleAddr);
+    auto reader = Audio_MakeReader(entry.romAddr + sampleAddr);
 
     Sample* sample = memalloc(Sample);
     uint32_t flags = reader.ReadUInt32();
-    uint32_t addr = reader.ReadUInt32();
+    reader.ReadUInt32();
 
     sample->codec = (flags >> 28) & 0x0F;
     sample->medium = (flags >> 24) & 0x03;
@@ -134,22 +133,13 @@ Sample* Audio_LoadSample(uint32_t sampleAddr, AudioTableEntry entry, uint32_t sa
     sample->size = flags;
     sample->loop = Audio_LoadLoop(entry.romAddr + reader.ReadUInt32());
     sample->book = Audio_LoadBook(entry.romAddr + reader.ReadUInt32());
-    sample->sampleAddr = (uint8_t*) gSampleBankTable->entries[sampleBankID].romAddr + addr;
-
-    sample->isRelocated = 1;
-    sample->medium = MEDIUM_RAM;
-
-    std::filesystem::path path{ "dumps/" + std::to_string(addr) + ".raw" };
-    std::ofstream ofs(path);
-    ofs.write(reinterpret_cast<const char*>(sample->sampleAddr), sample->size);
-    ofs.close();
-
-    gUsedSamples[gNumUsedSamples++] = sample;
+    sample->sampleAddr = nullptr;
+    sample->isRelocated = 0;
     return sample;
 }
 
 TunedSample Audio_LoadTunedSample(uint32_t addr, AudioTableEntry entry, uint32_t sampleBankID) {
-    auto reader = Audio_MakeReader(gAudioBank, entry.romAddr + addr);
+    auto reader = Audio_MakeReader(entry.romAddr + addr);
     auto sampleAddr = reader.ReadUInt32();
     auto tuning = reader.ReadFloat();
 
@@ -169,7 +159,7 @@ extern "C" Instrument* Audio_LoadInstrument(uint32_t addr, AudioTableEntry entry
         return nullptr;
     }
 
-    auto reader = Audio_MakeReader(gAudioBank, entry.romAddr + addr);
+    auto reader = Audio_MakeReader(entry.romAddr + addr, sizeof(Instrument));
 
     Instrument* instrument = memalloc(Instrument);
     instrument->isRelocated = reader.ReadUByte();
@@ -186,7 +176,7 @@ extern "C" Instrument* Audio_LoadInstrument(uint32_t addr, AudioTableEntry entry
 }
 
 extern "C" Drum* Audio_LoadDrum(uint32_t addr, AudioTableEntry entry, uint32_t sampleBankID) {
-    auto reader = Audio_MakeReader(gAudioBank, entry.romAddr + addr);
+    auto reader = Audio_MakeReader(entry.romAddr + addr);
     Drum* drum = memalloc(Drum);
 
     drum->adsrDecayIndex = reader.ReadInt8();

@@ -233,9 +233,9 @@ AudioSpec gAudioSpecs[] = {
 };
 s32 D_800C7C28 = 0x20000000; // unused?
 s16 gSeqTicksPerBeat = 0x30;
-s32 gAudioHeapSize = 0xAFE00;
-s32 gInitPoolSize = 0x26000;
-u32 gPermanentPoolSize = 0x21000;
+s32 gAudioHeapSize = 0xBFE00;
+s32 gInitPoolSize = 0x36000;
+u32 gPermanentPoolSize = 0x31000;
 u16 gSequenceMedium = 0;
 u16 gSoundFontMedium = 0;
 u16 gSampleBankMedium = 0;

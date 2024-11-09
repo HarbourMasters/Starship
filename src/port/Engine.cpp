@@ -209,6 +209,11 @@ void GameEngine::ProcessGfxCommands(Gfx* commands) {
     static int last_fps;
     static int last_update_rate;
     static int time;
+
+    if(gVIsPerFrame == 0){
+        gVIsPerFrame = 1;
+    }
+
     int fps = target_fps;
     int original_fps = gFPS = 60 / gVIsPerFrame;
 
