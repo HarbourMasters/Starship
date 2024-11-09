@@ -73,6 +73,10 @@ typedef void (*AudioCustomUpdateFunction)(void);
 #define AUDIOLOAD_SYNC 0
 #define AUDIOLOAD_ASYNC 1
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef enum {
     /* 0 */ ADSR_STATE_DISABLED,
     /* 1 */ ADSR_STATE_INITIAL,
@@ -1229,5 +1233,9 @@ extern s16 gD_800DD200[];
 extern f32 gHeadsetPanVolume[128];
 extern f32 gStereoPanVolume[128];
 extern f32 gDefaultPanVolume[128];
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
