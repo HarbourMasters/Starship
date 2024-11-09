@@ -16,6 +16,8 @@ set(CMAKE_C_STANDARD 11 CACHE STRING "The C standard to use")
 #add_compile_options(-fsanitize=address)
 #add_link_options(-fsanitize=address)
 
+set_property(DIRECTORY ${CMAKE_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME})
+
 # Add a custom module path to locate additional CMake modules
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/modules/")
 
