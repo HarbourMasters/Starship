@@ -834,7 +834,7 @@ typedef struct {
     /* 0x02 */ s16 unkMediumParam;
     /* 0x04 */ uintptr_t romAddr;
     /* 0x08 */ char pad[8];
-} AudioTableBase;
+} AudioTableBase; // size = 0x10
 
 typedef struct {
     /* 0x00 */ uintptr_t romAddr;

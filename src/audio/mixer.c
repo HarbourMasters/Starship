@@ -126,10 +126,16 @@ void aSetBufferImpl(uint8_t flags, uint16_t in, uint16_t out, uint16_t nbytes) {
 }
 
 void aInterleaveImpl(uint16_t dest, uint16_t left, uint16_t right, uint16_t c) {
-    int count = ROUND_UP_8(c) / sizeof(int16_t) / 4;
+    if(rspa.nbytes == 0){
+        return;
+    }
+
+    int count = rspa.nbytes;
+
     int16_t *l = BUF_S16(left);
     int16_t *r = BUF_S16(right);
-    int16_t *d = BUF_S16(dest);
+    int16_t *d = BUF_S16(rspa.out);
+
     while (count > 0) {
         int16_t l0 = *l++;
         int16_t l1 = *l++;
@@ -277,7 +283,7 @@ void aEnvSetup2Impl(uint16_t initial_vol_left, uint16_t initial_vol_right) {
 void aEnvMixerImpl(uint16_t in_addr, uint16_t n_samples, bool swap_reverb,
 				   bool neg_3, bool neg_2,
                    bool neg_left, bool neg_right,
-                   int32_t wet_dry_addr, u32 unk)
+                   int32_t wet_dry_addr, uint32_t unk)
 {
     int16_t *in = BUF_S16(in_addr);
     int16_t *dry[2] = {BUF_S16(((wet_dry_addr >> 24) & 0xFF) << 4), BUF_S16(((wet_dry_addr >> 16) & 0xFF) << 4)};

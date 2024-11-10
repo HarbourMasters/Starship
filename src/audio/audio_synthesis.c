@@ -557,8 +557,8 @@ s32 func_8000967C(s32 length, s16* ramAddr, UnkStruct_800097A8* arg2) {
 
 u8* func_800097A8(Sample* sample, s32 length, u32 flags, UnkStruct_800097A8* arg3) {
     s32 pad1;
-    SampleDma* pad2;
-    SampleDma* sp1C;
+    SampleDma* pad2 = NULL;
+    SampleDma* sp1C = NULL;
 
     if (flags == 1) {
         arg3->unk_0 = (s16*) sample->sampleAddr;
@@ -1005,11 +1005,15 @@ Acmd* func_8000A700(s32 noteIndex, NoteSubEu* noteSub, NoteSynthesisState* synth
                 if (nFramesToDecode != 0) {
                     frameIndex = (synthState->samplePosInt + skipInitialSamples - nFirstFrameSamplesToIgnore) / SAMPLES_PER_FRAME;
                     sampleDataOffset = frameIndex * frameSize;
+                    // LTODO: We always need to load from RAM
+
                     if (bookSample->medium == 0) {
                         sampleData = sampleDmaStart + sampleDataOffset + sampleAddr;
                     } else {
-                        sampleData = AudioLoad_DmaSampleData(sampleDmaStart + sampleDataOffset + sampleAddr, aligned,
-                                                             flags, &synthState->sampleDmaIndex, bookSample->medium);
+                        // LTODO: The samples are always on ram
+                        sampleData = sampleDmaStart + sampleDataOffset + sampleAddr;
+                        // sampleData = AudioLoad_DmaSampleData(sampleDmaStart + sampleDataOffset + sampleAddr, aligned,
+                        //                                      flags, &synthState->sampleDmaIndex, bookSample->medium);
                     }
                     // if (1){}
                     sampleDataStartPad = (uintptr_t) sampleData & 0xF;
