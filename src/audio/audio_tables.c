@@ -1,6 +1,7 @@
 #include "sys.h"
 #include "sf64audio_provisional.h"
 
+#if 0
 AudioTable gSampleBankTableInit = {
     { 4, 0, 0 },
     {
@@ -98,7 +99,7 @@ AudioTable gSoundFontTableInit = {
 
 // clang-format off
 
-u8 gSeqFontTableInit[283] = {
+u8 gSeqFontTableInitOriginal[283] = {
     // Offset into this table for sequence sound font list
     AS_BYTES(132), AS_BYTES(134), AS_BYTES(155), AS_BYTES(157), AS_BYTES(159), AS_BYTES(161), AS_BYTES(163),
     AS_BYTES(165), AS_BYTES(167), AS_BYTES(169), AS_BYTES(171), AS_BYTES(173), AS_BYTES(175), AS_BYTES(177),
@@ -123,3 +124,5 @@ u8 gSeqFontTableInit[283] = {
 };
 
 // clang-format on
+
+#endif

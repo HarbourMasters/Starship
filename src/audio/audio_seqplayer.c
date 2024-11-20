@@ -1,5 +1,6 @@
 #include "sys.h"
 #include "sf64audio_provisional.h"
+#include "endianness.h"
 
 #define PORTAMENTO_IS_SPECIAL(x) ((x).mode & 0x80)
 #define PORTAMENTO_MODE(x) ((x).mode & ~0x80)
@@ -1014,7 +1015,7 @@ void AudioSeq_SequenceChannelProcessScript(SequenceChannel* channel) {
 
                     case 0xC6:
                         cmd = AudioSeq_ScriptReadU8(state);
-                        sp52 = ((u16*) gSeqFontTable)[seqPlayer->seqId];
+                        sp52 = BSWAP16(((u16*) gSeqFontTable)[seqPlayer->seqId]);
                         loBits = gSeqFontTable[sp52];
                         cmd = gSeqFontTable[sp52 + loBits - cmd];
 

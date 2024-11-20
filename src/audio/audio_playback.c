@@ -175,7 +175,7 @@ Instrument* Audio_GetInstrument(s32 fontId, s32 instId) {
 	//fontId = 7;
 
     if(gSoundFontList[fontId].instruments == NULL){
-        gSoundFontList[fontId] = *Audio_LoadFont(gSoundFontTable->entries[fontId]);	
+        gSoundFontList[fontId] = *Audio_LoadFont(gSoundFontTable->entries[fontId], fontId);
     }
 
     if ((gFontLoadStatus[fontId] < 2) != 0) {
@@ -199,7 +199,7 @@ Drum* Audio_GetDrum(s32 fontId, s32 drumId) {
 
     // LTODO: Remove this
     if(gSoundFontList[fontId].drums == NULL){
-        gSoundFontList[fontId] = *Audio_LoadFont(gSoundFontTable->entries[fontId]);
+        gSoundFontList[fontId] = *Audio_LoadFont(gSoundFontTable->entries[fontId], fontId);
     }
 
     if ((gFontLoadStatus[fontId] < 2) != 0) {

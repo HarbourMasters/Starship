@@ -840,8 +840,8 @@ typedef struct {
 
 typedef struct {
     /* 0x00 */ AudioTableBase base;
-    /* 0x10 */ AudioTableEntry entries[]; // (dynamic size)
-} AudioTable;                             // size >= 0x20
+    /* 0x10 */ AudioTableEntry* entries; // (dynamic size)
+} AudioTable; // size >= 0x20
 
 typedef struct SampleDma {
     /* 0x00 */ u8* ramAddr;
@@ -1091,10 +1091,10 @@ bool AudioThread_ResetComplete(void);
 void AudioThread_ResetAudioHeap(s32);
 void AudioThread_Init(void);
 
-extern AudioTable gSampleBankTableInit;
-extern AudioTable gSeqTableInit;
-extern AudioTable gSoundFontTableInit;
-extern u8 gSeqFontTableInit[];
+// extern AudioTable gSampleBankTableInit;
+// extern AudioTable gSeqTableInit;
+// extern AudioTable gSoundFontTableInit;
+// extern u8 gSeqFontTableInit[];
 
 extern AudioSpec gAudioSpecs[];
 extern s16 gSeqTicksPerBeat;

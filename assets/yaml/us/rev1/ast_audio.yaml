@@ -1,8 +1,30 @@
-audio_seq:
-  { type: BLOB, offset: 0xDEA20, size: 0x3ACF0, symbol: gAudioSeq }
-  
-audio_bank:
-  { type: BLOB, offset: 0x119710, size: 0x1E020, symbol: gAudioBank }
+:config:
+  force: true
+  header:
+    code:
+      - '#include "sys.h"'
+      - '#include "sf64audio_provisional.h"'
 
-audio_table:
-  { type: BLOB, offset: 0x137730, size: 0x73C580, symbol: gAudioTable }
+audio_setup:
+  type: NAUDIO:V1:AUDIO_SETUP
+  audio_seq:
+    size: 0x3ACF0
+    offset: 0xDEA20
+  audio_bank:
+    size: 0x1E020
+    offset: 0x119710
+  audio_table:
+    size: 0x73C580
+    offset: 0x137730
+
+audio_sample_bank_table:
+  { type: NAUDIO:V1:AUDIO_TABLE, format: SAMPLE, offset: 0xC4210, symbol: gSampleBankTableInit }
+
+audio_seq_table:
+  { type: NAUDIO:V1:AUDIO_TABLE, format: SEQUENCE, offset: 0xC4260, symbol: gSeqTableInit }
+
+audio_soundfont_table:
+  { type: NAUDIO:V1:AUDIO_TABLE, format: SOUNDFONT, offset: 0xC4690, symbol: gSoundFontTableInit }
+
+audio_seq_font_table:
+  { type: ARRAY, count: 283, array_type: u8, offset: 0xC48B0, symbol: gSeqFontTableInit }

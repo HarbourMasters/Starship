@@ -6,8 +6,12 @@
 #include <vector>
 #include <fstream>
 #include <filesystem>
-#include "test.c"
 
+#ifdef OTR_AUDIO
+extern "C" SoundFont* Audio_LoadFont(AudioTableEntry entry, uint32_t fontId) {
+    return (SoundFont*) ResourceGetDataByCrc((uint64_t) gSoundFontTable->entries[fontId].romAddr);
+}
+#else
 namespace fs = std::filesystem;
 
 std::unordered_map<uint32_t, void*> gAudioCache;
@@ -56,7 +60,7 @@ EnvelopePoint* Audio_LoadEnvelope(uint32_t addr) {
     return envelopes;
 }
 
-extern "C" SoundFont* Audio_LoadFont(AudioTableEntry entry) {
+extern "C" SoundFont* Audio_LoadFont(AudioTableEntry entry, uint32_t fontId) {
     auto reader = Audio_MakeReader(gAudioBank, entry.romAddr);
 
     if(gAudioCache.contains(entry.romAddr)){
@@ -213,3 +217,4 @@ extern "C" Drum* Audio_LoadDrum(uint32_t addr, AudioTableEntry entry, uint32_t s
 
     return drum;
 }
+#endif

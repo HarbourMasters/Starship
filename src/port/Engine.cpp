@@ -17,6 +17,16 @@
 #include "resource/importers/SkeletonFactory.h"
 #include "resource/importers/Vec3fFactory.h"
 #include "resource/importers/Vec3sFactory.h"
+
+#include "resource/importers/audio/AudioTableFactory.h"
+#include "resource/importers/audio/BookFactory.h"
+#include "resource/importers/audio/DrumFactory.h"
+#include "resource/importers/audio/EnvelopeFactory.h"
+#include "resource/importers/audio/InstrumentFactory.h"
+#include "resource/importers/audio/LoopFactory.h"
+#include "resource/importers/audio/SampleFactory.h"
+#include "resource/importers/audio/SoundFontFactory.h"
+
 #include "port/interpolation/FrameInterpolation.h"
 #include <Fast3D/Fast3dWindow.h>
 #include <DisplayListFactory.h>
@@ -25,6 +35,7 @@
 #include <BlobFactory.h>
 #include <VertexFactory.h>
 #include "audio/GameAudio.h"
+#include "port/patches/DisplayListPatch.h"
 // #include "sf64audio_provisional.h"
 
 #include <Fast3D/gfx_pc.h>
@@ -127,11 +138,36 @@ GameEngine::GameEngine() {
 
     loader->RegisterResourceFactory(std::make_shared<LUS::ResourceFactoryBinaryBlobV0>(), RESOURCE_FORMAT_BINARY,
                                     "Blob", static_cast<uint32_t>(LUS::ResourceType::Blob), 0);
+
+    loader->RegisterResourceFactory(std::make_shared<SF64::ResourceFactoryBinaryAudioTableV0>(), RESOURCE_FORMAT_BINARY,
+                                    "AudioTable", static_cast<uint32_t>(SF64::ResourceType::AudioTable), 0);
+
+    loader->RegisterResourceFactory(std::make_shared<SF64::ResourceFactoryBinaryAdpcmBookV0>(), RESOURCE_FORMAT_BINARY,
+                                    "AdpcmBook", static_cast<uint32_t>(SF64::ResourceType::AdpcmBook), 0);
+
+    loader->RegisterResourceFactory(std::make_shared<SF64::ResourceFactoryBinaryDrumV0>(), RESOURCE_FORMAT_BINARY,
+                                    "Drum", static_cast<uint32_t>(SF64::ResourceType::Drum), 0);
+
+    loader->RegisterResourceFactory(std::make_shared<SF64::ResourceFactoryBinaryEnvelopeV0>(), RESOURCE_FORMAT_BINARY,
+                                    "Envelope", static_cast<uint32_t>(SF64::ResourceType::Envelope), 0);
+
+    loader->RegisterResourceFactory(std::make_shared<SF64::ResourceFactoryBinaryInstrumentV0>(), RESOURCE_FORMAT_BINARY,
+                                    "Instrument", static_cast<uint32_t>(SF64::ResourceType::Instrument), 0);
+
+    loader->RegisterResourceFactory(std::make_shared<SF64::ResourceFactoryBinaryAdpcmLoopV0>(), RESOURCE_FORMAT_BINARY,
+                                    "AdpcmLoop", static_cast<uint32_t>(SF64::ResourceType::AdpcmLoop), 0);
+
+    loader->RegisterResourceFactory(std::make_shared<SF64::ResourceFactoryBinarySampleV1>(), RESOURCE_FORMAT_BINARY,
+                                    "Sample", static_cast<uint32_t>(SF64::ResourceType::Sample), 1);
+
+    loader->RegisterResourceFactory(std::make_shared<SF64::ResourceFactoryBinarySoundFontV0>(), RESOURCE_FORMAT_BINARY,
+                                    "SoundFont", static_cast<uint32_t>(SF64::ResourceType::SoundFont), 0);
 }
 
 void GameEngine::Create() {
     const auto instance = Instance = new GameEngine();
     instance->AudioInit();
+    DisplayListPatch::Run();
     GameUI::SetupGuiElements();
 #if defined(__SWITCH__) || defined(__WIIU__)
     CVarRegisterInteger("gControlNav", 1); // always enable controller nav on switch/wii u

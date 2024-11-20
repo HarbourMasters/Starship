@@ -669,9 +669,8 @@ Acmd* AudioSynth_Update(Acmd* aList, s32* cmdCount, s16* aiBufStart, s32 aiBufLe
     //if (gAudioBufferParams.ticksPerUpdate > 3 && gGameState != GSTATE_PLAY) return;
     aCmdPtr = aList;
     for (i = gAudioBufferParams.ticksPerUpdate; i > 0; i--) {
-
-		AudioSeq_ProcessSequences(i - 1);
-		AudioSynth_SyncSampleStates(gAudioBufferParams.ticksPerUpdate - i);
+        AudioSeq_ProcessSequences(i - 1);
+        AudioSynth_SyncSampleStates(gAudioBufferParams.ticksPerUpdate - i);
     }
 
     aiBufPtr = aiBufStart;
