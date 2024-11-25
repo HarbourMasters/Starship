@@ -459,6 +459,7 @@ void DrawEnhancementsMenu() {
 void DrawCheatsMenu() {
     if (UIWidgets::BeginMenu("Cheats")) {
         UIWidgets::CVarCheckbox("Infinite Lives", "gInfiniteLives");
+        UIWidgets::CVarCheckbox("Invincible", "gInvincible");
         UIWidgets::CVarCheckbox("Unbreakable Wings", "gUnbreakableWings");
         UIWidgets::CVarCheckbox("Infinite Bombs", "gInfiniteBombs");
         UIWidgets::CVarCheckbox("Hyper Laser", "gHyperLaser");

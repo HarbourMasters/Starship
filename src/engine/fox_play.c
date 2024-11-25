@@ -5552,7 +5552,9 @@ void Player_UpdateShields(Player* player) {
         if (player->damage <= 0) {
             player->damage = 0;
         }
-        player->shields -= 2;
+        if (!CVarGetInteger("gInvincible", 0)) {
+            player->shields -= 2;
+        }
         if (player->shields <= 0) {
             player->shields = 0;
             player->damage = 0;
