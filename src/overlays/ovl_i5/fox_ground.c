@@ -1,6 +1,7 @@
 #include "global.h"
 #include "assets/ast_titania.h"
 #include "prevent_bss_reordering.h"
+#include "src/port/interpolation/FrameInterpolation.h"
 
 void Ground_801B5244(s32 arg0, s32 arg1);
 void Ground_801B5FE0(s32 arg0, s32 arg1, s32 arg2);
@@ -371,6 +372,7 @@ void Ground_801B58AC(Gfx** dList, f32 arg1) {
     spC4 = D_i5_801C5C14;
 
     if (D_i5_801C5C14 & 2) {
+        FrameInterpolation_RecordOpenChild(dList, D_i5_801C5C10);
         gDPSetupTile((*dList)++, G_IM_FMT_RGBA, G_IM_SIZ_16b, 32, 32, 0, 0, G_TX_MIRROR | G_TX_WRAP,
                      G_TX_NOMIRROR | G_TX_WRAP, 5, 5, G_TX_NOLOD, G_TX_NOLOD);
         gDPLoadTileTexture((*dList)++, D_TI_6001BA8, G_IM_FMT_RGBA, G_IM_SIZ_16b, 32, 32);
@@ -381,6 +383,7 @@ void Ground_801B58AC(Gfx** dList, f32 arg1) {
         gSPDisplayList((*dList)++, D_i5_801BA950);
         gSPPopMatrix((*dList)++, G_MTX_MODELVIEW);
         Ground_801B4AA8(NULL, &spC4);
+        FrameInterpolation_RecordCloseChild();
     }
 
     if (D_i5_801C5C14 & 1) {
@@ -565,6 +568,7 @@ void Ground_801B68A8(Gfx** dlist, s32 arg1, s32 arg2) {
     gDPSetupTile((*dlist)++, G_IM_FMT_RGBA, G_IM_SIZ_16b, 32, 32, 0, 0, G_TX_MIRROR | G_TX_WRAP,
                  G_TX_MIRROR | G_TX_WRAP, 5, 5, G_TX_NOLOD, G_TX_NOLOD);
     gDPLoadTileTexture((*dlist)++, D_TI_6001BA8, G_IM_FMT_RGBA, G_IM_SIZ_16b, 32, 32);
+    FrameInterpolation_RecordOpenChild(dlist, D_i5_801C5C10);
     Matrix_Translate(gGfxMatrix, D_i5_801C62D8.x, D_i5_801C62D8.y, D_i5_801C62D8.z + D_i5_801C5C10, MTXF_NEW);
     Matrix_ToMtx(gGfxMtx);
     gSPMatrix((*dlist)++, gGfxMtx++, G_MTX_NOPUSH | G_MTX_MUL | G_MTX_MODELVIEW);
@@ -575,6 +579,7 @@ void Ground_801B68A8(Gfx** dlist, s32 arg1, s32 arg2) {
         gSPDisplayList((*dlist)++, &D_i5_801C2528[j]);
         j = (j + 26) % 27;
     }
+    FrameInterpolation_RecordCloseChild();
 }
 
 bool Ground_801B6AEC(f32 arg0, f32 arg1, f32 arg2) {
