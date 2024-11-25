@@ -321,16 +321,23 @@ endif()
 
 target_link_libraries(${PROJECT_NAME} PRIVATE "${ADDITIONAL_LIBRARY_DEPENDENCIES}")
 
+set(USE_STANDALONE OFF)
+set(BUILD_STORMLIB OFF)
+set(BUILD_SM64 OFF)
+set(BUILD_MK64 OFF)
+add_subdirectory(tools/Torch)
+target_link_libraries(${PROJECT_NAME} PRIVATE torch)
+
 if(CMAKE_SYSTEM_NAME MATCHES "NintendoSwitch")
 
-nx_generate_nacp(Lylat.nacp
+nx_generate_nacp(Starship.nacp
    NAME "${PROJECT_NAME}"
    AUTHOR "${PROJECT_TEAM}"
    VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}"
 )
 
 nx_create_nro(${PROJECT_NAME}
-    NACP Lylat.nacp
+    NACP Starship.nacp
 )
 
 INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.nro DESTINATION . COMPONENT ${PROJECT_NAME})

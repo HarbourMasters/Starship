@@ -36,6 +36,7 @@
 #include <VertexFactory.h>
 #include "audio/GameAudio.h"
 #include "port/patches/DisplayListPatch.h"
+#include "port/extractor/GameExtractor.h"
 // #include "sf64audio_provisional.h"
 
 #include <Fast3D/gfx_pc.h>
@@ -61,32 +62,58 @@ void AudioThread_CreateNextAudioBuffer(int16_t* samples, uint32_t num_samples);
 GameEngine* GameEngine::Instance;
 static GamePool MemoryPool = { .chunk = 1024 * 512, .cursor = 0, .length = 0, .memory = nullptr };
 
-GameEngine::GameEngine() {
-    std::vector<std::string> OTRFiles;
-    if (const std::string cube_path = Ship::Context::GetPathRelativeToAppDirectory("starship.otr");
-        std::filesystem::exists(cube_path)) {
-        OTRFiles.push_back(cube_path);
+void GameEngine::GenAssetFile() {
+    auto extractor = GameExtractor();
+
+    if (!extractor.SelectGameFromUI()) {
+        ShowMessage("Extractor", "No game selected.");
+        return;
     }
-    if (const std::string sm64_otr_path = Ship::Context::GetPathRelativeToAppDirectory("sf64.otr");
-        std::filesystem::exists(sm64_otr_path)) {
-        OTRFiles.push_back(sm64_otr_path);
+    if (!extractor.ValidateChecksum()) {
+        ShowMessage("Extractor", "Invalid checksum.");
+        return;
     }
-    if (const std::string patches_path = Ship::Context::GetPathRelativeToAppDirectory("mods");
-        !patches_path.empty() && std::filesystem::exists(patches_path)) {
+
+    extractor.DecompressGame();
+
+    if (!extractor.GenerateOTR()) {
+        ShowMessage("Extractor", "Failed to generate OTR.");
+    }
+}
+
+void GameEngine::Create() {
+    std::vector<std::string> AssetFiles;
+    const auto instance = Instance = new GameEngine();
+    const std::string main_otr_path = Ship::Context::GetPathRelativeToAppDirectory("sf64.otr");
+    const std::string assets_path = Ship::Context::GetPathRelativeToAppDirectory("starship.otr");
+    const std::string patches_path = Ship::Context::GetPathRelativeToAppDirectory("mods");
+
+    if (std::filesystem::exists(main_otr_path)) {
+        AssetFiles.push_back(main_otr_path);
+    } else {
+        GenAssetFile();
+        AssetFiles.push_back(main_otr_path);
+    }
+
+    if (std::filesystem::exists(assets_path)) {
+        AssetFiles.push_back(assets_path);
+    }
+
+    if (!patches_path.empty() && std::filesystem::exists(patches_path)) {
         if (std::filesystem::is_directory(patches_path)) {
             for (const auto& p : std::filesystem::recursive_directory_iterator(patches_path)) {
                 const auto ext = p.path().extension().string();
                 if (StringHelper::IEquals(ext, ".otr") || StringHelper::IEquals(ext, ".o2r")) {
-                    OTRFiles.push_back(p.path().generic_string());
+                    AssetFiles.push_back(p.path().generic_string());
                 }
             }
         }
     }
 
-    this->context =
-        Ship::Context::CreateInstance("Starship", "ship", "starship.cfg.json", OTRFiles, {}, 3, { 44100, 1024*2, 2480*2 });
+    instance->context =
+        Ship::Context::CreateInstance("Starship", "ship", "starship.cfg.json", AssetFiles, {}, 3, { 44100, 1024*2, 2480*2 });
 
-    auto loader = context->GetResourceManager()->GetResourceLoader();
+    auto loader = instance->context->GetResourceManager()->GetResourceLoader();
     loader->RegisterResourceFactory(std::make_shared<SF64::ResourceFactoryBinaryAnimV0>(), RESOURCE_FORMAT_BINARY,
                                     "Animation", static_cast<uint32_t>(SF64::ResourceType::AnimData), 0);
     loader->RegisterResourceFactory(std::make_shared<SF64::ResourceFactoryBinarySkeletonV0>(), RESOURCE_FORMAT_BINARY,
@@ -164,11 +191,8 @@ GameEngine::GameEngine() {
 
     loader->RegisterResourceFactory(std::make_shared<SF64::ResourceFactoryBinarySoundFontV0>(), RESOURCE_FORMAT_BINARY,
                                     "SoundFont", static_cast<uint32_t>(SF64::ResourceType::SoundFont), 0);
-}
 
-void GameEngine::Create() {
-    const auto instance = Instance = new GameEngine();
-    instance->AudioInit();
+    GameEngine::AudioInit();
     DisplayListPatch::Run();
     GameUI::SetupGuiElements();
 #if defined(__SWITCH__) || defined(__WIIU__)
@@ -384,6 +408,15 @@ uint32_t GameEngine::GetInterpolationFPS() {
 
     return std::min<uint32_t>(Ship::Context::GetInstance()->GetWindow()->GetCurrentRefreshRate(),
                               CVarGetInteger("gInterpolationFPS", 20));
+}
+
+void GameEngine::ShowMessage(const char* title, const char* message) {
+#if defined(__SWITCH__)
+    SPDLOG_ERROR(message);
+#else
+    SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, title, message, nullptr);
+    SPDLOG_ERROR(message);
+#endif
 }
 
 extern "C" uint32_t GameEngine_GetSampleRate() {

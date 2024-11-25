@@ -15,28 +15,26 @@ struct GamePool {
 #include <Fast3D/gfx_pc.h>
 #include "libultraship/src/Context.h"
 
-
-
 class GameEngine {
   public:
     static GameEngine* Instance;
 
     std::shared_ptr<Ship::Context> context;
 
-    GameEngine();
+    GameEngine(){};
+    static void GenAssetFile();
     static void Create();
     void StartFrame() const;
     static void HandleAudioThread();
-    static void ProcessAudioTask(s16* audio_buffer);
     static void StartAudioFrame();
     static void EndAudioFrame();
     static void AudioInit();
     static void AudioExit();
     static void RunCommands(Gfx* Commands, const std::vector<std::unordered_map<Mtx*, MtxF>>& mtx_replacements);
-    void ProcessFrame(void (*run_one_game_iter)()) const;
     static void Destroy();
     static void ProcessGfxCommands(Gfx* commands);
     static uint32_t GetInterpolationFPS();
+    static void ShowMessage(const char* title, const char* message);
 };
 
 extern "C" void* GameEngine_Malloc(size_t size);

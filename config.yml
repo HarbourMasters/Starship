@@ -6,7 +6,7 @@ f7475fb11e7e6830f82883412638e8390791ab87:
   config:
     gbi: F3DEX
     sort: OFFSET
-    # logging: ERROR
+    logging: ERROR
     output:
       binary: sf64.otr
       code: src/assets
