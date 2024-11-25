@@ -536,16 +536,16 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang|AppleClang")
 endif()
 
 include(ExternalProject)
-ExternalProject_Add(Torch
-	PREFIX Torch
+ExternalProject_Add(TorchExternal
+	PREFIX TorchExternal
     SOURCE_DIR ${CMAKE_SOURCE_DIR}/tools/Torch
     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/Torch
 )
-ExternalProject_Get_Property(Torch install_dir)
+ExternalProject_Get_Property(TorchExternal install_dir)
 set(TORCH_EXECUTABLE ${install_dir}/src/Torch-build/$<CONFIGURATION>/torch)
 add_custom_target(
     ExtractAssets
-    DEPENDS Torch
+    DEPENDS TorchExternal
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
     COMMAND ${TORCH_EXECUTABLE} header -o baserom.us.uncompressed.z64
     COMMAND ${TORCH_EXECUTABLE} otr baserom.us.uncompressed.z64
