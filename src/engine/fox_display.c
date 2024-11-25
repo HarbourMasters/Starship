@@ -320,9 +320,6 @@ void Display_Landmaster(Player* player) {
 
     Matrix_Push(&gGfxMatrix);
 
-    // @port: Tag the transform.
-    FrameInterpolation_RecordOpenChild("Display_Landmaster", player->num);
-
     if (!gVersusMode) {
         gSPDisplayList(gMasterDisp++, aLandmasterModelDL);
     } else {
@@ -360,9 +357,6 @@ void Display_Landmaster(Player* player) {
 
     Matrix_MultVec3f(gGfxMatrix, &sp4C, &D_display_80161548[player->num]);
     Matrix_Pop(&gGfxMatrix);
-
-    // @port Pop the transform id.
-    FrameInterpolation_RecordCloseChild();
 }
 
 Gfx* sFaceDL[] = { aAwFoxHeadDL, aAwFalcoHeadDL, aAwSlippyHeadDL, aAwPeppyHeadDL };
@@ -1885,7 +1879,9 @@ void Display_Update(void) {
         playerPos.y = player->pos.y;
         playerPos.z = player->trueZpos;
         Display_SetSecondLight(&playerPos);
+        FrameInterpolation_RecordOpenChild(player, i);
         Display_Player_Update(player, 0);
+        FrameInterpolation_RecordCloseChild();
         Display_SetupPlayerSfxPos(player);
     }
 
@@ -1898,7 +1894,9 @@ void Display_Update(void) {
             playerPos.x = player->pos.x;
             playerPos.y = player->pos.y;
             playerPos.z = player->trueZpos;
+            FrameInterpolation_RecordOpenChild(player, i);
             Display_Player_Update(player, 1);
+            FrameInterpolation_RecordCloseChild();
         }
         Matrix_Pop(&gGfxMatrix);
     }
