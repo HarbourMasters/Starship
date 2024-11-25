@@ -15,6 +15,7 @@
 extern "C" {
 #include "sys.h"
 #include <sf64audio_provisional.h>
+#include <sf64context.h>
 }
 
 namespace GameUI {
@@ -557,6 +558,21 @@ void DrawDebugMenu() {
         UIWidgets::CVarCheckbox("Speed Control", "gDebugSpeedControl", {
             .tooltip = "Control the Arwing speed"
         });
+
+        if (CVarGetInteger("gCheckpoint.Set", 0)) {
+            if (UIWidgets::Button("Clear Checkpoint")) {
+                CVarClear("gCheckpoint.Set");
+                Ship::Context::GetInstance()->GetWindow()->GetGui()->SaveConsoleVariablesNextFrame();
+            }
+        } else if (gPlayer != NULL) {
+            if (UIWidgets::Button("Set Checkpoint")) {
+                CVarSetInteger("gCheckpoint.Set", 1);
+                CVarSetInteger("gCheckpoint.gSavedPathProgress", gGroundSurface);
+                CVarSetFloat("gCheckpoint.gSavedPathProgress", (-gPlayer->pos.z) - 250.0f);
+                CVarSetInteger("gCheckpoint.gSavedObjectLoadIndex", gObjectLoadIndex);
+                Ship::Context::GetInstance()->GetWindow()->GetGui()->SaveConsoleVariablesNextFrame();
+            }
+        }
 
         UIWidgets::Spacer(0);
 
