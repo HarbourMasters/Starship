@@ -14,7 +14,7 @@ class GameExtractor {
   public:
     std::optional<GameEntry> ValidateChecksum() const;
     bool SelectGameFromUI();
-    void DecompressGame() const;
+    void DecompressGame();
     bool GenerateOTR() const;
   private:
     fs::path mGamePath;

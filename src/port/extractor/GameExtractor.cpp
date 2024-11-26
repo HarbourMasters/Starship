@@ -3,6 +3,7 @@
 #include <fstream>
 
 #include "Context.h"
+#include "CompTool.h"
 #include "spdlog/spdlog.h"
 #include "portable-file-dialogs.h"
 #include <port/Engine.h>
@@ -37,14 +38,14 @@ std::optional<GameEntry> GameExtractor::ValidateChecksum() const {
     return mGameList[rom->GetHash()];
 }
 
-void GameExtractor::DecompressGame() const {
+void GameExtractor::DecompressGame() {
     auto game = this->ValidateChecksum();
     if (!game.has_value()) {
         return;
     }
 
     if (game->isCompressed) {
-        throw std::runtime_error("Compressed games are not supported yet.");
+        this->mGameData = CompTool::Decompress(this->mGameData);
     }
 }
 
