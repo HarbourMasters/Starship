@@ -1947,6 +1947,10 @@ void HUD_RadarWindow_Draw(f32 x, f32 y) {
         yScale = 1.69f;
         xScale1 = 0.70f;
         yScale1 = 0.70f;
+
+        if (gPlayerNum == 0 || gPlayerNum == 2) {
+            xPos = OTRGetDimensionFromLeftEdge(xPos);
+        }
     } else { // Simple player mode
         xPos = x - 32.0f;
         yPos = y - 14.0f;
@@ -1954,6 +1958,8 @@ void HUD_RadarWindow_Draw(f32 x, f32 y) {
         yScale = 4.24f;
         xScale1 = 1.70f;
         yScale1 = 1.70f;
+
+        xPos = OTRGetDimensionFromRightEdge(xPos);
     }
 
     RCP_SetupDL(&gMasterDisp, SETUPDL_78);
@@ -2109,15 +2115,15 @@ s32 HUD_RadarMarks_Update(void) {
 
         switch (gCurrentLevel) {
             case LEVEL_SECTOR_Z:
-                Lib_TextureRect_IA8(&gMasterDisp, D_SZ_60012D0, 16, 9, 251.0f + D_800D1E10, 181.0f, 1.00f, 1.00f);
+                Lib_TextureRect_IA8(&gMasterDisp, D_SZ_60012D0, 16, 9, OTRGetDimensionFromRightEdge(251.0f + D_800D1E10), 181.0f, 1.00f, 1.00f);
                 break;
 
             case LEVEL_FORTUNA:
-                Lib_TextureRect_IA8(&gMasterDisp, D_FO_6001260, 16, 16, 251.0f + D_800D1E10, 178.0f, 1.00f, 1.00f);
+                Lib_TextureRect_IA8(&gMasterDisp, D_FO_6001260, 16, 16, OTRGetDimensionFromRightEdge(251.0f + D_800D1E10), 178.0f, 1.00f, 1.00f);
                 break;
 
             case LEVEL_BOLSE:
-                Lib_TextureRect_IA8(&gMasterDisp, D_BO_6000C80, 16, 16, 251.0f + D_800D1E10, 178.0f, 1.00f, 1.00f);
+                Lib_TextureRect_IA8(&gMasterDisp, D_BO_6000C80, 16, 16, OTRGetDimensionFromRightEdge(251.0f + D_800D1E10), 178.0f, 1.00f, 1.00f);
                 break;
 
             case LEVEL_SECTOR_Y:
@@ -2128,21 +2134,29 @@ s32 HUD_RadarMarks_Update(void) {
                     if ((y < 150.0f) || (y > 206.0f)) {
                         break;
                     }
-                    Lib_TextureRect_IA8(&gMasterDisp, D_SY_6000840, 64, 64, 250.0f + D_800D1E10, temp, 0.25f, 0.25f);
+                    Lib_TextureRect_IA8(&gMasterDisp, D_SY_6000840, 64, 64, OTRGetDimensionFromRightEdge(250.0f + D_800D1E10), temp, 0.25f, 0.25f);
                 }
                 break;
 
             case LEVEL_KATINA:
-                Lib_TextureRect_IA8(&gMasterDisp, D_KA_6001260, 8, 8, 254.0f + D_800D1E10, 182.0f, 1.00f, 1.00f);
+                Lib_TextureRect_IA8(&gMasterDisp, D_KA_6001260, 8, 8, OTRGetDimensionFromRightEdge(254.0f + D_800D1E10), 182.0f, 1.00f, 1.00f);
                 break;
 
             case LEVEL_VENOM_2:
-                Lib_TextureRect_IA8(&gMasterDisp, D_VE2_6002890, 16, 16, 251.0f + D_800D1E10, 178.0f, 1.00f, 1.00f);
+                Lib_TextureRect_IA8(&gMasterDisp, D_VE2_6002890, 16, 16, OTRGetDimensionFromRightEdge(251.0f + D_800D1E10), 178.0f, 1.00f, 1.00f);
                 break;
         }
     }
 
+    // Lib_InitOrtho(&gMasterDisp);
     Matrix_Push(&gGfxMatrix);
+    if (gVersusMode) {
+        x1 = OTRGetDimensionFromLeftEdge(x1);
+        // Matrix_Scale(gGfxMatrix, 0.333f, 0.333f, 0.333f, MTXF_APPLY);
+    } else {
+        x1 = OTRGetDimensionFromRightEdge(x1);
+        // Matrix_Scale(gGfxMatrix, 0.306f, 0.306f, 0.306f, MTXF_APPLY);
+    }
     Matrix_Translate(gGfxMatrix, x1, y1, z1, MTXF_APPLY);
 
     if ((gCurrentLevel == LEVEL_SECTOR_Z) && (D_hud_80161710 != 0)) {
@@ -2159,7 +2173,13 @@ s32 HUD_RadarMarks_Update(void) {
         }
 
         Matrix_Push(&gGfxMatrix);
-        Matrix_Translate(gGfxMatrix, gRadarMarks[i].pos.x * 0.008f, -gRadarMarks[i].pos.z * 0.008f, 0.0f, MTXF_APPLY);
+        float tempX = gRadarMarks[i].pos.x * 0.008f;
+        if (gVersusMode) {
+            tempX = OTRGetDimensionFromLeftEdge(tempX);
+        } else {
+            tempX = OTRGetDimensionFromRightEdge(tempX);
+        }
+        Matrix_Translate(gGfxMatrix, tempX, -gRadarMarks[i].pos.z * 0.008f, 0.0f, MTXF_APPLY);
 
         if (gRadarMarks[i].type == 103) {
             gRadarMarks[i].yRot = 45.0f;
@@ -2176,6 +2196,7 @@ s32 HUD_RadarMarks_Update(void) {
     }
 
     Matrix_Pop(&gGfxMatrix);
+    // Lib_InitPerspective(&gMasterDisp);
     return 0;
 }
 
@@ -2913,7 +2934,7 @@ void HUD_VS_BombIcon_Draw(f32 arg0, f32 arg1, f32 arg2, f32 arg3) {
 }
 
 void HUD_VsModePortrait_Draw(void) {
-    f32 faceXpos[] = { 113.0f, 273.0f, 113.0f, 273.0f };
+    f32 faceXpos[] = { 113.0f, OTRGetDimensionFromRightEdge(273.0f), 113.0f, OTRGetDimensionFromRightEdge(273.0f) };
     f32 faceYpos[] = { 79.0f, 79.0f, 199.0f, 199.0f };
 
     RCP_SetupDL(&gMasterDisp, SETUPDL_76_POINT);
@@ -2922,7 +2943,7 @@ void HUD_VsModePortrait_Draw(void) {
 }
 
 void HUD_VS_ShieldGauge_Draw(void) {
-    f32 D_800D20E8[] = { 60.0f, 220.0f, 60.0f, 220.0f };
+    f32 D_800D20E8[] = { 60.0f, OTRGetDimensionFromRightEdge(220.0f), 60.0f, OTRGetDimensionFromRightEdge(220.0f) };
     f32 D_800D20F8[] = { 78.0f, 78.0f, 198.0f, 198.0f };
 
     Math_SmoothStepToF(&D_800D19E0[gPlayerNum], gPlayer[gPlayerNum].shields * (1.0f / 255.0f), 0.3f, 10.0f, 0.01f);
@@ -2940,7 +2961,7 @@ void HUD_VS_ShieldGauge_Draw(void) {
 
 void HUD_BoostGauge_Draw(f32 xPos, f32 yPos) {
     f32 boostGaugeXpos[] = {
-        110.0f, 270.0f, 110.0f, 270.0f, 0.0f,
+        110.0f, OTRGetDimensionFromRightEdge(270.0f), 110.0f, OTRGetDimensionFromRightEdge(270.0f), 0.0f,
     };
     f32 boostGaugeYpos[] = {
         16.0f, 16.0f, 136.0f, 136.0f, 0.0f,

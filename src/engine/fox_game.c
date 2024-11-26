@@ -568,8 +568,8 @@ void Game_Update(void) {
             }
             gDPFillRectangle(gMasterDisp++, SCREEN_WIDTH / 2 - 1 - 1, SCREEN_MARGIN, SCREEN_WIDTH / 2 + 1,
                              SCREEN_HEIGHT - SCREEN_MARGIN);
-            gDPFillRectangle(gMasterDisp++, SCREEN_MARGIN, SCREEN_HEIGHT / 2 - 1 - 1, SCREEN_WIDTH - SCREEN_MARGIN,
-                             SCREEN_HEIGHT / 2 + 1);
+            gDPFillWideRectangle(gMasterDisp++, OTRGetRectDimensionFromLeftEdge(SCREEN_MARGIN), SCREEN_HEIGHT / 2 - 1 - 1, 
+                                 OTRGetRectDimensionFromRightEdge(SCREEN_WIDTH - SCREEN_MARGIN), SCREEN_HEIGHT / 2 + 1);
 
             HUD_8008CB8C();
         }
