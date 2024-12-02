@@ -359,6 +359,7 @@ if(MSVC)
           ${DEFAULT_CXX_EXCEPTION_HANDLING}
       )
       target_compile_options(${PROJECT_NAME} PRIVATE  $<$<CONFIG:Debug>:/ZI;>)
+      target_compile_options(${PROJECT_NAME} PRIVATE  $<$<CONFIG:Release>:/Zi;>)
   elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
       target_compile_options(${PROJECT_NAME} PRIVATE
           $<$<CONFIG:Debug>:
