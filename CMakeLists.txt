@@ -27,6 +27,10 @@ set(VCPKG_TRIPLET x64-windows-static)
 set(VCPKG_TARGET_TRIPLET x64-windows-static)
 vcpkg_bootstrap()
 vcpkg_install_packages(zlib bzip2 libzip libpng sdl2 glew glfw3 nlohmann-json tinyxml2 spdlog)
+if(NOT EXISTS ${CMAKE_BINARY_DIR}/config.yml)
+	execute_process(COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_SOURCE_DIR}/config.yml" "${CMAKE_BINARY_DIR}/config.yml")
+	execute_process(COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/assets/" "${CMAKE_BINARY_DIR}/assets/")
+endif()
 endif()
 
 if (MSVC)
@@ -348,7 +352,6 @@ add_custom_target(
     ExtractAssets
     DEPENDS TorchExternal
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-    COMMAND ${TORCH_EXECUTABLE} header -o baserom.us.uncompressed.z64
     COMMAND ${TORCH_EXECUTABLE} otr baserom.us.uncompressed.z64
     COMMAND ${TORCH_EXECUTABLE} pack port starship.otr
     COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_SOURCE_DIR}/sf64.otr" "${CMAKE_BINARY_DIR}/sf64.otr"
