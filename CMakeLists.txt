@@ -18,6 +18,8 @@ set(CMAKE_C_STANDARD 11 CACHE STRING "The C standard to use")
 
 # Add a custom module path to locate additional CMake modules
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/modules/")
+set(YAML_CPP_STATIC_DEFINE ON)
+add_compile_definitions(YAML_CPP_STATIC_DEFINE)
 
 if (WIN32)
 include(cmake/automate-vcpkg.cmake)
@@ -25,6 +27,10 @@ set(VCPKG_TRIPLET x64-windows-static)
 set(VCPKG_TARGET_TRIPLET x64-windows-static)
 vcpkg_bootstrap()
 vcpkg_install_packages(zlib bzip2 libzip libpng sdl2 glew glfw3 nlohmann-json tinyxml2 spdlog)
+if(NOT EXISTS ${CMAKE_BINARY_DIR}/config.yml)
+	execute_process(COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_SOURCE_DIR}/config.yml" "${CMAKE_BINARY_DIR}/config.yml")
+	execute_process(COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/assets/" "${CMAKE_BINARY_DIR}/assets/")
+endif()
 endif()
 
 if (MSVC)
@@ -233,8 +239,7 @@ if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
 			">"
 			"INCLUDE_GAME_PRINTF;"
 			"UNICODE;"
-			"_UNICODE"
-			STORMLIB_NO_AUTO_LINK
+			"_UNICODE;"
 			"_CRT_SECURE_NO_WARNINGS;"
             "_SILENCE_ALL_MS_EXT_DEPRECATION_WARNINGS;"
 		)
@@ -252,11 +257,12 @@ if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
 			"INCLUDE_GAME_PRINTF;"
 			"WIN32;"
 			"UNICODE;"
-			"_UNICODE"
-			STORMLIB_NO_AUTO_LINK
+			"_UNICODE;"
             "_SILENCE_ALL_MS_EXT_DEPRECATION_WARNINGS;"
 		)
 	endif()
+	add_compile_definitions(STORMLIB_NO_AUTO_LINK)
+	set(STORMLIB_NO_AUTO_LINK ON)
 elseif (CMAKE_SYSTEM_NAME STREQUAL "CafeOS")
 	target_compile_definitions(${PROJECT_NAME} PRIVATE
 		"$<$<CONFIG:Debug>:"
@@ -321,10 +327,42 @@ endif()
 
 target_link_libraries(${PROJECT_NAME} PRIVATE "${ADDITIONAL_LIBRARY_DEPENDENCIES}")
 
-set(USE_STANDALONE OFF)
-set(BUILD_STORMLIB OFF)
-set(BUILD_SM64 OFF)
-set(BUILD_MK64 OFF)
+include(ExternalProject)
+ExternalProject_Add(TorchExternal
+	PREFIX TorchExternal
+    SOURCE_DIR ${CMAKE_SOURCE_DIR}/tools/Torch
+    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/TorchExternal
+)
+ExternalProject_Get_Property(TorchExternal install_dir)
+set(TORCH_EXECUTABLE ${install_dir}/src/TorchExternal-build/$<CONFIGURATION>/torch)
+add_custom_target(
+    ExtractAssetHeaders
+    DEPENDS TorchExternal
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    COMMAND ${TORCH_EXECUTABLE} header -o baserom.us.uncompressed.z64
+)
+add_custom_target(
+    GeneratePortOtr
+    DEPENDS TorchExternal
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    COMMAND ${TORCH_EXECUTABLE} pack port starship.otr
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_SOURCE_DIR}/starship.otr" "${CMAKE_BINARY_DIR}/starship.otr"
+)
+add_custom_target(
+    ExtractAssets
+    DEPENDS TorchExternal
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    COMMAND ${TORCH_EXECUTABLE} otr baserom.us.uncompressed.z64
+    COMMAND ${TORCH_EXECUTABLE} pack port starship.otr
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_SOURCE_DIR}/sf64.otr" "${CMAKE_BINARY_DIR}/sf64.otr"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_SOURCE_DIR}/starship.otr" "${CMAKE_BINARY_DIR}/starship.otr"
+)
+
+option(USE_STANDALONE "Build as a standalone executable" OFF)
+option(BUILD_STORMLIB "Build with StormLib support" OFF)
+
+option(BUILD_SM64 "Build with Super Mario 64 support" OFF)
+option(BUILD_MK64 "Build with Mario Kart 64 support" OFF)
 add_subdirectory(tools/Torch)
 target_link_libraries(${PROJECT_NAME} PRIVATE torch)
 
@@ -534,22 +572,3 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang|AppleClang")
       )
   endif()
 endif()
-
-include(ExternalProject)
-ExternalProject_Add(TorchExternal
-	PREFIX TorchExternal
-    SOURCE_DIR ${CMAKE_SOURCE_DIR}/tools/Torch
-    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/Torch
-)
-ExternalProject_Get_Property(TorchExternal install_dir)
-set(TORCH_EXECUTABLE ${install_dir}/src/Torch-build/$<CONFIGURATION>/torch)
-add_custom_target(
-    ExtractAssets
-    DEPENDS TorchExternal
-    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-    COMMAND ${TORCH_EXECUTABLE} header -o baserom.us.uncompressed.z64
-    COMMAND ${TORCH_EXECUTABLE} otr baserom.us.uncompressed.z64
-    COMMAND ${TORCH_EXECUTABLE} pack port starship.otr
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_SOURCE_DIR}/sf64.otr" "${CMAKE_BINARY_DIR}/sf64.otr"
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_SOURCE_DIR}/starship.otr" "${CMAKE_BINARY_DIR}/starship.otr"
-)
