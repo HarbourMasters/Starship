@@ -589,11 +589,3 @@ extern "C" void* GameEngine_Malloc(size_t size) {
     SPDLOG_INFO("Memory pool resized from {} to {}", MemoryPool.length - chunk, MemoryPool.length);
     return GameEngine_Malloc(size);
 }
-
-extern "C" float GetWindowWidth() {
-    return Ship::Context::GetInstance()->GetWindow()->GetWidth();
-}
-
-extern "C" float GetWindowHeight() {
-    return Ship::Context::GetInstance()->GetWindow()->GetHeight();
-}

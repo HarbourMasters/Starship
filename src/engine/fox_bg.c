@@ -229,6 +229,12 @@ void Background_DrawStarfield(void) {
             FrameInterpolation_ShouldInterpolateFrame(false);
         }
 
+        float originalWidth = currentScreenWidth / 5;
+        float originalAspect = originalWidth / (currentScreenHeight / 3);
+        float renderMaskWidth = originalWidth * (OTRGetAspectRatio() / originalAspect);
+        float marginX = (currentScreenWidth - renderMaskWidth) / 2;
+        float renderMaskHeight = currentScreenHeight / 3;
+
         for (i = 0; i < starCount; i++, yStar++, xStar++, color++) {
             // Adjust star positions with field offsets
             bx = *xStar + xField;
@@ -257,12 +263,6 @@ void Background_DrawStarfield(void) {
             // Apply rotation
             vx = (zCos * bx) + (zSin * by) + currentScreenWidth / 2.0f;
             vy = (-zSin * bx) + (zCos * by) + currentScreenHeight / 2.0f;
-
-            float originalWidth = currentScreenWidth / 5;
-            float originalAspect = originalWidth / (currentScreenHeight / 3);
-            float renderMaskWidth = originalWidth * (OTRGetAspectRatio() / originalAspect);
-            float marginX = (currentScreenWidth - renderMaskWidth) / 2;
-            float renderMaskHeight = currentScreenHeight / 3;
 
             // Check if the star is within the visible screen area with margin
             if (vx >= (marginX - STAR_MARGIN) && vx <= (marginX + renderMaskWidth + STAR_MARGIN) &&
