@@ -110,7 +110,7 @@ f32 sGroundPositions360z[4] = {
 };
 
 // Declare global variables for screen dimensions
-float gCurrentScreenWidth = 320.0f * 3;  // Default width
+float gCurrentScreenWidth = 320.0f * 5;  // Default width
 float gCurrentScreenHeight = 240.0f * 3; // Default height
 
 // Custom floating-point modulo function (replaces fmodf)
@@ -258,12 +258,15 @@ void Background_DrawStarfield(void) {
             vx = (zCos * bx) + (zSin * by) + currentScreenWidth / 2.0f;
             vy = (-zSin * bx) + (zCos * by) + currentScreenHeight / 2.0f;
 
-            float thirdWidth = currentScreenWidth / 3;
-            float thirdHeight = currentScreenHeight / 3;
+            float originalWidth = currentScreenWidth / 5;
+            float originalAspect = originalWidth / (currentScreenHeight / 3);
+            float renderMaskWidth = originalWidth * (OTRGetAspectRatio() / originalAspect);
+            float marginX = (currentScreenWidth - renderMaskWidth) / 2;
+            float renderMaskHeight = currentScreenHeight / 3;
 
             // Check if the star is within the visible screen area with margin
-            if (vx >= (thirdWidth - STAR_MARGIN) && vx <= ((thirdWidth * 2) + STAR_MARGIN) &&
-                vy >= (thirdHeight - STAR_MARGIN) && vy <= ((thirdHeight * 2) + STAR_MARGIN)) {
+            if (vx >= (marginX - STAR_MARGIN) && vx <= (marginX + renderMaskWidth + STAR_MARGIN) &&
+                vy >= (renderMaskHeight - STAR_MARGIN) && vy <= ((renderMaskHeight * 2) + STAR_MARGIN)) {
 
                 FrameInterpolation_RecordOpenChild("Starfield", i);
                 FrameInterpolation_RecordMarker(__FILE__, __LINE__);
