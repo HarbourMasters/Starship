@@ -32,8 +32,8 @@ Matrix* gGfxMatrix;
 Matrix sGfxMatrixStack[0x1000];
 Matrix* gCalcMatrix;
 Matrix sCalcMatrixStack[0x1000];
-Matrix* gInterpolationMatrix;
 Matrix sInterpolationMatrixStack[0x1000];
+Matrix* gInterpolationMatrix = &sInterpolationMatrixStack[0];
 
 // Copies src Matrix into dst
 void Matrix_Copy(Matrix* dst, Matrix* src) {
