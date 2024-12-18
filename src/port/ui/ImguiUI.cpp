@@ -471,6 +471,13 @@ void DrawCheatsMenu() {
         UIWidgets::CVarCheckbox("Start with Peppy dead", "gHit64PeppyDead", {
                 .tooltip = "Start the level with with Peppy dead."
             });
+        
+        UIWidgets::CVarCheckbox("Score Editor", "gScoreEditor", { .tooltip = "Enable the score editor" });
+
+        if (CVarGetInteger("gScoreEditor", 0) == 1) {
+            UIWidgets::CVarSliderInt("Score: %d", "gScoreEditValue", 0, 999, 0,
+                { .tooltip = "Increase or decrease the current mission score number" });
+        }
 
         ImGui::EndMenu();
     }

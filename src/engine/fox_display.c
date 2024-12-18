@@ -2132,6 +2132,14 @@ void Display_Update(void) {
         }
         gLaserStrength[0] = 2;
     }
+
+    if (CVarGetInteger("gScoreEditor", 0) == 1) {
+        if ((gGameState != GSTATE_PLAY) || (gPlayState <= PLAY_INIT)) {
+            return;
+        }
+        gHitCount = CVarGetInteger("gScoreEditValue", 1);
+
+    }
     Hit64_Main();
     // ground testing
 #if 0
