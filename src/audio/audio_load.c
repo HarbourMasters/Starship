@@ -1279,7 +1279,7 @@ s32 AudioLoad_RelocateFontAndPreloadSamples(s32 fontId, uintptr_t fontDataAddr, 
 
     gNumUsedSamples = 0;
     AudioLoad_RelocateFont(fontId, fontDataAddr, relocData);
-    return;
+    return 0;
 
     size = 0;
 

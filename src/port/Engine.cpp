@@ -432,11 +432,11 @@ extern "C" uint8_t GameEngine_OTRSigCheck(const char* data) {
     return strncmp(data, sOtrSignature, strlen(sOtrSignature)) == 0;
 }
 
-extern "C" float __cosf(float angle) {
+extern "C" float __cosf(float angle) throw() {
     return cosf(angle);
 }
 
-extern "C" float __sinf(float angle) {
+extern "C" float __sinf(float angle) throw() {
     return sinf(angle);
 }
 

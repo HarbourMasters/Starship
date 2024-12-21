@@ -65,11 +65,11 @@ void AudioThread_CreateNextAudioBuffer(s16* samples, u32 num_samples) {
             osSendMesg8(gAudioResetQueue, gAudioSpecId, OS_MESG_NOBLOCK);
         }
         gWaitingAudioTask = NULL;
-        return NULL;
+        return;
     }
 
     if (gAudioResetTimer > 16) {
-        return NULL;
+        return;
     }
     if (gAudioResetTimer != 0) {
         gAudioResetTimer++;
