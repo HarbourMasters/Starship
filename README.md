@@ -14,25 +14,26 @@ If you're having any trouble after reading through this `README`, feel free ask 
 Starship does not include any copyrighted assets.  You are required to provide a supported copy of the game.
 
 ### 1. Verify your ROM dump
-You can verify you have dumped a supported copy of the game by using the MD5 File Checksum Online at https://webencrypt.org/onlinetoolsjs/md5_checksum.html. The MD5 hash for a US 1.1 ROM is 741a94eee093c4c8684e66b89f8685e8.
+The supported ROM is the USA 1.1 Rev A version. You can verify you have dumped a supported copy of the game by using the MD5 File Checksum Online at https://webencrypt.org/onlinetoolsjs/md5_checksum.html. The MD5 hash for a US 1.1 ROM is 741a94eee093c4c8684e66b89f8685e8.
+
+### 2. Verify your ROM is in .z64 format
+Your ROM needs to be in .z64 format. If it's in .n64 format, use the following to convert it to a .z64: https://hack64.net/tools/swapper.php
 
 ### 2. Download Starship from [Releases](https://github.com/HarbourMasters/starship/releases)
 
-### 3. Launch the Game!
+### 3. Generating the OTR from the ROM
 #### Windows
-* Extract the zip
-* Launch `starship.exe`
+* Extract every file from the zip into a folder of your choosing.
+* Copy your ROM to the root of the folder you extracted the zip to.
+* Run "generate_otr.bat"
 
-#### Linux
-* Place your supported copy of the game in the same folder as the appimage.
-* Execute `starship.appimage`. You may have to `chmod +x` the appimage via terminal.
-
-#### macOS
-* Run `starship.app`.
-* When prompted, select your supported copy of the game.
+#### MacOS
+* Extract every file from the zip into a folder of your choosing.
+* Copy your ROM to the root of the folder you extracted the zip to.
+* Run "generate_otr.sh"
 
 ### 4. Play!
-
+* Launch `starship.exe`
 Congratulations, you are now sailing with Starship! Have fun!
 
 # Configuration
@@ -51,7 +52,7 @@ Congratulations, you are now sailing with Starship! Have fun!
 | Ctrl+R | Reset |
 
 ### Graphics Backends
-Currently, there are three rendering APIs supported: DirectX11 (Windows), OpenGL (all platforms), and Metal (macOS). You can change which API to use in the `Settings` menu of the menubar, which requires a restart.  If you're having an issue with crashing, you can change the API in the `starship.json` file by finding the line `"Backend":{`... and changing the `id` value to `3` and set the `Name` to `OpenGL`. `DirectX 11` with id `2` is the default on Windows. `Metal` with id `4` is the default on macOS.
+Currently, there are three rendering APIs supported: DirectX11 (Windows), OpenGL (all platforms), and Metal (macOS). You can change which API to use in the `Settings` menu of the menubar, which requires a restart.  If you're having an issue with crashing, you can change the API in the `starship.cfg.json` file by finding the line `"Backend":{`... and changing the `id` value to `3` and set the `Name` to `OpenGL`. `DirectX 11` with id `2` is the default on Windows. `Metal` with id `4` is the default on macOS.
 
 # Custom Assets
 
@@ -65,16 +66,6 @@ If you're interested in creating and/or packing your own custom asset `.o2r`/`.o
 ### Building
 
 If you want to manually compile Starship, please consult the [building instructions](docs/BUILDING.md).
-
-
-### Playtesting
-If you want to playtest a continuous integration build, you can find them at the links below. Keep in mind that these are for playtesting only, and you will likely encounter bugs and possibly crashes. 
-
-[comment]: <> (Todo: Make these...)
-
-* [Windows](https://nightly.link/HarbourMasters/2ship2harkinian/workflows/main/develop/2ship-windows.zip)
-* [Linux](https://nightly.link/HarbourMasters/2ship2harkinian/workflows/main/develop/2ship-linux.zip)
-* [Mac](https://nightly.link/HarbourMasters/2ship2harkinian/workflows/main/develop/2ship-mac.zip)
 
 <a href="https://github.com/Kenix3/libultraship/">
   <picture>
