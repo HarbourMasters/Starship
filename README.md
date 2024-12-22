@@ -19,7 +19,7 @@ The supported ROM is the USA 1.1 Rev A version. You can verify you have dumped a
 ### 2. Verify your ROM is in .z64 format
 Your ROM needs to be in .z64 format. If it's in .n64 format, use the following to convert it to a .z64: https://hack64.net/tools/swapper.php
 
-### 2. Download Starship from [Releases](https://github.com/HarbourMasters/starship/releases)
+### 2. Download Starship from [Releases](https://github.com/HarbourMasters/Starship/releases)
 
 ### 3. Generating the OTR from the ROM
 #### Windows
@@ -65,7 +65,7 @@ If you're interested in creating and/or packing your own custom asset `.o2r`/`.o
 # Development
 ### Building
 
-If you want to manually compile Starship, please consult the [building instructions](docs/BUILDING.md).
+If you want to manually compile Starship, please consult the [building instructions](https://github.com/HarbourMasters/Starship/blob/main/docs/BUILDING.md).
 
 <a href="https://github.com/Kenix3/libultraship/">
   <picture>
