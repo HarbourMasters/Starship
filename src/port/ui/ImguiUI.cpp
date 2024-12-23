@@ -422,7 +422,7 @@ void DrawGameMenu() {
         }
 #if !defined(__SWITCH__) && !defined(__WIIU__)
 
-        if (UIWidgets::MenuItem("Toggle Fullscreen", "F9")) {
+        if (UIWidgets::MenuItem("Toggle Fullscreen", "F11")) {
             Ship::Context::GetInstance()->GetWindow()->ToggleFullscreen();
         }
 
