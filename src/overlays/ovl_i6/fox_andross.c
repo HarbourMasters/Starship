@@ -329,7 +329,7 @@ void Andross_80188468(void) {
     actor->obj.pos.y = 300.0f;
     actor->obj.pos.z = -11959.0f;
     actor->iwork[11] = 1;
-    actor->iwork[14] = 1;
+    actor->iwork[TEAM_FACE] = FACE_FOX;
     actor->obj.id = OBJ_ACTOR_TEAM_ARWING;
     Object_SetInfo(&actor->info, actor->obj.id);
     AUDIO_PLAY_SFX(NA_SE_ARWING_ENGINE_FG, actor->sfxSource, 4);
@@ -450,7 +450,7 @@ void Andross_80188A4C(AndBrain* this) {
                             gScreenFlashTimer = 8;
                             AUDIO_PLAY_SFX(NA_SE_EN_DOWN_IMPACT, this->sfxSource, 4);
                             Boss_AwardBonus(this);
-                            gPlayer[0].state_1C8 = PLAYERSTATE_1C8_STANDBY;
+                            gPlayer[0].state = PLAYERSTATE_STANDBY;
                             this->state = 20;
                             this->swork[1] = 1000;
                             this->swork[2] = 1000;
@@ -658,7 +658,7 @@ void Andross_AndJamesTrigger_Update(AndJamesTrigger* this) {
     s32 i;
     Player* player = &gPlayer[0];
 
-    if ((gDrawBackdrop != 7) && (gPlayer[0].state_1C8 == PLAYERSTATE_1C8_ACTIVE) &&
+    if ((gDrawBackdrop != 7) && (gPlayer[0].state == PLAYERSTATE_ACTIVE) &&
         (fabsf(this->obj.pos.x - gPlayer[0].pos.x) < 9000.0f) &&
         (fabsf(this->obj.pos.z - gPlayer[0].trueZpos) < 9000.0f)) {
         gDrawBackdrop = 7;
@@ -667,14 +667,14 @@ void Andross_AndJamesTrigger_Update(AndJamesTrigger* this) {
         SEQCMD_STOP_SEQUENCE(SEQ_PLAYER_FANFARE, 20);
     }
 
-    if ((gPlayer[0].state_1C8 == PLAYERSTATE_1C8_ACTIVE) && (fabsf(this->obj.pos.x - gPlayer[0].pos.x) < 500.0f) &&
+    if ((gPlayer[0].state == PLAYERSTATE_ACTIVE) && (fabsf(this->obj.pos.x - gPlayer[0].pos.x) < 500.0f) &&
         (fabsf(this->obj.pos.z - gPlayer[0].trueZpos) < 500.0f)) {
         Audio_KillSfxById(NA_SE_OB_ROUTE_EXPLOSION1);
         Audio_SetEnvSfxReverb(0);
         gCurrentLevel = LEVEL_VENOM_2;
         gLevelPhase = 1;
         gVenomHardClear = 1;
-        player->state_1C8 = PLAYERSTATE_1C8_LEVEL_COMPLETE;
+        player->state = PLAYERSTATE_LEVEL_COMPLETE;
         player->csState = 3;
         player->zPath = gPathProgress = 0.0f;
         gDrawBackdrop = gDrawGround = true;
@@ -734,7 +734,7 @@ void Andross_AndExplosion_Update(AndExplosion* this) {
 
     if ((fabsf(this->obj.pos.x - gPlayer[0].pos.x) < 500.0f) &&
         (fabsf(this->obj.pos.z - gPlayer[0].trueZpos) < 500.0f)) {
-        if ((gPlayer[0].state_1C8 == PLAYERSTATE_1C8_ACTIVE || gPlayer[0].state_1C8 == PLAYERSTATE_1C8_U_TURN)) {
+        if ((gPlayer[0].state == PLAYERSTATE_ACTIVE || gPlayer[0].state == PLAYERSTATE_U_TURN)) {
             gPlayer[0].shields = 0;
             gRightWingHealth[0] = gLeftWingHealth[0] = 0;
             Player_ApplyDamage(&gPlayer[0], 1, 60);
@@ -843,7 +843,7 @@ void Andross_AndBrain_Update(AndBrain* this) {
             this->swork[5] = 100;
 
             if (this->timer_050 == 0) {
-                gPlayer[0].state_1C8 = PLAYERSTATE_1C8_START_360;
+                gPlayer[0].state = PLAYERSTATE_START_360;
                 gPlayer[0].csState = 0;
                 this->state = 1;
                 gPlayer[0].hideShadow = true;
@@ -851,7 +851,7 @@ void Andross_AndBrain_Update(AndBrain* this) {
             break;
 
         case 1:
-            if ((gPlayer[0].state_1C8 != PLAYERSTATE_1C8_START_360) && (this->timer_050 == 0)) {
+            if ((gPlayer[0].state != PLAYERSTATE_START_360) && (this->timer_050 == 0)) {
                 this->fwork[2] = 1.6f;
                 this->timer_050 = RAND_INT(1.0f) * 50.0f + 50;
                 this->fwork[3] = RAND_FLOAT_CENTERED(10000.0f);
@@ -885,7 +885,7 @@ void Andross_AndBrain_Update(AndBrain* this) {
 
                 Math_SmoothStepToF(&D_ctx_801779A8[gMainController], 40.0f, 1.0f, 3.0f, 0.0f);
 
-                if (((gGameFrameCount % 32) == 0) && (gPlayer[0].state_1C8 == PLAYERSTATE_1C8_ACTIVE)) {
+                if (((gGameFrameCount % 32) == 0) && (gPlayer[0].state == PLAYERSTATE_ACTIVE)) {
                     Player_ApplyDamage(&gPlayer[0], 3, 10);
                 }
             }
@@ -1082,7 +1082,7 @@ void Andross_AndBrain_Update(AndBrain* this) {
                         gPlayer[0].rot.z = 0.0f;
                     gPlayer[0].zRotBank = 150.0f;
                     gPlayer[0].camRoll = -90.0f;
-                    gPlayer[0].state_1C8 = PLAYERSTATE_1C8_LEVEL_COMPLETE;
+                    gPlayer[0].state = PLAYERSTATE_LEVEL_COMPLETE;
                     gPlayer[0].csState = 100;
                     gPlayer[0].csTimer = 240;
                     gPlayer[0].draw = true;
@@ -1121,7 +1121,7 @@ void Andross_AndBrain_Update(AndBrain* this) {
             }
             this->obj.pos.y = 10000.0f;
 
-            if ((gPlayer[0].state_1C8 == PLAYERSTATE_1C8_ACTIVE) && ((gGameFrameCount % 4) == 0)) {
+            if ((gPlayer[0].state == PLAYERSTATE_ACTIVE) && ((gGameFrameCount % 4) == 0)) {
                 Matrix_RotateY(gCalcMatrix, (gPlayer[0].yRot_114 + gPlayer[0].rot.y) * M_DTOR, 0U);
                 vec.x = RAND_FLOAT_CENTERED(800.0f);
                 vec.y = 600.0f;
@@ -1129,7 +1129,7 @@ void Andross_AndBrain_Update(AndBrain* this) {
                 Matrix_MultVec3fNoTranslate(gCalcMatrix, &vec, &sp64);
                 Andross_Effect357_Spawn(gPlayer[0].pos.x + sp64.x, sp64.y, gPlayer[0].trueZpos + sp64.z, 1.2f);
             }
-            if (gPlayer[0].state_1C8 != PLAYERSTATE_1C8_STANDBY) {
+            if (gPlayer[0].state != PLAYERSTATE_STANDBY) {
                 Matrix_RotateY(gCalcMatrix, -gPlayer[0].camYaw, MTXF_NEW);
 
                 vec.x = 0.0f;
@@ -1434,7 +1434,7 @@ void Andross_8018C390(Player* player) {
                 }
             }
             if (player->csTimer == 0) {
-                player->state_1C8 = PLAYERSTATE_1C8_ACTIVE;
+                player->state = PLAYERSTATE_ACTIVE;
                 player->unk_014 = 0.0f;
                 player->unk_018 = 0.0f;
             }
@@ -1679,7 +1679,7 @@ void Andross_Effect396_Draw(Effect396* this) {
 }
 
 void Andross_8018D0D8(AndAndross* this) {
-    if ((gPlayer[0].mercyTimer == 0) && (gPlayer[0].state_1C8 == PLAYERSTATE_1C8_ACTIVE) &&
+    if ((gPlayer[0].mercyTimer == 0) && (gPlayer[0].state == PLAYERSTATE_ACTIVE) &&
         (fabsf(this->vwork[10].x - gPlayer[0].pos.x) < 700.0f) &&
         (fabsf(this->vwork[10].y - gPlayer[0].pos.y) < 700.0f)) {
         Player_ApplyDamage(&gPlayer[0], 0, 40);
@@ -1734,7 +1734,7 @@ void Andross_8018D2B0(AndAndross* this) {
 
                         this->state = 31;
                         this->timer_050 = 200;
-                        gPlayer[0].state_1C8 = PLAYERSTATE_1C8_LEVEL_COMPLETE;
+                        gPlayer[0].state = PLAYERSTATE_LEVEL_COMPLETE;
                         gPlayer[0].csState = 0;
                     } else if (this->health < 50) {
                         AUDIO_PLAY_SFX(NA_SE_EN_KNOCK_DOWN, this->sfxSource, 4);
@@ -2520,11 +2520,11 @@ void Andross_AndAndross_Update(AndAndross* this) {
             }
             if ((this->animFrame > 35) && (this->animFrame < 150) && ((this->animFrame % 32) == 0)) {
                 AUDIO_PLAY_SFX(NA_SE_EN_ANDROSS_BITE1, this->sfxSource, 4);
-                if (player->state_1C8 == PLAYERSTATE_1C8_ANDROSS_MOUTH) {
+                if (player->state == PLAYERSTATE_ANDROSS_MOUTH) {
                     gControllerRumbleTimers[0] = 10;
                 }
             }
-            if ((this->animFrame == 20) && (player->state_1C8 == PLAYERSTATE_1C8_ANDROSS_MOUTH)) {
+            if ((this->animFrame == 20) && (player->state == PLAYERSTATE_ANDROSS_MOUTH)) {
                 player->draw = false;
                 for (i = 0; i < ARRAY_COUNT(gEffects); i++) {
                     if (gEffects[i].obj.id == OBJ_EFFECT_396) {
@@ -2592,7 +2592,7 @@ void Andross_AndAndross_Update(AndAndross* this) {
                 AUDIO_PLAY_SFX(NA_SE_EN_ANDROSS_VOMIT, this->sfxSource, 4);
             }
 
-            if ((this->animFrame == 13) && (player->state_1C8 == PLAYERSTATE_1C8_ANDROSS_MOUTH)) {
+            if ((this->animFrame == 13) && (player->state == PLAYERSTATE_ANDROSS_MOUTH)) {
                 player->draw = true;
                 player->csState = 1;
                 player->csTimer = 60;
@@ -2687,8 +2687,8 @@ void Andross_AndAndross_Update(AndAndross* this) {
                     this->swork[8] = 1;
                     this->fwork[9] = 0.2f;
                     this->animFrame = 0;
-                    if (player->state_1C8 == PLAYERSTATE_1C8_ACTIVE) {
-                        player->state_1C8 = PLAYERSTATE_1C8_ANDROSS_MOUTH;
+                    if (player->state == PLAYERSTATE_ACTIVE) {
+                        player->state = PLAYERSTATE_ANDROSS_MOUTH;
                         player->csState = 0;
                     }
                     break;
@@ -3648,7 +3648,6 @@ void Andross_AndLaserEmitter_Draw(AndLaserEmitter* this) {
 }
 
 void Andross_AndDoor_Update(AndDoor* this) {
-
     switch (this->state) {
         case 0:
             if (fabsf(this->obj.pos.z - gPlayer[0].trueZpos) < 1800.0f) {
@@ -3788,12 +3787,12 @@ void Andross_801939A0(s32 actorIdx) {
     actor->fwork[1] = 6.5f;
 
     if (actorIdx == 10) {
-        actor->iwork[14] = 1;
+        actor->iwork[TEAM_FACE] = FACE_FOX;
     }
     if (actorIdx == 1) {
         actor->state = 1;
         actor->work_046 = 255;
-        actor->animFrame = ACTOR_CS_1000;
+        actor->animFrame = ACTOR_CS_JAMES_ARWING;
     }
 
     Object_SetInfo(&actor->info, actor->obj.id);
@@ -4307,6 +4306,7 @@ void Andross_80193C4C(Player* player) {
                         gShowLevelClearStatusScreen = false;
                         break;
                 }
+                // Shooting Star. James? Is that you?
                 if (gCsFrameCount > 1300) {
                     rnd = RAND_INT(100.0f);
                     gStarFillColors[1155] = FILL_COLOR(gStarColors[rnd % 16U]);
@@ -4368,7 +4368,7 @@ void Andross_80193C4C(Player* player) {
             player->vel.z = sp68.z;
             player->vel.y = sp68.y;
             if (player->csTimer == 0) {
-                player->state_1C8 = PLAYERSTATE_1C8_ACTIVE;
+                player->state = PLAYERSTATE_ACTIVE;
                 player->unk_014 = 0.2f;
                 player->unk_018 = 0.0f;
                 player->unk_01C = 0.05f;

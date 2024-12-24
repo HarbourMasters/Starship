@@ -2008,7 +2008,7 @@ s32 Map_801A05B4(void) {
         temp_a0 = gSaveFile.save.data.rankingRoute[i];
         for (j = 0; j < temp_a0; j++) {
             var_a3 = gSaveFile.save.data.stats[i][j].hitCount;
-            if (gSaveFile.save.data.stats[i][j].unk_C != 0) {
+            if (gSaveFile.save.data.stats[i][j].hitCountOver256 != 0) {
                 var_a3 += 256;
             }
             sp30[i] += var_a3;

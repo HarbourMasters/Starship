@@ -57,19 +57,25 @@ typedef enum OptionId {
     /* 1000 */ OPTION_MAIN_MENU = 1000,
     /* 2000 */ OPTION_VERSUS_STAGE = 2000,
     /*    0 */ OPTION_MAP = 0,
-    /*    1 */ OPTION_TRAINING = 1,
-    /*    2 */ OPTION_VERSUS = 2,
-    /*    3 */ OPTION_RANKING = 3,
-    /*    4 */ OPTION_SOUND = 4,
-    /*    5 */ OPTION_DATA = 5,
-    /*    6 */ OPTION_EXPERT_SOUND = 6,
+    /*    1 */ OPTION_TRAINING,
+    /*    2 */ OPTION_VERSUS,
+    /*    3 */ OPTION_RANKING,
+    /*    4 */ OPTION_SOUND,
+#ifdef VERSION_EU
+    /*    5 */ OPTION_LANGUAGE,
+    /*    6 */ OPTION_DATA,
+    /*    7 */ OPTION_EXPERT_SOUND,
+#else
+    /*    5 */ OPTION_DATA,
+    /*    6 */ OPTION_EXPERT_SOUND,
+#endif
     /*   10 */ OPTION_POINT_MATCH = 10, // Point Match
     /*   20 */ OPTION_BR_MATCH = 20,    // Battle Royal Match
     /*   30 */ OPTION_TT_MATCH = 30,    // Time Trial Match
     /*  200 */ OPTION_NAME_ENTRY = 200,
     /*  300 */ OPTION_SCORE = 300,
     /*  400 */ OPTION_INVOICE = 400,
-    /*  401 */ OPTION_MAX,
+    /*  401 */ OPTION_MAX
 } OptionId;
 
 extern u8* gBSSMapPlanetTextures[9];
@@ -196,8 +202,8 @@ void Option_SetMenuLightPos(f32, f32, f32, f32*, f32*, f32*);
 void Option_CardLightning_Update(void);
 void Option_CardLightning_Draw(void);
 void Option_DrawCardLabel(OptionCardTexture tex);
-bool Option_Input_MoveCursor_Y(s32* arg0, s32 arg1, bool arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 controllerNum,
-                     StickInput* stickY);
+bool Option_Input_MoveCursor_Y(s32* arg0, s32 arg1, bool arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6,
+                               s32 controllerNum, StickInput* stickY);
 s32 Option_Input_DataSelect_X(s32*);
 bool Option_Input_Sound_X(f32* arg0, f32 arg1, f32 arg2, StickInput* arg3);
 void Option_Color_FlashRed(f32*);

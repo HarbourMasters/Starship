@@ -52,7 +52,7 @@ typedef void (*AudioCustomUpdateFunction)(void);
 // Samples are processed in groups of 16 called a "frame"
 #define SAMPLES_PER_FRAME ADPCMFSIZE
 
-// The length of one left/right channel is 13 frames
+// The length of one left/right channel is 12 frames
 #define DMEM_1CH_SIZE (12 * SAMPLES_PER_FRAME * SAMPLE_SIZE)
 // Both left and right channels
 #define DMEM_2CH_SIZE (2 * DMEM_1CH_SIZE)
@@ -1059,20 +1059,20 @@ void AudioLoad_DiscardSeqFonts(s32 seqId);
 s32 AudioLoad_SlowLoadSample(s32 fontId, u8 instId, s8* status);
 
 // audio_playback
-TunedSample* Audio_GetInstrumentTunedSample(Instrument* instrument, s32 arg1);
+TunedSample* Audio_GetInstrumentTunedSample(Instrument* instrument, s32 semitone);
 Instrument* Audio_GetInstrument(s32, s32);
 Drum* Audio_GetDrum(s32, s32);
-void func_80011F4C(Note* note);
+void Audio_NoteDisable(Note* note);
 void Audio_ProcessNotes(void);
 void Audio_SeqLayerNoteDecay(SequenceLayer* layer);
 void Audio_InitSyntheticWave(Note* note, SequenceLayer* layer);
 void Audio_InitNoteLists(NotePool* pool);
-void func_800128B4(void);
+void Audio_InitNoteFreeList(void);
 void Audio_NotePoolClear(NotePool* pool);
 void Audio_NotePoolFill(NotePool* pool, s32);
-void func_80012C40(Note* note);
+void Audio_AudioListRemove(Note* note);
 Note* Audio_AllocNote(SequenceLayer* layer);
-void func_800132E8(void);
+void Audio_NoteInitAll(void);
 
 // audio_seqplayer
 void AudioSeq_SequenceChannelDisable(SequenceChannel* channel);

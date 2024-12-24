@@ -787,7 +787,7 @@ static const ALIGN_ASSET(2) char ast_common_seg1_vtx_2A068[] = "__OTR__ast_commo
 
 static const ALIGN_ASSET(2) char D_102A098[] = "__OTR__ast_common/D_102A098";
 
-static const ALIGN_ASSET(2) char aRadarMarkKaSaucererDL[] = "__OTR__ast_common/aRadarMarkKaSaucererDL";
+static const ALIGN_ASSET(2) char aBallDL[] = "__OTR__ast_common/aBallDL";
 
 static const ALIGN_ASSET(2) char ast_common_seg1_vtx_2A8F8[] = "__OTR__ast_common/ast_common_seg1_vtx_2A8F8";
 

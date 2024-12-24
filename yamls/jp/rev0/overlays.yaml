@@ -1,4 +1,4 @@
-  - name: ovl_i1
+  - name: ovl_i1  # size = 0x141A0
     exclusive_ram_id: overlay
     type: code
     dir: overlays/ovl_i1
@@ -25,7 +25,7 @@
     - { type: bss, vram: 0x80192950, name: fox_co }
     - { type: bss, vram: 0x80192A70, name: fox_ve1 }
 
-  - name: ovl_i2
+  - name: ovl_i2 # size = 0xE800
     exclusive_ram_id: overlay
     type: code
     dir: overlays/ovl_i2
@@ -36,8 +36,8 @@
     symbol_name_format: i2_$VRAM
     subsegments:
     - [0xDBD820, c, fox_i2]
-    - [0xDBD830, c, fox_me]
-    - [0xDC52D0, c, fox_sx]
+    - [0xDBD830, c, fox_me] # size = 0x7AA0
+    - [0xDC52D0, c, fox_sx] # size = 0x6400
     - [0xDCB6D0, data, fox_i2]
     - [0xDCB6E0, data, fox_me]
     - [0xDCB8F0, data, fox_sx]
@@ -46,7 +46,7 @@
     - { type: bss, vram: 0x8018CFA0, name: fox_i2 }
     - { type: bss, vram: 0x8018CFB0, name: fox_sx }
 
-  - name: ovl_i3
+  - name: ovl_i3 # size = 0x3AD50
     exclusive_ram_id: overlay
     type: code
     dir: overlays/ovl_i3
@@ -77,7 +77,7 @@
     - { type: bss, vram: 0x801B9A70, name: fox_aq }
 
 
-  - name: ovl_i4
+  - name: ovl_i4 # size = 0x18B00
     exclusive_ram_id: overlay
     type: code
     dir: overlays/ovl_i4
@@ -87,11 +87,11 @@
     bss_size: 0x1B0
     symbol_name_format: i4_$VRAM
     subsegments:
-    - [0xE06D70, c, fox_i4]
-    - [0xE06E40, c, fox_fo]
-    - [0xE0B580, c, fox_bo]
-    - [0xE11FD0, c, fox_ka]
-    - [0xE18DD0, c, fox_sz]
+    - [0xE06D70, c, fox_i4] # size = 0xD0
+    - [0xE06E40, c, fox_fo] # size = 0x4740
+    - [0xE0B580, c, fox_bo] # size = 0x6A50
+    - [0xE11FD0, c, fox_ka] # size = 0x6E00
+    - [0xE18DD0, c, fox_sz] # size = 0x54D0
     - [0xE1E2A0, data, fox_i4]
     - [0xE1E2B0, data, fox_fo]
     - [0xE1E350, data, fox_bo]

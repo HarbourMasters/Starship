@@ -45,7 +45,7 @@ void Display_DrawHelpAlert(void) {
         return;
     }
 
-    if ((gTeamHelpActor->obj.status != OBJ_ACTIVE) || (gPlayer[0].state_1C8 != PLAYERSTATE_1C8_ACTIVE)) {
+    if ((gTeamHelpActor->obj.status != OBJ_ACTIVE) || (gPlayer[0].state != PLAYERSTATE_ACTIVE)) {
         gTeamHelpActor = NULL;
         gTeamHelpTimer = 0;
         return;
@@ -274,7 +274,7 @@ void Display_OnFootMuzzleFlash(Player* player) {
     FrameInterpolation_RecordOpenChild("Display_OnFootMuzzleFlash", player->num);
 
     Matrix_Copy(gGfxMatrix, &gIdentityMatrix);
-    if ((player->state_1C8 == PLAYERSTATE_1C8_ACTIVE) && (player->csTimer != 0)) {
+    if ((player->state == PLAYERSTATE_ACTIVE) && (player->csTimer != 0)) {
         Matrix_Translate(gGfxMatrix, D_display_801613B0[player->num].x, D_display_801613B0[player->num].y,
                          D_display_801613B0[player->num].z, MTXF_APPLY);
         Matrix_Scale(gGfxMatrix, D_display_800CA23C[player->csTimer - 1], D_display_800CA23C[player->csTimer - 1],
@@ -377,7 +377,7 @@ void Display_LandmasterMuzzleFlash(Player* player) {
     // @port: Tag the transform.
     FrameInterpolation_RecordOpenChild("Display_LandmasterMuzzleFlash", player->num);
 
-    if ((player->state_1C8 == PLAYERSTATE_1C8_ACTIVE) && (player->unk_1A0 != 0)) {
+    if ((player->state == PLAYERSTATE_ACTIVE) && (player->unk_1A0 != 0)) {
         Matrix_Translate(gGfxMatrix, D_display_80161548[player->num].x, D_display_80161548[player->num].y,
                          D_display_80161548[player->num].z, MTXF_APPLY);
         Matrix_Scale(gGfxMatrix, D_display_800CA248[player->unk_1A0 - 1], D_display_800CA248[player->unk_1A0 - 1],
@@ -661,7 +661,7 @@ void Display_ArwingWings(ArwingInfo* arwing) {
     Matrix_SetGfxMtx(&gMasterDisp);
     RCP_SetupDL_64_2();
 
-    if ((gGameState == GSTATE_PLAY) && (gPlayer[0].state_1C8 == PLAYERSTATE_1C8_LEVEL_INTRO) &&
+    if ((gGameState == GSTATE_PLAY) && (gPlayer[0].state == PLAYERSTATE_LEVEL_INTRO) &&
         (gCurrentLevel == LEVEL_CORNERIA)) {
         gDPSetPrimColor(gMasterDisp++, 0x00, 0x00, 255, 255, 255, 120);
         gSPClearGeometryMode(gMasterDisp++, G_CULL_BACK);
@@ -762,14 +762,14 @@ void Display_Arwing(Player* player, s32 reflectY) {
     }
 }
 
+// Arwing only
 void Display_Reticle(Player* player) {
     Vec3f* translate;
     s32 i;
 
     if ((gPlayerNum == player->num) && ((player->form == FORM_ARWING) || (player->form == FORM_LANDMASTER)) &&
         player->draw &&
-        (((gGameState == GSTATE_PLAY) && (player->state_1C8 == PLAYERSTATE_1C8_ACTIVE)) ||
-         (gGameState == GSTATE_MENU))) {
+        (((gGameState == GSTATE_PLAY) && (player->state == PLAYERSTATE_ACTIVE)) || (gGameState == GSTATE_MENU))) {
         for (i = 0; i < 2; i++) {
             FrameInterpolation_RecordOpenChild("Reticle", (player->num << 16) + i);
             FrameInterpolation_RecordMarker(__FILE__, __LINE__);
@@ -869,7 +869,7 @@ void Display_PlayerShadow_Draw(Player* player) {
             Matrix_RotateX(gGfxMatrix, M_PI / 2, MTXF_APPLY);
             Matrix_SetGfxMtx(&gMasterDisp);
             gSPClearGeometryMode(gMasterDisp++, G_CULL_BACK);
-            gSPDisplayList(gMasterDisp++, aRadarMarkKaSaucererDL);
+            gSPDisplayList(gMasterDisp++, aBallDL);
             gSPSetGeometryMode(gMasterDisp++, G_CULL_BACK);
             Matrix_Pop(&gGfxMatrix);
             break;
@@ -1214,7 +1214,7 @@ void Display_PlayerFeatures(Player* player) {
     f32 var_fv0;
     s32 pad[3];
 
-    if (player->draw && (player->state_1C8 != PLAYERSTATE_1C8_DOWN)) {
+    if (player->draw && (player->state != PLAYERSTATE_DOWN)) {
         switch (player->form) {
             case FORM_ARWING:
                 Matrix_RotateY(gCalcMatrix, (player->yRot_114 + player->rot.y + player->damageShake + 180.0f) * M_DTOR,
@@ -1292,7 +1292,7 @@ void Display_ArwingWingTrail_Draw(Player* player) {
         yRot *= 0.25f;
         sp50 = player->rot.x * 0.25f;
 
-        if (player->state_1C8 == PLAYERSTATE_1C8_LEVEL_COMPLETE) {
+        if (player->state == PLAYERSTATE_LEVEL_COMPLETE) {
             yRot = 0.0f;
             sp50 = 0.0f;
         }
@@ -1313,7 +1313,7 @@ void Display_ArwingWingTrail_Draw(Player* player) {
             Matrix_RotateX(gGfxMatrix, M_PI / 2, MTXF_APPLY);
             Matrix_RotateY(gGfxMatrix, M_DTOR * sp54, MTXF_APPLY);
             Matrix_SetGfxMtx(&gMasterDisp);
-            gSPDisplayList(gMasterDisp++, aRadarMarkKaSaucererDL);
+            gSPDisplayList(gMasterDisp++, aBallDL);
             Matrix_Pop(&gGfxMatrix);
         }
 
@@ -1333,7 +1333,7 @@ void Display_ArwingWingTrail_Draw(Player* player) {
             Matrix_RotateX(gGfxMatrix, M_PI / 2, MTXF_APPLY);
             Matrix_RotateY(gGfxMatrix, M_DTOR * sp54, MTXF_APPLY);
             Matrix_SetGfxMtx(&gMasterDisp);
-            gSPDisplayList(gMasterDisp++, aRadarMarkKaSaucererDL);
+            gSPDisplayList(gMasterDisp++, aBallDL);
             Matrix_Pop(&gGfxMatrix);
         }
 
@@ -1781,7 +1781,7 @@ void Display_Update(void) {
 #endif
 
     Matrix_Push(&gGfxMatrix);
-    if ((gCurrentLevel == LEVEL_AQUAS) && (gPlayer[0].state_1C8 == PLAYERSTATE_1C8_ACTIVE)) {
+    if ((gCurrentLevel == LEVEL_AQUAS) && (gPlayer[0].state == PLAYERSTATE_ACTIVE)) {
         Math_SmoothStepToF(&gCamDistortion, 0.01f, 0.2f, 0.002f, 0.0f);
     } else {
         Math_SmoothStepToF(&gCamDistortion, 0.0f, 0.2f, 0.002f, 0.0f);
@@ -1822,7 +1822,7 @@ void Display_Update(void) {
         if (camPlayer->alternateView && (camPlayer->boostSpeed > 5.0f)) {
             gPlayCamAt.x += SIN_DEG(gGameFrameCount * 150.0f) * camPlayer->boostSpeed * 0.2f;
         }
-    } else if (camPlayer->state_1C8 == PLAYERSTATE_1C8_LEVEL_COMPLETE) {
+    } else if (camPlayer->state == PLAYERSTATE_LEVEL_COMPLETE) {
         Display_CsLevelCompleteHandleCamera(camPlayer);
     } else {
         gPlayCamEye.x = camPlayer->cam.eye.x;
@@ -1859,7 +1859,7 @@ void Display_Update(void) {
 
     if ((gLevelType == LEVELTYPE_PLANET) || (gCurrentLevel == LEVEL_BOLSE)) {
         if ((gCurrentLevel == LEVEL_TITANIA) &&
-            ((gPlayer[0].state_1C8 != PLAYERSTATE_1C8_LEVEL_INTRO) || (gPlayer[0].unk_19C != 0))) {
+            ((gPlayer[0].state != PLAYERSTATE_LEVEL_INTRO) || (gPlayer[0].unk_19C != 0))) {
             Matrix_Push(&gGfxMatrix);
             Matrix_Translate(gGfxMatrix, 0.0f, gCameraShakeY, 0.0f, MTXF_APPLY);
             Matrix_SetGfxMtx(&gMasterDisp);
@@ -1889,7 +1889,7 @@ void Display_Update(void) {
         Display_SetupPlayerSfxPos(player);
     }
 
-    if ((gGroundSurface == SURFACE_WATER) && (gPlayer[0].state_1C8 != PLAYERSTATE_1C8_LEVEL_INTRO)) {
+    if ((gGroundSurface == SURFACE_WATER) && (gPlayer[0].state != PLAYERSTATE_LEVEL_INTRO)) {
         Lights_SetOneLight(&gMasterDisp, gLight2x, -1 * gLight2y, gLight2z, gLight2R, gLight2G, gLight2B, gAmbientR,
                            gAmbientG, gAmbientB);
         Matrix_Push(&gGfxMatrix);
@@ -1911,7 +1911,8 @@ void Display_Update(void) {
     TexturedLine_Draw();
     gReflectY = 1;
     PlayerShot_DrawAll();
-    if ((gGroundSurface == SURFACE_WATER) && (gPlayer[0].state_1C8 != PLAYERSTATE_1C8_LEVEL_INTRO)) {
+
+    if ((gGroundSurface == SURFACE_WATER) && (gPlayer[0].state != PLAYERSTATE_LEVEL_INTRO)) {
         Matrix_Push(&gGfxMatrix);
         Matrix_Scale(gGfxMatrix, 1.0f, -1.0f, 1.0f, MTXF_APPLY);
         gReflectY = -1;
@@ -1921,7 +1922,7 @@ void Display_Update(void) {
 
     gReflectY = -1;
 
-    if ((gGroundSurface == SURFACE_WATER) && (gPlayer[0].state_1C8 != PLAYERSTATE_1C8_LEVEL_INTRO)) {
+    if ((gGroundSurface == SURFACE_WATER) && (gPlayer[0].state != PLAYERSTATE_LEVEL_INTRO)) {
         Matrix_Push(&gGfxMatrix);
         Matrix_Scale(gGfxMatrix, 1.0f, -1.0f, 1.0f, MTXF_APPLY);
         for (i = 0, player = &gPlayer[0]; i < gCamCount; i++, player++) {
@@ -1947,8 +1948,7 @@ void Display_Update(void) {
 
     if ((gCurrentLevel != LEVEL_AQUAS) &&
         (((gCurrentLevel != LEVEL_CORNERIA) && (gCurrentLevel != LEVEL_VENOM_ANDROSS)) ||
-         ((gPlayer[0].state_1C8 != PLAYERSTATE_1C8_LEVEL_COMPLETE) &&
-          (gPlayer[0].state_1C8 != PLAYERSTATE_1C8_LEVEL_INTRO)))) {
+         ((gPlayer[0].state != PLAYERSTATE_LEVEL_COMPLETE) && (gPlayer[0].state != PLAYERSTATE_LEVEL_INTRO)))) {
         Effect_Draw(0);
     }
 
@@ -1965,13 +1965,12 @@ void Display_Update(void) {
         }
     }
 
-    if ((gCurrentLevel == LEVEL_AQUAS) && (gPlayer[0].state_1C8 == PLAYERSTATE_1C8_ACTIVE)) {
+    if ((gCurrentLevel == LEVEL_AQUAS) && (gPlayer[0].state == PLAYERSTATE_ACTIVE)) {
         Aquas_801AA20C();
     }
 
     if (((gCurrentLevel == LEVEL_CORNERIA) || (gCurrentLevel == LEVEL_VENOM_ANDROSS)) &&
-        ((gPlayer[0].state_1C8 == PLAYERSTATE_1C8_LEVEL_COMPLETE) ||
-         (gPlayer[0].state_1C8 == PLAYERSTATE_1C8_LEVEL_INTRO))) {
+        ((gPlayer[0].state == PLAYERSTATE_LEVEL_COMPLETE) || (gPlayer[0].state == PLAYERSTATE_LEVEL_INTRO))) {
         Effect_Draw(0);
     }
 
@@ -1997,14 +1996,13 @@ void Display_Update(void) {
         }
     }
 
-    if ((gLevelMode == LEVELMODE_TURRET) && (gPlayer[0].state_1C8 == PLAYERSTATE_1C8_ACTIVE)) {
+    if ((gLevelMode == LEVELMODE_TURRET) && (gPlayer[0].state == PLAYERSTATE_ACTIVE)) {
         Turret_Draw(gPlayer);
     }
 
     Background_DrawLensFlare();
 
-    if ((gCamCount != 1) &&
-        ((camPlayer->state_1C8 == PLAYERSTATE_1C8_ACTIVE) || (camPlayer->state_1C8 == PLAYERSTATE_1C8_U_TURN))) {
+    if ((gCamCount != 1) && ((camPlayer->state == PLAYERSTATE_ACTIVE) || (camPlayer->state == PLAYERSTATE_U_TURN))) {
         HUD_Draw();
         HUD_EdgeArrows_Update();
     }
@@ -2051,7 +2049,7 @@ void Display_Update(void) {
             gFillScreenRed = gFillScreenGreen = gFillScreenBlue = 0;
             gFillScreenAlphaStep = 8;
             gShowLevelClearStatusScreen = false;
-            pl->state_1C8 = PLAYERSTATE_1C8_NEXT;
+            pl->state = PLAYERSTATE_NEXT;
             pl->csTimer = 0;
             gFadeoutType = 4;
         }
@@ -2067,14 +2065,14 @@ void Display_Update(void) {
             }
             if (gCurrentLevel == LEVEL_SECTOR_X) {
                 gRingPassCount++;
-                gPlayer[0].state_1C8 = PLAYERSTATE_1C8_ENTER_WARP_ZONE;
+                gPlayer[0].state = PLAYERSTATE_ENTER_WARP_ZONE;
                 gPlayer[0].csState = 0;
                 gSceneSetup = 1;
                 AUDIO_PLAY_SFX(NA_SE_WARP_HOLE, gDefaultSfxSource, 0);
                 gMissionStatus = MISSION_WARP;
                 gLeveLClearStatus[gCurrentLevel] = 1;
             } else {
-                gPlayer[0].state_1C8 = PLAYERSTATE_1C8_ENTER_WARP_ZONE;
+                gPlayer[0].state = PLAYERSTATE_ENTER_WARP_ZONE;
                 gPlayer[0].csState = 0;
                 AUDIO_PLAY_SFX(NA_SE_WARP_HOLE, gDefaultSfxSource, 0);
                 gMissionStatus = MISSION_WARP;
@@ -2097,7 +2095,7 @@ void Display_Update(void) {
         }
 
         if (gControllerPress[0].button & L_TRIG) {
-            pl->state_1C8 = PLAYERSTATE_1C8_LEVEL_COMPLETE;
+            pl->state = PLAYERSTATE_LEVEL_COMPLETE;
             gMissionStatus = MISSION_ACCOMPLISHED;
         }
     }
@@ -2106,7 +2104,7 @@ void Display_Update(void) {
         Player* pl2 = &gPlayer[0];
 
         if ((gLevelMode != LEVELMODE_ALL_RANGE) && (gControllerPress[0].button & L_TRIG)) {
-            pl2->state_1C8 = PLAYERSTATE_1C8_START_360;
+            pl2->state = PLAYERSTATE_START_360;
         }
     }
 

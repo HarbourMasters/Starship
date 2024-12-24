@@ -1,27 +1,128 @@
 #include "global.h"
 
 SaveFile gSaveFile;
+
+// clang-format off
+
 Save gDefaultSave = {
-    {
-        // Replace with SaveData once that struct is complete
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01,
-        0x02, 0x03, 0x04, 0x00, 0x63, 0x63, 0x63, 0x46, 0x4F, 0x58, 0x50, 0x45, 0x50, 0x53, 0x4C, 0x50, 0x46,
-        0x41, 0x4C, 0x57, 0x4C, 0x46, 0x4C, 0x4F, 0x4E, 0x50, 0x49, 0x47, 0x41, 0x4E, 0x52, 0x42, 0x49, 0x4C,
-        0x4B, 0x41, 0x54, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x00, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x64, 0x90, 0x09, 0x57, 0x09, 0xB7, 0x09, 0x87,
-        0x09, 0x37, 0x09, 0x17, 0x09, 0xF7, 0x5A, 0x90, 0x09, 0x54, 0x09, 0x64, 0x09, 0xD4, 0x09, 0x74, 0x09,
-        0x14, 0x09, 0xF4, 0x50, 0x90, 0x09, 0x02, 0x09, 0xC2, 0x09, 0x42, 0x09, 0xA2, 0x09, 0x22, 0x09, 0xE2,
-        0x46, 0x90, 0x09, 0x01, 0x09, 0xC1, 0x09, 0x41, 0x09, 0xA1, 0x09, 0x21, 0x09, 0xE1, 0x3C, 0x90, 0x09,
-        0x05, 0x09, 0xC5, 0x09, 0x45, 0x09, 0xA5, 0x09, 0x25, 0x09, 0xE5, 0x32, 0x90, 0x04, 0x03, 0x09, 0xC3,
-        0x09, 0x43, 0x09, 0xA3, 0x09, 0x23, 0x09, 0xE3, 0x28, 0x90, 0x01, 0x06, 0x02, 0xC6, 0x09, 0x46, 0x09,
-        0xA6, 0x09, 0x26, 0x09, 0xE6, 0x1E, 0x90, 0x01, 0x02, 0x01, 0xC4, 0x01, 0x47, 0x08, 0xA5, 0x09, 0x23,
-        0x09, 0xE6, 0x14, 0x90, 0x01, 0x03, 0x01, 0xC5, 0x01, 0x47, 0x01, 0xA4, 0x06, 0x22, 0x09, 0xE1, 0x0A,
-        0x90, 0x01, 0x07, 0x01, 0xC4, 0x01, 0x44, 0x01, 0xA2, 0x01, 0x21, 0x04, 0xE5, 0xFF, 0x09, 0x01, 0x02,
-        0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09,
-    },
-    0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // PlanetData
+
+    0x01, 0x02, 0x03, 0x04, // pad10
+
+    SOUNDMODE_STEREO,
+    99, // musicVolume
+    99, // voiceVolume
+    99, // sfxVolume
+    
+    // rankNameEntry
+    'F', 'O', 'X', 
+    'P', 'E', 'P', 
+    'S', 'L', 'P', 
+    'F', 'A', 'L', 
+    'W', 'L', 'F', 
+    'L', 'O', 'N', 
+    'P', 'I', 'G', 
+    'A', 'N', 'R', 
+    'B', 'I', 'L', 
+    'K', 'A', 'T', 
+
+    // rankingRoute
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+
+    // rankingLives
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+
+    // rankingMedal
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+
+    // stats
+    PLANET_STATS(100, PLANET_CORNERIA, false, false, false), 
+    PLANET_STATS(9, PLANET_SECTOR_Y, true, true, true), 
+    PLANET_STATS(9, PLANET_AQUAS, true, true, true), 
+    PLANET_STATS(9, PLANET_ZONESS, true, true, true), 
+    PLANET_STATS(9, PLANET_SECTOR_Z, true, true, true), 
+    PLANET_STATS(9, PLANET_AREA_6, true, true, true), 
+    PLANET_STATS(9, SAVE_SLOT_VENOM_2, true, true, true), 
+
+    PLANET_STATS(90, PLANET_CORNERIA, false, false, false), 
+    PLANET_STATS(9, PLANET_SECTOR_Y, true, false, false), 
+    PLANET_STATS(9, PLANET_KATINA, true, false, false), 
+    PLANET_STATS(9, PLANET_VENOM, true, false, false), 
+    PLANET_STATS(9, PLANET_MACBETH, true, false, false), 
+    PLANET_STATS(9, PLANET_AREA_6, true, false, false), 
+    PLANET_STATS(9, SAVE_SLOT_VENOM_2, true, false, false), 
+
+    PLANET_STATS(80, PLANET_CORNERIA, false, false, false),
+    PLANET_STATS(9, PLANET_METEO, false, true, false),
+    PLANET_STATS(9, PLANET_FORTUNA, false, true, false),
+    PLANET_STATS(9, PLANET_SECTOR_X, false, true, false),
+    PLANET_STATS(9, PLANET_TITANIA, false, true, false),
+    PLANET_STATS(9, PLANET_BOLSE, false, true, false),
+    PLANET_STATS(9, SAVE_SLOT_VENOM_1, false, true, false),
+
+    PLANET_STATS(70, PLANET_CORNERIA, false, false, false), 
+    PLANET_STATS(9, PLANET_METEO, false, false, true),
+    PLANET_STATS(9, PLANET_FORTUNA, false, false, true),
+    PLANET_STATS(9, PLANET_SECTOR_X, false, false, true),
+    PLANET_STATS(9, PLANET_TITANIA, false, false, true),
+    PLANET_STATS(9, PLANET_BOLSE, false, false, true),
+    PLANET_STATS(9, SAVE_SLOT_VENOM_1, false, false, true),
+
+    PLANET_STATS(60, PLANET_CORNERIA, false, false, false), 
+    PLANET_STATS(9, PLANET_METEO, true, false, true),
+    PLANET_STATS(9, PLANET_FORTUNA, true, false, true),
+    PLANET_STATS(9, PLANET_SECTOR_X, true, false, true),
+    PLANET_STATS(9, PLANET_TITANIA, true, false, true),
+    PLANET_STATS(9, PLANET_BOLSE, true, false, true),
+    PLANET_STATS(9, SAVE_SLOT_VENOM_1, true, false, true),
+
+    PLANET_STATS(50, PLANET_CORNERIA, false, false, false), 
+    PLANET_STATS(4, PLANET_METEO, false, true, true),
+    PLANET_STATS(9, PLANET_FORTUNA, false, true, true),
+    PLANET_STATS(9, PLANET_SECTOR_X, false, true, true),
+    PLANET_STATS(9, PLANET_TITANIA, false, true, true),
+    PLANET_STATS(9, PLANET_BOLSE, false, true, true),
+    PLANET_STATS(9, SAVE_SLOT_VENOM_1, false, true, true),
+
+    PLANET_STATS(40, PLANET_CORNERIA, false, false, false), 
+    PLANET_STATS(1, PLANET_METEO, true, true, false),
+    PLANET_STATS(2, PLANET_FORTUNA, true, true, false),
+    PLANET_STATS(9, PLANET_SECTOR_X, true, true, false),
+    PLANET_STATS(9, PLANET_TITANIA, true, true, false),
+    PLANET_STATS(9, PLANET_BOLSE, true, true, false),
+    PLANET_STATS(9, SAVE_SLOT_VENOM_1, true, true, false),
+
+    PLANET_STATS(30, PLANET_CORNERIA, false, false, false),
+    PLANET_STATS(1, PLANET_METEO, false, true, false),
+    PLANET_STATS(1, PLANET_FORTUNA, true, false, false),
+    PLANET_STATS(1, PLANET_SECTOR_X, true, true, true),
+    PLANET_STATS(8, PLANET_TITANIA, true, false, true),
+    PLANET_STATS(9, PLANET_BOLSE, false, true, true),
+    PLANET_STATS(9, SAVE_SLOT_VENOM_1, true, true, false),
+
+    PLANET_STATS(20, PLANET_CORNERIA, false, false, false),
+    PLANET_STATS(1, PLANET_METEO, false, true, true),
+    PLANET_STATS(1, PLANET_FORTUNA, true, false, true),
+    PLANET_STATS(1, PLANET_SECTOR_X, true, true, true),
+    PLANET_STATS(1, PLANET_TITANIA, true, false, false),
+    PLANET_STATS(6, PLANET_BOLSE, false, true, false),
+    PLANET_STATS(9, SAVE_SLOT_VENOM_1, false, false, true),
+
+    PLANET_STATS(10, PLANET_CORNERIA, false, false, false),
+    PLANET_STATS(1, PLANET_METEO, true, true, true),
+    PLANET_STATS(1, PLANET_FORTUNA, true, false, false),
+    PLANET_STATS(1, PLANET_SECTOR_X, true, false, false),
+    PLANET_STATS(1, PLANET_TITANIA, false, true, false),
+    PLANET_STATS(1, PLANET_BOLSE, false, false, true),
+    PLANET_STATS(4, SAVE_SLOT_VENOM_1, true, false, true),
+    
+    // unk_EA
+    0xFF,
+
+    // padding
+    0x09, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09,
 };
+// clang-format on
 
 u16 Save_Checksum(Save* arg0) {
     u16 var_v1;

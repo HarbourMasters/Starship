@@ -312,9 +312,9 @@ void Spawner_Playground(void) {
 
 #if 0
     if (gControllerPress[0].button & L_JPAD) {
-        gArwingSpeed-=50;
+        gArwingSpeed -= 50;
     } else if (gControllerPress[0].button & R_JPAD) {
-        gArwingSpeed+=50;
+        gArwingSpeed += 50;
     }
 #endif
 }

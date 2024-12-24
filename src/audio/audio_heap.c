@@ -99,8 +99,8 @@ void AudioHeap_DiscardFont(s32 fontId) {
                 note->playbackState.parentLayer->enabled = false;
                 note->playbackState.parentLayer->finished = true;
             }
-            func_80011F4C(note);
-            func_80012C40(note);
+            Audio_NoteDisable(note);
+            Audio_AudioListRemove(note);
             AudioSeq_AudioListPushBack(&gNoteFreeLists.disabled, &note->listItem);
         }
     }
@@ -663,7 +663,6 @@ void AudioHeap_Init(void) {
     gAudioBufferParams.maxAiBufferLength *= gAudioBufferParams.numBuffers;
     gAudioBufferParams.minAiBufferLength *= gAudioBufferParams.numBuffers;
     gAudioBufferParams.ticksPerUpdate *= gAudioBufferParams.numBuffers;
-
     if (gAudioBufferParams.numBuffers >= 2) {
         gAudioBufferParams.maxAiBufferLength -= 0x10;
     }
@@ -700,10 +699,8 @@ void AudioHeap_Init(void) {
     AudioHeap_ResetLoadStatus();
 
     gNotes = AudioHeap_AllocZeroed(&gMiscPool, gNumNotes * sizeof(Note));
-
-    func_800132E8();
-    func_800128B4();
-
+    Audio_NoteInitAll();
+    Audio_InitNoteFreeList();
     gNoteSubsEu = AudioHeap_AllocZeroed(&gMiscPool, gAudioBufferParams.ticksPerUpdate * gNumNotes * sizeof(NoteSubEu));
 
     for (i = 0; i != 2; i++) {

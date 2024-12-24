@@ -155,7 +155,7 @@ extern s32 gCallTimer;
 extern s32 D_hud_80161704;
 extern s32 D_hud_80161708;
 extern s32 D_hud_8016170C;
-extern s32 D_hud_80161710;
+extern s32 gRadarMissileAlarmTimer;
 extern s32 gTotalHits; // 0x80161714 gTotalGameScore
 extern f32 D_hud_80161720[3];
 extern s32 gDisplayedHitCount;

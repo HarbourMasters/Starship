@@ -114,7 +114,7 @@ void Boss_CompleteLevel(Player* player, f32 xPos, f32 yPos, f32 zPos) {
     gBossDeathCamAtX = xPos;
     gBossDeathCamAtY = yPos;
 
-    player->state_1C8 = PLAYERSTATE_1C8_LEVEL_COMPLETE;
+    player->state = PLAYERSTATE_LEVEL_COMPLETE;
     player->csState = 10;
     player->csTimer = 50;
     player->csEventTimer = 50;

@@ -65,23 +65,23 @@ typedef enum LevelMode {
     /* 3 */ LEVELMODE_MAX,
 } LevelMode;
 
-typedef enum PlayerState1C8 {
-    /*  0 */ PLAYERSTATE_1C8_STANDBY,
-    /*  1 */ PLAYERSTATE_1C8_INIT,
-    /*  2 */ PLAYERSTATE_1C8_LEVEL_INTRO,
-    /*  3 */ PLAYERSTATE_1C8_ACTIVE,
-    /*  4 */ PLAYERSTATE_1C8_DOWN,
-    /*  5 */ PLAYERSTATE_1C8_U_TURN,
-    /*  6 */ PLAYERSTATE_1C8_NEXT,
-    /*  7 */ PLAYERSTATE_1C8_LEVEL_COMPLETE,
-    /*  8 */ PLAYERSTATE_1C8_ENTER_WARP_ZONE,
-    /*  9 */ PLAYERSTATE_1C8_START_360,
-    /* 10 */ PLAYERSTATE_1C8_GFOX_REPAIR,
-    /* 11 */ PLAYERSTATE_1C8_ANDROSS_MOUTH,
-    /* 12 */ PLAYERSTATE_1C8_12,
-    /* 13 */ PLAYERSTATE_1C8_VS_STANDBY,
-    /* 14 */ PLAYERSTATE_1C8_MAX,
-} PlayerState1C8;
+typedef enum PlayerState {
+    /*  0 */ PLAYERSTATE_STANDBY,
+    /*  1 */ PLAYERSTATE_INIT,
+    /*  2 */ PLAYERSTATE_LEVEL_INTRO,
+    /*  3 */ PLAYERSTATE_ACTIVE,
+    /*  4 */ PLAYERSTATE_DOWN,
+    /*  5 */ PLAYERSTATE_U_TURN,
+    /*  6 */ PLAYERSTATE_NEXT,
+    /*  7 */ PLAYERSTATE_LEVEL_COMPLETE,
+    /*  8 */ PLAYERSTATE_ENTER_WARP_ZONE,
+    /*  9 */ PLAYERSTATE_START_360,
+    /* 10 */ PLAYERSTATE_GFOX_REPAIR,
+    /* 11 */ PLAYERSTATE_ANDROSS_MOUTH,
+    /* 12 */ PLAYERSTATE_UNK_12,
+    /* 13 */ PLAYERSTATE_VS_STANDBY,
+    /* 14 */ PLAYERSTATE_MAX,
+} PlayerState;
 
 typedef enum PlayerShotStatus {
     /* 0 */ SHOT_FREE,
@@ -259,7 +259,7 @@ typedef struct Player {
     /* 0x1BC */ s32 turretRecoil;
     /* 0x1C0 */ s32 turretLockOnCount;
     /* 0x1C4 */ s32 num;
-    /* 0x1C8 */ PlayerState1C8 state_1C8;
+    /* 0x1C8 */ PlayerState state;
     /* 0x1CC */ PlayerForm form;
     /* 0x1D0 */ s32 csState;
     /* 0x1D4 */ bool grounded;

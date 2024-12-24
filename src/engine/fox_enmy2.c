@@ -1184,7 +1184,7 @@ void ActorEvent_ProcessScript(ActorEvent* this) {
                 this->drawShadow = true;
             }
 
-            if (gPlayer[0].state_1C8 == PLAYERSTATE_1C8_ACTIVE) {
+            if (gPlayer[0].state == PLAYERSTATE_ACTIVE) {
                 if (this->eventType == EVID_KATT) {
                     Audio_PlayFanfare(NA_BGM_KATT, 20, 10, 10);
                 }
@@ -1331,7 +1331,7 @@ void ActorEvent_ProcessScript(ActorEvent* this) {
 
         case EV_OPC(EVOP_PLAY_MSG):
             msg = Message_PtrFromId(actorScript[this->aiIndex + 1]);
-            if ((msg != NULL) && (gPlayer[0].state_1C8 == PLAYERSTATE_1C8_ACTIVE)) {
+            if ((msg != NULL) && (gPlayer[0].state == PLAYERSTATE_ACTIVE)) {
                 Radio_PlayMessage(msg, actorScript[this->aiIndex] & 0x1FF);
             }
             this->aiIndex += 2;
@@ -1840,7 +1840,7 @@ void ActorEvent_ProcessActions(ActorEvent* this) {
     Vec3f sp6C;
     Sprite* sprite;
 
-    if ((gPlayer[0].state_1C8 == PLAYERSTATE_1C8_ACTIVE) && (this->eventType != EVID_SARUMARINE_PERISCOPE) &&
+    if ((gPlayer[0].state == PLAYERSTATE_ACTIVE) && (this->eventType != EVID_SARUMARINE_PERISCOPE) &&
         (this->eventType != EVID_ANDROSS_GATE) && (this->eventType != EVID_ANDROSS_GATE_2) &&
         (this->eventType != EVID_SY_ROBOT_1) && (this->eventType != EVID_SY_ROBOT_2) &&
         (this->eventType != EVID_SY_ROBOT_3)) {
@@ -3042,7 +3042,7 @@ void ActorEvent_Update(ActorEvent* this) {
     Vec3f spAC;
     Vec3f spA0;
 
-    if ((gPlayer[0].state_1C8 == PLAYERSTATE_1C8_LEVEL_COMPLETE) || gKillEventActors) {
+    if ((gPlayer[0].state == PLAYERSTATE_LEVEL_COMPLETE) || gKillEventActors) {
         Object_Kill(&this->obj, this->sfxSource);
         return;
     }
@@ -3459,7 +3459,7 @@ void ActorEvent_Update(ActorEvent* this) {
         this->vel.z -= gPathVelZ;
     }
 
-    if (gPlayer[0].state_1C8 == PLAYERSTATE_1C8_ENTER_WARP_ZONE) {
+    if (gPlayer[0].state == PLAYERSTATE_ENTER_WARP_ZONE) {
         this->vel.z = 100.0f;
     }
 

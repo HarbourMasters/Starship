@@ -1,3 +1,9 @@
+/*
+ * File: fox_effect.c
+ * System: Effect
+ * Description: Effect Draw routines
+ */
+
 #include "global.h"
 #include "assets/ast_blue_marine.h"
 #include "assets/ast_arwing.h"
@@ -54,7 +60,7 @@ void BonusText_Update(void) {
 
             if (gLevelMode == LEVELMODE_ON_RAILS) {
                 bonus->pos.z -= gPathVelZ;
-            } else if (gPlayer[0].state_1C8 == PLAYERSTATE_1C8_ACTIVE) {
+            } else if (gPlayer[0].state == PLAYERSTATE_ACTIVE) {
                 bonus->pos.x += gPlayer[0].vel.x;
                 bonus->pos.z += gPlayer[0].vel.z;
             }
@@ -227,7 +233,7 @@ void Effect_Effect384_Draw(Effect384* this) {
     Graphics_SetScaleMtx(this->scale2);
 
     if ((this->scale1 == 71.0f) ||
-        ((gPlayer[0].state_1C8 == PLAYERSTATE_1C8_LEVEL_COMPLETE) && (gCurrentLevel == LEVEL_CORNERIA))) {
+        ((gPlayer[0].state == PLAYERSTATE_LEVEL_COMPLETE) && (gCurrentLevel == LEVEL_CORNERIA))) {
         RCP_SetupDL(&gMasterDisp, SETUPDL_38);
     } else {
         RCP_SetupDL(&gMasterDisp, SETUPDL_67);
@@ -376,7 +382,7 @@ void Effect_Effect347_Draw(Effect347* this) {
 void Effect_Effect351_Draw(Effect351* this) {
     Graphics_SetScaleMtx(this->scale2);
     gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, this->unk_4A);
-    gSPDisplayList(gMasterDisp++, aRadarMarkKaSaucererDL);
+    gSPDisplayList(gMasterDisp++, aBallDL);
 }
 
 void Effect_Clouds_Draw(EffectClouds* this) {
@@ -694,8 +700,7 @@ void Effect_Effect357_Update(Effect357* this) {
         this->vel.y -= 0.5f;
     }
 
-    if ((gCurrentLevel == LEVEL_BOLSE) && (gPlayer[0].state_1C8 == PLAYERSTATE_1C8_LEVEL_COMPLETE) &&
-        (gCsFrameCount > 175)) {
+    if ((gCurrentLevel == LEVEL_BOLSE) && (gPlayer[0].state == PLAYERSTATE_LEVEL_COMPLETE) && (gCsFrameCount > 175)) {
         this->vel.x *= 0.95f;
         this->vel.y *= 0.95f;
         this->vel.z *= 0.95f;
@@ -722,7 +727,7 @@ bool func_effect_800798C4(s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3f* rot, vo
 void Effect_Effect357_Draw(Effect357* this) {
     Vec3f frameJointTable[50];
 
-    if ((gCurrentLevel == LEVEL_BOLSE) && (gPlayer[0].state_1C8 == PLAYERSTATE_1C8_LEVEL_COMPLETE)) {
+    if ((gCurrentLevel == LEVEL_BOLSE) && (gPlayer[0].state == PLAYERSTATE_LEVEL_COMPLETE)) {
         Display_SetSecondLight(&this->obj.pos);
     }
 
@@ -1484,11 +1489,11 @@ void Effect_Effect362_Spawn(f32 xPos, f32 yPos, f32 zPos, f32 scale2) {
 }
 
 void Effect_Effect362_Update(Effect362* this) {
-    if (gPlayer[0].state_1C8 == PLAYERSTATE_1C8_LEVEL_COMPLETE) {
+    if (gPlayer[0].state == PLAYERSTATE_LEVEL_COMPLETE) {
         this->obj.rot.x = RAD_TO_DEG(gPlayer[0].camPitch);
         this->obj.rot.y = RAD_TO_DEG(-gPlayer[0].camYaw);
     }
-    if (gPlayer[0].state_1C8 == PLAYERSTATE_1C8_NEXT) {
+    if (gPlayer[0].state == PLAYERSTATE_NEXT) {
         this->unk_46 = 2;
         this->vel.y -= 0.13f;
     }
@@ -1721,7 +1726,7 @@ void Effect_Effect343_Setup(Effect343* this, f32 xPos, f32 yPos, f32 zPos, f32 s
         this->unk_48 = -this->unk_48;
     }
 
-    if ((gCurrentLevel == LEVEL_FORTUNA) && (gPlayer[0].state_1C8 != PLAYERSTATE_1C8_NEXT)) {
+    if ((gCurrentLevel == LEVEL_FORTUNA) && (gPlayer[0].state != PLAYERSTATE_NEXT)) {
         this->unk_4A = 180;
     } else {
         this->unk_4A = 255;
@@ -1759,7 +1764,7 @@ void Effect_Effect387_Update(Effect387* this) {
     s32 var_v0;
 
     var_v0 = 1 - 1;
-    if ((gCurrentLevel == LEVEL_FORTUNA) && (gPlayer[0].state_1C8 != PLAYERSTATE_1C8_NEXT)) {
+    if ((gCurrentLevel == LEVEL_FORTUNA) && (gPlayer[0].state != PLAYERSTATE_NEXT)) {
         var_v0 = 4 - 1;
     }
 
@@ -1995,7 +2000,7 @@ void func_effect_8007D2C8(f32 xPos, f32 yPos, f32 zPos, f32 scale2) {
 
 void Effect_Effect339_Update(EffectFireSmoke* this) {
     if (gLevelType == LEVELTYPE_PLANET) {
-        if ((gCurrentLevel == LEVEL_KATINA) && (gPlayer[0].state_1C8 == PLAYERSTATE_1C8_LEVEL_COMPLETE)) {
+        if ((gCurrentLevel == LEVEL_KATINA) && (gPlayer[0].state == PLAYERSTATE_LEVEL_COMPLETE)) {
             this->vel.y += 0.1f;
             if (this->timer_50 == 0) {
                 this->unk_4C++;
@@ -2008,7 +2013,7 @@ void Effect_Effect339_Update(EffectFireSmoke* this) {
                 }
             }
         } else {
-            if ((gCurrentLevel == LEVEL_MACBETH) && (gPlayer[0].state_1C8 == PLAYERSTATE_1C8_LEVEL_COMPLETE) &&
+            if ((gCurrentLevel == LEVEL_MACBETH) && (gPlayer[0].state == PLAYERSTATE_LEVEL_COMPLETE) &&
                 (this->vel.x != 0)) {
                 Math_SmoothStepToF(&this->vel.x, -1.0f, 1.0f, 1.0f, 0.0f);
                 Math_SmoothStepToF(&this->vel.z, 4.0f, 1.0f, 1.0f, 0.0f);
@@ -3332,8 +3337,9 @@ void func_effect_800815DC(void) {
     s32 i;
 
     for (i = 0; i < ARRAY_COUNT(gEffects); i++) {
-        if ((gEffects[i].obj.id == OBJ_EFFECT_366 || (gEffects[i].obj.id == OBJ_EFFECT_395 && gEffects[i].state == 1) ||
-             gEffects[i].obj.id == OBJ_EFFECT_364 || gEffects[i].obj.id == OBJ_EFFECT_346) &&
+        if (((gEffects[i].obj.id == OBJ_EFFECT_366) ||
+             ((gEffects[i].obj.id == OBJ_EFFECT_395) && (gEffects[i].state == 1)) ||
+             (gEffects[i].obj.id == OBJ_EFFECT_364) || (gEffects[i].obj.id == OBJ_EFFECT_346)) &&
             gEffects[i].obj.status == OBJ_ACTIVE) {
             gEffects[i].obj.status = OBJ_FREE;
             break;
@@ -3504,7 +3510,7 @@ void Effect_Effect395_Update(Effect395* this) {
     velocity.y = this->vel.y;
     velocity.z = this->vel.z;
 
-    //! FAKE: Probably some debug stuff printing different messages depending on what unk_4E is.
+    //! FAKE: Probably some debug stuff printing different messages depending on what state is.
     if ((this->state != 0) && (this->state != 6) && (this->state != 7) && (this->state != 11)) {
         if (gCurrentLevel) {}
         PRINTF("ＺＯ＿ＭＯＶＥ ＨＥＬＰ %d\n");

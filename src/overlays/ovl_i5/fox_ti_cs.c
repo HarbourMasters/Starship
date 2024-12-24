@@ -221,7 +221,7 @@ void Titania_LevelStart(Player* player) {
 
             if (gCsFrameCount == 580) {
                 gLevelStartStatusScreenTimer = 50;
-                player->state_1C8 = PLAYERSTATE_1C8_ACTIVE;
+                player->state = PLAYERSTATE_ACTIVE;
                 player->csState = player->csTimer = player->csEventTimer = player->hideShadow = 0;
                 player->gravity = 3.0f;
                 player->unk_014 = 0.0f;
@@ -524,7 +524,7 @@ void Titania_LevelComplete(Player* player) {
         gFillScreenAlphaTarget = 255;
 
         if (gFillScreenAlpha == 255) {
-            player->state_1C8 = PLAYERSTATE_1C8_NEXT;
+            player->state = PLAYERSTATE_NEXT;
             gFadeoutType = 4;
             Play_ClearObjectData();
             Audio_FadeOutAll(10);

@@ -403,7 +403,7 @@ s32 HUD_8008CB8C(void);
 void HUD_VS_ShieldGaugeTex_Draw(f32, f32, f32, f32, f32);
 void HUD_DrawBossHealth(void);
 void HUD_DrawCountdown(s32* , f32);
-void HUD_Shield_GoldRings_HitPoints(f32, f32);
+void HUD_Shield_GoldRings_Score(f32, f32);
 void HUD_BombCounter_Draw(f32, f32);
 void HUD_Draw(void);
 void FoBase_Draw(Boss*);
@@ -424,7 +424,7 @@ void Aquas_AqRock_Setup(Actor*, s32);
 void Aquas_CsLevelComplete(Player*);
 void Aquas_Effect363_Update(Effect*);
 void Aquas_Effect363_Draw(Effect*);
-void HUD_Hitpoints_Draw(f32, f32);
+void HUD_Score_Draw(f32, f32);
 void Venom1_LevelStart2(Player* player);
 
 // fox_col1

@@ -2688,8 +2688,8 @@ void Audio_PlaySequenceDistorted(u8 seqPlayId, u16 seqId, u16 distortion, u8 fad
 }
 
 void Audio_PlaySoundTestTrack(u8 trackNumber) {
-    u16 sp26;
-    u8 sp25;
+    u16 seqId;
+    u8 bgmParam;
 
     if ((trackNumber >= 45) && (trackNumber < 50)) {
         SEQCMD_STOP_SEQUENCE(SEQ_PLAYER_BGM, 1);
@@ -2701,10 +2701,10 @@ void Audio_PlaySoundTestTrack(u8 trackNumber) {
         AUDIO_PLAY_SFX(NA_SE_ERROR, gDefaultSfxSource, 4);
     } else {
         sPlaylistIndex = 0xFF;
-        sp26 = sSoundTestTracks[trackNumber].seqId & 0xFF;
-        sp25 = sSoundTestTracks[trackNumber].bgmParam;
+        seqId = sSoundTestTracks[trackNumber].seqId & 0xFF;
+        bgmParam = sSoundTestTracks[trackNumber].bgmParam;
         SEQCMD_STOP_SEQUENCE(D_800C5E70 ^ 1, 5);
-        Audio_PlaySequence(D_800C5E70, sp26, 0, sp25);
+        Audio_PlaySequence(D_800C5E70, seqId, 0, bgmParam);
         D_800C5E70 ^= 1;
     }
 }

@@ -64,7 +64,7 @@ void Audio_SequencePlayerProcessSound(SequencePlayer* seqplayer) {
     if (seqplayer->recalculateVolume) {
         seqplayer->appliedFadeVolume = seqplayer->fadeVolume * seqplayer->fadeVolumeMod;
     }
-    for (i = 0; i < 16; i++) {
+    for (i = 0; i < SEQ_NUM_CHANNELS; i++) {
         if ((IS_SEQUENCE_CHANNEL_VALID(seqplayer->channels[i]) == 1) && (seqplayer->channels[i]->enabled == 1)) {
             Audio_SequenceChannelProcessSound(seqplayer->channels[i], seqplayer->recalculateVolume);
         }
@@ -216,7 +216,8 @@ f32 Audio_AdsrUpdate(AdsrState* adsr) {
                     break;
                 default:
                     if (adsr->delay >= 4) {
-                        adsr->delay = (adsr->delay * gAudioBufferParams.ticksPerUpdate / gAudioBufferParams.numBuffers) / 4;
+                        adsr->delay =
+                            (adsr->delay * gAudioBufferParams.ticksPerUpdate / gAudioBufferParams.numBuffers) / 4;
                     }
                     if (adsr->delay == 0) {
                         adsr->delay = 1;

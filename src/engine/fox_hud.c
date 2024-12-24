@@ -13,7 +13,7 @@ s32 D_801616D0[13];
 s32 D_hud_80161704;
 s32 D_hud_80161708;
 s32 D_hud_8016170C;
-s32 D_hud_80161710;
+s32 gRadarMissileAlarmTimer;
 s32 gTotalHits;
 s32 D_80161718;
 s32 D_8016171C;
@@ -192,7 +192,7 @@ void HUD_TeamDownWrench_Draw(s32 arg0) {
     RCP_SetupDL(&gMasterDisp, SETUPDL_36);
     if (arg0 == 0) {
         for (i = 1; i < 4; i++) {
-            if (((gTeamShields[i] != 0) || (gPlayer[0].state_1C8 != PLAYERSTATE_1C8_LEVEL_COMPLETE)) &&
+            if (((gTeamShields[i] != 0) || (gPlayer[0].state != PLAYERSTATE_LEVEL_COMPLETE)) &&
                 (gTeamShields[i] <= 0) && (gTeamShields[i] != -2)) {
                 Matrix_Push(&gGfxMatrix);
                 Matrix_Translate(gGfxMatrix, sTeamDownWrenchPos[i - 1].x, sTeamDownWrenchPos[i - 1].y,
@@ -499,7 +499,7 @@ void HUD_TeamShields_Draw(f32 xPos, f32 yPos, s32 arg2) {
         ((gPlayState == PLAY_PAUSE) || (gShowLevelClearStatusScreen == 1) || (gLevelStartStatusScreenTimer != 0))) {
         RCP_SetupDL(&gMasterDisp, SETUPDL_76_POINT);
         gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 0, 255);
-        if ((arg2 == 0) && (gPlayer[0].state_1C8 == PLAYERSTATE_1C8_LEVEL_COMPLETE)) {
+        if ((arg2 == 0) && (gPlayer[0].state == PLAYERSTATE_LEVEL_COMPLETE)) {
             Graphics_DisplaySmallText(xPos + (8.0f * xScale) + 4.0f, yPos + 2.0f, 1.0f, 1.0f, " OK ");
         } else {
             Graphics_DisplaySmallText(xPos + (8.0f * xScale) + 4.0f, yPos + 2.0f, 1.0f, 1.0f, "DOWN");
@@ -1467,7 +1467,7 @@ void HUD_PauseScreen_Update(void) {
                 break;
 
             case 2:
-                gPlayer[0].state_1C8 = PLAYERSTATE_1C8_STANDBY;
+                gPlayer[0].state = PLAYERSTATE_STANDBY;
                 gFillScreenRed = gFillScreenGreen = gFillScreenBlue = 0;
                 gFillScreenAlphaTarget = 255;
                 gFillScreenAlphaStep = 32;
@@ -1589,7 +1589,7 @@ void HUD_PauseScreen_Update(void) {
                 gSavedHitCount = gSavedObjectLoadIndex = 0;
 
                 Audio_StopPlayerNoise(0);
-                gPlayer[0].state_1C8 = PLAYERSTATE_1C8_NEXT;
+                gPlayer[0].state = PLAYERSTATE_NEXT;
                 gScreenFlashTimer = 0;
                 gPlayer[0].csTimer = 0;
                 gFillScreenAlpha = gFillScreenAlphaTarget = 255;
@@ -1758,7 +1758,7 @@ void HUD_RadarMark_KaSaucerer_Draw(void) {
     gDPSetPrimColor(gMasterDisp++, 0, 0, 0, 0, 0, 255);
     Matrix_Scale(gGfxMatrix, 125.0f, 125.0f, 1.0f, MTXF_APPLY);
     Matrix_SetGfxMtx(&gMasterDisp);
-    gSPDisplayList(gMasterDisp++, aRadarMarkKaSaucererDL);
+    gSPDisplayList(gMasterDisp++, aBallDL);
 }
 
 void HUD_RadarMark_Missile_Draw(void) {
@@ -1874,7 +1874,7 @@ void HUD_RadarMark_Draw(s32 type) {
                     arwingMarkColor = 1;
                 }
 
-                if (gPlayer[type].state_1C8 == PLAYERSTATE_1C8_VS_STANDBY) {
+                if (gPlayer[type].state == PLAYERSTATE_VS_STANDBY) {
                     break;
                 }
             }
@@ -1971,7 +1971,7 @@ void HUD_RadarMarks_Setup(void) {
     Item* item;
 
     for (i = 0; i < gCamCount; i++) {
-        if (gPlayer[i].state_1C8 == PLAYERSTATE_1C8_NEXT) {
+        if (gPlayer[i].state == PLAYERSTATE_NEXT) {
             continue;
         }
         gRadarMarks[i].enabled = true;
@@ -1988,7 +1988,7 @@ void HUD_RadarMarks_Setup(void) {
             continue;
         }
 
-        if (gPlayer[i].state_1C8 != PLAYERSTATE_1C8_ACTIVE) {
+        if (gPlayer[i].state != PLAYERSTATE_ACTIVE) {
             continue;
         }
 
@@ -2178,11 +2178,11 @@ s32 HUD_RadarMarks_Update(void) {
     Matrix_Push(&gGfxMatrix);
     Matrix_Translate(gGfxMatrix, x1 + gHudOffsetPers, y1, z1, MTXF_APPLY);
 
-    if ((gCurrentLevel == LEVEL_SECTOR_Z) && (D_hud_80161710 != 0)) {
+    if ((gCurrentLevel == LEVEL_SECTOR_Z) && (gRadarMissileAlarmTimer != 0)) {
         Matrix_Push(&gGfxMatrix);
         HUD_RadarMissileAlarm_Draw();
         Matrix_Pop(&gGfxMatrix);
-        D_hud_80161710--;
+        gRadarMissileAlarmTimer--;
     }
 
     for (i = ARRAY_COUNT(gRadarMarks) - 1; i >= 0; i--) {
@@ -2220,19 +2220,20 @@ s32 ActorMissileSeek_ModeCheck(ActorMissileSeekMode mode) {
     for (i = 0, actor = &gActors[0]; i < 60; i++, actor++) {
         switch (mode) {
             case MISSILE_SEEK_TEAMMATES:
-                if ((actor->obj.status == OBJ_ACTIVE) && (actor->obj.id == OBJ_MISSILE_SEEK_TEAM)) {
+                if ((actor->obj.status == OBJ_ACTIVE) && (actor->obj.id == OBJ_ACTOR_MISSILE_SEEK_TEAM)) {
                     ret++;
                 }
                 break;
 
             case MISSILE_SEEK_PLAYER:
-                if ((actor->obj.status == OBJ_ACTIVE) && (actor->obj.id == OBJ_MISSILE_SEEK_PLAYER)) {
+                if ((actor->obj.status == OBJ_ACTIVE) && (actor->obj.id == OBJ_ACTOR_MISSILE_SEEK_PLAYER)) {
                     ret++;
                 }
                 break;
 
             case MISSILE_SEEK_EITHER:
-                if (((actor->obj.id == OBJ_MISSILE_SEEK_TEAM) || (actor->obj.id == OBJ_MISSILE_SEEK_PLAYER)) &&
+                if (((actor->obj.id == OBJ_ACTOR_MISSILE_SEEK_TEAM) ||
+                     (actor->obj.id == OBJ_ACTOR_MISSILE_SEEK_PLAYER)) &&
                     (actor->obj.status == OBJ_ACTIVE)) {
                     ret++;
                 }
@@ -3295,7 +3296,7 @@ void HUD_Radar(void) {
     HUD_RadarMarks_Update();
 }
 
-void HUD_Hitpoints_Update(f32 xPos, f32 yPos) {
+void HUD_Score_Update(f32 xPos, f32 yPos) {
     f32 r;
     f32 g;
     f32 b;
@@ -3381,24 +3382,22 @@ void HUD_Hitpoints_Update(f32 xPos, f32 yPos) {
         r = 255;
         g = 255;
         b = 255;
+    } else if (medalStatus) {
+        r = 200;
+        g = 100;
+        b = 50;
     } else {
-        if (medalStatus) {
-            r = 200;
-            g = 100;
-            b = 50;
-        } else {
-            r = 90;
-            g = 160;
-            b = 200;
-        }
+        r = 90;
+        g = 160;
+        b = 200;
     }
     RCP_SetupDL(&gMasterDisp, SETUPDL_76_POINT);
     gDPSetPrimColor(gMasterDisp++, 0, 0, r, g, b, 255);
-    HUD_Hitpoints_Draw(xPos, yPos);
+    HUD_Score_Draw(xPos, yPos);
 }
 
-void HUD_Shield_GoldRings_HitPoints(f32 xPos, f32 yPos) {
-    HUD_Hitpoints_Update(xPos, yPos);
+void HUD_Shield_GoldRings_Score(f32 xPos, f32 yPos) {
+    HUD_Score_Update(xPos, yPos);
     HUD_PlayerShield_GoldRings();
 }
 
@@ -3626,7 +3625,7 @@ void HUD_SinglePlayer(void) {
     HUD_IncomingMsg();
 
     if (D_hud_80161708 != 0) {
-        HUD_Shield_GoldRings_HitPoints(24.0f, 30.0f);
+        HUD_Shield_GoldRings_Score(24.0f, 30.0f);
         if (gCurrentLevel != LEVEL_TRAINING) {
             HUD_LivesCount2_Draw(248.0f, 11.0f, gLifeCount[gPlayerNum]);
         }
@@ -3753,13 +3752,13 @@ void HUD_Draw(void) {
     gDPSetTextureFilter(gMasterDisp++, G_TF_BILERP);
 }
 
-void FoBase_Draw(Boss* boss) {
+void FoBase_Draw(Boss* this) {
     RCP_SetupDL_29(gFogRed, gFogGreen, gFogBlue, gFogAlpha, gFogNear, gFogFar);
     gSPDisplayList(gMasterDisp++, aFoBaseDL2);
     RCP_SetupDL_34(gFogRed, gFogGreen, gFogBlue, gFogAlpha, gFogNear, gFogFar);
     gSPSetGeometryMode(gMasterDisp++, G_CULL_BACK);
     gDPSetTextureFilter(gMasterDisp++, G_TF_POINT);
-    gDPSetPrimColor(gMasterDisp++, 0, 0, 0, (s32) boss->fwork[1], (s32) boss->fwork[2], 255);
+    gDPSetPrimColor(gMasterDisp++, 0, 0, 0, (s32) this->fwork[1], (s32) this->fwork[2], 255);
     gSPDisplayList(gMasterDisp++, aFoBaseDL1);
     gDPSetTextureFilter(gMasterDisp++, G_TF_BILERP);
 }
@@ -4247,7 +4246,7 @@ void ActorTeamBoss_SetAction(ActorTeamBoss* this) {
         this->state = 3;
     }
 
-    if (gPlayer[0].state_1C8 == PLAYERSTATE_1C8_LEVEL_COMPLETE) {
+    if (gPlayer[0].state == PLAYERSTATE_LEVEL_COMPLETE) {
         if ((this->state != 2) && (this->state != 3)) {
             this->iwork[4] = 1;
             this->state = 2;
@@ -4534,7 +4533,7 @@ void ActorTeamBoss_Radarmarks_Init(ActorTeamBoss* this) {
 void ActorTeamBoss_DmgEffect(ActorTeamBoss* this) {
     s32 mask;
 
-    if ((gTeamShields[this->aiType] < 64) && (gPlayer[0].state_1C8 != PLAYERSTATE_1C8_LEVEL_COMPLETE)) {
+    if ((gTeamShields[this->aiType] < 64) && (gPlayer[0].state != PLAYERSTATE_LEVEL_COMPLETE)) {
         mask = 8 - 1;
         if (gTeamShields[this->aiType] > 16) {
             mask = 16 - 1;
@@ -4830,14 +4829,14 @@ void ActorTeamBoss_Update(ActorTeamBoss* this) {
             }
 
             if ((this->iwork[10] != 0) && (gLevelMode == LEVELMODE_ALL_RANGE) && (this->iwork[9] == 0) &&
-                (gPlayer[0].state_1C8 != PLAYERSTATE_1C8_LEVEL_COMPLETE)) {
+                (gPlayer[0].state != PLAYERSTATE_LEVEL_COMPLETE)) {
                 this->work_048 = 2;
                 this->work_04A = 0;
             }
 
             if ((gLevelMode == LEVELMODE_ALL_RANGE) &&
                 (fabsf(this->obj.pos.x > range) || fabsf(this->obj.pos.z > range)) &&
-                (gPlayer[0].state_1C8 != PLAYERSTATE_1C8_LEVEL_COMPLETE)) {
+                (gPlayer[0].state != PLAYERSTATE_LEVEL_COMPLETE)) {
                 this->work_048 = 2;
                 this->work_04A = 1;
             }
@@ -4877,7 +4876,7 @@ void Aquas_CsIntroActors_Update(ActorCutscene* this) {
     if (this->state == 0) {
         switch (this->animFrame) {
             case 1:
-                if ((player->state_1C8 != PLAYERSTATE_1C8_LEVEL_INTRO) || (this->animFrame != 1)) {
+                if ((player->state != PLAYERSTATE_LEVEL_INTRO) || (this->animFrame != 1)) {
                     if (gCsFrameCount > 1588) {
                         this->fwork[0] = 5.0f;
                     } else {
@@ -4942,8 +4941,7 @@ void Aquas_Effect363_Spawn(f32 x, f32 y, f32 z, f32 arg3) {
             effect->obj.pos.y = y;
             effect->obj.pos.z = z;
 
-            if ((player->state_1C8 == PLAYERSTATE_1C8_LEVEL_INTRO) && (gCurrentLevel == LEVEL_AQUAS) &&
-                (player->csState < 2)) {
+            if ((player->state == PLAYERSTATE_LEVEL_INTRO) && (gCurrentLevel == LEVEL_AQUAS) && (player->csState < 2)) {
                 effect->scale1 = 0.4f;
                 effect->unk_44 = 0;
                 effect->unk_46 = 24;
@@ -5362,7 +5360,7 @@ void Aquas_CsLevelStart(Player* player) {
             if (player->csTimer <= 900) {
                 gLevelStartStatusScreenTimer = 50;
 
-                player->state_1C8 = PLAYERSTATE_1C8_ACTIVE;
+                player->state = PLAYERSTATE_ACTIVE;
                 player->csState = 0;
                 player->csTimer = 0;
 
@@ -5418,7 +5416,7 @@ f32 D_800D24CC = 0.02f;
 void Aquas_Effect363_Update(Effect363* this) {
     Player* player = &gPlayer[0];
 
-    if ((player->state_1C8 == PLAYERSTATE_1C8_LEVEL_INTRO) && (gCurrentLevel == LEVEL_AQUAS) && (player->csState < 2)) {
+    if ((player->state == PLAYERSTATE_LEVEL_INTRO) && (gCurrentLevel == LEVEL_AQUAS) && (player->csState < 2)) {
         switch (this->state) {
             case 0:
                 this->unk_44 += this->unk_46;
@@ -5449,12 +5447,12 @@ void Aquas_Effect363_Update(Effect363* this) {
         }
         this->obj.rot.z += this->unk_48;
     } else {
-        if (player->state_1C8 == PLAYERSTATE_1C8_LEVEL_COMPLETE) {
+        if (player->state == PLAYERSTATE_LEVEL_COMPLETE) {
             this->obj.rot.x = RAD_TO_DEG(player->camPitch);
             this->obj.rot.y = RAD_TO_DEG(-player->camYaw);
         }
 
-        if (player->state_1C8 == PLAYERSTATE_1C8_NEXT) {
+        if (player->state == PLAYERSTATE_NEXT) {
             this->unk_46 = 2;
             if (player->csState >= 4) {
                 this->vel.y -= 0.13f;
@@ -5464,8 +5462,8 @@ void Aquas_Effect363_Update(Effect363* this) {
         this->scale2 += 0.8f;
         this->unk_4A -= this->unk_46;
 
-        if ((this->unk_4A < 0) || ((player->state_1C8 == PLAYERSTATE_1C8_LEVEL_INTRO) &&
-                                   (gCurrentLevel == LEVEL_AQUAS) && (player->csState == 5))) {
+        if ((this->unk_4A < 0) ||
+            ((player->state == PLAYERSTATE_LEVEL_INTRO) && (gCurrentLevel == LEVEL_AQUAS) && (player->csState == 5))) {
             Object_Kill(&this->obj, this->sfxSource);
         }
         this->obj.rot.z += this->unk_48;
@@ -5473,8 +5471,7 @@ void Aquas_Effect363_Update(Effect363* this) {
 }
 
 void Aquas_Effect363_Draw(Effect363* this) {
-    if ((gPlayer[0].state_1C8 == PLAYERSTATE_1C8_LEVEL_INTRO) && (gCurrentLevel == LEVEL_AQUAS) &&
-        (gPlayer[0].csState < 2)) {
+    if ((gPlayer[0].state == PLAYERSTATE_LEVEL_INTRO) && (gCurrentLevel == LEVEL_AQUAS) && (gPlayer[0].csState < 2)) {
         RCP_SetupDL(&gMasterDisp, SETUPDL_68);
         gDPSetPrimColor(gMasterDisp++, 0, 0, 0, 21, 34, this->unk_4A);
         gDPSetEnvColor(gMasterDisp++, 255, 255, 251, 0);
@@ -5492,7 +5489,7 @@ void stub_80094D10(void) {
 void stub_80094D18(void) {
 }
 
-void HUD_Hitpoints_Draw(f32 x, f32 y) {
+void HUD_Score_Draw(f32 x, f32 y) {
     u8* D_800D24DC[] = { aLargeText_0, aLargeText_1, aLargeText_2, aLargeText_3, aLargeText_4,
                          aLargeText_5, aLargeText_6, aLargeText_7, aLargeText_8, aLargeText_9 };
     s32 D_800D2504[] = { 100, 10, 1 };
@@ -5665,7 +5662,7 @@ void Aquas_AqCoralReef2_Setup(ActorCutscene* this, s32 posIdx) {
     this->obj.id = OBJ_ACTOR_CUTSCENE;
     this->obj.pos = sAqCoralReef2Pos[posIdx];
     this->obj.pos.z -= gPathProgress;
-    this->animFrame = 46;
+    this->animFrame = ACTOR_CS_AQ_CORAL_REEF_2;
     Object_SetInfo(&this->info, this->obj.id);
 }
 
@@ -5680,7 +5677,7 @@ void Aquas_AqRock_Setup(ActorCutscene* this, s32 posIdx) {
     this->obj.id = OBJ_ACTOR_CUTSCENE;
     this->obj.pos = sAqRockPos[posIdx];
     this->obj.pos.z -= gPathProgress;
-    this->animFrame = 47;
+    this->animFrame = ACTOR_CS_AQ_ROCK;
     Object_SetInfo(&this->info, this->obj.id);
 }
 
@@ -5966,7 +5963,7 @@ void Aquas_CsLevelComplete(Player* player) {
 
                 if (gFillScreenAlpha == 255) {
                     gLeveLClearStatus[LEVEL_AQUAS] = Play_CheckMedalStatus(150) + 1;
-                    player->state_1C8 = PLAYERSTATE_1C8_NEXT;
+                    player->state = PLAYERSTATE_NEXT;
                     player->csTimer = 0;
                     Audio_FadeOutAll(10);
                     gFadeoutType = 4;
@@ -6189,7 +6186,7 @@ void Venom1_LevelStart2(Player* player) {
             if (gCsFrameCount == 300) {
                 gPathTexScroll = 0;
                 gLevelStartStatusScreenTimer = 50;
-                player->state_1C8 = PLAYERSTATE_1C8_ACTIVE;
+                player->state = PLAYERSTATE_ACTIVE;
                 player->baseSpeed = gArwingSpeed;
                 player->csState = 0;
                 player->csTimer = 0;

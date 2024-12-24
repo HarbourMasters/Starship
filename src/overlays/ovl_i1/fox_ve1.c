@@ -2385,7 +2385,7 @@ void Venom1_80198414(void) {
 
 void Venom1_Ve1Golemech_Dying(Ve1Golemech* this) {
     this->obj.pos.z = gPlayer[0].pos.z;
-    if ((this->timer_052 <= 0) && (gPlayer[0].state_1C8 == PLAYERSTATE_1C8_ACTIVE)) {
+    if ((this->timer_052 <= 0) && (gPlayer[0].state == PLAYERSTATE_ACTIVE)) {
         Venom1_80198414();
     }
 }

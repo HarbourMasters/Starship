@@ -53,7 +53,7 @@ void Venom2_UpdateEvents(ActorAllRange* this) {
                 gStarWolfTeamAlive[i] = 1;
             }
 
-            if (player->state_1C8 == PLAYERSTATE_1C8_ACTIVE) {
+            if (player->state == PLAYERSTATE_ACTIVE) {
                 this->state = 2;
                 player->pos.x = 0.0f;
                 player->pos.z = 8000.0f;
@@ -93,7 +93,7 @@ void Venom2_UpdateEvents(ActorAllRange* this) {
                 if (this->timer_0BC == 0) {
                     team->state = 2;
                     this->state = 2;
-                    player->state_1C8 = PLAYERSTATE_1C8_ACTIVE;
+                    player->state = PLAYERSTATE_ACTIVE;
                     player->unk_014 = 0.0001f;
                     gLevelStartStatusScreenTimer = 80;
                 }
@@ -110,14 +110,15 @@ void Venom2_UpdateEvents(ActorAllRange* this) {
                 (gActors[7].obj.status == OBJ_FREE) && (this->timer_0BE == 0)) {
                 this->timer_0BE = 80;
             }
-            if ((this->timer_0BE == 1) && (player->state_1C8 != PLAYERSTATE_1C8_LEVEL_COMPLETE)) {
+
+            if ((this->timer_0BE == 1) && (player->state != PLAYERSTATE_LEVEL_COMPLETE)) {
                 for (i = 1; i < ARRAY_COUNT(gTeamShields); i++) {
                     gPrevPlanetTeamShields[i] = gSavedTeamShields[i];
                     gPrevPlanetSavedTeamShields[i] = gSavedTeamShields[i];
                     gSavedTeamShields[i] = gTeamShields[i];
                 }
 
-                player->state_1C8 = PLAYERSTATE_1C8_LEVEL_COMPLETE;
+                player->state = PLAYERSTATE_LEVEL_COMPLETE;
                 player->csState = 0;
                 gLeveLClearStatus[gCurrentLevel] = 2;
                 D_ctx_80177C94 = gGoldRingCount[0];
@@ -144,7 +145,7 @@ void Venom2_UpdateEvents(ActorAllRange* this) {
 
             if ((gControllerPress->button & START_BUTTON) || (gAllRangeEventTimer == (gAllRangeSpawnEvent + 300))) {
                 this->state = 2;
-                player->state_1C8 = PLAYERSTATE_1C8_ACTIVE;
+                player->state = PLAYERSTATE_ACTIVE;
                 Camera_Update360(player, true);
                 player->unk_014 = 0.0f;
                 D_hud_80161708 = 0;

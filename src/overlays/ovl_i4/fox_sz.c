@@ -58,9 +58,9 @@ void SectorZ_MissileExplode(ActorAllRange* this, bool shotDown) {
     if (shotDown) {
         sMissileDestroyCount++;
         if ((sMissileDestroyCount >= 6) &&
-            ((gPlayer[0].state_1C8 == PLAYERSTATE_1C8_ACTIVE) || (gPlayer[0].state_1C8 == PLAYERSTATE_1C8_U_TURN))) {
+            ((gPlayer[0].state == PLAYERSTATE_ACTIVE) || (gPlayer[0].state == PLAYERSTATE_U_TURN))) {
             gCsFrameCount = 0;
-            gPlayer[0].state_1C8 = PLAYERSTATE_1C8_LEVEL_COMPLETE;
+            gPlayer[0].state = PLAYERSTATE_LEVEL_COMPLETE;
             gPlayer[0].csState = 1000;
             gActors[SZ_GREAT_FOX].state = 6;
             gPlayer[0].csTimer = 30;
@@ -174,8 +174,8 @@ void SectorZ_Missile_Update(ActorAllRange* this) {
         SectorZ_MissileExplode(this, false);
         gCameraShake = 25;
         gBosses[SZ_GREAT_FOX].dmgType = DMG_MISSILE;
-        if ((gPlayer[0].state_1C8 == PLAYERSTATE_1C8_ACTIVE) || (gPlayer[0].state_1C8 == PLAYERSTATE_1C8_U_TURN)) {
-            gPlayer[0].state_1C8 = PLAYERSTATE_1C8_LEVEL_COMPLETE;
+        if ((gPlayer[0].state == PLAYERSTATE_ACTIVE) || (gPlayer[0].state == PLAYERSTATE_U_TURN)) {
+            gPlayer[0].state = PLAYERSTATE_LEVEL_COMPLETE;
             gPlayer[0].csState = 0;
             gActors[SZ_GREAT_FOX].state = -31072;
             return;
@@ -186,16 +186,16 @@ void SectorZ_Missile_Update(ActorAllRange* this) {
     if (CVarGetInteger("gSzMissileBug", 0) == 1) {
         bugFixCond = 0;
     } else {
-        bugFixCond = (gPlayer[0].state_1C8 == PLAYERSTATE_1C8_GFOX_REPAIR);
+        bugFixCond = (gPlayer[0].state == PLAYERSTATE_GFOX_REPAIR);
     }
 
     // Level complete trigger check
     if (((fabsf(this->fwork[MISSILE_TARGET_Z] - this->obj.pos.z) < 2000.0f) &&
          (((gPlayer[0].cam.eye.z < 0.0f) || (D_edisplay_801615D0.y < 0.0f)) ||
           bugFixCond)) &&
-        (((gPlayer[0].state_1C8 == PLAYERSTATE_1C8_ACTIVE) || bugFixCond) ||
-         (gPlayer[0].state_1C8 == PLAYERSTATE_1C8_U_TURN))) {
-        gPlayer[0].state_1C8 = PLAYERSTATE_1C8_LEVEL_COMPLETE;
+        (((gPlayer[0].state == PLAYERSTATE_ACTIVE) || bugFixCond) ||
+         (gPlayer[0].state == PLAYERSTATE_U_TURN))) {
+        gPlayer[0].state = PLAYERSTATE_LEVEL_COMPLETE;
         gPlayer[0].csState = 100;
         gActors[SZ_GREAT_FOX].state = -31072;
     }
@@ -282,7 +282,7 @@ void SectorZ_KattCutscene(ActorCutscene* this) {
         this->timer_0BC = 400;
         this->state = 3;
 
-        gPlayer[0].state_1C8 = PLAYERSTATE_1C8_STANDBY;
+        gPlayer[0].state = PLAYERSTATE_STANDBY;
 
         Audio_PlayFanfare(NA_BGM_KATT, 20, 10, 10);
         AllRange_ClearRadio();
@@ -365,7 +365,7 @@ void SectorZ_EnemyUpdate(ActorAllRange* this) {
         Radio_PlayMessage(gMsg_ID_16030, RCID_FALCO);
     }
 
-    if (((this->timer_0C0 == 0) && (gPlayer[0].state_1C8 != PLAYERSTATE_1C8_STANDBY)) &&
+    if (((this->timer_0C0 == 0) && (gPlayer[0].state != PLAYERSTATE_STANDBY)) &&
         ((gAllRangeEventTimer < 200) || ((gAllRangeEventTimer > 4000) && (gAllRangeEventTimer < 4200)))) {
         this->timer_0C0 = 5;
 
@@ -433,7 +433,7 @@ void SectorZ_EnemyUpdate(ActorAllRange* this) {
             SectorZ_SpawnMissile(&gActors[SZ_MISSILE_RIGHT], 2);
             SectorZ_SpawnMissile(&gActors[SZ_MISSILE_LEFT], 1);
             SectorZ_SpawnMissile(&gActors[SZ_MISSILE_CENTER], 0);
-            D_hud_80161710 = 580;
+            gRadarMissileAlarmTimer = 580;
             break;
 
         case 3850:
@@ -443,11 +443,11 @@ void SectorZ_EnemyUpdate(ActorAllRange* this) {
         case 4000:
             SectorZ_SpawnMissile(&gActors[SZ_MISSILE_LEFT], 1);
             SectorZ_SpawnMissile(&gActors[SZ_MISSILE_CENTER], 0);
-            D_hud_80161710 = 580;
+            gRadarMissileAlarmTimer = 580;
             break;
 
         case 2000:
-            D_hud_80161710 = 490;
+            gRadarMissileAlarmTimer = 490;
             SectorZ_SpawnMissile(&gActors[SZ_MISSILE_CENTER], 0);
 
             gActors[SZ_MISSILE_CENTER].fwork[1] = 10.0f;
@@ -458,7 +458,7 @@ void SectorZ_EnemyUpdate(ActorAllRange* this) {
             SectorZ_SpawnMissileEscort(&gActors[SZ_ESCORT_3], 2);
             SectorZ_SpawnMissileEscort(&gActors[SZ_ESCORT_4], 3);
 
-            gPlayer[0].state_1C8 = PLAYERSTATE_1C8_STANDBY;
+            gPlayer[0].state = PLAYERSTATE_STANDBY;
 
             this->state = 10;
             this->fwork[10] = 0.0f;
@@ -486,13 +486,13 @@ void SectorZ_EnemyUpdate(ActorAllRange* this) {
 
 bool SectorZ_GFoxArwingRepair(Player* player) {
     // clang-format off
-    if (player->state_1C8 == PLAYERSTATE_1C8_ACTIVE) {
+    if (player->state == PLAYERSTATE_ACTIVE) {
         if ((player->yRot_114 > 30.0f) && 
             (player->yRot_114 < 150.0f) && 
             (fabsf(player->pos.x - 1270.0f) < 450.0f) &&
             (fabsf(player->pos.y - 265.0f) < 100.0f) && 
             (fabsf(player->trueZpos) < 172.0f)) {
-            player->state_1C8 = PLAYERSTATE_1C8_GFOX_REPAIR;
+            player->state = PLAYERSTATE_GFOX_REPAIR;
             player->csState = 0;
             gActors[SZ_GREAT_FOX].state = 20;
             gAllRangeEventTimer--;
@@ -596,7 +596,7 @@ void SectorZ_UpdateEvents(ActorAllRange* this) {
 
             if (this->timer_0BC == 70) {
                 this->state = 2;
-                player->state_1C8 = PLAYERSTATE_1C8_ACTIVE;
+                player->state = PLAYERSTATE_ACTIVE;
                 Camera_Update360(player, true);
                 player->unk_014 = 0.0f;
             }
@@ -663,7 +663,7 @@ void SectorZ_UpdateEvents(ActorAllRange* this) {
 
             if (this->timer_0BC < 9680) {
                 this->state = 2;
-                player->state_1C8 = PLAYERSTATE_1C8_ACTIVE;
+                player->state = PLAYERSTATE_ACTIVE;
                 Camera_Update360(player, true);
                 player->unk_014 = 0.0f;
                 gActors[SZ_MISSILE_CENTER].fwork[1] = 25.0f;
@@ -992,7 +992,7 @@ void SectorZ_LevelStart(Player* player) {
 
             if (gCsFrameCount == 820) {
                 Audio_KillSfxById(NA_SE_DEMO_SIREN);
-                player->state_1C8 = PLAYERSTATE_1C8_ACTIVE;
+                player->state = PLAYERSTATE_ACTIVE;
                 player->unk_01C = player->unk_018 = player->unk_014 = 0.f;
                 AUDIO_PLAY_BGM(gBgmSeqId);
                 gLevelStartStatusScreenTimer = 50;
@@ -1420,7 +1420,7 @@ void SectorZ_LevelComplete(Player* player) {
                 gFillScreenRed = gFillScreenGreen = gFillScreenBlue = 0;
                 gFillScreenAlphaStep = 8;
                 if (gFillScreenAlpha == 255) {
-                    player->state_1C8 = PLAYERSTATE_1C8_NEXT;
+                    player->state = PLAYERSTATE_NEXT;
                     player->csTimer = 0;
                     gFadeoutType = 4;
                     gLeveLClearStatus[LEVEL_SECTOR_Z] = Play_CheckMedalStatus(100) + 1;

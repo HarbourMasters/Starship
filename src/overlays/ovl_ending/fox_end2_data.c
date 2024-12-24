@@ -72,7 +72,7 @@ void Ending_80190274(u32 arg0, AssetInfo* asset);
 void Ending_80190648(s32 arg0, AssetInfo* asset);
 void Ending_80190778(u32 arg0, AssetInfo* asset);
 void Ending_80190CF0(u32 arg0, AssetInfo* asset);
-void Ending_80191234(s32 arg0, s32 arg1);
+void Ending_80191234(u32 arg0, AssetInfo* asset);
 void Ending_80191294(u32 arg0, AssetInfo* asset);
 
 // clang-format off

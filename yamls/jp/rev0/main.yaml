@@ -154,7 +154,7 @@
 
       # DATA - Microcode
       - [0xC1030, data, aspmain]
-      - [0xC1360, data, audio/audio_tables]
+      - [0xC1360, .data, audio/audio_tables]
       - [0xC1B20, data, f3dex]
 
       # DATA - Nintendo Libraries

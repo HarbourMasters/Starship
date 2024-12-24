@@ -267,9 +267,8 @@ void Bolse_UpdateEventHandler(ActorEvent* this) {
             if (gBosses[2].state == 10) {
                 SEQCMD_STOP_SEQUENCE(SEQ_PLAYER_BGM, 1);
                 SEQCMD_STOP_SEQUENCE(SEQ_PLAYER_FANFARE, 1);
-                if ((gPlayer[0].state_1C8 == PLAYERSTATE_1C8_ACTIVE) ||
-                    (gPlayer[0].state_1C8 == PLAYERSTATE_1C8_U_TURN)) {
-                    gPlayer[0].state_1C8 = PLAYERSTATE_1C8_LEVEL_COMPLETE;
+                if ((gPlayer[0].state == PLAYERSTATE_ACTIVE) || (gPlayer[0].state == PLAYERSTATE_U_TURN)) {
+                    gPlayer[0].state = PLAYERSTATE_LEVEL_COMPLETE;
                     gPlayer[0].csTimer = 30;
                     gPlayer[0].csState = 0;
                     gPlayer[0].unk_000 = 0.0f;
@@ -292,7 +291,7 @@ void Bolse_UpdateEventHandler(ActorEvent* this) {
                 this->iwork[1] = gHitCount;
                 this->state = 10;
                 this->timer_0BC = 150;
-                gPlayer[0].state_1C8 = PLAYERSTATE_1C8_STANDBY;
+                gPlayer[0].state = PLAYERSTATE_STANDBY;
                 AUDIO_PLAY_BGM(NA_BGM_BOSS_BO);
                 AllRange_ClearRadio();
                 gPlayer[0].cam.eye.x = 400.0f;
@@ -325,7 +324,7 @@ void Bolse_UpdateEventHandler(ActorEvent* this) {
                 }
                 if (i == 3) {
                     this->state = 2;
-                    player->state_1C8 = PLAYERSTATE_1C8_ACTIVE;
+                    player->state = PLAYERSTATE_ACTIVE;
                     return;
                 }
             }
@@ -341,7 +340,7 @@ void Bolse_UpdateEventHandler(ActorEvent* this) {
 
             if ((gControllerPress->button & START_BUTTON) || ((gAllRangeSpawnEvent + 300) == gAllRangeEventTimer)) {
                 this->state = 2;
-                player->state_1C8 = PLAYERSTATE_1C8_ACTIVE;
+                player->state = PLAYERSTATE_ACTIVE;
                 Camera_Update360(player, true);
                 player->unk_014 = 0.0f;
                 D_hud_80161708 = 0;
@@ -395,7 +394,7 @@ void Bolse_UpdateEventHandler(ActorEvent* this) {
             if (!this->timer_0BC) {
                 gAllRangeEventTimer = 3000;
                 this->state = 2;
-                player->state_1C8 = PLAYERSTATE_1C8_ACTIVE;
+                player->state = PLAYERSTATE_ACTIVE;
                 Camera_Update360(player, true);
                 player->unk_014 = 0.0f;
                 Audio_KillSfxBySource(gBosses[1].sfxSource);
@@ -648,7 +647,7 @@ bool Bolse_8018D278(BoLaserCannon* this) {
 
 void Bolse_BoLaserCannon_Update(BoLaserCannon* this) {
     Bolse_8018CC60(this);
-    if ((gPlayer[0].state_1C8 != PLAYERSTATE_1C8_STANDBY) && (gPlayer[0].state_1C8 != PLAYERSTATE_1C8_LEVEL_COMPLETE)) {
+    if ((gPlayer[0].state != PLAYERSTATE_STANDBY) && (gPlayer[0].state != PLAYERSTATE_LEVEL_COMPLETE)) {
         Bolse_8018CCE8(this);
         Bolse_8018CE5C(this);
         if (Bolse_8018D008(this)) {
@@ -1316,7 +1315,7 @@ void Bolse_LevelStart(Player* player) {
             }
 
             if (gCsFrameCount == 270) {
-                player->state_1C8 = PLAYERSTATE_1C8_ACTIVE;
+                player->state = PLAYERSTATE_ACTIVE;
                 player->baseSpeed = gArwingSpeed;
                 player->unk_014 = 0.0001f;
 

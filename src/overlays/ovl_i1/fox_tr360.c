@@ -195,7 +195,7 @@ void Training_SpawnEnemies(void) {
         aiTypeIndex = 0;
     }
 
-    if (((gGameFrameCount % 4) == 0) && (gPlayer[0].state_1C8 == PLAYERSTATE_1C8_ACTIVE)) {
+    if (((gGameFrameCount % 4) == 0) && (gPlayer[0].state == PLAYERSTATE_ACTIVE)) {
         src.x = 0.0f;
         src.y = 0.0f;
         src.z = -15000.0f;
