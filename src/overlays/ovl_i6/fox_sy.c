@@ -83,7 +83,7 @@ void SectorY_SyShogun_Init(SyShogun* this) {
         this->fwork[43] = 3.5f;
         this->fwork[45] = 40.0f;
 
-        if (gPlayer[0].state_1C8 == PLAYERSTATE_1C8_START_360) {
+        if (gPlayer[0].state == PLAYERSTATE_START_360) {
             this->obj.pos.z = -28900.0f;
             gScenery360[SHOGUN_SHIP].obj.pos.z = -30000.0f;
         }
@@ -111,8 +111,8 @@ void SectorY_SyShogun_Init(SyShogun* this) {
     }
 
     if (gLevelMode == LEVELMODE_ON_RAILS) {
-        if (gPlayer[0].state_1C8 == PLAYERSTATE_1C8_ACTIVE) {
-            gPlayer[0].state_1C8 = PLAYERSTATE_1C8_START_360;
+        if (gPlayer[0].state == PLAYERSTATE_ACTIVE) {
+            gPlayer[0].state = PLAYERSTATE_START_360;
             gPlayer[0].csState = 0;
             SEQCMD_STOP_SEQUENCE(SEQ_PLAYER_BGM, 50);
             SEQCMD_STOP_SEQUENCE(SEQ_PLAYER_FANFARE, 50);
@@ -283,7 +283,7 @@ void SectorY_801983E4(SyShogun* this) {
                     } else {
                         SectorY_80199D64(this);
                     }
-                } else if (gPlayer[0].state_1C8 != PLAYERSTATE_1C8_U_TURN) {
+                } else if (gPlayer[0].state != PLAYERSTATE_U_TURN) {
                     Math_SmoothStepToAngle(&this->rot_078.x, 181.0f, 0.1f, 6.0f, 0.1f);
                     this->swork[21] = 3;
                     this->fwork[11] = SIN_DEG(this->rot_078.y) * (this->fwork[45] + 10.0f);
@@ -438,9 +438,9 @@ void SectorY_80198F5C(SyShogun* this) {
         if (this->index == 0) {
             this->timer_058 = 20000;
             this->vel.x = this->vel.y = this->vel.z = 0.0f;
-            if ((gPlayer[0].state_1C8 == PLAYERSTATE_1C8_ACTIVE) || (gPlayer[0].state_1C8 == PLAYERSTATE_1C8_U_TURN)) {
+            if ((gPlayer[0].state == PLAYERSTATE_ACTIVE) || (gPlayer[0].state == PLAYERSTATE_U_TURN)) {
                 gCsFrameCount = 0;
-                gPlayer[0].state_1C8 = PLAYERSTATE_1C8_LEVEL_COMPLETE;
+                gPlayer[0].state = PLAYERSTATE_LEVEL_COMPLETE;
                 gPlayer[0].csTimer = 0;
                 gPlayer[0].csState = gPlayer[0].csTimer;
                 gPlayer[0].rot.y += gPlayer[0].yRot_114;
@@ -475,9 +475,9 @@ void SectorY_80198F5C(SyShogun* this) {
         this->vel.y = 0.0f;
         this->vel.x = 0.0f;
 
-        if ((gPlayer[0].state_1C8 == PLAYERSTATE_1C8_ACTIVE) || (gPlayer[0].state_1C8 == PLAYERSTATE_1C8_U_TURN)) {
+        if ((gPlayer[0].state == PLAYERSTATE_ACTIVE) || (gPlayer[0].state == PLAYERSTATE_U_TURN)) {
             this->timer_058 = 100;
-            gPlayer[0].state_1C8 = PLAYERSTATE_1C8_STANDBY;
+            gPlayer[0].state = PLAYERSTATE_STANDBY;
             gCsFrameCount = 0;
             xDisplacement = gPlayer[0].cam.eye.x - this->obj.pos.x;
             zDisplacement = gPlayer[0].cam.eye.z - this->obj.pos.z;
@@ -631,7 +631,7 @@ void SectorY_80199438(SyShogun* this) {
                     gScenery360[SHOGUN_SHIP].info.dList = aSySaruzinDL;
                     gScenery360[SHOGUN_SHIP].info.drawType = 0;
                 } else {
-                    gPlayer[0].state_1C8 = PLAYERSTATE_1C8_ACTIVE;
+                    gPlayer[0].state = PLAYERSTATE_ACTIVE;
                     Camera_UpdateArwing360(&gPlayer[0], true);
                     gPlayer[0].unk_014 = 0.0f;
                     if (gTeamShields[TEAM_ID_PEPPY] > 0) {
@@ -1096,7 +1096,7 @@ void SectorY_8019AEEC(SyShogun* this) {
             gScenery360[SHOGUN_SHIP].obj.pos.z = -20000.0f;
             this->fwork[43] = 0.0f;
             this->vel.y = 0.0f;
-            gPlayer[0].state_1C8 = PLAYERSTATE_1C8_ACTIVE;
+            gPlayer[0].state = PLAYERSTATE_ACTIVE;
             Camera_UpdateArwing360(&gPlayer[0], true);
             gPlayer[0].unk_014 = 0.0f;
             this->swork[34]++;
@@ -1409,7 +1409,7 @@ void SectorY_SyShogun_Update(SyShogun* this) {
     Vec3f dest;
     s32 pad;
 
-    if (gPlayer[0].state_1C8 != PLAYERSTATE_1C8_START_360) {
+    if (gPlayer[0].state != PLAYERSTATE_START_360) {
         if (this->swork[34] == 1) {
             if (this->health > 0) {
                 gScenery360[SHOGUN_SHIP].obj.pos.z += 20.0f;
@@ -2271,7 +2271,7 @@ void SectorY_LevelComplete(Player* player) {
                 gFillScreenAlphaStep = 8;
                 if (gFillScreenAlpha == 255) {
                     Audio_FadeOutAll(10);
-                    player->state_1C8 = PLAYERSTATE_1C8_NEXT;
+                    player->state = PLAYERSTATE_NEXT;
                     player->csTimer = 0;
                     gFadeoutType = 4;
                     gLeveLClearStatus[LEVEL_SECTOR_Y] = Play_CheckMedalStatus(150) + 1;
@@ -2539,7 +2539,7 @@ void SectorY_801A0510(ActorCutscene* this, s32 arg1) {
         case 1:
         case 2:
         case 8:
-            this->animFrame = ACTOR_CS_38;
+            this->animFrame = ACTOR_CS_SY_ROBOT;
             this->obj.rot.y = 90.0f;
             Object_SetInfo(&this->info, this->obj.id);
             break;
@@ -3415,7 +3415,7 @@ void SectorY_801A0AC0(Player* player) {
 
                 gLevelStartStatusScreenTimer = 100;
 
-                player->state_1C8 = PLAYERSTATE_1C8_ACTIVE;
+                player->state = PLAYERSTATE_ACTIVE;
                 player->csState = 0;
                 player->csTimer = 0;
                 player->csEventTimer = 0;

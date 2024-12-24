@@ -77,7 +77,7 @@ void Corneria_CoGranga_ShootLaser(CoGranga* this, f32 x, f32 y, f32 z) {
                       this->obj.pos.z + dest.z, 100.0f);
 }
 
-void Corneria_Granga_SpawnItem(Boss* arg0, f32 x, f32 y, f32 z, ObjectId itemId) {
+void Corneria_Granga_SpawnItem(Boss* this, f32 x, f32 y, f32 z, ObjectId itemId) {
     s32 i;
 
     for (i = 0; i < ARRAY_COUNT(gItems); i++) {
@@ -101,8 +101,8 @@ void Corneria_Granga_Init(CoGranga* this) {
     gBossFrameCount = 0;
 
     if (gLevelMode == LEVELMODE_ON_RAILS) {
-        if (gPlayer[0].state_1C8 == PLAYERSTATE_1C8_ACTIVE) {
-            gPlayer[0].state_1C8 = PLAYERSTATE_1C8_START_360;
+        if (gPlayer[0].state == PLAYERSTATE_ACTIVE) {
+            gPlayer[0].state = PLAYERSTATE_START_360;
             gPlayer[0].csState = 0;
             SEQCMD_STOP_SEQUENCE(SEQ_PLAYER_BGM, 50);
             SEQCMD_STOP_SEQUENCE(SEQ_PLAYER_FANFARE, 50);
@@ -185,9 +185,8 @@ void Corneria_CoGranga_HandleDamage(CoGranga* this) {
 
                 gCsFrameCount = 0;
 
-                if ((gPlayer[0].state_1C8 == PLAYERSTATE_1C8_ACTIVE) ||
-                    (gPlayer[0].state_1C8 == PLAYERSTATE_1C8_U_TURN)) {
-                    gPlayer[0].state_1C8 = PLAYERSTATE_1C8_LEVEL_COMPLETE;
+                if ((gPlayer[0].state == PLAYERSTATE_ACTIVE) || (gPlayer[0].state == PLAYERSTATE_U_TURN)) {
+                    gPlayer[0].state = PLAYERSTATE_LEVEL_COMPLETE;
                     gPlayer[0].csState = gPlayer[0].csTimer = 0;
                     gPlayer[0].rot.y += gPlayer[0].yRot_114;
 
@@ -397,9 +396,9 @@ ObjectId Corneria_CoGranga_ChooseMissileTarget(CoGranga* this) {
      */
     if (this->swork[GRANGA_MISSILE_COUNT] >= 5) {
         this->swork[GRANGA_MISSILE_COUNT] = 0;
-        return OBJ_MISSILE_SEEK_PLAYER;
+        return OBJ_ACTOR_MISSILE_SEEK_PLAYER;
     } else if (ActorMissileSeek_ModeCheck(0) < 4) {
-        return OBJ_MISSILE_SEEK_TEAM;
+        return OBJ_ACTOR_MISSILE_SEEK_TEAM;
     } else {
         return 0;
     }
@@ -620,7 +619,7 @@ void Corneria_CoGranga_Update(CoGranga* this) {
     Vec3f sp6C = { 0.0f, 0.0f, -30.0f };
     f32 sp5C;
 
-    if (gPlayer[0].state_1C8 != PLAYERSTATE_1C8_START_360) {
+    if (gPlayer[0].state != PLAYERSTATE_START_360) {
         if (!this->swork[GRANGA_INIT]) {
             this->swork[GRANGA_INIT]++;
 
@@ -1642,10 +1641,10 @@ void Corneria_CoGarudaDestroy_Draw(CoGarudaDestroy* this) {
 
 void Corneria_CoCarrier_ChooseMissileTarget(CoCarrier* this, f32 xPos, f32 yPos, f32 zPos, f32 arg4, s32 arg5,
                                             s32 eventType) {
-    ObjectId objId = OBJ_MISSILE_SEEK_PLAYER;
+    ObjectId objId = OBJ_ACTOR_MISSILE_SEEK_PLAYER;
 
     if (ActorMissileSeek_ModeCheck(0) < 4) {
-        objId = OBJ_MISSILE_SEEK_TEAM;
+        objId = OBJ_ACTOR_MISSILE_SEEK_TEAM;
     }
 
     Corneria_BossMissile_Spawn(this->obj.pos.x + xPos, this->obj.pos.y + yPos, this->obj.pos.z + zPos, arg4,
@@ -2193,8 +2192,7 @@ void Corneria_CoCarrier_Update(CoCarrier* this) {
                         this->vel.y *= 1.5f;
                         gMissionStatus = MISSION_ACCOMPLISHED;
 
-                        if ((gPlayer[0].state_1C8 == PLAYERSTATE_1C8_ACTIVE) ||
-                            (gPlayer[0].state_1C8 == PLAYERSTATE_1C8_U_TURN)) {
+                        if ((gPlayer[0].state == PLAYERSTATE_ACTIVE) || (gPlayer[0].state == PLAYERSTATE_U_TURN)) {
                             Boss_CompleteLevel(gPlayer, this->obj.pos.x, this->obj.pos.y, this->obj.pos.z);
                         }
 
@@ -2850,7 +2848,6 @@ void Corneria_CsTeamSetup(ActorCutscene* this, s32 teamIdx) {
     this->fwork[0] = RAND_FLOAT(360.0f);
 
     Object_SetInfo(&this->info, this->obj.id);
-
     this->drawShadow = true;
     this->iwork[11] = 1;
     this->info.cullDistance = 200.0f;
@@ -2975,9 +2972,9 @@ void Corneria_LevelStart(Player* player) {
             Corneria_CsTeamSetup(slippy, 1);
             Corneria_CsTeamSetup(peppy, 2);
 
-            falco->iwork[14] = 2;
-            slippy->iwork[14] = 3;
-            peppy->iwork[14] = 4;
+            falco->iwork[TEAM_FACE] = FACE_FALCO;
+            slippy->iwork[TEAM_FACE] = FACE_SLIPPY;
+            peppy->iwork[TEAM_FACE] = FACE_PEPPY;
 
             player->cam.eye.x = gCsCamEyeX = player->pos.x - 400.0f;
             gPlayer[0].cam.eye.y = gCsCamEyeY = player->pos.y + 600.0f;
@@ -3334,7 +3331,7 @@ void Corneria_LevelStart(Player* player) {
                 player->cam.eye.x = player->pos.x;
                 player->cam.eye.y = (player->pos.y * player->unk_148) + 50.0f;
                 player->cam.eye.z = 30.0f;
-                player->state_1C8 = PLAYERSTATE_1C8_ACTIVE;
+                player->state = PLAYERSTATE_ACTIVE;
                 player->csState = 0;
                 player->cam.at.x = player->pos.x;
                 player->cam.at.y = (player->pos.y * player->unk_148) + 20.0f;
@@ -3619,7 +3616,7 @@ void Corneria_LevelComplete1(Player* player) {
                 gFillScreenAlphaStep = 8;
 
                 if (gFillScreenAlpha == 255) {
-                    player->state_1C8 = PLAYERSTATE_1C8_NEXT;
+                    player->state = PLAYERSTATE_NEXT;
                     player->csTimer = 0;
                     gFadeoutType = 4;
                     gLeveLClearStatus[gCurrentLevel] = Play_CheckMedalStatus(150) + 1;

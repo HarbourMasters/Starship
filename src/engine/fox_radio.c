@@ -757,7 +757,7 @@ void Radio_Draw(void) {
             }
 
             if ((gActors[idx].obj.status != OBJ_ACTIVE) && (gGameFrameCount & 4) &&
-                (gPlayer[0].state_1C8 == PLAYERSTATE_1C8_ACTIVE) && (gCurrentRadioPortrait != RCID_STATIC) &&
+                (gPlayer[0].state == PLAYERSTATE_ACTIVE) && (gCurrentRadioPortrait != RCID_STATIC) &&
                 (gCurrentRadioPortrait != RCID_STATIC + 1) && (gCurrentRadioPortrait != RCID_1000)) {
                 RCP_SetupDL(&gMasterDisp, SETUPDL_76_POINT);
                 gDPSetPrimColor(gMasterDisp++, 0x00, 0x00, 255, 255, 0, 255);
@@ -779,6 +779,7 @@ void Radio_Draw(void) {
     }
 }
 
+// Unused in VERSION_US and absent in VERSION_EU, probably a leftover from VERSION_JP ?
 void func_radio_800BC040(void) {
     if (gPlayState != PLAY_PAUSE) {
         if (gRadioStateTimer > 0) {

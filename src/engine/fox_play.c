@@ -436,7 +436,7 @@ void Play_Setup360_CO(void) {
         }
     }
 
-    for (i = 0, sprite = gSprites; i < ARRAY_COUNT(gSprites); i++) {
+    for (i = 0, sprite = &gSprites[0]; i < ARRAY_COUNT(gSprites); i++) {
         if (gLevelObjects[i].id <= OBJ_INVALID) {
             break;
         }
@@ -1656,8 +1656,7 @@ void Player_CheckItemCollect(Player* player) {
 
     for (i = 0, item = gItems; i < ARRAY_COUNT(gItems); i++, item++) {
         if ((item->obj.status == OBJ_ACTIVE) &&
-            ((player->state_1C8 == PLAYERSTATE_1C8_ACTIVE) || (player->state_1C8 == PLAYERSTATE_1C8_U_TURN)) &&
-            (item->timer_4A == 0) &&
+            ((player->state == PLAYERSTATE_ACTIVE) || (player->state == PLAYERSTATE_U_TURN)) && (item->timer_4A == 0) &&
             Player_CheckHitboxCollision(player, item->info.hitbox, &sp6C, item->obj.pos.x, item->obj.pos.y,
                                         item->obj.pos.z, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f)) {
             item->collected = true;
@@ -1801,7 +1800,7 @@ void Player_CollisionCheck(Player* player) {
                 break;
         }
     } else if (player->form == FORM_ARWING) {
-        if ((player->hit1.y < (gGroundHeight + 13.0f)) && (player->state_1C8 != PLAYERSTATE_1C8_DOWN)) {
+        if ((player->hit1.y < (gGroundHeight + 13.0f)) && (player->state != PLAYERSTATE_DOWN)) {
             if (gGroundSurface == SURFACE_WATER) {
                 player->hitTimer = 7;
                 player->rot.x = (player->baseSpeed + player->boostSpeed) * 0.5f;
@@ -1814,7 +1813,7 @@ void Player_CollisionCheck(Player* player) {
                 Effect_Effect362_Spawn(player->hit1.x, player->hit1.y, player->hit1.z, 6.0f);
             }
         }
-        if ((player->hit2.y < (gGroundHeight + 13.0f)) && (player->state_1C8 != PLAYERSTATE_1C8_DOWN)) {
+        if ((player->hit2.y < (gGroundHeight + 13.0f)) && (player->state != PLAYERSTATE_DOWN)) {
             if (gGroundSurface == SURFACE_WATER) {
                 player->hitTimer = 7;
                 player->rot.x = (player->baseSpeed + player->boostSpeed) * 0.5f;
@@ -2058,7 +2057,7 @@ void Player_CollisionCheck(Player* player) {
             }
         }
 
-        for (i = 0, boss = gBosses; i < ARRAY_COUNT(gBosses); i++, boss++) {
+        for (i = 0, boss = &gBosses[0]; i < ARRAY_COUNT(gBosses); i++, boss++) {
             if (boss->obj.status == OBJ_ACTIVE) {
                 if ((boss->obj.id == OBJ_BOSS_VE2_BASE) || (boss->obj.id == OBJ_BOSS_FO_BASE) ||
                     (boss->obj.id == OBJ_BOSS_SZ_GREAT_FOX) || (boss->obj.id == OBJ_BOSS_BO_BASE)) {
@@ -2216,7 +2215,7 @@ void Player_CollisionCheck(Player* player) {
                             }
                         } else {
                             actor->dmgType = DMG_COLLISION;
-                            if (actor->obj.id == OBJ_MISSILE_SEEK_TEAM) {
+                            if (actor->obj.id == OBJ_ACTOR_MISSILE_SEEK_TEAM) {
                                 actor->dmgType = -1;
                             }
                             if (actor->info.damage) {
@@ -2258,7 +2257,7 @@ void Player_CollisionCheck(Player* player) {
 
     if (gCamCount == 4) {
         for (opponent = &gPlayer[3], i = 3; i >= 0; i--, opponent--) {
-            if ((i != gPlayerNum) && (opponent->state_1C8 == PLAYERSTATE_1C8_ACTIVE)) {
+            if ((i != gPlayerNum) && (opponent->state == PLAYERSTATE_ACTIVE)) {
                 spC8.x = 25.0f;
                 if (player->form == FORM_ON_FOOT) {
                     spC8.x = 4.0f;
@@ -2316,7 +2315,7 @@ void Player_CollisionCheck(Player* player) {
                 player->knockback.y = 30.0f;
                 player->rot.x = (player->baseSpeed + player->boostSpeed) * 0.8f;
             }
-            if (player->state_1C8 == PLAYERSTATE_1C8_DOWN) {
+            if (player->state == PLAYERSTATE_DOWN) {
                 player->radioDamageTimer = 2;
                 Effect_Effect382_Spawn(player->pos.x, player->trueZpos, 30.0f, 0.0f, 5.0f);
                 Effect_Effect382_Spawn(player->pos.x, player->trueZpos, -30.0f, 0.0f, 5.0f);
@@ -2851,7 +2850,7 @@ void Play_Init(void) {
         gSceneSetup = 0;
     }
 
-    gShowHud = 1;
+    gShowHud = true;
     gDrawGround = gDrawBackdrop = 1;
     gAqDrawMode = sOverheadCam = 0;
     gCamDistortion = sOverheadCamDist = 0.0f;
@@ -2945,7 +2944,7 @@ void Play_Init(void) {
     MEM_ARRAY_ALLOCATE(gPlayer, gCamCount);
     Player_InitializeAll();
     for (i = 0; i < gCamCount; i++) {
-        gPlayer[i].state_1C8 = PLAYERSTATE_1C8_INIT;
+        gPlayer[i].state = PLAYERSTATE_INIT;
         gPlayerGlareAlphas[i] = D_ctx_801783C0[i] = 0;
         gControllerRumbleTimers[i] = 0;
         gPlayerScores[i] = 0;
@@ -3298,8 +3297,8 @@ bool Player_CanLockOn(s32 playerNum) {
 
     if (gVersusMode) {
         for (i = 0; i < gCamCount; i++) {
-            if (((gPlayer[playerNum].state_1C8 == PLAYERSTATE_1C8_ACTIVE) ||
-                 (gPlayer[playerNum].state_1C8 == PLAYERSTATE_1C8_U_TURN)) &&
+            if (((gPlayer[playerNum].state == PLAYERSTATE_ACTIVE) ||
+                 (gPlayer[playerNum].state == PLAYERSTATE_U_TURN)) &&
                 (gVsLockOnTimers[i][playerNum] != 0)) {
                 return false;
             }
@@ -3321,7 +3320,7 @@ bool Player_UpdateLockOn(Player* player) {
             Object_PlayerSfx(player->sfxSource, NA_SE_LOCK_SEARCH, player->num);
         }
         if (!((gInputHold->button & R_TRIG) && (gInputHold->button & Z_TRIG) && (player->form == FORM_ARWING) &&
-              (player->state_1C8 == PLAYERSTATE_1C8_ACTIVE)) &&
+              (player->state == PLAYERSTATE_ACTIVE)) &&
             ((gGameFrameCount % 4) == 0) && Player_CanLockOn(player->num)) {
             if (gChargeTimers[player->num] > 20) {
                 for (i = 0; i < 13; i++) { // bug? should be 11
@@ -3673,7 +3672,7 @@ void Player_CheckBounds360(Player* player) {
             var_fv1 = 100000.0f;
         }
         if ((var_fv1 < fabsf(player->pos.x)) || (var_fv1 < fabsf(player->pos.z))) {
-            player->state_1C8 = PLAYERSTATE_1C8_U_TURN;
+            player->state = PLAYERSTATE_U_TURN;
             player->unk_19C = 0;
             player->csState = 0;
             player->unk_000 = 0.0f;
@@ -4721,7 +4720,7 @@ void Player_Setup(Player* playerx) {
         Camera_Update360(player, true);
     }
 
-    player->state_1C8 = PLAYERSTATE_1C8_ACTIVE;
+    player->state = PLAYERSTATE_ACTIVE;
     player->wingPosition = gLevelType;
 
     if ((gLevelMode == LEVELMODE_ALL_RANGE) && !gVersusMode) {
@@ -4755,7 +4754,7 @@ void Player_Setup(Player* playerx) {
 
         switch (gCurrentLevel) {
             case LEVEL_CORNERIA:
-                player->state_1C8 = PLAYERSTATE_1C8_LEVEL_INTRO;
+                player->state = PLAYERSTATE_LEVEL_INTRO;
                 player->wingPosition = 1;
                 gGroundSurface = gSavedGroundSurface = SURFACE_WATER;
                 Play_dummy_MuteSfx();
@@ -4777,10 +4776,10 @@ void Player_Setup(Player* playerx) {
             case LEVEL_KATINA:
             case LEVEL_SECTOR_Z:
             case LEVEL_VENOM_2:
-                player->state_1C8 = PLAYERSTATE_1C8_LEVEL_INTRO;
+                player->state = PLAYERSTATE_LEVEL_INTRO;
                 break;
             case LEVEL_METEO:
-                player->state_1C8 = PLAYERSTATE_1C8_LEVEL_INTRO;
+                player->state = PLAYERSTATE_LEVEL_INTRO;
                 break;
         }
     } else {
@@ -4805,7 +4804,7 @@ void Player_Setup(Player* playerx) {
         }
     }
 
-    if (player->state_1C8 == PLAYERSTATE_1C8_LEVEL_INTRO) {
+    if (player->state == PLAYERSTATE_LEVEL_INTRO) {
         player->draw = true;
         switch (gCurrentLevel) {
             case LEVEL_CORNERIA:
@@ -4885,7 +4884,7 @@ void Player_Setup(Player* playerx) {
     Display_SetupPlayerSfxPos(player);
 
     if (!gVersusMode && (((gCurrentLevel != LEVEL_TITANIA) && (gCurrentLevel != LEVEL_SOLAR)) || gVersusMode ||
-                         (player->state_1C8 != PLAYERSTATE_1C8_LEVEL_INTRO))) {
+                         (player->state != PLAYERSTATE_LEVEL_INTRO))) {
         Audio_StartPlayerNoise(gPlayerNum);
     }
 
@@ -5055,7 +5054,7 @@ void Player_UpdateTankRoll(Player* player) {
 void Player_ArwingBoost(Player* player) {
     f32 sp2C;
     f32 sp28;
-    s32 var;
+    s32 stickY;
 
     if ((player->boostMeter != 0.0f) && (gInputHold->button & gBrakeButton[player->num]) &&
         (gInputHold->button & gBoostButton[player->num])) {
@@ -5073,7 +5072,8 @@ void Player_ArwingBoost(Player* player) {
 
     player->sfx.boost = 0;
 
-    var = gInputPress->stick_y; // fake?
+    stickY = gInputPress->stick_y; // fake?
+
     if (gLoopDownTimers[gPlayerNum] != 0) {
         gLoopDownTimers[gPlayerNum]--;
     }
@@ -5082,7 +5082,7 @@ void Player_ArwingBoost(Player* player) {
         gLoopBoostTimers[gPlayerNum]--;
     }
     if (!player->somersault && (gDrawBackdrop < 5)) {
-        if (var >= -50) {
+        if (stickY >= -50) {
             gLoopDownTimers[gPlayerNum] = 5;
         }
         if ((gLoopDownTimers[gPlayerNum] > 0) && (gLoopDownTimers[gPlayerNum] < 5) &&
@@ -5131,7 +5131,7 @@ void Player_ArwingBoost(Player* player) {
             }
         }
         if ((gInputHold->button & gBoostButton[player->num]) && !(gInputHold->button & gBrakeButton[player->num]) &&
-            (player->state_1C8 != PLAYERSTATE_1C8_U_TURN) && !player->boostCooldown) {
+            (player->state != PLAYERSTATE_U_TURN) && !player->boostCooldown) {
             if (player->boostMeter == 0.0f) {
                 Player_PlaySfx(player->sfxSource, NA_SE_ARWING_BOOST, player->num);
                 player->unk_194 = 5.0f;
@@ -5218,7 +5218,7 @@ void Player_ArwingBrake(Player* player) {
         (gUturnBrakeTimers[gPlayerNum] != 0)) {
         gUturnDownTimers[gPlayerNum] = 0;
         gUturnBrakeTimers[gPlayerNum] = 0;
-        player->state_1C8 = PLAYERSTATE_1C8_U_TURN;
+        player->state = PLAYERSTATE_U_TURN;
         player->csState = 0;
         player->unk_19C = 1;
         player->unk_000 = 0.0f;
@@ -5231,7 +5231,7 @@ void Player_ArwingBrake(Player* player) {
     }
 
     if ((gInputHold->button & gBrakeButton[player->num]) && !(gInputHold->button & gBoostButton[player->num]) &&
-        (player->state_1C8 != PLAYERSTATE_1C8_U_TURN) && !player->boostCooldown) {
+        (player->state != PLAYERSTATE_U_TURN) && !player->boostCooldown) {
         if (player->boostMeter == 0.0f) {
             Player_PlaySfx(player->sfxSource, NA_SE_ARWING_BRAKE, player->num);
             if ((gLevelMode == LEVELMODE_ALL_RANGE) && (gInputPress->button & gBrakeButton[player->num])) {
@@ -5513,7 +5513,7 @@ void Player_UpdateEffects(Player* player) {
         if (player->form == FORM_ARWING) {
             player->damageShake =
                 SIN_DEG(player->hitTimer * 400.0f) * player->hitTimer * D_800D3164[player->hitDirection];
-            if (player->state_1C8 == PLAYERSTATE_1C8_ACTIVE) {
+            if (player->state == PLAYERSTATE_ACTIVE) {
                 player->xShake =
                     SIN_DEG(player->hitTimer * 400.0f) * player->hitTimer * D_800D3164[player->hitDirection] * 0.8f;
             }
@@ -5606,7 +5606,8 @@ void Play_dummy_800B41E0(Player* player) {
 }
 
 void Player_Down(Player* player) {
-    player->state_1C8 = PLAYERSTATE_1C8_DOWN;
+    player->state = PLAYERSTATE_DOWN;
+
     if (!gVersusMode) {
         SEQCMD_STOP_SEQUENCE(SEQ_PLAYER_BGM, 1);
         SEQCMD_STOP_SEQUENCE(SEQ_PLAYER_FANFARE, 1);
@@ -5622,7 +5623,7 @@ void Player_Down(Player* player) {
     player->hitTimer = 0;
     player->radioDamageTimer = 0;
     player->damageShake = 0.0f;
-    gShowHud = 0;
+    gShowHud = false;
 }
 
 void Player_UpdateOnRails(Player* player) {
@@ -5760,7 +5761,7 @@ void Player_Update360(Player* player) {
 void Player_LowHealthMsg(Player* player) {
     s32 teamId;
 
-    if ((player->state_1C8 == PLAYERSTATE_1C8_ACTIVE) && (gTeamLowHealthMsgTimer >= 0)) {
+    if ((player->state == PLAYERSTATE_ACTIVE) && (gTeamLowHealthMsgTimer >= 0)) {
         gTeamLowHealthMsgTimer++;
         if (gTeamLowHealthMsgTimer > 32 * 30) {
             gTeamLowHealthMsgTimer = 0;
@@ -5832,13 +5833,13 @@ void Player_Update(Player* player) {
             *gControllerRumble = 1;
         }
     }
-    if (player->state_1C8 > PLAYERSTATE_1C8_INIT) {
+    if (player->state > PLAYERSTATE_INIT) {
         Player_UpdateEffects(player);
     }
 
     player->flags_228 = 0;
 
-    if ((player->state_1C8 > PLAYERSTATE_1C8_INIT) && (player->form == FORM_ARWING) && !gVersusMode) {
+    if ((player->state > PLAYERSTATE_INIT) && (player->form == FORM_ARWING) && !gVersusMode) {
         switch (player->wingPosition) {
             case 0:
                 sp1C4 = Animation_GetFrameData(&D_arwing_3015AF4, 0, sp58);
@@ -5858,28 +5859,28 @@ void Player_Update(Player* player) {
         player->whooshTimer--;
     }
 
-    switch (player->state_1C8) {
-        case PLAYERSTATE_1C8_STANDBY:
+    switch (player->state) {
+        case PLAYERSTATE_STANDBY:
             player->draw = false;
-            gShowHud = 0;
+            gShowHud = false;
             gPauseEnabled = false;
             break;
 
-        case PLAYERSTATE_1C8_INIT:
+        case PLAYERSTATE_INIT:
             Player_Setup(player);
             gFillScreenAlphaTarget = 0;
             gPauseEnabled = false;
             break;
 
-        case PLAYERSTATE_1C8_LEVEL_INTRO:
-            gShowHud = 0;
+        case PLAYERSTATE_LEVEL_INTRO:
+            gShowHud = false;
             gPauseEnabled = false;
             player->arwing.drawFace = true;
             Cutscene_LevelStart(player);
             break;
 
-        case PLAYERSTATE_1C8_ACTIVE:
-            gShowHud = 1;
+        case PLAYERSTATE_ACTIVE:
+            gShowHud = true;
             Player_LowHealthMsg(player);
             player->arwing.drawFace = false;
             D_hud_80161704 = 255;
@@ -5914,7 +5915,7 @@ void Player_Update(Player* player) {
                                 sp1C4 = RAND_INT(3.9f);
                             } while (gPlayerInactive[sp1C4]);
                             player->attacker = sp1C4 + 1;
-                            player->state_1C8 = PLAYERSTATE_1C8_VS_STANDBY;
+                            player->state = PLAYERSTATE_VS_STANDBY;
                             player->csState = 0;
                             Camera_FollowPlayer(player, player->attacker - 1, 1);
                         } else {
@@ -5943,11 +5944,11 @@ void Player_Update(Player* player) {
             }
             break;
 
-        case PLAYERSTATE_1C8_DOWN:
+        case PLAYERSTATE_DOWN:
             Cutscene_PlayerDown(player);
             break;
 
-        case PLAYERSTATE_1C8_U_TURN:
+        case PLAYERSTATE_U_TURN:
             if (gVersusMode) {
                 gVsLockOnTimers[player->num][0] = gVsLockOnTimers[player->num][1] = gVsLockOnTimers[player->num][2] =
                     gVsLockOnTimers[player->num][3] = 0;
@@ -5969,7 +5970,8 @@ void Player_Update(Player* player) {
                 Player_CheckItemCollect(player);
             }
             break;
-        case PLAYERSTATE_1C8_LEVEL_COMPLETE:
+
+        case PLAYERSTATE_LEVEL_COMPLETE:
             player->alternateView = false;
             gPauseEnabled = false;
             Player_UpdateShields(player);
@@ -5978,14 +5980,14 @@ void Player_Update(Player* player) {
             gShowHud = gChargeTimers[player->num] = 0;
             break;
 
-        case PLAYERSTATE_1C8_ENTER_WARP_ZONE:
+        case PLAYERSTATE_ENTER_WARP_ZONE:
             gPauseEnabled = false;
             Player_UpdateShields(player);
             Cutscene_EnterWarpZone(player);
-            gShowHud = 0;
+            gShowHud = false;
             break;
 
-        case PLAYERSTATE_1C8_START_360:
+        case PLAYERSTATE_START_360:
             gPauseEnabled = false;
             Player_UpdateShields(player);
             Cutscene_AllRangeMode(player);
@@ -5993,21 +5995,21 @@ void Player_Update(Player* player) {
             gChargeTimers[player->num] = player->alternateView = gShowHud = 0;
             break;
 
-        case PLAYERSTATE_1C8_GFOX_REPAIR:
+        case PLAYERSTATE_GFOX_REPAIR:
             gPauseEnabled = false;
             AllRange_GreatFoxRepair(player);
-            gShowHud = 0;
+            gShowHud = false;
             break;
 
-        case PLAYERSTATE_1C8_ANDROSS_MOUTH:
+        case PLAYERSTATE_ANDROSS_MOUTH:
             Andross_8018C390(player);
             Player_UpdateShields(player);
             break;
 
-        case PLAYERSTATE_1C8_12:
+        case PLAYERSTATE_UNK_12:
             break;
 
-        case PLAYERSTATE_1C8_VS_STANDBY:
+        case PLAYERSTATE_VS_STANDBY:
             player->draw = false;
             if (gPlayerInactive[player->num] == true) {
                 Camera_FollowPlayer(player, player->attacker - 1, 0);
@@ -6027,8 +6029,8 @@ void Player_Update(Player* player) {
             }
             break;
 
-        case PLAYERSTATE_1C8_NEXT:
-            gShowHud = 0;
+        case PLAYERSTATE_NEXT:
+            gShowHud = false;
 
             if (!gVersusMode) {
                 gPauseEnabled = false;
@@ -6048,7 +6050,7 @@ void Player_Update(Player* player) {
             }
             if (player->csTimer == 0) {
                 if (gCamCount == 4) {
-                    player->state_1C8 = PLAYERSTATE_1C8_VS_STANDBY;
+                    player->state = PLAYERSTATE_VS_STANDBY;
                     player->csTimer = 200;
                 } else {
                     gFillScreenRed = gFillScreenGreen = gFillScreenBlue = 0;
@@ -6126,7 +6128,7 @@ void Player_Update(Player* player) {
     Math_SmoothStepToF(&player->pathWidth, sp1C8, 1.0f, 10.0f, 0.0f);
     if (player->form == FORM_ARWING) {
         Math_SmoothStepToF(&player->unk_194, player->unk_190, 0.5f, 5.0f, 0.0f);
-        if (player->boostCooldown && (gPlayer[0].state_1C8 == PLAYERSTATE_1C8_ACTIVE)) {
+        if (player->boostCooldown && (gPlayer[0].state == PLAYERSTATE_ACTIVE)) {
             player->unk_190 = 0.5f;
         } else {
             player->unk_190 = 1.0f;
@@ -6144,14 +6146,15 @@ void Camera_UpdateArwingOnRails(Player* player) {
     f32 temp;
 
     gCsCamEyeX = (player->pos.x - player->xPath) * player->unk_148;
-    if (((player->form == FORM_ARWING) && (player->state_1C8 == PLAYERSTATE_1C8_ACTIVE)) ||
-        (player->state_1C8 == PLAYERSTATE_1C8_U_TURN)) {
+
+    if (((player->form == FORM_ARWING) && (player->state == PLAYERSTATE_ACTIVE)) ||
+        (player->state == PLAYERSTATE_U_TURN)) {
         gCsCamEyeY = (player->pos.y - player->yPath) * player->unk_148;
     }
     var_fv1 = gInputPress->stick_x;
     var_fv0 = -gInputPress->stick_y;
 
-    if ((player->state_1C8 != PLAYERSTATE_1C8_ACTIVE) || player->somersault) {
+    if ((player->state != PLAYERSTATE_ACTIVE) || player->somersault) {
         var_fv0 = 0.0f;
         var_fv1 = 0;
     }
@@ -6266,7 +6269,7 @@ void Camera_FollowPlayer(Player* player, s32 playerNum, bool arg2) {
     if (((gGameFrameCount & mask) == (gPlayerNum * 32)) || arg2) {
         for (i = 0; i < 100; i++) {
             playerNum = RAND_INT(3.9f);
-            if ((gPlayer[playerNum].state_1C8 != PLAYERSTATE_1C8_VS_STANDBY) && !gPlayerInactive[playerNum]) {
+            if ((gPlayer[playerNum].state != PLAYERSTATE_VS_STANDBY) && !gPlayerInactive[playerNum]) {
                 break;
             }
         }
@@ -6373,7 +6376,7 @@ void Camera_UpdateArwing360(Player* player, bool arg1) {
     var_fv0 = (player->somersault) ? 1.0f : 0.79f;
     atY = (player->pos.y * (var_fv0)) + player->damageShake + (player->xRock * 5.0f);
     atY += (player->unk_02C * 0.5f);
-    if (player->state_1C8 == PLAYERSTATE_1C8_U_TURN) {
+    if (player->state == PLAYERSTATE_U_TURN) {
         atY = player->pos.y;
     }
     atZ = player->pos.z;
@@ -6390,7 +6393,8 @@ void Camera_UpdateArwing360(Player* player, bool arg1) {
     eyeZ += sp68.z;
     atX += sp68.x;
     atZ += sp68.z;
-    if (player->state_1C8 == PLAYERSTATE_1C8_ACTIVE) {
+
+    if (player->state == PLAYERSTATE_ACTIVE) {
         Math_SmoothStepToF(&player->cam.eye.x, eyeX, player->unk_014, 30000.0f, 0);
         Math_SmoothStepToF(&player->cam.eye.y, eyeY, player->unk_014, 30000.0f, 0);
         Math_SmoothStepToF(&player->cam.eye.z, eyeZ, player->unk_014, 30000.0f, 0);
@@ -6564,8 +6568,7 @@ void Camera_SetStarfieldPos(f32 xEye, f32 yEye, f32 zEye, f32 xAt, f32 yAt, f32 
     gStarfieldX = FloatMod(sp34, starfieldWidth);
     gStarfieldY = FloatMod(sp30, starfieldHeight);
 
-    // Special case handling for specific game state and level
-    if ((gGameState == GSTATE_PLAY) && (gPlayer[0].state_1C8 == PLAYERSTATE_1C8_LEVEL_INTRO) &&
+    if ((gGameState == GSTATE_PLAY) && (gPlayer[0].state == PLAYERSTATE_LEVEL_INTRO) &&
         (gCurrentLevel == LEVEL_METEO)) {
         if (fabsf(gStarfieldX - sp20) < 50.0f) {
             D_bg_8015F96C = 0.0f;
@@ -6591,8 +6594,8 @@ void Camera_Update360(Player* player, bool arg1) {
 }
 
 void Camera_Update(Player* player) {
-    switch (player->state_1C8) {
-        case PLAYERSTATE_1C8_ACTIVE:
+    switch (player->state) {
+        case PLAYERSTATE_ACTIVE:
             switch (gLevelMode) {
                 case LEVELMODE_ON_RAILS:
                     if (player->form == FORM_ARWING) {
@@ -6618,12 +6621,12 @@ void Camera_Update(Player* player) {
             }
             break;
 
-        case PLAYERSTATE_1C8_U_TURN:
+        case PLAYERSTATE_U_TURN:
             player->camRoll -= player->camRoll * 0.1f;
             Camera_Update360(player, false);
             break;
 
-        case PLAYERSTATE_1C8_DOWN:
+        case PLAYERSTATE_DOWN:
             if ((gLevelMode == LEVELMODE_ON_RAILS) && (player->form == FORM_ARWING)) {
                 player->cam.eye.x += (player->pos.x - player->cam.eye.x) * 0.1f;
                 player->cam.eye.y += (player->pos.y - player->cam.eye.y) * 0.1f;
@@ -6636,8 +6639,9 @@ void Camera_Update(Player* player) {
                 player->cam.at.z = player->trueZpos + gPathProgress - 1.0f;
             }
             break;
-        case PLAYERSTATE_1C8_NEXT:
-        case PLAYERSTATE_1C8_LEVEL_COMPLETE:
+
+        case PLAYERSTATE_NEXT:
+        case PLAYERSTATE_LEVEL_COMPLETE:
             break;
     }
 }
@@ -6647,7 +6651,7 @@ void Camera_SetupLights(Player* player) {
     Vec3f dest;
     f32 pad;
 
-    if ((gCurrentLevel == LEVEL_AQUAS) && (gPlayer[0].state_1C8 != PLAYERSTATE_1C8_LEVEL_INTRO)) {
+    if ((gCurrentLevel == LEVEL_AQUAS) && (gPlayer[0].state != PLAYERSTATE_LEVEL_INTRO)) {
         gEnvLightyRot = gLight1yRotTarget = gLight1yRotTarget = gLight2yRotTarget = gLight1yRotTarget = 110.0f;
         if ((gGameFrameCount & 0x20) != 0) {
             gEnvLightyRot = gLight1yRotTarget = gLight1yRotTarget = gLight2yRotTarget = gLight1yRotTarget = 90.0f;
@@ -6777,8 +6781,8 @@ void Play_UpdateLevel(void) {
             break;
 
         case LEVEL_VENOM_2:
-            if ((gPlayer[0].state_1C8 != PLAYERSTATE_1C8_LEVEL_COMPLETE) && (gLevelPhase == 2)) {
-                gPlayer[0].state_1C8 = PLAYERSTATE_1C8_LEVEL_COMPLETE;
+            if ((gPlayer[0].state != PLAYERSTATE_LEVEL_COMPLETE) && (gLevelPhase == 2)) {
+                gPlayer[0].state = PLAYERSTATE_LEVEL_COMPLETE;
                 gPlayer[0].csState = 0;
                 gPlayer[0].draw = true;
                 gPlayer[0].pos.z = 15000.0f;
@@ -6810,7 +6814,7 @@ void Play_UpdateLevel(void) {
         case LEVEL_SECTOR_X:
             if (gLevelPhase == 1) {
                 gBlurAlpha = 128;
-                if (gPlayer[0].state_1C8 == PLAYERSTATE_1C8_LEVEL_COMPLETE) {
+                if (gPlayer[0].state == PLAYERSTATE_LEVEL_COMPLETE) {
                     Math_SmoothStepToF(&gWarpZoneBgAlpha, 0.0f, 1.0f, 1.0f, 0.0f);
                 } else {
                     Math_SmoothStepToF(&gWarpZoneBgAlpha, 128.0f, 1.0f, 1.0f, 0.0f);
@@ -6819,7 +6823,7 @@ void Play_UpdateLevel(void) {
 
             if ((gCurrentLevel == LEVEL_SECTOR_X) && (gLevelPhase == 0) && (gRingPassCount == 4)) {
                 gRingPassCount++;
-                gPlayer[0].state_1C8 = PLAYERSTATE_1C8_ENTER_WARP_ZONE;
+                gPlayer[0].state = PLAYERSTATE_ENTER_WARP_ZONE;
                 gPlayer[0].csState = 0;
                 gSceneSetup = 1;
                 AUDIO_PLAY_SFX(NA_SE_WARP_HOLE, gDefaultSfxSource, 0);
@@ -6845,7 +6849,7 @@ void Play_UpdateLevel(void) {
             for (gPathTexScroll; gPathTexScroll >= 10.0f; gPathTexScroll -= 10.0f) {
                 Lib_Texture_Scroll(D_SO_6005710, 32, 32, 1);
             }
-            if (gPlayer[0].state_1C8 == PLAYERSTATE_1C8_NEXT) {
+            if (gPlayer[0].state == PLAYERSTATE_NEXT) {
                 Lib_Texture_Scroll(D_SO_6005710, 32, 32, 1);
             }
             Lib_Texture_Mottle(D_SO_601E1E8, D_SO_6020F60, 3);
@@ -6875,7 +6879,7 @@ void Play_UpdateLevel(void) {
 #endif
             }
 
-            if ((gPlayer[0].state_1C8 == PLAYERSTATE_1C8_ACTIVE) && ((gGameFrameCount & cycleMask) == 0)) {
+            if ((gPlayer[0].state == PLAYERSTATE_ACTIVE) && ((gGameFrameCount & cycleMask) == 0)) {
                 gPlayer[0].shields--;
                 if (gPlayer[0].shields <= 0) {
                     gPlayer[0].shields = 0;
@@ -6893,7 +6897,7 @@ void Play_UpdateLevel(void) {
 
             Audio_SetHeatAlarmParams(shields, heightParam);
 
-            if (((gGameFrameCount % 8) == 0) && (gPlayer[0].state_1C8 != PLAYERSTATE_1C8_LEVEL_COMPLETE)) {
+            if (((gGameFrameCount % 8) == 0) && (gPlayer[0].state != PLAYERSTATE_LEVEL_COMPLETE)) {
                 Solar_8019E8B8(RAND_FLOAT_CENTERED(6000.0f), -80.0f,
                                gPlayer[0].trueZpos + (RAND_FLOAT(2000.0f) + -6000.0f),
                                RAND_FLOAT(10.0f) + 20.0f); // check
@@ -6911,7 +6915,7 @@ void Play_UpdateLevel(void) {
             for (gPathTexScroll; gPathTexScroll >= 20.0f; gPathTexScroll -= 20.0f) {
                 Lib_Texture_Scroll(D_ZO_602C2CC, 32, 32, 1);
             }
-            if (gPlayer[0].state_1C8 == PLAYERSTATE_1C8_NEXT) {
+            if (gPlayer[0].state == PLAYERSTATE_NEXT) {
                 Lib_Texture_Scroll(D_ZO_602C2CC, 32, 32, 1);
             }
 
@@ -7094,7 +7098,7 @@ void Play_Main(void) {
             Play_Update();
 
             if ((gControllerPress[gMainController].button & START_BUTTON) &&
-                (gPlayer[0].state_1C8 == PLAYERSTATE_1C8_LEVEL_INTRO) &&
+                (gPlayer[0].state == PLAYERSTATE_LEVEL_INTRO) &&
                 gSaveFile.save.data.planet[sSaveSlotFromLevel[gCurrentLevel]].normalClear) {
                 Audio_ClearVoice();
                 Audio_SetEnvSfxReverb(0);
@@ -7127,7 +7131,7 @@ void Play_Main(void) {
         case PLAY_PAUSE:
             if (!gVersusMode) {
                 if ((gControllerPress[gMainController].button & R_TRIG) && (gPlayer[0].form != FORM_BLUE_MARINE) &&
-                    (gPlayer[0].state_1C8 != PLAYERSTATE_1C8_STANDBY)) {
+                    (gPlayer[0].state != PLAYERSTATE_STANDBY)) {
                     if (gShowReticles[0] = 1 - gShowReticles[0]) {
                         AUDIO_PLAY_SFX(NA_SE_MAP_WINDOW_OPEN, gDefaultSfxSource, 4);
                     } else {

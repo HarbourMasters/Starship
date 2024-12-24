@@ -135,8 +135,8 @@ void* AudioLoad_DmaSampleData(uintptr_t devAddr, u32 size, u32 arg2, u8* dmaInde
     dma->ttl = 2;
     dma->devAddr = dmaDevAddr;
     dma->sizeUnused = dma->size;
-    AudioLoad_Dma(&gCurAudioFrameDmaIoMsgBuf[gCurAudioFrameDmaCount++], 0, 0, dmaDevAddr, dma->ramAddr, dma->size,
-                  &gCurAudioFrameDmaQueue, medium, "SUPERDMA");
+    AudioLoad_Dma(&gCurAudioFrameDmaIoMsgBuf[gCurAudioFrameDmaCount++], OS_MESG_PRI_NORMAL, OS_READ, dmaDevAddr,
+                  dma->ramAddr, dma->size, &gCurAudioFrameDmaQueue, medium, "SUPERDMA");
     *dmaIndexRef = sp38;
     return devAddr - dmaDevAddr + dma->ramAddr;
 }
@@ -220,7 +220,7 @@ void AudioLoad_InitSampleDmaBuffers(s32 numNotes) {
     gSampleDmaReuseQueue2WrPos = gSampleDmaCount - gSampleDmaListSize1;
 }
 
-// Updates the audiotable entries with their absolute ROM addresses
+// Updates the audiotable entries with their relative ROM addresses
 void AudioLoad_InitTable(AudioTable* table, u8* romAddr, u16 unkMediumParam) {
     s32 i;
 
@@ -634,7 +634,8 @@ void AudioLoad_SyncDma(uintptr_t devAddr, u8* ramAddr, u32 size, s32 medium) {
     }
 
     if (size != 0) {
-        AudioLoad_Dma(&gSyncDmaIoMsg, 1, 0, devAddr, ramAddr, size, &gSyncDmaQueue, medium, "FastCopy");
+        AudioLoad_Dma(&gSyncDmaIoMsg, OS_MESG_PRI_HIGH, OS_READ, devAddr, ramAddr, size, &gSyncDmaQueue, medium,
+                      "FastCopy");
         MQ_WAIT_FOR_MESG(&gSyncDmaQueue, NULL);
     }
 }

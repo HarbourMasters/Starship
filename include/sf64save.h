@@ -24,11 +24,15 @@ typedef struct {
 typedef struct PlanetStats {
     /* bit 0 */ u16 hitCount : 8;
     /* bit 8 */ u16 planetId : 4;
-    /* bit C */ u16 unk_C : 1; // hitCount related
+    /* bit C */ u16 hitCountOver256 : 1;
     /* bit D */ u16 peppyAlive : 1;
     /* bit E */ u16 falcoAlive : 1;
     /* bit F */ u16 slippyAlive : 1;
-} PlanetStats; // size = 0x10
+} PlanetStats; // size = 0x2
+
+#define PLANET_STATS(hitCount, planetId, peppyAlive, falcoAlive, slippyAlive) \
+    (hitCount > 255 ? hitCount - 256 : hitCount),                             \
+        ((planetId << 4) | ((hitCount > 255 ? 1 : 0) << 3) | (peppyAlive << 2) | (falcoAlive << 1) | (slippyAlive))
 
 typedef struct SaveData {
     /* 0x00 */ PlanetData planet[16];
@@ -38,13 +42,14 @@ typedef struct SaveData {
     /* 0x16 */ u8 voiceVolume;
     /* 0x17 */ u8 sfxVolume;
     /* 0x18 */ u8 rankNameEntry[RANKING_MAX][ENTRY_MAX]; // Name entries in the ranking
-    /* 0x36 */ u8 rankingRoute[RANKING_MAX];  // Maximum number of planets played in the current record
-    /* 0x40 */ u8 rankingLives[RANKING_MAX];  // Player lives left in the current record
-    /* 0x4A */ u16 rankingMedal[RANKING_MAX]; // Medals obtained in the current record
+    /* 0x36 */ u8 rankingRoute[RANKING_MAX];             // Maximum number of planets played in the current record
+    /* 0x40 */ u8 rankingLives[RANKING_MAX];             // Player lives left in the current record
+    /* 0x4A */ u16 rankingMedal[RANKING_MAX];            // Medals obtained in the current record
     /* 0x5E */ PlanetStats stats[RANKING_MAX][ROUTE_MAX];
     /* 0xEA */ u8 unk_EA;
-    /* 0xEB */ char padEB[0x3];
-    /* 0xEE */ char padEE[0x10];
+    /* 0xEB */ u8 textLanguage;  // EU Only text language selection
+    /* 0xEC */ u8 voiceLanguage; // EU Only voice language selection
+    /* 0xED */ char padEE[0x11];
 } SaveData; // size = 0xFE
 
 typedef struct {

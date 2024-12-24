@@ -48,7 +48,7 @@ static const char devstr30[] = "Group:Undefined Command\n";
 
 void AudioSeq_AudioListPushBack(AudioListItem* list, AudioListItem* item);
 void* AudioSeq_AudioListPopBack(AudioListItem* list);
-u8 AudioSeq_GetInstrument(SequenceChannel* channel, u8 arg1, Instrument** instrument, AdsrSettings* adsrSettings);
+u8 AudioSeq_GetInstrument(SequenceChannel* channel, u8 instId, Instrument** instrumentOut, AdsrSettings* adsrSettings);
 
 void AudioSeq_InitSequenceChannel(SequenceChannel* channel) {
     s32 i;
@@ -144,16 +144,13 @@ void AudioSeq_SeqLayerDisable(SequenceLayer* layer) {
     }
 }
 
-void AudioSeq_SeqLayerFree(SequenceChannel* channel, s32 layerIndex) 
-{
-    if (layerIndex < 4) {
-        SequenceLayer* layer = channel->layers[layerIndex];
+void AudioSeq_SeqLayerFree(SequenceChannel* channel, s32 layerIndex) {
+    SequenceLayer* layer = channel->layers[layerIndex];
 
-        if (layer != NULL) {
-            AudioSeq_AudioListPushBack(&gLayerFreeList, &layer->listItem);
-            AudioSeq_SeqLayerDisable(layer);
-            channel->layers[layerIndex] = NULL;
-        }
+    if (layer != NULL) {
+        AudioSeq_AudioListPushBack(&gLayerFreeList, &layer->listItem);
+        AudioSeq_SeqLayerDisable(layer);
+        channel->layers[layerIndex] = NULL;
     }
 }
 
@@ -769,8 +766,8 @@ void AudioSeq_SetInstrument(SequenceChannel* channel, u8 instId) {
     channel->hasInstrument = true;
 }
 
-void AudioSeq_SequenceChannelSetVolume(SequenceChannel* channel, u8 arg1) {
-    channel->volume = (s32) arg1 / 127.0f;
+void AudioSeq_SequenceChannelSetVolume(SequenceChannel* channel, u8 volume) {
+    channel->volume = (s32) volume / 127.0f;
 }
 
 void AudioSeq_SequenceChannelProcessScript(SequenceChannel* channel) {
@@ -1531,7 +1528,7 @@ void AudioSeq_ProcessSequences(s32 arg0) {
     s32 i;
 
     for (i = 0; i < ARRAY_COUNT(gSeqPlayers); i++) {
-        if (gSeqPlayers[i].enabled == 1) {
+        if (gSeqPlayers[i].enabled == true) {
             AudioSeq_SequencePlayerProcessSequence(&gSeqPlayers[i]);
             Audio_SequencePlayerProcessSound(&gSeqPlayers[i]);
         }

@@ -17,6 +17,7 @@ options:
   - linker_scripts/jp/rev0/symbol_addrs.txt
   - linker_scripts/jp/rev0/symbol_addrs_fix.txt
   - linker_scripts/jp/rev0/symbol_addrs_assets.txt
+  - linker_scripts/jp/rev0/symbol_addrs_overlays.txt
 
   asm_path: asm/jp/rev0
   src_path: srcjp
