@@ -888,7 +888,6 @@ Acmd* AudioSynth_ProcessNote(s32 noteIndex, NoteSubEu* noteSub, NoteSynthesisSta
     s32 dmemUncompressedAddrOffset1;
     u32 sampleslenFixedPoint;
     u8* samplesToLoadAddr;
-    uintptr_t buffAddr;
     s32 gain;
     u32 nEntries;
     s32 aligned;
@@ -933,7 +932,7 @@ Acmd* AudioSynth_ProcessNote(s32 noteIndex, NoteSubEu* noteSub, NoteSynthesisSta
         noteSamplesDmemAddrBeforeResampling = DMEM_UNCOMPRESSED_NOTE + (synthState->samplePosInt * SAMPLE_SIZE);
         synthState->samplePosInt += numSamplesToLoad;
     } else {
-        bookSample = *((Sample**) noteSub->waveSampleAddr);
+        bookSample = *(noteSub->waveSampleAddr);
         loopInfo = bookSample->loop;
 
         endPos = loopInfo->end;
@@ -1166,10 +1165,9 @@ Acmd* AudioSynth_ProcessNote(s32 noteIndex, NoteSubEu* noteSub, NoteSynthesisSta
                 case 2:
                     switch (curPart) {
                         case 0:
-                            aInterl(aList++, skipBytes + DMEM_UNCOMPRESSED_NOTE,
-                                    DMEM_TEMP + (SAMPLES_PER_FRAME * SAMPLE_SIZE), ALIGN8(numSamplesToLoadAdj / 2));
+                            aInterl(aList++, skipBytes + DMEM_UNCOMPRESSED_NOTE, DMEM_WET_SCRATCH, ALIGN8(numSamplesToLoadAdj / 2));
                             resampledTempLen = numSamplesToLoadAdj;
-                            noteSamplesDmemAddrBeforeResampling = DMEM_TEMP + (SAMPLES_PER_FRAME * SAMPLE_SIZE);
+                            noteSamplesDmemAddrBeforeResampling = DMEM_WET_SCRATCH;
                             if (noteSub->bitField0.finished) {
                                 aClearBuffer(aList++, resampledTempLen + noteSamplesDmemAddrBeforeResampling,
                                              numSamplesToLoadAdj + SAMPLES_PER_FRAME);
@@ -1177,8 +1175,7 @@ Acmd* AudioSynth_ProcessNote(s32 noteIndex, NoteSubEu* noteSub, NoteSynthesisSta
                             break;
 
                         case 1:
-                            aInterl(aList++, skipBytes + DMEM_UNCOMPRESSED_NOTE,
-                                    resampledTempLen + DMEM_TEMP + (SAMPLES_PER_FRAME * SAMPLE_SIZE),
+                            aInterl(aList++, skipBytes + DMEM_UNCOMPRESSED_NOTE, resampledTempLen + DMEM_WET_SCRATCH,
                                     ALIGN8(numSamplesToLoadAdj / 2));
                             break;
                     }

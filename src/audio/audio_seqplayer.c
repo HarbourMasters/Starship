@@ -145,12 +145,14 @@ void AudioSeq_SeqLayerDisable(SequenceLayer* layer) {
 }
 
 void AudioSeq_SeqLayerFree(SequenceChannel* channel, s32 layerIndex) {
-    SequenceLayer* layer = channel->layers[layerIndex];
-
-    if (layer != NULL) {
-        AudioSeq_AudioListPushBack(&gLayerFreeList, &layer->listItem);
-        AudioSeq_SeqLayerDisable(layer);
-        channel->layers[layerIndex] = NULL;
+    if (layerIndex < 4) {
+        SequenceLayer* layer = channel->layers[layerIndex];
+        
+        if (layer != NULL) {
+            AudioSeq_AudioListPushBack(&gLayerFreeList, &layer->listItem);
+            AudioSeq_SeqLayerDisable(layer);
+            channel->layers[layerIndex] = NULL;
+        }
     }
 }
 
