@@ -215,7 +215,7 @@ static const ALIGN_ASSET(2) char D_arwing_300F448[] = "__OTR__ast_arwing/D_arwin
 
 static const ALIGN_ASSET(2) char D_arwing_3010448[] = "__OTR__ast_arwing/D_arwing_3010448";
 
-static const ALIGN_ASSET(2) char aAwLaserGun2L[] = "__OTR__ast_arwing/aAwLaserGun2L";
+static const ALIGN_ASSET(2) char aAwLaserGun2DL[] = "__OTR__ast_arwing/aAwLaserGun2DL";
 
 static const ALIGN_ASSET(2) char ast_arwing_seg3_vtx_11550[] = "__OTR__ast_arwing/ast_arwing_seg3_vtx_11550";
 
