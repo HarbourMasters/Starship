@@ -82,11 +82,28 @@ GameEngine::GameEngine() {
         }
     }
 
-    auto controlDeck = std::make_shared<LUS::ControlDeck>();
-    auto window = std::make_shared<Fast::Fast3dWindow>(std::vector<std::shared_ptr<Ship::GuiWindow>>({}));
 
     this->context =
-        Ship::Context::CreateInstance("Starship", "ship", "starship.cfg.json", OTRFiles, {}, 3, { 44100, 1024*2, 2480*2 }, window, controlDeck);
+        Ship::Context::CreateUninitializedInstance("Starship", "ship", "starship.cfg.json");
+    
+    this->context->InitLogging();
+    this->context->InitConfiguration();
+    this->context->InitConsoleVariables();
+
+    auto controlDeck = std::make_shared<LUS::ControlDeck>();
+
+    this->context->InitResourceManager(OTRFiles, {}, 3);
+    this->context->InitControlDeck(controlDeck);
+    this->context->InitCrashHandler();
+    this->context->InitConsole();
+
+    auto window = std::make_shared<Fast::Fast3dWindow>(std::vector<std::shared_ptr<Ship::GuiWindow>>({}));
+
+    this->context->InitWindow(window);
+    this->context->InitAudio({ 44100, 1024*2, 2480*2 });
+    this->context->InitGfxDebugger();
+
+    this->context->Init(OTRFiles, {}, 3, { 44100, 1024*2, 2480*2 }, window, controlDeck);
 
     Ship::Context::GetInstance()->GetLogger()->set_level((spdlog::level::level_enum)CVarGetInteger("gDeveloperTools.LogLevel", 1));
     Ship::Context::GetInstance()->GetLogger()->set_pattern("[%H:%M:%S.%e] [%s:%#] [%l] %v");
