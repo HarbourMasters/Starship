@@ -82,26 +82,18 @@ GameEngine::GameEngine() {
         }
     }
 
-
     this->context =
         Ship::Context::CreateUninitializedInstance("Starship", "ship", "starship.cfg.json");
-    
-    this->context->InitLogging();
-    this->context->InitConfiguration();
-    this->context->InitConsoleVariables();
+
+    this->context->InitConfiguration(); // without this line InitConsoleVariables fails at Config::Reload()
+    this->context->InitConsoleVariables(); // without this line the controldeck constructor failes in ShipDeviceIndexMappingManager::UpdateControllerNamesFromConfig()
 
     auto controlDeck = std::make_shared<LUS::ControlDeck>();
 
-    this->context->InitResourceManager(OTRFiles, {}, 3);
-    this->context->InitControlDeck(controlDeck);
-    this->context->InitCrashHandler();
-    this->context->InitConsole();
+    this->context->InitResourceManager(OTRFiles, {}, 3); // without this line InitWindow fails in Gui::Init()
+    this->context->InitConsole(); // without this line the GuiWindow constructor fails in ConsoleWindow::InitElement()
 
     auto window = std::make_shared<Fast::Fast3dWindow>(std::vector<std::shared_ptr<Ship::GuiWindow>>({}));
-
-    this->context->InitWindow(window);
-    this->context->InitAudio({ 44100, 1024*2, 2480*2 });
-    this->context->InitGfxDebugger();
 
     this->context->Init(OTRFiles, {}, 3, { 44100, 1024*2, 2480*2 }, window, controlDeck);
 
