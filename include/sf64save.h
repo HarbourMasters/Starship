@@ -32,7 +32,7 @@ typedef struct PlanetStats {
 
 #define PLANET_STATS(hitCount, planetId, peppyAlive, falcoAlive, slippyAlive) \
     (hitCount > 255 ? hitCount - 256 : hitCount),                             \
-        ((planetId << 4) | ((hitCount > 255 ? 1 : 0) << 3) | (peppyAlive << 2) | (falcoAlive << 1) | (slippyAlive))
+        ((planetId) | ((hitCount > 255 ? 1 : 0) << 4) | (peppyAlive << 5) | (falcoAlive << 6) | (slippyAlive << 7))
 
 typedef struct SaveData {
     /* 0x00 */ PlanetData planet[16];
