@@ -524,7 +524,7 @@ void Background_DrawBackdrop(void) {
                 case LEVEL_CORNERIA:
                 case LEVEL_VENOM_1: {
                     // Calculate vertical and horizontal offsets
-                    f32 sp134 = (gPlayer[gPlayerNum].camPitch * -6000.0f) - (gPlayer[gPlayerNum].cam.eye.y * 0.6f);
+                    f32 bgYpos = (gPlayer[gPlayerNum].camPitch * -6000.0f) - (gPlayer[gPlayerNum].cam.eye.y * 0.6f);
                     f32 sp13C =
                         Math_ModF(Math_RadToDeg(gPlayer[gPlayerNum].camYaw) * (-7280.0f / 360.0f) * 5.0f, 7280.0f);
                     f32 corneriaCamYawDeg = Math_RadToDeg(gPlayer[0].camYaw);
