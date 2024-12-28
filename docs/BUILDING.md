@@ -177,6 +177,11 @@ git submodule update --init
 # Add `-DCMAKE_BUILD_TYPE:STRING=Release` if you're packaging
 cmake -H. -Bbuild-cmake -GNinja
 
+# Copy ROM to working dir with the expected name
+# Update $ROM_PATH to point to your ROM)
+ROM_PATH=~/rom.z64
+cp $ROM_PATH baserom.us.rev1.z64
+
 # Generate sf64.otr
 cmake --build build-cmake --target ExtractAssets
 
