@@ -1027,6 +1027,17 @@ void Ending_Main(void) {
     gCsFrameCount++;
     gGameFrameCount++;
 
+    if (CVarGetInteger("gSkipCredits", 0)) {
+        gControllerLock = 0;
+        if (gControllerPress[0].button & START_BUTTON) {
+            D_ending_80196D00 = 7;
+            D_ending_80196D04 = 7200;
+            D_ending_80192E70 = 7200;
+        }
+    } else {
+        gControllerLock = 10000;
+    }
+
     switch (D_ending_80196D00) {
         case 0:
             gRadioState = 0;
@@ -1150,6 +1161,10 @@ void Ending_Draw(void) {
 }
 
 void Ending_8018ABE8(void) {
+    if (CVarGetInteger("gSkipCredits", 0)) {
+        return;
+    }
+
     if (gControllerPress[3].button & Z_TRIG) {
         D_ending_80198584 ^= 1;
     }
@@ -1356,6 +1371,10 @@ void Ending_8018B174(Vec3f* actorPos, Vec3f* actorRot, f32* actorScale) {
     Vec3f pos = *actorPos;
     Vec3f sp1C = *actorRot;
     scale = *actorScale;
+
+    if (CVarGetInteger("gSkipCredits", 0)) {
+        return;
+    }
 
     if (gControllerHold[2].button & Z_TRIG) {
         if (gControllerHold[2].button & R_CBUTTONS) {

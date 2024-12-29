@@ -449,6 +449,15 @@ void DrawEnhancementsMenu() {
 
             ImGui::EndMenu();
         }
+
+        if (UIWidgets::BeginMenu("Cutscenes")) {
+            UIWidgets::CVarCheckbox("Skip Credits", "gSkipCredits", {
+                .tooltip = "Allows skipping credits by pressing the START button",
+                .defaultValue = true
+            });
+
+            ImGui::EndMenu();
+        }
         
         if (UIWidgets::BeginMenu("Fixes")) {
             UIWidgets::CVarCheckbox("Macbeth: Level ending cutscene camera fix", "gMaCameraFix", {
