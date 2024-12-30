@@ -11,7 +11,7 @@ void Training_RingPassCount_Draw(void) {
     if (gRingPassCount != 0) {
         RCP_SetupDL(&gMasterDisp, SETUPDL_83);
         gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, 255);
-        HUD_Number_Draw(250.0f, 50.0f, gRingPassCount, 1.0f, 0, 999);
+        HUD_Number_Draw(OTRGetDimensionFromRightEdge(250.0f), 50.0f, gRingPassCount, 1.0f, 0, 999);
     }
 }
 
