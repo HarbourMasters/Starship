@@ -2,6 +2,7 @@
 #include "fox_hud.h"
 #include "prevent_bss_reordering.h"
 #include "port/interpolation/FrameInterpolation.h"
+#include "port/ui/CosmeticEditor.h"
 #include "port/hooks/Events.h"
 
 Vec3f D_801616A0;
@@ -1777,6 +1778,11 @@ void HUD_RadarMark_Arwing_Draw(s32 colorIdx) {
         { 177, 242, 12, 255 }, { 89, 121, 6, 128 }, { 90, 90, 255, 255 }, { 45, 45, 128, 128 },
         { 0, 179, 67, 255 },   { 0, 90, 34, 128 },  { 255, 30, 0, 255 },  { 128, 15, 0, 128 },
     };
+    char* arwingMarkColorOverrides[] = { "Radar.Fox", "Radar.Fox_Dark",
+    "Radar.Falco", "Radar.Falco_Dark",
+    "Radar.Slippy", "Radar.Slippy_Dark",
+    "Radar.Peppy", "Radar.Peppy_Dark"
+    };
     f32 var_fv1;
     f32 var_fv2;
 
@@ -1789,16 +1795,16 @@ void HUD_RadarMark_Arwing_Draw(s32 colorIdx) {
     }
 
     RCP_SetupDL(&gMasterDisp, SETUPDL_62);
-    gDPSetPrimColor(gMasterDisp++, 0, 0, arwingMarkColor[colorIdx][0], arwingMarkColor[colorIdx][1],
-                    arwingMarkColor[colorIdx][2], arwingMarkColor[colorIdx][3]);
+    gDPSetPrimColorWithOverride(gMasterDisp++, 0, 0, arwingMarkColor[colorIdx][0], arwingMarkColor[colorIdx][1],
+                    arwingMarkColor[colorIdx][2], arwingMarkColor[colorIdx][3], arwingMarkColorOverrides[colorIdx]);
     Matrix_Scale(gGfxMatrix, var_fv1, var_fv2, 1.0f, MTXF_APPLY);
     Matrix_SetGfxMtx(&gMasterDisp);
     gSPDisplayList(gMasterDisp++, aRadarMarkArwingDL);
 }
 
-void HUD_RadarMark_StarWolf_Draw(void) {
+void HUD_RadarMark_StarWolf_Draw(char* colorOverride) {
     RCP_SetupDL(&gMasterDisp, SETUPDL_62);
-    gDPSetPrimColor(gMasterDisp++, 0, 0, 0, 0, 0, 255);
+    gDPSetPrimColorWithOverride(gMasterDisp++, 0, 0, 0, 0, 0, 255, colorOverride);
     Matrix_Scale(gGfxMatrix, 54.0f, 54.0f, 1.0f, MTXF_APPLY);
     Matrix_SetGfxMtx(&gMasterDisp);
     gSPDisplayList(gMasterDisp++, aStarWolfRadarMarkDL);
@@ -1890,10 +1896,16 @@ void HUD_RadarMark_Draw(s32 type) {
             break;
 
         case RADARMARK_WOLF:
+            HUD_RadarMark_StarWolf_Draw("Radar.Wolf");
+            break;
         case RADARMARK_LEON:
+            HUD_RadarMark_StarWolf_Draw("Radar.Leon");
+            break;
         case RADARMARK_PIGMA:
+            HUD_RadarMark_StarWolf_Draw("Radar.Pigma");
+            break;
         case RADARMARK_ANDREW:
-            HUD_RadarMark_StarWolf_Draw();
+            HUD_RadarMark_StarWolf_Draw("Radar.Andrew");
             break;
 
         case RADARMARK_KATT:
