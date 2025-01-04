@@ -5523,13 +5523,18 @@ void HUD_Score_Draw(f32 x, f32 y) {
     f32 x1;
     f32 y1;
     f32 xScale;
+    bool decrease = false;
 
     x = OTRGetDimensionFromLeftEdge(x);
 
     if (gHitCount > gDisplayedHitCount) {
         temp3 = gDisplayedHitCount + 1;
         temp4 = gDisplayedHitCount;
-    } else {
+    } else if (gHitCount < gDisplayedHitCount) {
+        decrease = true;
+        temp3 = gDisplayedHitCount - 1;
+        temp4 = gDisplayedHitCount;
+    } else{
         temp3 = gHitCount;
         temp4 = gDisplayedHitCount;
     }
@@ -5539,6 +5544,7 @@ void HUD_Score_Draw(f32 x, f32 y) {
     temp3 %= i;
     temp4 %= i;
 
+    //Loop runs three times with i == 100, 10, and 1. For each digit of the score counter. 
     for (i /= 10, j = 0; i != 1; i /= 10, j++) {
         xScale = 1.0f;
         x1 = x;
@@ -5612,7 +5618,11 @@ void HUD_Score_Draw(f32 x, f32 y) {
         }
 
         if (D_hud_80161720[j] >= 2.0f) {
-            temp4++;
+            if (decrease) {
+                temp4--;
+            } else {
+                temp4++;
+            }
             if (temp4 >= 10) {
                 temp4 = 0;
             }
@@ -5620,7 +5630,11 @@ void HUD_Score_Draw(f32 x, f32 y) {
         }
 
         if ((D_hud_80161720[j] < 2.0f) && (D_hud_80161720[j] >= 1.1f)) {
-            temp4++;
+            if (decrease) {
+                temp4--;
+            } else {
+                temp4++;
+            }
             if (temp4 >= 10) {
                 temp4 = 0;
             }
@@ -5637,7 +5651,11 @@ void HUD_Score_Draw(f32 x, f32 y) {
 
     if ((gHitCount != gDisplayedHitCount) && (D_hud_80161720[0] == 0.0f) && (D_hud_80161720[1] == 0.0f) &&
         (D_hud_80161720[2] == 0.0f)) {
-        gDisplayedHitCount++;
+        if (decrease){
+            gDisplayedHitCount--;
+        } else {
+            gDisplayedHitCount++;
+        }
 
         if ((gDisplayedHitCount == 4) || (gDisplayedHitCount == 9) || (gDisplayedHitCount == 14) ||
             (gDisplayedHitCount == 19) || (gDisplayedHitCount == 24) || (gDisplayedHitCount == 29)) {
