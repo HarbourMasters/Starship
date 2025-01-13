@@ -19,8 +19,8 @@ u16 Message_IdFromPtr(u16* msgPtr) {
     MsgLookup* lookup = (MsgLookup*) LOAD_ASSET(gMsgLookup);
 
     while (lookup->msgPtr != NULL) {
-        if(GameEngine_OTRSigCheck(msgPtr)){
-            if(strcmp(((char*) msgPtr) + 7, lookup->path) == 0){
+        if (GameEngine_OTRSigCheck(msgPtr)) {
+            if (strcmp(((char*) msgPtr) + 7, lookup->path) == 0) {
                 return lookup->msgId;
             }
         } else {
@@ -65,7 +65,7 @@ void Message_DisplayChar(Gfx** gfxPtr, u16 msgChar, s32 xpos, s32 ypos) {
     gDPLoadTextureBlock_4b((*gfxPtr)++, gTextCharTextures[msgChar >> 2], G_IM_FMT_CI, 16, 13, msgChar % 4U,
                            G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD,
                            G_TX_NOLOD);
-    gSPTextureRectangle((*gfxPtr)++, xpos << 2, ypos << 2, (xpos + 13) << 2, (ypos + 13) << 2, G_TX_RENDERTILE, 64, 0,
+    gSPWideTextureRectangle((*gfxPtr)++, xpos << 2, ypos << 2, (xpos + 13) << 2, (ypos + 13) << 2, G_TX_RENDERTILE, 64, 0,
                         1024, 1024);
 }
 

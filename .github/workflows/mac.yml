@@ -1,0 +1,29 @@
+name: MacOS Validation
+
+on:
+  pull_request:
+    branches: [ "*" ]
+
+jobs:
+  build:
+    runs-on: macOS-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - name: Install dependencies
+        run: brew install sdl2 libpng glew ninja cmake libzip nlohmann-json tinyxml2 spdlog
+      - name: Build
+        run: |
+          cmake -H. -Bbuild-cmake -GNinja -DCMAKE_BUILD_TYPE=Release
+          cmake --build build-cmake -j
+      - name: Create Package
+        run: |
+          mkdir starship-release
+          mv build-cmake/Starship starship-release/
+      - name: Publish packaged artifacts
+        uses: actions/upload-artifact@v4
+        with:
+            name: starship-mac-x64
+            path: starship-release
+            retention-days: 1

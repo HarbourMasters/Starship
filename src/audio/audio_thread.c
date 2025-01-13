@@ -65,11 +65,11 @@ void AudioThread_CreateNextAudioBuffer(s16* samples, u32 num_samples) {
             osSendMesg8(gAudioResetQueue, gAudioSpecId, OS_MESG_NOBLOCK);
         }
         gWaitingAudioTask = NULL;
-        return NULL;
+        return;
     }
 
     if (gAudioResetTimer > 16) {
-        return NULL;
+        return;
     }
     if (gAudioResetTimer != 0) {
         gAudioResetTimer++;
@@ -83,14 +83,11 @@ void AudioThread_CreateNextAudioBuffer(s16* samples, u32 num_samples) {
 
     // Spectrum Analyzer fix
     memcpy(gAiBuffers[gCurAiBuffIndex], samples, num_samples);
-    
-    gAudioRandom = osGetCount() * (gAudioRandom + gAudioTaskCountQ);
 
-    if (gMaxAbiCmdCnt < abiCmdCount) {
-        gMaxAbiCmdCnt = abiCmdCount;
-    }
+    gAudioRandom = osGetCount() * (gAudioRandom + gAudioTaskCountQ);
 }
 
+// Original function, unused in the port.
 SPTask* AudioThread_CreateTask() {
     static s32 gMaxAbiCmdCnt = 128;
     static SPTask* gWaitingAudioTask = NULL;

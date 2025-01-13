@@ -361,7 +361,7 @@ void Area6_ActorMissileSeekPlayer_Setup(ActorMissileSeekPlayer* this, f32 xPos, 
     PRINTF("おふ\n"); // Off
     Actor_Initialize(this);
     this->obj.status = OBJ_INIT;
-    this->obj.id = OBJ_MISSILE_SEEK_PLAYER;
+    this->obj.id = OBJ_ACTOR_MISSILE_SEEK_PLAYER;
 
     this->obj.pos.x = xPos;
     this->obj.pos.y = yPos;
@@ -830,8 +830,10 @@ void Area6_A6Gorgon_Update(A6Gorgon* this) {
         case 2:
             Math_SmoothStepToF(D_ctx_801779A8, 10.0f, 1.0f, 5.0f, 0.0f);
             if (this->timer_050 == 10) {
-                gFillScreenRed = gFillScreenGreen = gFillScreenBlue = 255;
-                gFillScreenAlpha = gFillScreenAlphaTarget = 255;
+                if (CVarGetInteger("gDisableGorgonFlash", 0) == 0) {
+                    gFillScreenRed = gFillScreenGreen = gFillScreenBlue = 255;
+                    gFillScreenAlpha = gFillScreenAlphaTarget = 255;
+                }
                 gFillScreenAlphaTarget = 0;
                 gFillScreenAlphaStep = 25;
                 gCameraShake = 50;
@@ -1142,7 +1144,8 @@ void Area6_A6Gorgon_Update(A6Gorgon* this) {
                         }
 
                         if ((gActors[spf124].obj.status == OBJ_FREE) ||
-                            (gActors[spf124].obj.id != OBJ_MISSILE_SEEK_PLAYER) || (D_i3_801C2250[A6_BSS_24] == 0)) {
+                            (gActors[spf124].obj.id != OBJ_ACTOR_MISSILE_SEEK_PLAYER) ||
+                            (D_i3_801C2250[A6_BSS_24] == 0)) {
                             D_i3_801C2250[A6_BSS_12_0 + var_s0] = 0;
 
                             spf124 = 0;
@@ -1184,9 +1187,9 @@ void Area6_A6Gorgon_Update(A6Gorgon* this) {
             break;
 
         case 11:
-            if ((this->timer_052 == 160) && ((gPlayer[0].state_1C8 == PLAYERSTATE_1C8_ACTIVE) ||
-                                             (gPlayer[0].state_1C8 == PLAYERSTATE_1C8_U_TURN))) {
-                gPlayer[0].state_1C8 = PLAYERSTATE_1C8_LEVEL_COMPLETE;
+            if ((this->timer_052 == 160) &&
+                ((gPlayer[0].state == PLAYERSTATE_ACTIVE) || (gPlayer[0].state == PLAYERSTATE_U_TURN))) {
+                gPlayer[0].state = PLAYERSTATE_LEVEL_COMPLETE;
                 gPlayer[0].csState = 0;
             }
 
@@ -2487,7 +2490,7 @@ void Area6_LevelStart(Player* player) {
                 player->csTimer = 0;
 
                 AUDIO_PLAY_BGM(NA_BGM_STAGE_A6);
-                player->state_1C8 = PLAYERSTATE_1C8_ACTIVE;
+                player->state = PLAYERSTATE_ACTIVE;
             }
             break;
     }
@@ -2574,7 +2577,7 @@ void Area6_LevelStart(Player* player) {
     Matrix_RotateY(gCalcMatrix, (player->rot.y + player->yRot_114 + 180.0f) * M_DTOR, MTXF_NEW);
     Matrix_RotateX(gCalcMatrix, -(player->rot.x * M_DTOR), MTXF_APPLY);
 
-    if (player->state_1C8 != PLAYERSTATE_1C8_ACTIVE) {
+    if (player->state != PLAYERSTATE_ACTIVE) {
         sp74.x = 0.0f;
         sp74.y = 0.0f;
         sp74.z = player->baseSpeed;
@@ -2666,7 +2669,7 @@ void Area6_8018EC38(ActorCutscene* this, s32 teamIdx) {
 
         // @port: Setup team faces (original code was omitting Peppy)
         if ((teamIdx + 1 != 3) || (CVarGetInteger("gTeamFaces", 1) == 1)) {
-            this->iwork[14] = teamIdx + 2;
+            this->iwork[TEAM_FACE] = teamIdx + 2;
         }
 
         Object_SetInfo(&this->info, this->obj.id);

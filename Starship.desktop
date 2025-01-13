@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.0
+Name=2SHIP
+Exec=Starship
+Terminal=false
+Icon=logo
+Type=Application
+Categories=Game;
+X-AppImage-Integrate=false

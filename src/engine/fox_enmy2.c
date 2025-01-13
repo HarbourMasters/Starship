@@ -20,6 +20,7 @@
 #include "assets/ast_solar.h"
 #include "assets/ast_ve1_boss.h"
 #include "assets/ast_zoness.h"
+#include "port/hooks/Events.h"
 
 s32 gTeamEventActorIndex[4] = { 0, 0, 0, 0 };
 s32 gCallVoiceParam = 0;
@@ -1106,7 +1107,7 @@ void ActorEvent_ProcessScript(ActorEvent* this) {
             levelScripts = (uint16_t**) LOAD_ASSET(D_ZO_602AAC0);
             break;
         case LEVEL_VENOM_1:
-            levelScripts = (uint16_t**) LOAD_ASSET(D_VE1_601B1E4);
+            levelScripts = (uint16_t**) LOAD_ASSET(aVe1EventScript);
             break;
         case LEVEL_MACBETH:
             levelScripts = (uint16_t**) LOAD_ASSET(D_MA_60381D8);
@@ -1184,7 +1185,7 @@ void ActorEvent_ProcessScript(ActorEvent* this) {
                 this->drawShadow = true;
             }
 
-            if (gPlayer[0].state_1C8 == PLAYERSTATE_1C8_ACTIVE) {
+            if (gPlayer[0].state == PLAYERSTATE_ACTIVE) {
                 if (this->eventType == EVID_KATT) {
                     Audio_PlayFanfare(NA_BGM_KATT, 20, 10, 10);
                 }
@@ -1331,7 +1332,7 @@ void ActorEvent_ProcessScript(ActorEvent* this) {
 
         case EV_OPC(EVOP_PLAY_MSG):
             msg = Message_PtrFromId(actorScript[this->aiIndex + 1]);
-            if ((msg != NULL) && (gPlayer[0].state_1C8 == PLAYERSTATE_1C8_ACTIVE)) {
+            if ((msg != NULL) && (gPlayer[0].state == PLAYERSTATE_ACTIVE)) {
                 Radio_PlayMessage(msg, actorScript[this->aiIndex] & 0x1FF);
             }
             this->aiIndex += 2;
@@ -1840,7 +1841,7 @@ void ActorEvent_ProcessActions(ActorEvent* this) {
     Vec3f sp6C;
     Sprite* sprite;
 
-    if ((gPlayer[0].state_1C8 == PLAYERSTATE_1C8_ACTIVE) && (this->eventType != EVID_SARUMARINE_PERISCOPE) &&
+    if ((gPlayer[0].state == PLAYERSTATE_ACTIVE) && (this->eventType != EVID_SARUMARINE_PERISCOPE) &&
         (this->eventType != EVID_ANDROSS_GATE) && (this->eventType != EVID_ANDROSS_GATE_2) &&
         (this->eventType != EVID_SY_ROBOT_1) && (this->eventType != EVID_SY_ROBOT_2) &&
         (this->eventType != EVID_SY_ROBOT_3)) {
@@ -3042,7 +3043,7 @@ void ActorEvent_Update(ActorEvent* this) {
     Vec3f spAC;
     Vec3f spA0;
 
-    if ((gPlayer[0].state_1C8 == PLAYERSTATE_1C8_LEVEL_COMPLETE) || gKillEventActors) {
+    if ((gPlayer[0].state == PLAYERSTATE_LEVEL_COMPLETE) || gKillEventActors) {
         Object_Kill(&this->obj, this->sfxSource);
         return;
     }
@@ -3459,7 +3460,7 @@ void ActorEvent_Update(ActorEvent* this) {
         this->vel.z -= gPathVelZ;
     }
 
-    if (gPlayer[0].state_1C8 == PLAYERSTATE_1C8_ENTER_WARP_ZONE) {
+    if (gPlayer[0].state == PLAYERSTATE_ENTER_WARP_ZONE) {
         this->vel.z = 100.0f;
     }
 
@@ -3791,12 +3792,15 @@ void ActorEvent_Update(ActorEvent* this) {
             break;
     }
 
+    // Unused early RadarMark implementation?
+    /*
     if (gLevelMode == LEVELMODE_ALL_RANGE) {
         D_ctx_80177F20[this->index + 1] = this->obj.pos.x;
         D_ctx_80178028[this->index + 1] = this->obj.pos.z;
         D_ctx_80178130[this->index + 1] = Math_ModF(this->rot_0F4.y, 360.0f) + 180.0f;
         D_ctx_80178238[this->index + 1] = 1;
     }
+    */
 }
 
 UNK_TYPE D_800D129C[140] = { 0 }; // unused
@@ -3877,6 +3881,8 @@ void ActorEvent_Draw(ActorEvent* this) {
     s16 savedState;
     s32 pad;
 
+    CALL_CANCELLABLE_RETURN_EVENT(ObjectDrawPreSetupEvent, OBJECT_TYPE_ACTOR_EVENT, this);
+
     if (this->timer_0C6 && (this->eventType != EVID_MA_RAILROAD_CART) && (this->eventType != EVID_SY_LASER_TURRET) &&
         (this->eventType != EVID_SY_SHIP_WINDOWS)) {
         if ((this->eventType != EVID_ME_METEOR_1) && (this->eventType != EVID_ME_METEOR_2) &&
@@ -3922,18 +3928,23 @@ void ActorEvent_Draw(ActorEvent* this) {
         case EVID_WZ_PILLAR_2:
         case EVID_WZ_METEOR_1:
         case EVID_WZ_METEOR_2:
-        case EVID_WZ_GATE:
+        case EVID_WZ_GATE: {
             RCP_SetupDL(&gMasterDisp, SETUPDL_34);
             gDPSetTextureFilter(gMasterDisp++, G_TF_POINT);
             gDPSetPrimColor(gMasterDisp++, 0x00, 0x00, (s32) this->fwork[15], (s32) this->fwork[16],
                             (s32) this->fwork[17], 255);
-            gSPDisplayList(gMasterDisp++, sEventActorInfo[this->eventType].dList);
+            CALL_CANCELLABLE_EVENT(ObjectDrawPostSetupEvent, OBJECT_TYPE_ACTOR_EVENT, this){
+                gSPDisplayList(gMasterDisp++, sEventActorInfo[this->eventType].dList);
+            }
             gDPSetTextureFilter(gMasterDisp++, G_TF_BILERP);
             break;
+        }
 
-        default:
-            if ((this->eventType < EVID_200) && (sEventActorInfo[this->eventType].dList != NULL)) {
-                gSPDisplayList(gMasterDisp++, sEventActorInfo[this->eventType].dList);
+        default: {
+            CALL_CANCELLABLE_EVENT(ObjectDrawPostSetupEvent, OBJECT_TYPE_ACTOR_EVENT, this){
+                if ((this->eventType < EVID_200) && (sEventActorInfo[this->eventType].dList != NULL)) {
+                    gSPDisplayList(gMasterDisp++, sEventActorInfo[this->eventType].dList);
+                }
             }
 
             switch (this->eventType) {
@@ -4212,6 +4223,7 @@ void ActorEvent_Draw(ActorEvent* this) {
                 }
             }
             break;
+        }
     }
 }
 
@@ -4241,11 +4253,14 @@ void func_enmy2_800763A4(Actor* this) {
             Object_Kill(&this->obj, this->sfxSource);
             Actor_Despawn(this);
 
+            // Unused early RadarMark implementation?
+            /*
             if (gLevelMode == LEVELMODE_ALL_RANGE) {
                 D_ctx_80177F20[this->index + 1] = this->obj.pos.x;
                 D_ctx_80178028[this->index + 1] = this->obj.pos.z;
                 D_ctx_80178130[this->index + 1] = 1001.0f;
             }
+            */
             return;
         }
     } else {
@@ -4446,11 +4461,14 @@ void func_enmy2_800763A4(Actor* this) {
         }
     }
 
+    // Unused early RadarMark implementation?
+    /*
     if (gLevelMode == LEVELMODE_ALL_RANGE) {
         D_ctx_80177F20[this->index + 1] = this->obj.pos.x;
         D_ctx_80178028[this->index + 1] = this->obj.pos.z;
         D_ctx_80178130[this->index + 1] = this->rot_0F4.y + 180.0f;
     }
+    */
 
     if (this->obj.id == OBJ_ACTOR_ALLRANGE) {
         ActorAllRange_SetShadowData(this);

@@ -4,21 +4,8 @@
 #include "assets/ast_logo.h"
 #include "mods.h"
 #include "port/interpolation/FrameInterpolation.h"
-typedef struct {
-    /* 0x00 */ s16 count;
-    /* 0x02 */ u16 samplingFrequency;   // Target sampling rate in Hz
-    /* 0x04 */ u16 aiSamplingFrequency; // True sampling rate of the audio interface (AI), see `osAiSetFrequency`
-    /* 0x06 */ s16 samplesPerFrameTarget;
-    /* 0x08 */ s16 maxAiBufferLength;
-    /* 0x0A */ s16 minAiBufferLength;
-    /* 0x0C */ s16 ticksPerUpdate; // for each audio thread update, number of ticks to process audio
-    /* 0x0E */ s16 samplesPerTick;
-    /* 0x10 */ s16 samplesPerTickMax;
-    /* 0x12 */ s16 samplesPerTickMin;
-    /* 0x14 */ f32 resampleRate;
-    /* 0x18 */ f32 ticksPerUpdateInv;       // inverse (reciprocal) of ticksPerUpdate
-    /* 0x1C */ f32 ticksPerUpdateInvScaled; // ticksPerUpdateInv scaled down by a factor of 256
-} AudioBufferParameters;                    // size = 0x20
+#include "port/hooks/list/EngineEvent.h"
+
 f32 gNextVsViewScale;
 f32 gVsViewScale;
 s32 gPlayerInactive[4];
@@ -354,18 +341,14 @@ void Game_SetScene(void) {
             break;
     }
 }
-extern u8 gAudioSpecId;
-extern int audBuffer;
-extern AudioBufferParameters gAudioBufferParams;
-extern int countermin;
-
-extern unsigned short samples_high;
-extern unsigned short samples_low;
 
 void Game_Update(void) {
     s32 i;
     u8 partialFill;
     u8 soundMode;
+
+    // @port: @event: Call GamePreUpdateEvent
+    CALL_EVENT(GamePreUpdateEvent);
 
     Game_SetGameState();
     if (gGameStandby) {
@@ -585,9 +568,13 @@ void Game_Update(void) {
                 Radio_Draw();
                 if (gShowHud) {
                     HUD_Draw();
-                    HUD_EdgeArrows_Update();
+                    CALL_CANCELLABLE_EVENT(DrawEdgeArrowsHUDEvent){
+                        HUD_EdgeArrows_Update();
+                    }
                 }
-                HUD_DrawBossHealth();
+                CALL_CANCELLABLE_EVENT(DrawBossHealthHUDEvent){
+                    HUD_DrawBossHealth();
+                }
             }
         } else {
             for (i = 0; i < gCamCount; i++) {
@@ -621,32 +608,9 @@ void Game_Update(void) {
                                    gFillScreenRed, gFillScreenGreen, gFillScreenBlue, gFillScreenAlpha);
         }
         Audio_dummy_80016A50();
-#if MODS_RAM_MOD == 1
-        RamMod_Update();
-#endif
-#if MODS_FPS_COUNTER == 1
-        Play_RenderFps();
-#endif
-        if(CVarGetInteger("gSpawnerMod", 0) == 1){
-            Spawner();
-        }
-    }
-    RCP_SetupDL(&gMasterDisp, SETUPDL_83);
-    gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 0, 255);
-    // Graphics_DisplaySmallText(10, 180, 1.0f, 1.0f, "SAM_HIGH:");
-    // Graphics_DisplaySmallNumber(90, 180, samples_high + audBuffer);
-    // Graphics_DisplaySmallText(10, 190, 1.0f, 1.0f, "SAM_LOW:");
-    // Graphics_DisplaySmallNumber(90, 190, samples_low + audBuffer);
-    // Graphics_DisplaySmallText(10, 200, 1.0f, 1.0f, "AUDIOBUF:");
-    // Graphics_DisplaySmallNumber(90, 200, audBuffer);
-    // Graphics_DisplaySmallText(10, 210, 1.0f, 1.0f, "AUDIOSPEC:");
-    // Graphics_DisplaySmallNumber(90, 210, gAudioSpecId);
-    // Graphics_DisplaySmallText(10, 220, 1.0f, 1.0f, "TICKS:");
-    // Graphics_DisplaySmallNumber(90, 220, gAudioBufferParams.ticksPerUpdate);
-    if (gControllerPress[0].button & L_JPAD) {
-      //  audBuffer-=1;
-    } else if (gControllerPress[0].button & R_JPAD) {
-       // audBuffer+=1;
+
+        // @port: @event: Call GamePostUpdateEvent
+        CALL_EVENT(GamePostUpdateEvent);
     }
 }
 

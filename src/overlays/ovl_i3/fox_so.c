@@ -743,7 +743,7 @@ void Solar_Effect392_Update(Effect392* this) {
                 }
             }
 
-            if (gPlayer[0].state_1C8 != PLAYERSTATE_1C8_LEVEL_COMPLETE) {
+            if (gPlayer[0].state != PLAYERSTATE_LEVEL_COMPLETE) {
                 func_effect_8007A774(&gPlayer[0], this, this->scale2 * 12.0f);
             }
 
@@ -822,7 +822,7 @@ void Solar_Effect392_Update(Effect392* this) {
                 Math_SmoothStepToF(&this->vel.y, -65.0f, 2.0f, 1.0f, 0.5f);
             }
 
-            if (gPlayer[0].state_1C8 != PLAYERSTATE_1C8_LEVEL_COMPLETE) {
+            if (gPlayer[0].state != PLAYERSTATE_LEVEL_COMPLETE) {
                 func_effect_8007A774(&gPlayer[0], this, this->scale2 * 12.0f);
             }
 
@@ -872,7 +872,7 @@ void Solar_Effect392_Update(Effect392* this) {
             this->vel.y = COS_DEG(this->unk_60.z) * (this->unk_60.x * 10.0f);
             this->vel.z = gPlayer[0].vel.z + 15.0f;
 
-            if (gPlayer[0].state_1C8 != PLAYERSTATE_1C8_LEVEL_COMPLETE) {
+            if (gPlayer[0].state != PLAYERSTATE_LEVEL_COMPLETE) {
                 func_effect_8007A774(&gPlayer[0], this, this->scale2 * 18.0f);
                 if ((this->unk_4C == 0) && ((this->scale2 >= 9.8f) || (this->scale2 <= 4.4f))) {
                     AUDIO_PLAY_SFX(NA_SE_EN_SOBOSS_BREATH, this->sfxSource, 4);
@@ -900,7 +900,7 @@ void Solar_Effect392_Update(Effect392* this) {
             this->vel.y = COS_DEG(this->unk_60.z) * sp50 * 50.0f;
             this->vel.z = gPlayer[0].vel.z + 80.0f;
 
-            if (gPlayer[0].state_1C8 != PLAYERSTATE_1C8_LEVEL_COMPLETE) {
+            if (gPlayer[0].state != PLAYERSTATE_LEVEL_COMPLETE) {
                 func_effect_8007A774(&gPlayer[0], this, this->scale2 * 18.0f);
                 if ((this->unk_4C == 0) && ((this->scale2 >= 9.8f) || (this->scale2 <= 4.4f))) {
                     AUDIO_PLAY_SFX(NA_SE_EN_SOBOSS_BREATH, this->sfxSource, 4);
@@ -1228,7 +1228,7 @@ void Solar_LevelStart(Player* player) {
                 player->baseSpeed = gArwingSpeed;
                 Play_ClearObjectData();
                 gLevelStartStatusScreenTimer = 50;
-                player->state_1C8 = PLAYERSTATE_1C8_ACTIVE;
+                player->state = PLAYERSTATE_ACTIVE;
                 player->csState = 0;
                 player->pos.y = 350.0f;
 
@@ -2040,8 +2040,8 @@ void Solar_801A3C4C(SoVulkain* this) {
 
         AUDIO_PLAY_SFX(NA_SE_EN_DOWN_IMPACT, this->sfxSource, 4);
 
-        if (gPlayer[0].state_1C8 == PLAYERSTATE_1C8_ACTIVE) {
-            gPlayer[0].state_1C8 = PLAYERSTATE_1C8_LEVEL_COMPLETE;
+        if (gPlayer[0].state == PLAYERSTATE_ACTIVE) {
+            gPlayer[0].state = PLAYERSTATE_LEVEL_COMPLETE;
             gPlayer[0].csTimer = 0;
             gPlayer[0].csState = gPlayer[0].csTimer;
 
@@ -3405,7 +3405,7 @@ void Solar_LevelComplete(Player* player) {
                 if (gFillScreenAlpha == 255) {
                     Audio_StopPlayerNoise(0);
                     Audio_FadeOutAll(10);
-                    player->state_1C8 = PLAYERSTATE_1C8_NEXT;
+                    player->state = PLAYERSTATE_NEXT;
                     player->csTimer = 0;
                     gFadeoutType = 4;
                     gLeveLClearStatus[LEVEL_SOLAR] = Play_CheckMedalStatus(100) + 1;

@@ -18,16 +18,56 @@ f7475fb11e7e6830f82883412638e8390791ab87:
     # logging: ERROR
     output:
       binary: sf64.otr
-      code: src/assets
-      headers: include/assets
-      modding: src/assets
-    enums:
-      - include/sf64object.h
-      - include/sf64level.h
-      - include/sf64mesg.h
-      - include/sf64audio_external.h
-      - include/sf64event.h
-      - include/sf64player.h
+#      code: src/assets
+#      headers: include/assets
+#      modding: src/assets
+#    enums:
+#      - include/bgm.h
+#      - include/sf64object.h
+#      - include/sf64level.h
+#      - include/sf64mesg.h
+#      - include/sf64audio_external.h
+#      - include/sf64event.h
+#      - include/sf64player.h
+
+d8b1088520f7c5f81433292a9258c1184afa1457:
+  name: Star Fox 64 (U) (V1.0) (Compressed)
+  preprocess:
+    decompress_mio0:
+      method: mio0-comptool
+      type: decompress
+      target: 63b69f0ef36306257481afc250f9bc304c7162b2
+      restart: true
+
+63b69f0ef36306257481afc250f9bc304c7162b2:
+  name: Star Fox 64 (U) (V1.0)
+  path: assets/yaml/us/rev0
+  config:
+    gbi: F3DEX
+    sort: OFFSET
+    # logging: ERROR
+    output:
+      binary: sf64.otr
+#      code: src/assets
+#      headers: include/assets
+#      modding: src/assets
+#    enums:
+#      - include/bgm.h
+#      - include/sf64object.h
+#      - include/sf64level.h
+#      - include/sf64mesg.h
+#      - include/sf64audio_external.h
+#      - include/sf64event.h
+#      - include/sf64player.h
+
+9bd71afbecf4d0a43146e4e7a893395e19bf3220:
+  name: Star Fox 64 (JP) (V1.0) (Compressed)
+  preprocess:
+    decompress_mio0:
+      method: mio0-comptool
+      type: decompress
+      target: d064229a32cc05ab85e2381ce07744eb3ffaf530
+      restart: true
 
 d064229a32cc05ab85e2381ce07744eb3ffaf530:
   name: Star Fox 64 (JP) (V1.0)
@@ -35,8 +75,9 @@ d064229a32cc05ab85e2381ce07744eb3ffaf530:
   config:
     gbi: F3DEX
     sort: OFFSET
+    logging: ERROR
     output:
-      binary: mods/sf64jp.otr
+      binary: ./mods/sf64jp.otr
       code: src/assets
       headers: include/assets
       modding: src/assets

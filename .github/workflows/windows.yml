@@ -1,0 +1,23 @@
+name: Windows Validation
+
+on:
+  pull_request:
+    branches: [ "*" ]
+
+jobs:
+  build:
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - name: Build
+        run: |
+          cmake -S . -B "build/x64" -G "Visual Studio 17 2022" -T v143 -A x64 -DCMAKE_BUILD_TYPE=Release
+          cmake --build ./build/x64
+      - name: Upload build
+        uses: actions/upload-artifact@v4
+        with:
+          name: starship-windows
+          path: ./build/x64/Debug
+          retention-days: 1

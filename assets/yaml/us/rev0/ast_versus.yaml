@@ -1,0 +1,762 @@
+:config:
+  segments:
+    - [0x03, 0x8E48E0]
+  header:
+    code:
+      - '#include "assets/ast_versus.h"'
+    header:
+      - '#include "gfx.h"'
+      - '#include "sf64object.h"'
+      - '#include "sf64level.h"'
+      - '#include "sf64event.h"'
+      - '#include "sf64player.h"'
+      - '#include "sf64audio_external.h"'
+      - '#include "sf64mesg.h"'
+
+D_versus_3000000:
+  { type: TEXTURE, ctype: u8, format: CI4, width:  16, height: 16, offset: 0x3000000, symbol: D_versus_3000000, tlut: 0x3000080 }
+D_versus_3000080:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 16, offset: 0x3000080, symbol: D_versus_3000080 }
+
+D_versus_30000A0:
+  { type: TEXTURE, ctype: u8, format: CI4, width:  16, height: 16, offset: 0x30000A0, symbol: D_versus_30000A0, tlut: 0x30000A0 }
+D_versus_3000120:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 16, offset: 0x3000120, symbol: D_versus_3000120 }
+
+D_versus_3000140:
+  { type: TEXTURE, ctype: u8, format: CI4, width:  16, height: 16, offset: 0x3000140, symbol: D_versus_3000140, tlut: 0x30001C0 }
+D_versus_30001C0:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 16, offset: 0x30001C0, symbol: D_versus_30001C0 }
+
+D_versus_30001E0:
+  { type: TEXTURE, ctype: u8, format: CI4, width:  64, height: 13, offset: 0x30001E0, symbol: D_versus_30001E0, tlut: 0x3000380 }
+D_versus_3000380:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 16, offset: 0x3000380, symbol: D_versus_3000380 }
+
+D_versus_30003A0:
+  { type: TEXTURE, ctype: u8, format: CI4, width:  64, height: 10, offset: 0x30003A0, symbol: D_versus_30003A0, tlut: 0x30004E0 }
+D_versus_30004E0:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 17, offset: 0x30004E0, symbol: D_versus_30004E0 }
+
+# BLOB_3000500:
+#   { type: BLOB, size: 0x10, offset: 0x3000500, symbol: BLOB_3000500} # 17th color for D_versus_30004E0?
+
+D_versus_3000510:
+  { type: TEXTURE, ctype: u8, format: CI4, width:  80, height: 10, offset: 0x3000510, symbol: D_versus_3000510, tlut: 0x30006A0 }
+D_versus_30006A0:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 17, offset: 0x30006A0, symbol: D_versus_30006A0 }
+
+# BLOB_30006C0:
+#   { type: BLOB, size: 0x10, offset: 0x30006C0, symbol: BLOB_30006C0} # 17th color for D_versus_30006A0?
+
+D_versus_30006D0:
+  { type: TEXTURE, ctype: u8, format: CI4, width:  64, height: 10, offset: 0x30006D0, symbol: D_versus_30006D0, tlut: 0x3000810 }
+D_versus_3000810:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 17, offset: 0x3000810, symbol: D_versus_3000810 }
+
+# BLOB_3000830:
+#   { type: BLOB, size: 0x10, offset: 0x3000830, symbol: BLOB_3000830} # 17th color for D_versus_3000810?
+
+D_versus_3000840:
+  { type: TEXTURE, ctype: u8, format: CI4, width:  32, height: 10, offset: 0x3000840, symbol: D_versus_3000840, tlut: 0x30008E0 }
+D_versus_30008E0:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 16, offset: 0x30008E0, symbol: D_versus_30008E0 }
+
+D_versus_3000900:
+  { type: TEXTURE, ctype: u8, format: CI4, width:  32, height: 15, offset: 0x3000900, symbol: D_versus_3000900, tlut: 0x30009F0 }
+D_versus_30009F0:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 16, offset: 0x30009F0, symbol: D_versus_30009F0 }
+
+D_versus_3000A10:
+  { type: TEXTURE, ctype: u8, format: CI4, width:  32, height: 15, offset: 0x3000A10, symbol: D_versus_3000A10, tlut: 0x3000B00 }
+D_versus_3000B00:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 16, offset: 0x3000B00, symbol: D_versus_3000B00 }
+
+aVsBoostGaugeFrameTex:
+  { type: TEXTURE, ctype: u8, format: IA8, width:  32, height:  5, offset: 0x3000B20, symbol: aVsBoostGaugeFrameTex }
+
+aVsShieldGaugeFrameTex:
+  { type: TEXTURE, ctype: u8, format: IA8, width:  80, height: 26, offset: 0x3000BC0, symbol: aVsShieldGaugeFrameTex }
+
+aVsStarTex:
+  { type: TEXTURE, ctype: u8, format: IA8, width:   8, height:  8, offset: 0x30013E0, symbol: aVsStarTex }
+
+D_versus_3001420:
+  { type: TEXTURE, ctype: u8, format: CI8, width: 256, height: 42, offset: 0x3001420, symbol: D_versus_3001420, tlut: 0x3003E20 }
+D_versus_3003E20:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 248, offset: 0x3003E20, symbol: D_versus_3003E20 }
+
+D_versus_3004010:
+  { type: TEXTURE, ctype: u8, format: CI8, width: 136, height: 25, offset: 0x3004010, symbol: D_versus_3004010, tlut: 0x3004D58 }
+D_versus_3004D58:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 256, offset: 0x3004D58, symbol: D_versus_3004D58 }
+
+D_versus_3004F60:
+  { type: TEXTURE, ctype: u8, format: CI8, width: 152, height: 25, offset: 0x3004F60, symbol: D_versus_3004F60, tlut: 0x3005E38 }
+D_versus_3005E38:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 256, offset: 0x3005E38, symbol: D_versus_3005E38 }
+
+D_versus_3006040:
+  { type: TEXTURE, ctype: u8, format: CI8, width: 104, height: 25, offset: 0x3006040, symbol: D_versus_3006040, tlut: 0x3006A68 }
+D_versus_3006A68:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 248, offset: 0x3006A68, symbol: D_versus_3006A68 }
+
+D_versus_3006C60:
+  { type: TEXTURE, ctype: u8, format: CI8, width:  96, height: 23, offset: 0x3006C60, symbol: D_versus_3006C60, tlut: 0x3007500 }
+D_versus_3007500:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 224, offset: 0x3007500, symbol: D_versus_3007500 }
+
+D_versus_30076C0:
+  { type: TEXTURE, ctype: u8, format: CI8, width: 152, height: 25, offset: 0x30076C0, symbol: D_versus_30076C0, tlut: 0x3008598 }
+D_versus_3008598:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 256, offset: 0x3008598, symbol: D_versus_3008598 }
+
+D_versus_30087A0:
+  { type: TEXTURE, ctype: u8, format: CI8, width:  40, height: 40, offset: 0x30087A0, symbol: D_versus_30087A0, tlut: 0x3008DE0 }
+D_versus_3008DE0:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 112, offset: 0x3008DE0, symbol: D_versus_3008DE0 }
+
+D_versus_3008EC0:
+  { type: TEXTURE, ctype: u8, format: CI8, width:  64, height: 40, offset: 0x3008EC0, symbol: D_versus_3008EC0, tlut: 0x30098C0 }
+D_versus_30098C0:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 104, offset: 0x30098C0, symbol: D_versus_30098C0 }
+
+D_versus_3009990:
+  { type: TEXTURE, ctype: u8, format: CI8, width:  64, height: 40, offset: 0x3009990, symbol: D_versus_3009990, tlut: 0x300A390 }
+D_versus_300A390:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 112, offset: 0x300A390, symbol: D_versus_300A390 }
+
+D_versus_300A470:
+  { type: TEXTURE, ctype: u8, format: CI8, width: 152, height: 23, offset: 0x300A470, symbol: D_versus_300A470, tlut: 0x300B218 }
+D_versus_300B218:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 232, offset: 0x300B218, symbol: D_versus_300B218 }
+
+D_versus_300B3F0:
+  { type: TEXTURE, ctype: u8, format: CI8, width: 168, height: 25, offset: 0x300B3F0, symbol: D_versus_300B3F0, tlut: 0x300C458 }
+D_versus_300C458:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 256, offset: 0x300C458, symbol: D_versus_300C458 }
+
+D_versus_300C660:
+  {type: TEXTURE, ctype: u8, format: CI8, width: 112, height: 25, offset: 0x300C660, symbol: D_versus_300C660, tlut: 0x300D150 }
+D_versus_300D150:
+  {type: TEXTURE, ctype: u16, format: TLUT, colors: 251, offset: 0x300D150, symbol: D_versus_300D150 }
+
+aVsBoostGaugeCoolTex:
+  { type: TEXTURE, ctype: u8, format: CI8, width:  24, height:  3, offset: 0x300D350, symbol: aVsBoostGaugeCoolTex, tlut: 0x300D398 }
+aVsBoostGaugeCoolTLUT:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 16, offset: 0x300D398, symbol: aVsBoostGaugeCoolTLUT }
+
+aVsBoostGaugeOverheatTex:
+  { type: TEXTURE, ctype: u8, format: CI8, width:  24, height:  3, offset: 0x300D3C0, symbol: aVsBoostGaugeOverheatTex, tlut: 0x300D408 }
+aVsBoostGaugeOverheatTLUT:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 24, offset: 0x300D408, symbol: aVsBoostGaugeOverheatTLUT }
+
+aVsShieldGaugeTex:
+  { type: TEXTURE, ctype: u8, format: CI8, width:  48, height:  4, offset: 0x300D440, symbol: aVsShieldGaugeTex, tlut: 0x300D500 }
+aVsShieldGaugeTLUT:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 40, offset: 0x300D500, symbol: aVsShieldGaugeTLUT }
+
+D_versus_300D550:
+  { type: GFX, offset: 0x300D550, symbol: D_versus_300D550}
+D_versus_300DE80:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x300DE80, symbol: D_versus_300DE80 }
+
+D_versus_300E080:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x300E080, symbol: D_versus_300E080 }
+
+D_versus_300E280:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 16, offset: 0x300E280, symbol: D_versus_300E280 }
+
+D_versus_300E680:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x300E680, symbol: D_versus_300E680 }
+
+D_versus_300E880:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x300E880, symbol: D_versus_300E880 }
+
+D_versus_300EA80:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x300EA80, symbol: D_versus_300EA80 }
+
+D_versus_300EC80:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x300EC80, symbol: D_versus_300EC80 }
+
+D_versus_300EE80:
+  { type: GFX, offset: 0x300EE80, symbol: D_versus_300EE80}
+
+aVsLandmasterModelDL:
+  { type: GFX, offset: 0x300FB80, symbol: aVsLandmasterModelDL}
+
+D_versus_3010690:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x3010690, symbol: D_versus_3010690 }
+
+D_versus_3010890:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x3010890, symbol: D_versus_3010890 }
+
+D_versus_3010A90:
+  { type: GFX, offset: 0x3010A90, symbol: D_versus_3010A90}
+
+D_versus_3011470:
+  { type: GFX, offset: 0x3011470, symbol: D_versus_3011470}
+
+D_versus_3011E40:
+  { type: GFX, offset: 0x3011E40, symbol: D_versus_3011E40}
+
+D_versus_3011ED0:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 64, height: 32, offset: 0x3011ED0, symbol: D_versus_3011ED0 }
+
+aVsSpaceJunk3DL:
+  { type: GFX, offset: 0x3012ED0, symbol: aVsSpaceJunk3DL}
+
+aVsSpaceJunk2DL:
+  { type: GFX, offset: 0x3013580, symbol: aVsSpaceJunk2DL}
+
+aVsSpaceJunk1DL:
+  { type: GFX, offset: 0x3013780, symbol: aVsSpaceJunk1DL}
+
+D_versus_3013F50:
+  {type: TEXTURE, ctype: u8, format: CI8, width: 32, height: 32, offset: 0x3013F50, symbol: D_versus_3013F50, tlut: 0x3014350 }
+D_versus_3014350:
+  {type: TEXTURE, ctype: u16, format: TLUT, colors: 224, offset: 0x3014350, symbol: D_versus_3014350}
+
+D_versus_3014510:
+  {type: TEXTURE, ctype: u8, format: CI8, width:  8, height:  8, offset: 0x3014510, symbol: D_versus_3014510, tlut: 0x3014550 }
+D_versus_3014550:
+  {type: TEXTURE, ctype: u16, format: TLUT, colors: 32, offset: 0x3014550, symbol: D_versus_3014550}
+
+D_versus_3014590:
+  {type: TEXTURE, ctype: u8, format: CI8, width: 16, height: 16, offset: 0x3014590, symbol: D_versus_3014590, tlut: 0x3014690 }
+D_versus_3014690:
+  {type: TEXTURE, ctype: u16, format: TLUT, colors: 16, offset: 0x3014690, symbol: D_versus_3014690}
+
+D_versus_30146B0:
+  { type: GFX, offset: 0x30146B0, symbol: D_versus_30146B0}
+
+D_versus_3014740:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 64, height: 32, offset: 0x3014740, symbol: D_versus_3014740 }
+
+D_versus_3015740:
+  { type: GFX, offset: 0x3015740, symbol: D_versus_3015740}
+
+D_versus_3015898:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x3015898, symbol: D_versus_3015898 }
+
+D_versus_30160A0:
+  { type: GFX, offset: 0x30160A0, symbol: D_versus_30160A0}
+
+D_versus_30162F8:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x30162F8, symbol: D_versus_30162F8 }
+
+aVsKaFlBaseDL:
+  { type: GFX, offset: 0x3016B00, symbol: aVsKaFlBaseDL}
+
+D_versus_3016DC0:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x3016DC0, symbol: D_versus_3016DC0 }
+
+D_versus_3016FC0:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x3016FC0, symbol: D_versus_3016FC0 }
+
+D_versus_30171C0:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x30171C0, symbol: D_versus_30171C0 }
+
+aVsPyramid1DL:
+  { type: GFX, offset: 0x30173C0, symbol: aVsPyramid1DL}
+
+aVsPyramid2DL:
+  { type: GFX, offset: 0x30174E0, symbol: aVsPyramid2DL}
+
+aVsBuildingDL:
+  { type: GFX, offset: 0x3017600, symbol: aVsBuildingDL}
+
+D_versus_3017800:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x3017800, symbol: D_versus_3017800 }
+
+D_versus_3018000:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x3018000, symbol: D_versus_3018000 }
+
+D_versus_3018800:
+  { type: GFX, offset: 0x3018800, symbol: D_versus_3018800}
+
+D_versus_3018D60:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x3018D60, symbol: D_versus_3018D60 }
+
+D_versus_3019560:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x3019560, symbol: D_versus_3019560 }
+
+D_versus_3019D60:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x3019D60, symbol: D_versus_3019D60 }
+
+D_versus_301A560:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x301A560, symbol: D_versus_301A560 }
+
+D_versus_301AD60:
+  { type: GFX, offset: 0x301AD60, symbol: D_versus_301AD60}
+
+D_versus_301ADE8:
+  {type: TEXTURE, ctype: u8, format: IA8, width: 16, height: 16, offset: 0x301ADE8, symbol: D_versus_301ADE8 }
+
+D_versus_301AEF0:
+  { type: GFX, offset: 0x301AEF0, symbol: D_versus_301AEF0}
+
+D_versus_301AF78:
+  {type: TEXTURE, ctype: u8, format: IA8, width: 16, height: 16, offset: 0x301AF78, symbol: D_versus_301AF78 }
+
+aVsArchDL:
+  { type: GFX, offset: 0x301B080, symbol: aVsArchDL}
+
+D_versus_301B438:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x301B438, symbol: D_versus_301B438 }
+
+D_versus_301B640:
+  { type: GFX, offset: 0x301B640, symbol: D_versus_301B640}
+
+D_versus_301B6E0:
+  { type: GFX, offset: 0x301B6E0, symbol: D_versus_301B6E0}
+
+D_versus_301B768:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x301B768, symbol: D_versus_301B768 }
+
+D_versus_301C0A4:
+  { type: SF64:ANIM, offset: 0x301C0A4, symbol: D_versus_301C0A4}
+
+D_versus_301C3A8:
+  { type: SF64:ANIM, offset: 0x301C3A8, symbol: D_versus_301C3A8}
+
+aVsOnFootFalcoSkel:
+  { type: SF64:SKELETON, offset: 0x301C614, symbol: aVsOnFootFalcoSkel }
+
+D_versus_301C79C:
+  { type: SF64:ANIM, offset: 0x301C79C, symbol: D_versus_301C79C }
+
+D_versus_301C9B0:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x301C9B0, symbol: D_versus_301C9B0 }
+
+D_versus_301CCE4:
+  { type: SF64:ANIM, offset: 0x301CCE4, symbol: D_versus_301CCE4}
+
+D_versus_301CFEC:
+  { type: SF64:ANIM, offset: 0x301CFEC, symbol: D_versus_301CFEC}
+
+aVsOnFootFoxSkel:
+  { type: SF64:SKELETON, offset: 0x301D258, symbol: aVsOnFootFoxSkel }
+
+D_versus_301D3DC:
+  { type: SF64:ANIM, offset: 0x301D3DC, symbol: D_versus_301D3DC }
+
+D_versus_301D568:
+  { type: SF64:ANIM, offset: 0x301D568, symbol: D_versus_301D568 }
+
+D_versus_301D888:
+  { type: SF64:ANIM, offset: 0x301D888, symbol: D_versus_301D888}
+
+aVsOnFootPeppySkel:
+  { type: SF64:SKELETON, offset: 0x301DB94, symbol: aVsOnFootPeppySkel }
+
+D_versus_301DD6C:
+  { type: SF64:ANIM, offset: 0x301DD6C, symbol: D_versus_301DD6C }
+
+D_versus_301DEA4:
+  { type: SF64:ANIM, offset: 0x301DEA4, symbol: D_versus_301DEA4}
+
+D_versus_301E19C:
+  { type: SF64:ANIM, offset: 0x301E19C, symbol: D_versus_301E19C}
+
+aVsOnFootSlippySkel:
+  { type: SF64:SKELETON, offset: 0x301E3E8, symbol: aVsOnFootSlippySkel }
+
+D_versus_301E560:
+  { type: SF64:ANIM, offset: 0x301E560, symbol: D_versus_301E560}
+
+D_versus_301E570:
+  { type: GFX, offset: 0x301E570, symbol: D_versus_301E570}
+
+D_versus_301E5F8:
+  {type: TEXTURE, ctype: u8, format: IA8, width: 16, height: 16, offset: 0x301E5F8, symbol: D_versus_301E5F8 }
+
+D_versus_301E700:
+  { type: GFX, offset: 0x301E700, symbol: D_versus_301E700}
+
+D_versus_301E788:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x301E788, symbol: D_versus_301E788 }
+
+D_versus_301E990:
+  { type: GFX, offset: 0x301E990, symbol: D_versus_301E990}
+
+D_versus_301EA18:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x301EA18, symbol: D_versus_301EA18 }
+
+D_versus_301EC20:
+  { type: GFX, offset: 0x301EC20, symbol: D_versus_301EC20}
+
+D_versus_301ECA8:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x301ECA8, symbol: D_versus_301ECA8 }
+
+D_versus_301EEB0:
+  { type: GFX, offset: 0x301EEB0, symbol: D_versus_301EEB0}
+
+D_versus_301EF38:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x301EF38, symbol: D_versus_301EF38 }
+
+aVsLandmasterCanonDL:
+  { type: GFX, offset: 0x301F140, symbol: aVsLandmasterCanonDL}
+
+D_versus_301F2E0:
+  { type: GFX, offset: 0x301F2E0, symbol: D_versus_301F2E0}
+
+D_versus_301F368:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x301F368, symbol: D_versus_301F368 }
+
+D_versus_301F570:
+  { type: GFX, offset: 0x301F570, symbol: D_versus_301F570}
+
+D_versus_301F5F8:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x301F5F8, symbol: D_versus_301F5F8 }
+
+D_versus_301F800:
+  { type: GFX, offset: 0x301F800, symbol: D_versus_301F800}
+
+D_versus_301F888:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x301F888, symbol: D_versus_301F888 }
+
+D_versus_301FA90:
+  { type: GFX, offset: 0x301FA90, symbol: D_versus_301FA90}
+
+D_versus_301FB18:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x301FB18, symbol: D_versus_301FB18 }
+
+D_versus_301FD20:
+  { type: GFX, offset: 0x301FD20, symbol: D_versus_301FD20}
+
+D_versus_301FDA8:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x301FDA8, symbol: D_versus_301FDA8 }
+
+D_versus_301FFB0:
+  { type: GFX, offset: 0x301FFB0, symbol: D_versus_301FFB0}
+
+D_versus_3020048:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x3020048, symbol: D_versus_3020048 }
+
+D_versus_3020850:
+  { type: GFX, offset: 0x3020850, symbol: D_versus_3020850}
+
+D_versus_30208D8:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x30208D8, symbol: D_versus_30208D8 }
+
+D_versus_3020AE0:
+  { type: GFX, offset: 0x3020AE0, symbol: D_versus_3020AE0}
+
+D_versus_3020B78:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x3020B78, symbol: D_versus_3020B78 }
+
+D_versus_3020D80:
+  { type: GFX, offset: 0x3020D80, symbol: D_versus_3020D80}
+
+D_versus_3020E18:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x3020E18, symbol: D_versus_3020E18 }
+
+D_versus_3021620:
+  { type: GFX, offset: 0x3021620, symbol: D_versus_3021620}
+
+D_versus_30216B8:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x30216B8, symbol: D_versus_30216B8 }
+
+D_versus_30218C0:
+  { type: GFX, offset: 0x30218C0, symbol: D_versus_30218C0}
+
+D_versus_3021958:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x3021958, symbol: D_versus_3021958 }
+
+D_versus_3022160:
+  { type: GFX, offset: 0x3022160, symbol: D_versus_3022160}
+
+D_versus_30221E8:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x30221E8, symbol: D_versus_30221E8 }
+
+D_versus_30223F0:
+  { type: GFX, offset: 0x30223F0, symbol: D_versus_30223F0}
+
+D_versus_30226D0:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width:  8, height:  8, offset: 0x30226D0, symbol: D_versus_30226D0 }
+
+D_versus_3022DE0:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width:  8, height:  8, offset: 0x3022DE0, symbol: D_versus_3022DE0 }
+
+D_versus_3022E60:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x3022E60, symbol: D_versus_3022E60 }
+
+D_versus_3023238:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x3023238, symbol: D_versus_3023238 }
+
+D_versus_3023F68:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width:  8, height:  8, offset: 0x3023F68, symbol: D_versus_3023F68 }
+
+D_versus_30242D0:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width:  8, height:  8, offset: 0x30242D0, symbol: D_versus_30242D0 }
+
+D_versus_30246E8:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width:  8, height:  8, offset: 0x30246E8, symbol: D_versus_30246E8 }
+
+D_versus_3024C30:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x3024C30, symbol: D_versus_3024C30 }
+
+D_versus_3025138:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x3025138, symbol: D_versus_3025138 }
+
+D_versus_3025938:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width:  8, height:  8, offset: 0x3025938, symbol: D_versus_3025938 }
+
+D_versus_3025C68:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x3025C68, symbol: D_versus_3025C68 }
+
+D_versus_30261A0:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width:  8, height:  8, offset: 0x30261A0, symbol: D_versus_30261A0 }
+
+D_versus_3026A38:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width:  8, height:  8, offset: 0x3026A38, symbol: D_versus_3026A38 }
+
+D_versus_3026AB8:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width:  8, height:  8, offset: 0x3026AB8, symbol: D_versus_3026AB8 }
+
+D_versus_3026B38:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width:  8, height:  8, offset: 0x3026B38, symbol: D_versus_3026B38 }
+
+D_versus_3026BB8:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width:  8, height:  8, offset: 0x3026BB8, symbol: D_versus_3026BB8 }
+
+D_versus_3026C38:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width:  8, height:  8, offset: 0x3026C38, symbol: D_versus_3026C38 }
+
+D_versus_3026CB8:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height:  8, offset: 0x3026CB8, symbol: D_versus_3026CB8 }
+
+D_versus_3026DB8:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height:  8, offset: 0x3026DB8, symbol: D_versus_3026DB8 }
+
+D_versus_3026EB8:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x3026EB8, symbol: D_versus_3026EB8 }
+
+D_versus_3027268:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x3027268, symbol: D_versus_3027268 }
+
+D_versus_3028130:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width:  8, height: 16, offset: 0x3028130, symbol: D_versus_3028130 }
+
+D_versus_3028230:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 16, offset: 0x3028230, symbol: D_versus_3028230 }
+
+D_versus_3028C60:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width:  8, height:  8, offset: 0x3028C60, symbol: D_versus_3028C60 }
+
+D_versus_3028CE0:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x3028CE0, symbol: D_versus_3028CE0 }
+
+D_versus_3029160:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width:  8, height:  8, offset: 0x3029160, symbol: D_versus_3029160 }
+
+D_versus_3029388:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x3029388, symbol: D_versus_3029388 }
+
+D_versus_302A0A0:
+  { type: GFX, offset: 0x302A0A0, symbol: D_versus_302A0A0}
+
+D_versus_302A138:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x302A138, symbol: D_versus_302A138 }
+
+D_versus_302A940:
+  { type: GFX, offset: 0x302A940, symbol: D_versus_302A940}
+
+D_versus_302A9C8:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x302A9C8, symbol: D_versus_302A9C8 }
+
+D_versus_302ABD0:
+  { type: GFX, offset: 0x302ABD0, symbol: D_versus_302ABD0}
+
+D_versus_302AC68:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x302AC68, symbol: D_versus_302AC68 }
+
+D_versus_302B470:
+  { type: GFX, offset: 0x302B470, symbol: D_versus_302B470}
+
+D_versus_302B4F8:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x302B4F8, symbol: D_versus_302B4F8 }
+
+D_versus_302B700:
+  { type: GFX, offset: 0x302B700, symbol: D_versus_302B700}
+
+D_versus_302B788:
+  { type: TEXTURE, ctype: u8, format: IA8, width: 16, height: 16, offset: 0x302B788, symbol: D_versus_302B788 }
+
+D_versus_302B890:
+  { type: GFX, offset: 0x302B890, symbol: D_versus_302B890}
+
+D_versus_302B918:
+  { type: TEXTURE, ctype: u8, format: IA8, width: 16, height: 16, offset: 0x302B918, symbol: D_versus_302B918 }
+
+D_versus_302BA20:
+  { type: GFX, offset: 0x302BA20, symbol: D_versus_302BA20}
+
+D_versus_302BAA8:
+  { type: TEXTURE, ctype: u8, format: IA8, width: 16, height: 16, offset: 0x302BAA8, symbol: D_versus_302BAA8 }
+
+D_versus_302BBB0:
+  { type: GFX, offset: 0x302BBB0, symbol: D_versus_302BBB0}
+
+D_versus_302BC38:
+  { type: TEXTURE, ctype: u8, format: IA8, width: 16, height: 16, offset: 0x302BC38, symbol: D_versus_302BC38 }
+
+D_versus_302BD40:
+  { type: GFX, offset: 0x302BD40, symbol: D_versus_302BD40}
+
+D_versus_302BDC8:
+  { type: TEXTURE, ctype: u8, format: IA8, width: 16, height: 16, offset: 0x302BDC8, symbol: D_versus_302BDC8 }
+
+D_versus_302BED0:
+  { type: GFX, offset: 0x302BED0, symbol: D_versus_302BED0}
+
+D_versus_302BF88:
+  { type: TEXTURE, ctype: u8, format: CI8, width:  16, height: 16, offset: 0x302BF88, symbol: D_versus_302BF88, tlut: 0x302C088 }
+
+D_versus_302C088:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 34, offset: 0x302C088, symbol: D_versus_302C088 }
+
+D_versus_302C0D0:
+  { type: GFX, offset: 0x302C0D0, symbol: D_versus_302C0D0}
+
+D_versus_302C188:
+  { type: TEXTURE, ctype: u8, format: CI8, width:  16, height: 16, offset: 0x302C188, symbol: D_versus_302C188, tlut: 0x302C288 }
+D_versus_302C288:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 94, offset: 0x302C288, symbol: D_versus_302C288 }
+
+D_versus_302C350:
+  { type: GFX, offset: 0x302C350, symbol: D_versus_302C350}
+
+D_versus_302C408:
+  { type: TEXTURE, ctype: u8, format: CI8, width:  16, height: 16, offset: 0x302C408, symbol: D_versus_302C408, tlut: 0x302C508 }
+D_versus_302C508:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 76, offset: 0x302C508, symbol: D_versus_302C508 }
+
+D_versus_302C5A0:
+  { type: GFX, offset: 0x302C5A0, symbol: D_versus_302C5A0}
+
+D_versus_302C658:
+  { type: TEXTURE, ctype: u8, format: CI8, width:  16, height: 16, offset: 0x302C658, symbol: D_versus_302C658, tlut: 0x302C758 }
+D_versus_302C758:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 101, offset: 0x302C758, symbol: D_versus_302C758 }
+
+D_versus_302C830:
+  { type: GFX, offset: 0x302C830, symbol: D_versus_302C830}
+
+D_versus_302C8E8:
+  { type: TEXTURE, ctype: u8, format: CI8, width:  16, height: 16, offset: 0x302C8E8, symbol: D_versus_302C8E8, tlut: 0x302C9E8 }
+D_versus_302C9E8:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 165, offset: 0x302C9E8, symbol: D_versus_302C9E8 }
+
+D_versus_302CB40:
+  { type: GFX, offset: 0x302CB40, symbol: D_versus_302CB40}
+
+D_versus_302CBF8:
+  { type: TEXTURE, ctype: u8, format: CI8, width:  16, height: 16, offset: 0x302CBF8, symbol: D_versus_302CBF8, tlut: 0x302CCF8 }
+D_versus_302CCF8:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 158, offset: 0x302CCF8, symbol: D_versus_302CCF8 }
+
+D_versus_302CE40:
+  { type: GFX, offset: 0x302CE40, symbol: D_versus_302CE40}
+
+D_versus_302CEF8:
+  { type: TEXTURE, ctype: u8, format: CI8, width:  16, height: 16, offset: 0x302CEF8, symbol: D_versus_302CEF8, tlut: 0x302CFF8 }
+D_versus_302CFF8:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 146, offset: 0x302CFF8, symbol: D_versus_302CFF8}
+
+D_versus_302D120:
+  { type: GFX, offset: 0x302D120, symbol: D_versus_302D120}
+
+D_versus_302D1B8:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width:  8, height:  8, offset: 0x302D1B8, symbol: D_versus_302D1B8 }
+
+D_versus_302D240:
+  { type: GFX, offset: 0x302D240, symbol: D_versus_302D240}
+
+D_versus_302D2C8:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x302D2C8, symbol: D_versus_302D2C8 }
+
+D_versus_302D4D0:
+  { type: GFX, offset: 0x302D4D0, symbol: D_versus_302D4D0}
+
+D_versus_302D568:
+  {type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x302D568, symbol: D_versus_302D568 }
+
+D_versus_302DD70:
+  { type: SF64:ENVIRONMENT, offset: 0x302DD70, symbol: D_versus_302DD70}
+
+D_versus_302DDB4:
+  { type: SF64:ENVIRONMENT, offset: 0x302DDB4, symbol: D_versus_302DDB4}
+
+D_versus_302DDF8:
+  { type: SF64:ENVIRONMENT, offset: 0x302DDF8, symbol: D_versus_302DDF8}
+
+D_versus_302DE3C:
+  { type: SF64:OBJECT_INIT, offset: 0x302DE3C, symbol: D_versus_302DE3C}
+
+D_versus_302E0E4:
+  { type: SF64:OBJECT_INIT, offset: 0x302E0E4, symbol: D_versus_302E0E4}
+
+D_versus_302E170:
+  { type: SF64:OBJECT_INIT, offset: 0x302E170, symbol: D_versus_302E170}
+
+D_versus_302E378:
+  { type: SF64:OBJECT_INIT, offset: 0x302E378, symbol: D_versus_302E378}
+
+aVsSpaceJunk1Hitbox:
+  { type: SF64:HITBOX, offset: 0x302ED4C, symbol: aVsSpaceJunk1Hitbox}
+
+aVsSpaceJunk2Hitbox:
+  { type: SF64:HITBOX, offset: 0x302ED98, symbol: aVsSpaceJunk2Hitbox}
+
+aVsSpaceJunk3Hitbox:
+  { type: SF64:HITBOX, offset: 0x302EDB4, symbol: aVsSpaceJunk3Hitbox}
+
+aVsKaFlBaseHitbox:
+  { type: SF64:HITBOX, offset: 0x302EE00, symbol: aVsKaFlBaseHitbox}
+
+aVsBuilding1Hibox:
+  { type: SF64:HITBOX, offset: 0x302EE64, symbol: aVsBuilding1Hibox}
+
+aVsBuilding2Hibox:
+  { type: SF64:HITBOX, offset: 0x302EE80, symbol: aVsBuilding2Hibox}
+
+aVsArchHitbox:
+  { type: SF64:HITBOX, offset: 0x302EE9C, symbol: aVsArchHitbox}
+
+D_versus_302EEE8:
+  { type: SF64:TRIANGLE, count: 4, offset: 0x302EEE8, symbol: D_versus_302EEE8, mesh_symbol: D_versus_OFFSET}
+
+D_versus_302EF6C:
+  { type: SF64:TRIANGLE, count: 4, offset: 0x302EF6C, symbol: D_versus_302EF6C, mesh_symbol: D_versus_OFFSET}
+
+D_versus_302EFF0:
+  { type: SF64:TRIANGLE, count: 4, offset: 0x302EFF0, symbol: D_versus_302EFF0, mesh_symbol: D_versus_OFFSET}
+
+D_versus_302F044:
+  { type: SF64:TRIANGLE, count: 14, offset: 0x302F044, symbol: D_versus_302F044, mesh_symbol: D_versus_OFFSET}
+
+D_versus_302E56C:
+  {type: VEC3F, count: 20, offset: 0x302E56C, symbol: D_versus_302E56C}
+
+D_versus_302E65C:
+  {type: VEC3F, count: 20, offset: 0x302E65C, symbol: D_versus_302E65C}
+
+D_versus_302E74C:
+  {type: VEC3F, count: 19, offset: 0x302E74C, symbol: D_versus_302E74C}
+
+D_versus_302E830:
+  {type: VEC3F, count: 25, offset: 0x302E830, symbol: D_versus_302E830}
+
+D_versus_302E95C:
+  {type: VEC3F, count: 20, offset: 0x302E95C, symbol: D_versus_302E95C}
+
+D_versus_302EA4C:
+  {type: VEC3F, count: 20, offset: 0x302EA4C, symbol: D_versus_302EA4C}
+
+D_versus_302EB3C:
+  {type: VEC3F, count: 19, offset: 0x302EB3C, symbol: D_versus_302EB3C}
+
+D_versus_302EC20:
+  {type: VEC3F, count: 25, offset: 0x302EC20, symbol: D_versus_302EC20}

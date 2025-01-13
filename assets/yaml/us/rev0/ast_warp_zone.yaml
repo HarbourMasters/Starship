@@ -1,0 +1,42 @@
+:config:
+  segments:
+    - [0x07, 0xBF5D50]
+  header:
+    code:
+      - '#include "assets/ast_warp_zone.h"'
+    header:
+      - '#include "gfx.h"'
+      - '#include "sf64object.h"'
+
+aWzSxEnemy1DL:
+  { type: GFX, offset: 0x7000000, symbol: aWzSxEnemy1DL }
+
+aWzGateDL:
+  { type: GFX, offset: 0x7000280, symbol: aWzGateDL }
+
+aWzMeteor2DL:
+  { type: GFX, offset: 0x70008F0, symbol: aWzMeteor2DL }
+
+D_WZ_7000260:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 4, height: 4, offset: 0x7000260, symbol: D_WZ_7000260 }
+
+D_WZ_7000A30:
+  { type: TEXTURE, ctype: u8, format: CI4, width: 32, height: 32, offset: 0x7000A30, symbol: D_WZ_7000A30, tlut: 0x7000C30 }
+
+D_WZ_7000C30:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 8, offset: 0x7000C30, symbol: D_WZ_7000C30 }
+
+aWzPillar1DL:
+  { type: GFX, offset: 0x7000C40, symbol: aWzPillar1DL }
+
+aWzMeteor1DL:
+  { type: GFX, offset: 0x7000E80, symbol: aWzMeteor1DL }
+
+aWzPillar2DL:
+  { type: GFX, offset: 0x70010E0, symbol: aWzPillar2DL }
+
+D_WZ_7001540:
+  { type: GFX, offset: 0x7001540, symbol: D_WZ_7001540 }
+
+D_WZ_70015D0:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x70015D0, symbol: D_WZ_70015D0 }

@@ -1,6 +1,7 @@
 #include "global.h"
 #include "assets/ast_landmaster.h"
 #include "assets/ast_titania.h"
+#include "port/hooks/Events.h"
 
 void func_tank_80047754(Player* player);
 void func_tank_80047D38(Player* player, f32);
@@ -380,7 +381,7 @@ void func_tank_80044868(Player* player) {
     f32 stickTilt;
     f32 sp2C;
 
-    stickTilt = (gInputPress->stick_y * 0.7f) - 8.0f;
+    stickTilt = (gInputPress->stick_y * 0.7f * (CVarGetInteger("gInvertYAxis", 0) == 1 ? -1 : 1)) - 8.0f;
     if (stickTilt < -40.0f) {
         stickTilt = -40.0f;
     }
@@ -490,7 +491,7 @@ void func_tank_80044868(Player* player) {
         if ((gCurrentLevel == LEVEL_TITANIA) && !gBossActive) {
             func_tank_80043280(D_landmaster_3005EA8, D_TI_6009BB8, gGameFrameCount * -55.0f);
         }
-        if ((gCurrentLevel == LEVEL_MACBETH) && (player->state_1C8 == PLAYERSTATE_1C8_LEVEL_COMPLETE)) {
+        if ((gCurrentLevel == LEVEL_MACBETH) && (player->state == PLAYERSTATE_LEVEL_COMPLETE)) {
             // Using D_TI_6009BB8 since it's the same texture, D_Tex_800DACB8 might be imported incorrectly.
             func_tank_80043280(D_landmaster_3005EA8, /* D_Tex_800DACB8 */ D_TI_6009BB8, gGameFrameCount * -55.0f);
         }
@@ -550,35 +551,39 @@ void func_tank_80045348(Player* player) {
 
     if (player->unk_19C >= 0) {
         if ((gBoostButton[player->num] & gInputHold->button) && !player->boostCooldown) {
-            D_800C9F14++;
-            sp2E = true;
-            if (D_800C9F24 == 0.0f) {
-                player->unk_190 = player->unk_194 = 4.0f;
-                AUDIO_PLAY_SFX(NA_SE_TANK_DASH, player->sfxSource, 0);
-            } else {
-                player->unk_190 = 2.0f;
-            }
-            baseSpeedTarget = 25.0f;
-            sp40 = -200.0f;
-            sp3C = 0.2f;
-            sp38 = 6.0f;
+            CALL_CANCELLABLE_EVENT(PlayerActionBoostEvent, player) {
+                D_800C9F14++;
+                sp2E = true;
+                if (D_800C9F24 == 0.0f) {
+                    player->unk_190 = player->unk_194 = 4.0f;
+                    AUDIO_PLAY_SFX(NA_SE_TANK_DASH, player->sfxSource, 0);
+                } else {
+                    player->unk_190 = 2.0f;
+                }
+                baseSpeedTarget = 25.0f;
+                sp40 = -200.0f;
+                sp3C = 0.2f;
+                sp38 = 6.0f;
 
-            D_800C9F24 += 1.0f;
-            if (D_ctx_801779A8[player->num] < 25.0f) {
-                D_ctx_801779A8[player->num] = 25.0f;
-            }
+                D_800C9F24 += 1.0f;
+                if (D_ctx_801779A8[player->num] < 25.0f) {
+                    D_ctx_801779A8[player->num] = 25.0f;
+                }
 
-            Math_SmoothStepToF(&D_ctx_801779A8[player->num], 50.0f, 1.0f, 10.0f, 0.0f);
+                Math_SmoothStepToF(&D_ctx_801779A8[player->num], 50.0f, 1.0f, 10.0f, 0.0f);
+            }
         } else {
             D_800C9F24 = 0.0f;
         }
         if ((gBrakeButton[player->num] & gInputHold->button) && !player->boostCooldown && !sp2E) {
-            D_800C9F14++;
-            baseSpeedTarget = 5.0f;
-            sp40 = 100.0f;
-            sp3C = 0.2f;
-            D_800C9F28 += 1.0f;
-            Math_SmoothStepToF(&D_ctx_801779A8[player->num], 25.0f, 1.0f, 5.0f, 0.0f);
+            CALL_CANCELLABLE_EVENT(PlayerActionBrakeEvent, player) {
+                D_800C9F14++;
+                baseSpeedTarget = 5.0f;
+                sp40 = 100.0f;
+                sp3C = 0.2f;
+                D_800C9F28 += 1.0f;
+                Math_SmoothStepToF(&D_ctx_801779A8[player->num], 25.0f, 1.0f, 5.0f, 0.0f);
+            }
         } else {
             D_800C9F28 = 0.0f;
         }
@@ -664,7 +669,8 @@ void func_tank_80045678(Player* player) {
             AUDIO_PLAY_SFX(NA_SE_TANK_GO_UP, player->sfxSource, 0);
         }
         player->zRotBank += ((__cosf(gGameFrameCount * M_DTOR * 8.0f) * 10.0f) - player->zRotBank) * 0.1f;
-        temp = -gInputPress->stick_y;
+
+        temp = -gInputPress->stick_y * (CVarGetInteger("gInvertYAxis", 0) == 1 ? -1 : 1);
         Math_SmoothStepToF(&player->rot.x, temp * 0.3f, 0.05f, 5.0f, 0.00001f);
         Math_SmoothStepToF(&player->boostSpeed, 15.0f, 0.5f, 5.0f, 0.0f);
         Math_SmoothStepToF(&player->rot.z, 0.0f, 0.1f, 5.0f, 0.00001f);
@@ -1305,7 +1311,7 @@ void func_tank_80047FBC(Player* player) {
     if (!(D_800C9F08 & 1)) {
         Math_SmoothStepToF(&player->rot.z, -((player->vel.z / 5.0f) * 4.0f), 0.4f, 8.0f, 0.01f);
         if (player->rot.z >= 3.0f) {
-            if (gPlayer[0].state_1C8 != PLAYERSTATE_1C8_LEVEL_COMPLETE) {
+            if (gPlayer[0].state != PLAYERSTATE_LEVEL_COMPLETE) {
                 AUDIO_PLAY_SFX(NA_SE_RAILWAY_BOUND, player->sfxSource, 0);
             }
             D_800C9F08 |= 1;
@@ -1471,7 +1477,8 @@ void func_tank_800481F4(Player* player) {
                                                           actor->obj.rot.y, actor->obj.rot.z, 0.0f, 0.0f, 0.0f);
                     if (temp_v0 != 0) {
                         actor->dmgType = DMG_COLLISION;
-                        if ((actor->obj.id == OBJ_ACTOR_TI_LANDMINE) || (actor->obj.id == OBJ_MISSILE_SEEK_TEAM)) {
+                        if ((actor->obj.id == OBJ_ACTOR_TI_LANDMINE) ||
+                            (actor->obj.id == OBJ_ACTOR_MISSILE_SEEK_TEAM)) {
                             actor->dmgType = -1;
                         }
                         if (actor->info.damage) {

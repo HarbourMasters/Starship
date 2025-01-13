@@ -413,7 +413,7 @@ void CheatRam_SpawnCheckpoint(void) {
     static ItemCheckpoint* checkpoint = NULL;
     s32 i;
 
-    if ((gLevelMode != LEVELMODE_ON_RAILS) || (gPlayer[0].state_1C8 != PLAYERSTATE_1C8_ACTIVE)) {
+    if ((gLevelMode != LEVELMODE_ON_RAILS) || (gPlayer[0].state != PLAYERSTATE_ACTIVE)) {
         return;
     }
 
@@ -564,7 +564,7 @@ void CheatRam_UpdateEntry(CheatEntry* cheat) {
             }
             break;
         case CHEAT_COMPLETE:
-            if ((gCurrentLevel == LEVEL_CORNERIA) && (gPlayer[0].state_1C8 != PLAYERSTATE_1C8_LEVEL_COMPLETE)) {
+            if ((gCurrentLevel == LEVEL_CORNERIA) && (gPlayer[0].state != PLAYERSTATE_LEVEL_COMPLETE)) {
                 if ((gLevelMode == LEVELMODE_ON_RAILS) && (cheat->option == MISSION_COMPLETE)) {
                     gScenery360 = Memory_Allocate(200 * sizeof(Scenery360));
                     gLevelMode = LEVELMODE_ALL_RANGE;
@@ -572,7 +572,7 @@ void CheatRam_UpdateEntry(CheatEntry* cheat) {
                     gLevelMode = LEVELMODE_ON_RAILS;
                 }
             }
-            gPlayer[0].state_1C8 = PLAYERSTATE_1C8_LEVEL_COMPLETE;
+            gPlayer[0].state = PLAYERSTATE_LEVEL_COMPLETE;
         default:
             cheat->ram[0].data.i = cheat->option;
             break;
@@ -670,8 +670,8 @@ void RamMod_Update(void) {
         return;
     }
 
-    if ((contPress->button & START_BUTTON) && (gPlayer[0].state_1C8 == PLAYERSTATE_1C8_LEVEL_COMPLETE)) {
-        gPlayer[0].state_1C8 = PLAYERSTATE_1C8_NEXT;
+    if ((contPress->button & START_BUTTON) && (gPlayer[0].state == PLAYERSTATE_LEVEL_COMPLETE)) {
+        gPlayer[0].state = PLAYERSTATE_NEXT;
         Audio_FadeOutAll(10);
         gFadeoutType = 4;
         gLeveLClearStatus[gCurrentLevel] = Play_CheckMedalStatus(medalCount[gCurrentLevel]) + 1;

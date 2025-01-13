@@ -267,7 +267,7 @@ void func_versus_800BDE44(void) {
     gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 0, 255);
 
     for (i = 0; i < 4; i++) {
-        if ((gPlayer[i].state_1C8 == PLAYERSTATE_1C8_ACTIVE) || (gPlayer[i].state_1C8 == PLAYERSTATE_1C8_U_TURN)) {
+        if ((gPlayer[i].state == PLAYERSTATE_ACTIVE) || (gPlayer[i].state == PLAYERSTATE_U_TURN)) {
             if ((gPlayerScores[i] != sVsDisplayedScores[i]) || (D_80178810[i] != 0)) {
                 D_80178810[i] += 4;
                 if (D_80178810[i] > 15) {
@@ -590,7 +590,7 @@ s32 Versus_UpdatePlayerStatus(void) {
     for (i = 0, ret = 0; i < 4; i++) {
         D_80178850[i] = true;
 
-        if (gPlayer[i].state_1C8 != PLAYERSTATE_1C8_VS_STANDBY) {
+        if (gPlayer[i].state != PLAYERSTATE_VS_STANDBY) {
             D_80178850[i] = false;
             sPlayerRespawnTimer[i] = 150;
             continue;
@@ -714,7 +714,7 @@ void func_versus_800BF750(void) {
     RCP_SetupDL(&gMasterDisp, SETUPDL_76);
 
     for (i = 0; i < 4; i++) {
-        if (gPlayer[i].state_1C8 != PLAYERSTATE_1C8_ACTIVE) {
+        if (gPlayer[i].state != PLAYERSTATE_ACTIVE) {
             continue;
         }
         for (j = 0, temp = 0; j < 4; j++) {
@@ -737,10 +737,10 @@ bool Versus_CheckForWinner(void) {
     switch (gVsMatchType) {
         case VS_MATCH_POINTS:
             for (i = 0, numDown = 0; i < 4; i++) {
-                if (gPlayer[i].state_1C8 != PLAYERSTATE_1C8_VS_STANDBY) {
+                if (gPlayer[i].state != PLAYERSTATE_VS_STANDBY) {
                     sVsWinner = i;
                 }
-                if (gPlayer[i].state_1C8 == PLAYERSTATE_1C8_VS_STANDBY) {
+                if (gPlayer[i].state == PLAYERSTATE_VS_STANDBY) {
                     numDown++;
                 }
             }
@@ -772,7 +772,7 @@ bool Versus_CheckForWinner(void) {
                     if (gPlayer[j].attacker >= 0) {
                         gPlayer[j].attacker = i + 1;
                     }
-                    gPlayer[j].state_1C8 = PLAYERSTATE_1C8_VS_STANDBY;
+                    gPlayer[j].state = PLAYERSTATE_VS_STANDBY;
                 }
                 gVsMatchWon = true;
                 sVsWinner = i;
@@ -781,10 +781,10 @@ bool Versus_CheckForWinner(void) {
 
         case VS_MATCH_BATTLE:
             for (i = 0, numDown = 0; i < 4; i++) {
-                if (gPlayer[i].state_1C8 != PLAYERSTATE_1C8_VS_STANDBY) {
+                if (gPlayer[i].state != PLAYERSTATE_VS_STANDBY) {
                     sVsWinner = i;
                 }
-                if (gPlayer[i].state_1C8 == PLAYERSTATE_1C8_VS_STANDBY) {
+                if (gPlayer[i].state == PLAYERSTATE_VS_STANDBY) {
                     numDown++;
                 }
             }
@@ -811,7 +811,7 @@ bool Versus_CheckForWinner(void) {
                     if (gPlayer[j].attacker >= 0) {
                         gPlayer[j].attacker = i + 1;
                     }
-                    gPlayer[j].state_1C8 = PLAYERSTATE_1C8_VS_STANDBY;
+                    gPlayer[j].state = PLAYERSTATE_VS_STANDBY;
                 }
                 gVsMatchWon = true;
             }
@@ -824,8 +824,7 @@ bool Versus_CheckForWinner(void) {
 
             if (gVsMatchType == VS_MATCH_TIME) {
                 for (i = 0; i < 4; i++) {
-                    if ((gPlayer[i].state_1C8 == PLAYERSTATE_1C8_DOWN) ||
-                        (gPlayer[i].state_1C8 == PLAYERSTATE_1C8_VS_STANDBY)) {
+                    if ((gPlayer[i].state == PLAYERSTATE_DOWN) || (gPlayer[i].state == PLAYERSTATE_VS_STANDBY)) {
                         gPlayerScores[i] = D_80178838[i] = sVsDisplayedScores[i] = D_80178810[i] = 0;
                         sPlayerDownFrames[i]++;
                     }
@@ -912,7 +911,7 @@ bool Versus_CheckForWinner(void) {
                     gPlayer[j].attacker = i + 1;
                 }
 
-                gPlayer[j].state_1C8 = PLAYERSTATE_1C8_VS_STANDBY;
+                gPlayer[j].state = PLAYERSTATE_VS_STANDBY;
             }
             gVsMatchWon = true;
             break;

@@ -490,7 +490,7 @@ s32 Title_GetRankTotalHits(void) {
 
         for (j = 0; j < rankingRoute; j++) {
             hitCount = gSaveFile.save.data.stats[i][j].hitCount;
-            hitCount |= (gSaveFile.save.data.stats[i][j].unk_C & 1) << 8;
+            hitCount |= (gSaveFile.save.data.stats[i][j].hitCountOver256 & 1) << 8;
 
             gTotalHitsRanking[i] += hitCount;
 
@@ -3388,8 +3388,14 @@ void Title_NextState_OptionMenu(void) {
                 if (sWipeHeight < 120) {
                     sWipeHeight += 18;
                 } else {
-                    gGameState = GSTATE_MENU;
-                    // gGameState = GSTATE_ENDING;
+                    if (CVarGetInteger("gDebugEnding", 0) == 1) {
+                        gGameState = GSTATE_ENDING;
+                        gGreatFoxIntact = 1;
+                        gLeveLClearStatus[LEVEL_ZONESS] = 1;
+                        gLeveLClearStatus[LEVEL_KATINA] = 1;
+                    } else {
+                        gGameState = GSTATE_MENU;
+                    }
                     gNextGameStateTimer = 2;
                     gOptionMenuStatus = OPTION_WAIT;
                     gDrawMode = DRAW_NONE;
@@ -3623,21 +3629,21 @@ void Title_Radio_PlayMessage(u16** msgList, RadioCharacterId character) {
     switch (gGameState) {
         case GSTATE_TITLE:
             gRadioPrintPosY = 176;
-            gRadioPrintPosX = 85;
-            gRadioTextBoxPosX = 80.0f;
+            gRadioPrintPosX = OTRGetRectDimensionFromLeftEdge(85);
+            gRadioTextBoxPosX = OTRGetRectDimensionFromLeftEdge(80.0f);
             gRadioTextBoxPosY = 174.0f;
             gRadioTextBoxScaleX = 4.63f;
-            gRadioPortraitPosX = 32.0f;
+            gRadioPortraitPosX = OTRGetRectDimensionFromLeftEdge(32.0f);
             gRadioPortraitPosY = 174.0f;
             break;
 
         case GSTATE_PLAY:
             gRadioPrintPosY = 179;
-            gRadioPrintPosX = 79;
-            gRadioTextBoxPosX = 74.0f;
+            gRadioPrintPosX = OTRGetRectDimensionFromLeftEdge(79);
+            gRadioTextBoxPosX = OTRGetRectDimensionFromLeftEdge(74.0f);
             gRadioTextBoxPosY = 178.0f;
             gRadioTextBoxScaleX = 4.53f;
-            gRadioPortraitPosX = 26.0f;
+            gRadioPortraitPosX = OTRGetRectDimensionFromLeftEdge(26.0f);
             gRadioPortraitPosY = 178.0f;
     }
 

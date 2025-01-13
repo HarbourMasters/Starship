@@ -20,7 +20,6 @@ ctx.c.m2c
 assets/yaml/us/ast_test.yaml
 /audio_data
 src/assets/*
-include/assets/*
 /build
 build-new/
 tools/mio0
@@ -35,6 +34,7 @@ cmake-build-*/
 .vs
 build*
 logs/
+/mods/
 starship.cfg.json
 default.sav
 imgui.ini
@@ -49,3 +49,5 @@ Starship.log
 *.lib
 *.pdb
 dumps/
+_packages/*
+*.DS_Store

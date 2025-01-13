@@ -1,0 +1,144 @@
+name: GenerateBuilds
+
+on:
+  push:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  generate-port-otr:
+    runs-on: ubuntu-22.04
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: true
+    - name: Install dependencies
+      run: sudo apt-get install gcc g++ git cmake ninja-build lsb-release
+    - name: ccache
+      uses: hendrikmuhs/ccache-action@v1.2.13
+      with:
+        key: ${{ runner.os }}-otr-ccache-${{ github.ref }}-${{ github.sha }}
+        restore-keys: |
+          ${{ runner.os }}-otr-ccache-${{ github.ref }}
+          ${{ runner.os }}-otr-ccache-
+    - name: Cache build folders
+      uses: actions/cache@v4
+      with:
+        key: ${{ runner.os }}-otr-build-${{ github.ref }}-${{ github.sha }}
+        restore-keys: |
+          ${{ runner.os }}-otr-build-${{ github.ref }}
+          ${{ runner.os }}-otr-build-
+        path: |
+          tools/Torch/cmake-build-release
+    - name: Generate starship.otr
+      run: |
+        export PATH="/usr/lib/ccache:/usr/local/opt/ccache/libexec:$PATH"
+        make -C tools/Torch type=release -j3
+        tools/Torch/cmake-build-release/torch pack port starship.otr
+    - uses: actions/upload-artifact@v4
+      with:
+        name: starship.otr
+        path: starship.otr
+        retention-days: 1
+
+  build-windows:
+    needs: generate-port-otr
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - name: Build
+        run: |
+          cmake -S . -B "build/x64" -G "Visual Studio 17 2022" -T v143 -A x64 -DCMAKE_BUILD_TYPE=Release
+          cmake --build ./build/x64 --config Release --parallel 10
+      - name: Download starship.otr
+        uses: actions/download-artifact@v4
+        with:
+          name: starship.otr
+          path: ./build/x64/Release/starship.otr
+      - name: Upload build
+        uses: actions/upload-artifact@v4
+        with:
+          name: starship-windows
+          path: ./build/x64/Release
+
+  build-macos:
+    needs: generate-port-otr
+    runs-on: macOS-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - name: Install dependencies
+        run: brew install sdl2 libpng glew ninja cmake libzip nlohmann-json tinyxml2 spdlog
+      - name: Build
+        run: |
+          cmake -H. -Bbuild-cmake -GNinja -DCMAKE_BUILD_TYPE=Release
+          cmake --build build-cmake --config Release -j3
+      - name: Download starship.otr
+        uses: actions/download-artifact@v4
+        with:
+          name: starship.otr
+          path: build-cmake/starship.otr
+      - name: Create Package
+        run: |
+          mkdir starship-release
+          mv build-cmake/Starship starship-release/
+          mv build-cmake/starship.otr starship-release/
+      - name: Publish packaged artifacts
+        uses: actions/upload-artifact@v4
+        with:
+            name: starship-mac-x64
+            path: starship-release
+
+  build-linux:
+    needs: generate-port-otr
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - name: Install dependencies
+        run: sudo apt-get install gcc g++ git cmake ninja-build lsb-release libsdl2-dev libpng-dev libsdl2-net-dev libzip-dev zipcmp zipmerge ziptool nlohmann-json3-dev libtinyxml2-dev libspdlog-dev libboost-dev libopengl-dev
+      - name: Install latest SDL
+        run: |
+          export PATH="/usr/lib/ccache:/usr/local/opt/ccache/libexec:$PATH"
+          wget https://www.libsdl.org/release/SDL2-2.24.1.tar.gz
+          tar -xzf SDL2-2.24.1.tar.gz
+          cd SDL2-2.24.1
+          ./configure --enable-hidapi-libusb
+          make -j 10
+          sudo make install
+      - name: Install latest tinyxml2
+        run: |
+          export PATH="/usr/lib/ccache:/usr/local/opt/ccache/libexec:$PATH"
+          wget https://github.com/leethomason/tinyxml2/archive/refs/tags/10.0.0.tar.gz
+          tar -xzf 10.0.0.tar.gz
+          cd tinyxml2-10.0.0
+          mkdir build
+          cd build
+          cmake ..
+          make
+          sudo make install
+      - name: Download starship.otr
+        uses: actions/download-artifact@v4
+        with:
+          name: starship.otr
+          path: build-cmake/starship.otr
+      - name: Build
+        run: |
+          cmake -H. -Bbuild-cmake -GNinja -DCMAKE_BUILD_TYPE=Release
+          cmake --build build-cmake --config Release -j3
+          (cd build-cmake && cpack -G External)
+
+          mv README.md readme.txt
+          mv build-cmake/*.appimage starship.appimage
+      - name: Upload build
+        uses: actions/upload-artifact@v4
+        with:
+          name: Starship-linux
+          path: |
+            starship.appimage

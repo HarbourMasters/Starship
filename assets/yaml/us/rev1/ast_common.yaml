@@ -920,8 +920,8 @@ D_102A010:
 D_102A098:
   { type: TEXTURE, format: RGBA16, width: 32, height: 32, ctype: u16, offset: 0x102A098, symbol: D_102A098 }
 
-aRadarMarkKaSaucererDL:
-  { type: GFX, offset: 0x102A8A0, symbol: aRadarMarkKaSaucererDL }
+aBallDL:
+  { type: GFX, offset: 0x102A8A0, symbol: aBallDL }
 
 D_102A928:
   { type: TEXTURE, format: RGBA16, width: 16, height: 16, ctype: u16, offset: 0x102A928, symbol: D_102A928 }

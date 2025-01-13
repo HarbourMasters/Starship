@@ -420,7 +420,7 @@ void Ending_801886F4(void) {
         return;
     }
 
-    RCP_SetupDL(&gMasterDisp, SETUPDL_78);
+    RCP_SetupDL(&gMasterDisp, SETUPDL_78_POINT);
     gDPSetPrimColor(gMasterDisp++, 0x00, 0x00, 255, 255, 255, 255);
 
     switch ((D_ending_80196F90 % 8) / 2) {
@@ -1139,8 +1139,10 @@ void Ending_Draw(void) {
     if ((D_ending_80192E70 >= 0) && (D_ending_80192E70 < 10000)) {
         RCP_SetupDL(&gMasterDisp, SETUPDL_83);
         gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 0, 255);
-        Graphics_DisplaySmallText(10, 220, 1.0f, 1.0f, "TIMER");
-        Graphics_DisplaySmallNumber(80, 220, D_ending_80192E70);
+        Graphics_DisplaySmallText(10, 210, 1.0f, 1.0f, "TIMER");
+        Graphics_DisplaySmallNumber(80, 210, D_ending_80192E70);
+        Graphics_DisplaySmallText(10, 220, 1.0f, 1.0f, "CSFRM");
+        Graphics_DisplaySmallNumber(80, 220, gCsFrameCount);
     }
 #endif
 
@@ -1545,9 +1547,13 @@ void Ending_8018B860(void) {
     Play_ClearObjectData();
 
     Ending_8018B3E8(&gActors[0], 0);
-    Ending_8018B52C(&gActors[1], 0);
-    Ending_8018B52C(&gActors[2], 1);
-    Ending_8018B52C(&gActors[3], 2);
+
+    // Buildings
+    Ending_8018B52C(&gActors[1], 0); // left
+    Ending_8018B52C(&gActors[2], 1); // right near
+    Ending_8018B52C(&gActors[3], 2); // right far
+
+    // Cornerian fighters
     Ending_8018B6D8(&gActors[4], 0);
     Ending_8018B6D8(&gActors[5], 1);
     Ending_8018B6D8(&gActors[6], 2);
@@ -1774,6 +1780,7 @@ void Ending_8018C21C(void) {
     f32 spE4;
     s32 i;
 
+    // Clouds
     if (gCsFrameCount < 780) {
         Matrix_Push(&gGfxMatrix);
         RCP_SetupDL(&gMasterDisp, SETUPDL_17);
@@ -1792,6 +1799,13 @@ void Ending_8018C21C(void) {
     }
 
     Matrix_Push(&gGfxMatrix);
+
+    // Actors
+    // 0 Great Fox
+    // 1 Building on the left
+    // 2 building on the right near
+    // 3 building on the right far
+    // 4 5 6 7 8 9 cornerian ships
 
     for (i = ARRAY_COUNT(gActors) - 1; i >= 0; i--) {
         if (gActors[i].obj.status != OBJ_FREE) {
@@ -1876,7 +1890,11 @@ void Ending_8018C21C(void) {
                     gSPDisplayList(gMasterDisp++, D_END_700F320);
                     break;
 
-                case 3:
+                case 3: // Cornerian ships
+
+                    // @port: Tag the transform.
+                    FrameInterpolation_RecordOpenChild(&gActors, i);
+
                     RCP_SetupDL(&gMasterDisp, SETUPDL_23);
                     Matrix_Translate(gGfxMatrix, gActors[i].obj.pos.x, gActors[i].obj.pos.y, gActors[i].obj.pos.z,
                                      MTXF_APPLY);
@@ -1935,6 +1953,9 @@ void Ending_8018C21C(void) {
                     Matrix_SetGfxMtx(&gMasterDisp);
                     gSPDisplayList(gMasterDisp++, D_END_700C620);
                     Matrix_Pop(&gGfxMatrix);
+
+                    // @port Pop the transform id.
+                    FrameInterpolation_RecordCloseChild();
                     break;
             }
             Matrix_Pop(&gGfxMatrix);

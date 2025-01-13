@@ -111,10 +111,10 @@ void SectorX_SxSlippy_Update(SxSlippy* this) {
 
                 gBosses[0].swork[6] = 0;
                 gTeamShields[TEAM_ID_SLIPPY] = -2;
-                gPlayer[0].state_1C8 = PLAYERSTATE_1C8_STANDBY;
+                gPlayer[0].state = PLAYERSTATE_STANDBY;
 
                 this->timer_0BC = 200;
-                this->iwork[14] = 3;
+                this->iwork[TEAM_FACE] = FACE_SLIPPY;
                 this->fwork[0] = 0.0f;
                 this->fwork[1] = 0.0f;
 
@@ -146,7 +146,7 @@ void SectorX_SxSlippy_Update(SxSlippy* this) {
             Math_SmoothStepToF(&gPlayer[0].cam.eye.y, this->obj.pos.y, this->fwork[1], 20.0f, 0.0f);
 
             if (this->timer_0BC == 0) {
-                gPlayer[0].state_1C8 = PLAYERSTATE_1C8_ACTIVE;
+                gPlayer[0].state = PLAYERSTATE_ACTIVE;
                 if (gPlayer[0].alternateView) {
                     Camera_UpdateCockpitOnRails(&gPlayer[0], 1);
                 }
@@ -503,7 +503,7 @@ void SectorX_SxSpyborg_Update(SxSpyborg* this) {
         }
     }
 
-    if (((this->state != 8) && (this->state != 20)) && (gPlayer[0].state_1C8 != PLAYERSTATE_1C8_ACTIVE)) {
+    if (((this->state != 8) && (this->state != 20)) && (gPlayer[0].state != PLAYERSTATE_ACTIVE)) {
         this->state = 8;
         this->fwork[0] = 0.0f;
         Audio_KillSfxBySourceAndId(D_i2_80195D88, NA_SE_EN_SZMIS_ENGINE);
@@ -902,7 +902,7 @@ void SectorX_SxSpyborg_Update(SxSpyborg* this) {
                 this->animFrame++;
                 if (this->animFrame >= Animation_GetFrameCount(&D_SX_60123BC)) {
                     this->animFrame = Animation_GetFrameCount(&D_SX_60123BC) - 1;
-                    if (gPlayer[0].state_1C8 != PLAYERSTATE_1C8_STANDBY) {
+                    if (gPlayer[0].state != PLAYERSTATE_STANDBY) {
                         this->animFrame = 0;
                         this->state = 10;
                         this->fwork[0] = 0.0f;
@@ -1087,8 +1087,8 @@ void SectorX_SxSpyborg_Update(SxSpyborg* this) {
             }
 
             if (this->timer_050 == 120) {
-                if ((gPlayer[0].state_1C8 != PLAYERSTATE_1C8_NEXT) && (gPlayer[0].state_1C8 != PLAYERSTATE_1C8_DOWN)) {
-                    gPlayer[0].state_1C8 = PLAYERSTATE_1C8_LEVEL_COMPLETE;
+                if ((gPlayer[0].state != PLAYERSTATE_NEXT) && (gPlayer[0].state != PLAYERSTATE_DOWN)) {
+                    gPlayer[0].state = PLAYERSTATE_LEVEL_COMPLETE;
                     gPlayer[0].csState = 0;
                     gPlayer[0].draw = true;
                 }
@@ -1343,13 +1343,13 @@ void SectorX_SxSpyborg_PostLimbDraw(s32 limbIndex, Vec3f* rot, void* thisx) {
     }
 }
 
-Vec3f D_i2_801956B0[5] = { { 0.0f, 2300.0f, -5000.0f },
-                           { -600.0f, 2200.0f, -5000.0f },
-                           { -300.0f, 2270.0f, -5000.0f },
-                           { 300.0f, 2270.0f, -5000.0f },
-                           { 600.0f, 2200.0f, -5000.0f } };
+Vec3f sSxCsCommanderPos[5] = { { 0.0f, 2300.0f, -5000.0f },
+                               { -600.0f, 2200.0f, -5000.0f },
+                               { -300.0f, 2270.0f, -5000.0f },
+                               { 300.0f, 2270.0f, -5000.0f },
+                               { 600.0f, 2200.0f, -5000.0f } };
 
-Vec3f D_i2_801956EC[3] = {
+Vec3f sLevelStartTeamSetupPos[3] = {
     { 150.0f, 250.0f, 50.0f },
     { -150.0f, -50.0f, 50.0f },
     { 150.0f, -50.0f, 50.0f },
@@ -1362,7 +1362,7 @@ f32 D_i2_80195740[4] = { -150.0f, 150.0f, 0.0f, 0.0f };
 f32 D_i2_80195750[4] = { 20.0f, 0.0f, -70.0f, 0.0f };
 f32 D_i2_80195760[4] = { -250.0f, -200.0f, -400.0f, -8000.0f };
 f32 D_i2_80195770[3] = { 120.0f, 180.0f, -150.0f };
-s16 D_i2_8019577C[3] = { 2, 3, 4 };
+s16 sSxTeamFaces[3] = { FACE_FALCO, FACE_SLIPPY, FACE_PEPPY };
 
 void SectorX_SxSpyborg_Draw(SxSpyborg* this) {
     f32 fwork;
@@ -1435,32 +1435,32 @@ void SectorX_SxSpyborg_Draw(SxSpyborg* this) {
     }
 }
 
-void SectorX_80193800(ActorCutscene* this, s32 index) {
+void SectorX_CsCommander_Setup(ActorCutscene* this, s32 index) {
     Actor_Initialize(this);
     this->obj.status = OBJ_ACTIVE;
     this->obj.id = OBJ_ACTOR_CUTSCENE;
 
-    this->obj.pos.x = D_i2_801956B0[index].x;
-    this->obj.pos.y = D_i2_801956B0[index].y;
-    this->obj.pos.z = D_i2_801956B0[index].z;
+    this->obj.pos.x = sSxCsCommanderPos[index].x;
+    this->obj.pos.y = sSxCsCommanderPos[index].y;
+    this->obj.pos.z = sSxCsCommanderPos[index].z;
 
     this->vel.z = 30.0f;
     this->vel.y = -16.0f;
-    this->animFrame = 20;
+    this->animFrame = ACTOR_CS_COMMANDER;
     this->obj.rot.x = 15.0f;
 
     Object_SetInfo(&this->info, this->obj.id);
     AUDIO_PLAY_SFX(NA_SE_EN_ENGINE_01, this->sfxSource, 4);
 }
 
-void SectorX_801938D8(ActorCutscene* this, s32 index) {
+void SectorX_LevelStart_SetupTeam(ActorCutscene* this, s32 teamIdx) {
     Actor_Initialize(this);
     this->obj.status = OBJ_ACTIVE;
     this->obj.id = OBJ_ACTOR_CUTSCENE;
 
-    this->obj.pos.x = gPlayer[0].cam.eye.x + D_i2_801956EC[index].x;
-    this->obj.pos.y = gPlayer[0].cam.eye.y + D_i2_801956EC[index].y;
-    this->obj.pos.z = gPlayer[0].cam.eye.z + D_i2_801956EC[index].z;
+    this->obj.pos.x = gPlayer[0].cam.eye.x + sLevelStartTeamSetupPos[teamIdx].x;
+    this->obj.pos.y = gPlayer[0].cam.eye.y + sLevelStartTeamSetupPos[teamIdx].y;
+    this->obj.pos.z = gPlayer[0].cam.eye.z + sLevelStartTeamSetupPos[teamIdx].z;
 
     this->state = 1;
     this->iwork[11] = 1;
@@ -1469,7 +1469,7 @@ void SectorX_801938D8(ActorCutscene* this, s32 index) {
     this->obj.rot.y = 180.0f;
     this->obj.rot.x = 10.0f;
 
-    if (index == 2) {
+    if (teamIdx == 2) {
         this->obj.rot.z = -20.0f;
     }
 
@@ -1492,7 +1492,7 @@ void SectorX_LevelStart(Player* player) {
         case 0:
             gCsFrameCount = 0;
             for (i = 0; i < 5; i++) {
-                SectorX_80193800(&gActors[5 + i], i);
+                SectorX_CsCommander_Setup(&gActors[5 + i], i);
             }
             player->csState = 1;
             player->cam.eye.x = gCsCamEyeX = 100.0f;
@@ -1581,17 +1581,17 @@ void SectorX_LevelStart(Player* player) {
             switch (gCsFrameCount) {
                 case 195:
                     if (gTeamShields[TEAM_ID_FALCO] > 0) {
-                        SectorX_801938D8(&gActors[0], 0);
+                        SectorX_LevelStart_SetupTeam(&gActors[0], 0);
                     }
                     break;
                 case 213:
                     if (gTeamShields[TEAM_ID_SLIPPY] > 0) {
-                        SectorX_801938D8(&gActors[1], 1);
+                        SectorX_LevelStart_SetupTeam(&gActors[1], 1);
                     }
                     break;
                 case 229:
                     if (gTeamShields[TEAM_ID_PEPPY] > 0) {
-                        SectorX_801938D8(&gActors[2], 2);
+                        SectorX_LevelStart_SetupTeam(&gActors[2], 2);
                     }
                     break;
             }
@@ -1628,7 +1628,7 @@ void SectorX_LevelStart(Player* player) {
                 player->baseSpeed = gArwingSpeed;
                 AUDIO_PLAY_BGM(gBgmSeqId);
                 gLevelStartStatusScreenTimer = 80;
-                player->state_1C8 = PLAYERSTATE_1C8_ACTIVE;
+                player->state = PLAYERSTATE_ACTIVE;
                 player->csState = player->csTimer = player->csEventTimer = 0;
                 player->cam.eye.y = player->pos.y * player->unk_148 + 50.0f;
                 player->cam.eye.z = 400.0f;
@@ -1663,7 +1663,7 @@ void SectorX_LevelStart(Player* player) {
     player->trueZpos = player->pos.z + player->camDist;
 }
 
-void SectorX_801944D4(ActorCutscene* this, s32 index) {
+void SectorX_LevelComplete_SetupTeam(ActorCutscene* this, s32 teamIdx) {
     Vec3f srcA;
     Vec3f destA;
     Vec3f srcB;
@@ -1671,12 +1671,14 @@ void SectorX_801944D4(ActorCutscene* this, s32 index) {
     Player* player = &gPlayer[0];
 
     Matrix_RotateY(gCalcMatrix, player->rot.y * M_DTOR, MTXF_NEW);
-    srcA.x = D_i2_80195710[index];
-    srcA.y = D_i2_80195720[index];
-    srcA.z = D_i2_80195730[index];
-    srcB.x = D_i2_80195740[index];
-    srcB.y = D_i2_80195750[index];
-    srcB.z = D_i2_80195760[index];
+
+    srcA.x = D_i2_80195710[teamIdx];
+    srcA.y = D_i2_80195720[teamIdx];
+    srcA.z = D_i2_80195730[teamIdx];
+    srcB.x = D_i2_80195740[teamIdx];
+    srcB.y = D_i2_80195750[teamIdx];
+    srcB.z = D_i2_80195760[teamIdx];
+
     Matrix_MultVec3fNoTranslate(gCalcMatrix, &srcA, &destA);
     Matrix_MultVec3fNoTranslate(gCalcMatrix, &srcB, &destB);
 
@@ -1697,16 +1699,16 @@ void SectorX_801944D4(ActorCutscene* this, s32 index) {
 
     Object_SetInfo(&this->info, this->obj.id);
 
-    if (index == 3) {
+    if (teamIdx == 3) {
         this->animFrame = ACTOR_CS_GREAT_FOX;
         this->state = 20;
         this->obj.rot.x = -player->rot.x - 10.0f;
         this->obj.rot.y = (player->rot.y + 180.0f) - 10.0f;
         this->fwork[9] = 10.0f;
     } else {
-        this->obj.rot.z = D_i2_80195770[index];
+        this->obj.rot.z = D_i2_80195770[teamIdx];
         this->iwork[11] = 1;
-        this->iwork[14] = D_i2_8019577C[index];
+        this->iwork[TEAM_FACE] = sSxTeamFaces[teamIdx];
         AUDIO_PLAY_SFX(NA_SE_ARWING_ENGINE_FG, this->sfxSource, 4);
     }
 }
@@ -1793,7 +1795,7 @@ void SectorX_LevelComplete(Player* player) {
                 gFillScreenRed = gFillScreenGreen = gFillScreenBlue = 0;
                 gFillScreenAlphaTarget = 255;
                 if (gFillScreenAlpha == 255) {
-                    player->state_1C8 = PLAYERSTATE_1C8_NEXT;
+                    player->state = PLAYERSTATE_NEXT;
                     gFadeoutType = 4;
                     player->csTimer = 0;
                     Play_ClearObjectData();
@@ -1814,13 +1816,13 @@ void SectorX_LevelComplete(Player* player) {
 
         case 100:
             if (gTeamShields[TEAM_ID_FALCO] > 0) {
-                SectorX_801944D4(&gActors[1], 0);
+                SectorX_LevelComplete_SetupTeam(&gActors[1], 0);
             }
             if (gTeamShields[TEAM_ID_SLIPPY] > 0) {
-                SectorX_801944D4(&gActors[2], 1);
+                SectorX_LevelComplete_SetupTeam(&gActors[2], 1);
             }
             if (gTeamShields[TEAM_ID_PEPPY] > 0) {
-                SectorX_801944D4(&gActors[3], 2);
+                SectorX_LevelComplete_SetupTeam(&gActors[3], 2);
             }
             break;
 
@@ -1837,8 +1839,8 @@ void SectorX_LevelComplete(Player* player) {
             break;
 
         case 920:
-            gActors[1].iwork[14] = gActors[2].iwork[14] = gActors[3].iwork[14] = 0;
-            SectorX_801944D4(&gActors[0], 3);
+            gActors[1].iwork[TEAM_FACE] = gActors[2].iwork[TEAM_FACE] = gActors[3].iwork[TEAM_FACE] = FACE_NONE;
+            SectorX_LevelComplete_SetupTeam(&gActors[0], 3);
             AUDIO_PLAY_SFX(NA_SE_GREATFOX_ENGINE, gActors[0].sfxSource, 0);
             break;
 

@@ -11,6 +11,8 @@
 #include <libultraship/libultraship.h>
 #include <Fast3D/gfx_pc.h>
 #include "port/Engine.h"
+#include "port/notification/notification.h"
+#include "utils/StringHelper.h"
 
 extern "C" {
 #include "sys.h"
@@ -24,6 +26,7 @@ std::shared_ptr<Ship::GuiWindow> mConsoleWindow;
 std::shared_ptr<Ship::GuiWindow> mStatsWindow;
 std::shared_ptr<Ship::GuiWindow> mInputEditorWindow;
 std::shared_ptr<Ship::GuiWindow> mGfxDebuggerWindow;
+std::shared_ptr<Notification::Window> mNotificationWindow;
 std::shared_ptr<AdvancedResolutionSettings::AdvancedResolutionSettingsWindow> mAdvancedResolutionSettingsWindow;
 
 void SetupGuiElements() {
@@ -36,6 +39,15 @@ void SetupGuiElements() {
 
     mGameMenuBar = std::make_shared<GameMenuBar>("gOpenMenuBar", CVarGetInteger("gOpenMenuBar", 0));
     gui->SetMenuBar(mGameMenuBar);
+
+    if (gui->GetMenuBar() && !gui->GetMenuBar()->IsVisible()) {
+#if defined(__SWITCH__) || defined(__WIIU__)
+        Notification::Emit({ .message = "Press - to access enhancements menu", .remainingTime = 10.0f });
+#else
+        Notification::Emit({ .message = "Press F1 to access enhancements menu", .remainingTime = 10.0f });
+#endif
+    }
+
     mStatsWindow = gui->GetGuiWindow("Stats");
     if (mStatsWindow == nullptr) {
         SPDLOG_ERROR("Could not find stats window");
@@ -59,13 +71,20 @@ void SetupGuiElements() {
 
     mAdvancedResolutionSettingsWindow = std::make_shared<AdvancedResolutionSettings::AdvancedResolutionSettingsWindow>("gAdvancedResolutionEditorEnabled", "Advanced Resolution Settings");
     gui->AddGuiWindow(mAdvancedResolutionSettingsWindow);
+    mNotificationWindow = std::make_shared<Notification::Window>("gNotifications", "Notifications Window");
+    gui->AddGuiWindow(mNotificationWindow);
+    mNotificationWindow->Show();
 }
 
 void Destroy() {
+    auto gui = Ship::Context::GetInstance()->GetWindow()->GetGui();
+    gui->RemoveAllGuiWindows();
+
     mAdvancedResolutionSettingsWindow = nullptr;
     mConsoleWindow = nullptr;
     mStatsWindow = nullptr;
     mInputEditorWindow = nullptr;
+    mNotificationWindow = nullptr;
 }
 
 std::string GetWindowButtonText(const char* text, bool menuOpen) {
@@ -100,24 +119,24 @@ void DrawSettingsMenu(){
                 .isPercentage = true,
             })) {
                 float val = CVarGetFloat("gMainMusicVolume", 1.0f) * 100;
-                gSaveFile.save.data.musicVolume = val;
-                Audio_SetVolume(AUDIO_TYPE_MUSIC, val);
+                gSaveFile.save.data.musicVolume = (u8) val;
+                Audio_SetVolume(AUDIO_TYPE_MUSIC, (u8) val);
             }
             if (UIWidgets::CVarSliderFloat("Voice Volume", "gVoiceVolume", 0.0f, 1.0f, 1.0f, {
                 .format = "%.0f%%",
                 .isPercentage = true,
             })) {
                 float val = CVarGetFloat("gVoiceVolume", 1.0f) * 100;
-                gSaveFile.save.data.voiceVolume = val;
-                Audio_SetVolume(AUDIO_TYPE_VOICE, val);
+                gSaveFile.save.data.voiceVolume = (u8) val;
+                Audio_SetVolume(AUDIO_TYPE_VOICE, (u8) val);
             }
             if (UIWidgets::CVarSliderFloat("Sound Effects Volume", "gSFXMusicVolume", 0.0f, 1.0f, 1.0f, {
                 .format = "%.0f%%",
                 .isPercentage = true,
             })) {
                 float val = CVarGetFloat("gSFXMusicVolume", 1.0f) * 100;
-                gSaveFile.save.data.sfxVolume = val;
-                Audio_SetVolume(AUDIO_TYPE_SFX, val);
+                gSaveFile.save.data.sfxVolume = (u8) val;
+                Audio_SetVolume(AUDIO_TYPE_SFX, (u8) val);
             }
 
             static std::unordered_map<Ship::AudioBackend, const char*> audioBackendNames = {
@@ -159,15 +178,18 @@ void DrawSettingsMenu(){
                 .tooltip = "Allows controller navigation of the SOH menu bar (Settings, Enhancements,...)\nCAUTION: This will disable game inputs while the menubar is visible.\n\nD-pad to move between items, A to select, and X to grab focus on the menu bar"
             });
 #endif
-            UIWidgets::CVarCheckbox("Show Inputs", "gInputEnabled", {
-                .tooltip = "Shows currently pressed inputs on the bottom right of the screen"
-            });
+            // UIWidgets::CVarCheckbox("Show Inputs", "gInputEnabled", {
+            //     .tooltip = "Shows currently pressed inputs on the bottom right of the screen"
+            // });
             if (CVarGetInteger("gInputEnabled", 0)) {
                 UIWidgets::CVarSliderFloat("Input Scale", "gInputScale", 1.0f, 3.0f, 1.0f, {
                     .tooltip = "Sets the on screen size of the displayed inputs from the Show Inputs setting",
                     .format = "%.1fx",
                 });
             }
+            UIWidgets::CVarCheckbox("Invert Y Axis", "gInvertYAxis",{
+                .tooltip = "Inverts the Y axis for controlling vehicles"
+            });
 
             ImGui::EndMenu();
         }
@@ -264,7 +286,7 @@ void DrawSettingsMenu(){
         #else
             bool matchingRefreshRate =
                 CVarGetInteger("gMatchRefreshRate", 0) && Ship::Context::GetInstance()->GetWindow()->GetWindowBackend() != Ship::WindowBackend::FAST3D_DXGI_DX11;
-            UIWidgets::CVarSliderInt((currentFps == 20) ? "FPS: Original (20)" : "FPS: %d", "gInterpolationFPS", minFps, maxFps, 30, {
+            UIWidgets::CVarSliderInt((currentFps == 30) ? "FPS: Original (30)" : "FPS: %d", "gInterpolationFPS", minFps, maxFps, 60, {
                 .disabled = matchingRefreshRate
             });
         #endif
@@ -302,13 +324,8 @@ void DrawSettingsMenu(){
                                                   "##ExtraLatencyThreshold", "gExtraLatencyThreshold", 0, 360, "", 0, true, true, false);
             UIWidgets::Tooltip("When Interpolation FPS setting is at least this threshold, add one frame of input lag (e.g. 16.6 ms for 60 FPS) in order to avoid jitter. This setting allows the CPU to work on one frame while GPU works on the previous frame.\nThis setting should be used when your computer is too slow to do CPU + GPU work in time.");
         }
-
-        UIWidgets::CVarCheckbox("Disable Starfield interpolation", "gDisableStarsInterpolation", {
-            .tooltip = "Disable starfield interpolation to increase performance on slower CPUs"
-        });
-
+      
         UIWidgets::PaddedSeparator(true, true, 3.0f, 3.0f);
-
 
         static std::unordered_map<Ship::WindowBackend, const char*> windowBackendNames = {
                 { Ship::WindowBackend::FAST3D_DXGI_DX11, "DirectX" },
@@ -357,6 +374,8 @@ void DrawSettingsMenu(){
             UIWidgets::PaddedEnhancementCheckbox("Allow multi-windows", "gEnableMultiViewports", true, false, false, "", UIWidgets::CheckboxGraphics::Cross, true);
             UIWidgets::Tooltip("Allows windows to be able to be dragged off of the main game window. Requires a reload to take effect.");
         }
+
+        UIWidgets::PaddedEnhancementCheckbox("Enable Alternative Assets", "gEnhancements.Mods.AlternateAssets");
 
         // If more filters are added to LUS, make sure to add them to the filters list here
         ImGui::Text("Texture Filter (Needs reload)");
@@ -409,7 +428,7 @@ void DrawGameMenu() {
         }
 #if !defined(__SWITCH__) && !defined(__WIIU__)
 
-        if (UIWidgets::MenuItem("Toggle Fullscreen", "F9")) {
+        if (UIWidgets::MenuItem("Toggle Fullscreen", "F11")) {
             Ship::Context::GetInstance()->GetWindow()->ToggleFullscreen();
         }
 
@@ -420,6 +439,10 @@ void DrawGameMenu() {
         ImGui::EndMenu();
     }
 }
+
+static const char* hudAspects[] = {
+    "Expand", "Custom", "Original (4:3)", "Widescreen (16:9)", "Nintendo 3DS (5:3)", "16:10 (8:5)", "Ultrawide (21:9)"
+};
 
 void DrawEnhancementsMenu() {
     if (UIWidgets::BeginMenu("Enhancements")) {
@@ -442,6 +465,10 @@ void DrawEnhancementsMenu() {
                 .tooltip = "Fixes a camera bug found in the code of the game"
             });
 
+            UIWidgets::CVarCheckbox("Sector Z: Spawn all actors", "gSzActorFix", {
+                .tooltip = "Fixes a bug found in Sector Z, where only 10 of 12 available actors are spawned, this causes two 'Space Junk Boxes' to be missing from the level."
+            });
+
             ImGui::EndMenu();
         }
 
@@ -450,6 +477,76 @@ void DrawEnhancementsMenu() {
                 .tooltip = "Restores the missile cutscene bug present in JP 1.0"
             });
 
+            UIWidgets::CVarCheckbox("Beta: Restore beta coin", "gRestoreBetaCoin", {
+                .tooltip = "Restores the beta coin that got replaced with the gold ring"
+            });
+
+            UIWidgets::CVarCheckbox("Beta: Restore old boost/brake gauge", "gRestoreOldBoostGauge", {
+                .tooltip = "Restores the old boost gauge that was seen in some beta footage"
+            });
+
+            ImGui::EndMenu();
+        }
+
+        if (UIWidgets::BeginMenu("HUD")) {
+            if (UIWidgets::CVarCombobox("HUD Aspect Ratio", "gHUDAspectRatio.Selection", hudAspects, 
+            {
+                .tooltip = "Which Aspect Ratio to use when drawing the HUD (Radar, gauges and radio messages)",
+                .defaultIndex = 0,
+            })) {
+                CVarSetInteger("gHUDAspectRatio.Enabled", 1);
+                switch (CVarGetInteger("gHUDAspectRatio.Selection", 0)) {
+                    case 0:
+                        CVarSetInteger("gHUDAspectRatio.Enabled", 0);
+                        CVarSetInteger("gHUDAspectRatio.X", 0);
+                        CVarSetInteger("gHUDAspectRatio.Y", 0);
+                        break;
+                    case 1:
+                        if (CVarGetInteger("gHUDAspectRatio.X", 0) <= 0){
+                            CVarSetInteger("gHUDAspectRatio.X", 1);
+                        }
+                        if (CVarGetInteger("gHUDAspectRatio.Y", 0) <= 0){
+                            CVarSetInteger("gHUDAspectRatio.Y", 1);
+                        }
+                        break;
+                    case 2:
+                        CVarSetInteger("gHUDAspectRatio.X", 4);
+                        CVarSetInteger("gHUDAspectRatio.Y", 3);
+                        break;
+                    case 3:
+                        CVarSetInteger("gHUDAspectRatio.X", 16);
+                        CVarSetInteger("gHUDAspectRatio.Y", 9);
+                        break;
+                    case 4:
+                        CVarSetInteger("gHUDAspectRatio.X", 5);
+                        CVarSetInteger("gHUDAspectRatio.Y", 3);
+                        break;
+                    case 5:
+                        CVarSetInteger("gHUDAspectRatio.X", 8);
+                        CVarSetInteger("gHUDAspectRatio.Y", 5);
+                        break;
+                    case 6:
+                        CVarSetInteger("gHUDAspectRatio.X", 21);
+                        CVarSetInteger("gHUDAspectRatio.Y", 9);
+                        break;                    
+                }
+            }
+            
+            if (CVarGetInteger("gHUDAspectRatio.Selection", 0) == 1)
+            {
+                UIWidgets::CVarSliderInt("Horizontal: %d", "gHUDAspectRatio.X", 1, 100, 1);
+                UIWidgets::CVarSliderInt("Vertical: %d", "gHUDAspectRatio.Y", 1, 100, 1);
+            }
+
+            ImGui::Dummy(ImVec2(ImGui::CalcTextSize("Nintendo 3DS (5:3)").x + 35, 0.0f));
+            ImGui::EndMenu();
+        }
+
+        if (UIWidgets::BeginMenu("Accessibility")) { 
+            UIWidgets::CVarCheckbox("Disable Gorgon (Area 6 boss) screen flashes", "gDisableGorgonFlash", {
+                .tooltip = "Gorgon flashes the screen repeatedly when firing its beam or when teleporting, which causes eye pain for some players and may be harmful to those with photosensitivity.",
+                .defaultValue = false
+            });
             ImGui::EndMenu();
         }
 
@@ -463,14 +560,20 @@ void DrawCheatsMenu() {
         UIWidgets::CVarCheckbox("Invincible", "gInvincible");
         UIWidgets::CVarCheckbox("Unbreakable Wings", "gUnbreakableWings");
         UIWidgets::CVarCheckbox("Infinite Bombs", "gInfiniteBombs");
+        UIWidgets::CVarCheckbox("Infinite Boost/Brake", "gInfiniteBoost");
         UIWidgets::CVarCheckbox("Hyper Laser", "gHyperLaser");
-
-        ImGui::EndMenu();
-    }
-}
-
-void DrawHit64Menu() {
-    if (UIWidgets::BeginMenu("Hit+64")) {
+        UIWidgets::CVarSliderInt("Laser Range Multiplier: %d%%", "gLaserRangeMult", 15, 800, 100,
+            { .tooltip = "Changes how far your lasers fly." });
+        UIWidgets::CVarCheckbox("Rapid-fire mode", "gRapidFire", {
+                .tooltip = "Hold A to keep firing. Release A to start charging a shot."
+            });
+            if (CVarGetInteger("gRapidFire", 0) == 1) {
+                ImGui::Dummy(ImVec2(22.0f, 0.0f));
+                ImGui::SameLine();
+                UIWidgets::CVarCheckbox("Hold L to Charge", "gLtoCharge", {
+                    .tooltip = "If you prefer to not have auto-charge."
+                });
+            }
         UIWidgets::CVarCheckbox("Self destruct button", "gHit64SelfDestruct", {
                 .tooltip = "Press Down on the D-PAD to instantly self destruct."
             });
@@ -483,29 +586,48 @@ void DrawHit64Menu() {
         UIWidgets::CVarCheckbox("Start with Peppy dead", "gHit64PeppyDead", {
                 .tooltip = "Start the level with with Peppy dead."
             });
+        
+        UIWidgets::CVarCheckbox("Score Editor", "gScoreEditor", { .tooltip = "Enable the score editor" });
+
+        if (CVarGetInteger("gScoreEditor", 0) == 1) {
+            UIWidgets::CVarSliderInt("Score: %d", "gScoreEditValue", 0, 999, 0,
+                { .tooltip = "Increase or decrease the current mission score number" });
+        }
 
         ImGui::EndMenu();
     }
 }
 
-const char* debugInfoPages[6] = {
-        "Object",
-        "Check Surface",
-        "Map",
-        "Stage",
-        "Effect",
-        "Enemy",
+static const char* debugInfoPages[6] = {
+    "Object",
+    "Check Surface",
+    "Map",
+    "Stage",
+    "Effect",
+    "Enemy",
+};
+
+static const char* logLevels[] = {
+    "trace", "debug", "info", "warn", "error", "critical", "off",
 };
 
 void DrawDebugMenu() {
     if (UIWidgets::BeginMenu("Developer")) {
+        if (UIWidgets::CVarCombobox("Log Level", "gDeveloperTools.LogLevel", logLevels, {
+            .tooltip = "The log level determines which messages are printed to the "
+                        "console. This does not affect the log file output",
+            .defaultIndex = 1,
+        })) {
+            Ship::Context::GetInstance()->GetLogger()->set_level((spdlog::level::level_enum)CVarGetInteger("gDeveloperTools.LogLevel", 1));
+        }
+
         UIWidgets::WindowButton("Gfx Debugger", "gGfxDebuggerEnabled", GameUI::mGfxDebuggerWindow, {
             .tooltip = "Enables the Gfx Debugger window, allowing you to input commands, type help for some examples"
         });
 
-        UIWidgets::CVarCheckbox("Debug mode", "gEnableDebugMode", {
-            .tooltip = "TBD"
-        });
+        // UIWidgets::CVarCheckbox("Debug mode", "gEnableDebugMode", {
+        //     .tooltip = "TBD"
+        // });
 
         UIWidgets::CVarCheckbox("Level Selector", "gLevelSelector", {
             .tooltip = "Allows you to select any level from the main menu"
@@ -520,7 +642,11 @@ void DrawDebugMenu() {
         });
 
         UIWidgets::CVarCheckbox("SFX Jukebox", "gSfxJukebox", {
-            .tooltip = "Allows you to play sound effects from the game"
+            .tooltip = "Press L in the Expert Sound options to play sound effects from the game"
+        });
+
+        UIWidgets::CVarCheckbox("Disable Starfield interpolation", "gDisableStarsInterpolation", {
+            .tooltip = "Disable starfield interpolation to increase performance on slower CPUs"
         });
 
         UIWidgets::CVarCheckbox("Spawner Mod", "gSpawnerMod", {
@@ -560,17 +686,21 @@ void DrawDebugMenu() {
             .tooltip = "Control the Arwing speed"
         });
 
-        if (CVarGetInteger("gCheckpoint.Set", 0)) {
+        UIWidgets::CVarCheckbox("Debug Ending", "gDebugEnding", {
+            .tooltip = "Jump to credits at the main menu"
+        });
+
+        if (CVarGetInteger(StringHelper::Sprintf("gCheckpoint.%d.Set", gCurrentLevel).c_str(), 0)) {
             if (UIWidgets::Button("Clear Checkpoint")) {
-                CVarClear("gCheckpoint.Set");
+                CVarClear(StringHelper::Sprintf("gCheckpoint.%d.Set", gCurrentLevel).c_str());
                 Ship::Context::GetInstance()->GetWindow()->GetGui()->SaveConsoleVariablesNextFrame();
             }
-        } else if (gPlayer != NULL) {
+        } else if (gPlayer != NULL && gGameState == GSTATE_PLAY) {
             if (UIWidgets::Button("Set Checkpoint")) {
-                CVarSetInteger("gCheckpoint.Set", 1);
-                CVarSetInteger("gCheckpoint.gSavedPathProgress", gGroundSurface);
-                CVarSetFloat("gCheckpoint.gSavedPathProgress", (-gPlayer->pos.z) - 250.0f);
-                CVarSetInteger("gCheckpoint.gSavedObjectLoadIndex", gObjectLoadIndex);
+                CVarSetInteger(StringHelper::Sprintf("gCheckpoint.%d.Set", gCurrentLevel).c_str(), 1);
+                CVarSetInteger(StringHelper::Sprintf("gCheckpoint.%d.gSavedPathProgress", gCurrentLevel).c_str(), gGroundSurface);
+                CVarSetFloat(StringHelper::Sprintf("gCheckpoint.%d.gSavedPathProgress", gCurrentLevel).c_str(), (-gPlayer->pos.z) - 250.0f);
+                CVarSetInteger(StringHelper::Sprintf("gCheckpoint.%d.gSavedObjectLoadIndex", gCurrentLevel).c_str(), gObjectLoadIndex);
                 Ship::Context::GetInstance()->GetWindow()->GetGui()->SaveConsoleVariablesNextFrame();
             }
         }
@@ -607,8 +737,6 @@ void GameMenuBar::DrawElement() {
         DrawCheatsMenu();
 
         ImGui::SetCursorPosY(0.0f);
-
-        DrawHit64Menu();
 
         ImGui::SetCursorPosY(0.0f);
 

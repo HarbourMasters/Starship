@@ -123,11 +123,25 @@ void Radio_PlayMessage(u16* msg, RadioCharacterId character) {
     gRadioMsg = msg;
     gRadioState = 100;
 
-    switch (gGameState) {
+    gRadioMsgId = Message_IdFromPtr(msg);
+    Audio_PlayVoice(gRadioMsgId);
+}
+
+void Radio_CalculatePositions(){
+        switch (gGameState) {
         case GSTATE_TITLE:
+            gRadioPrintPosY = 176;
+            gRadioPrintPosX = OTRGetRectDimensionFromLeftEdgeOverride(85.0f);
+            gRadioTextBoxPosX = OTRGetRectDimensionFromLeftEdgeOverride(80.0f);
+            gRadioTextBoxPosY = 174.0f;
+            gRadioTextBoxScaleX = 4.63f;
+            gRadioPortraitPosX = OTRGetRectDimensionFromLeftEdgeOverride(32.0f);
+            gRadioPortraitPosY = 174.0f;
+            break;
+
         case GSTATE_ENDING:
             gRadioPrintPosY = 176;
-            gRadioPrintPosX = 85;
+            gRadioPrintPosX = 85.0f;
             gRadioTextBoxPosX = 80.0f;
             gRadioTextBoxPosY = 174.0f;
             gRadioTextBoxScaleX = 4.63f;
@@ -137,17 +151,14 @@ void Radio_PlayMessage(u16* msg, RadioCharacterId character) {
 
         case GSTATE_PLAY:
             gRadioPrintPosY = 180;
-            gRadioPrintPosX = 79;
-            gRadioTextBoxPosX = 74.0f;
+            gRadioPrintPosX = OTRGetRectDimensionFromLeftEdgeOverride(79.0f);
+            gRadioTextBoxPosX = OTRGetRectDimensionFromLeftEdgeOverride(74.0f);
             gRadioTextBoxPosY = 178.0f;
             gRadioTextBoxScaleX = 4.53f;
-            gRadioPortraitPosX = 26.0f;
+            gRadioPortraitPosX = OTRGetRectDimensionFromLeftEdgeOverride(26.0f);
             gRadioPortraitPosY = 178.0f;
             break;
     }
-
-    gRadioMsgId = Message_IdFromPtr(msg);
-    Audio_PlayVoice(gRadioMsgId);
 }
 
 s32 sRadioUseRedBox;
@@ -428,10 +439,12 @@ void func_radio_800BAAE8(void) {
 
         if (mirror) {
             Lib_TextureRect_RGBA16_MirX(&gMasterDisp, radioPortraitTex, 44, 44, gRadioPortraitPosX,
-                                     gRadioPortraitPosY + 20.0f + sp38 + gRadioPortraitScaleY, 1.0f, gRadioPortraitScaleY);
+                                        gRadioPortraitPosY + 20.0f + sp38 + gRadioPortraitScaleY, 1.0f,
+                                        gRadioPortraitScaleY);
         } else {
             Lib_TextureRect_RGBA16(&gMasterDisp, radioPortraitTex, 44, 44, gRadioPortraitPosX,
-                                gRadioPortraitPosY + 20.0f + sp38 + gRadioPortraitScaleY, 1.0f, gRadioPortraitScaleY);
+                                   gRadioPortraitPosY + 20.0f + sp38 + gRadioPortraitScaleY, 1.0f,
+                                   gRadioPortraitScaleY);
         }
     }
 }
@@ -442,6 +455,8 @@ void func_radio_800BB388(void) {
     u8* texture;
     u16* palette;
     f32 sp30;
+    
+    Radio_CalculatePositions();
 
     if ((gGameState != GSTATE_MAP) && (gRadioTextBoxScaleY != 0.0f)) {
         temp_fa0 = (gRadioTextBoxScaleY / 0.26f) * 3.0f;
@@ -572,7 +587,6 @@ void Radio_Draw(void) {
         case 32:
             if (Audio_GetCurrentVoice() == 0) {
                 gRadioMsgListIndex++;
-                gRadioMsgId = 10 * (gRadioMsgListIndex + 1);
                 gRadioMsg = SEGMENTED_TO_VIRTUAL(gRadioMsgList[gRadioMsgListIndex]);
                 Audio_PlayVoice(Message_IdFromPtr(gRadioMsg));
                 gRadioMsgCharIndex = 0;
@@ -603,7 +617,7 @@ void Radio_Draw(void) {
             if (!(fakeTemp)) {
                 ret = Audio_GetCurrentVoiceStatus();
 
-                if (gRadioMsgId < 50) {
+                if (gRadioMsgCharIndex < 60 && gRadioMsg[gRadioMsgCharIndex + 1] != MSGCHAR_END) {
                     if (gRadioMsg[gRadioMsgCharIndex + 1] == MSGCHAR_NXT) {
                         if (ret == 0) {
                             gRadioState = 31;
@@ -611,8 +625,8 @@ void Radio_Draw(void) {
                     } else {
                         gRadioMsgCharIndex++;
                     }
-                } else {
-                    gRadioMsgCharIndex++;
+                } else if (gRadioMsgCharIndex < 60) {
+                    gRadioMsgCharIndex = 60;
                 }
 
                 if (sRadioCheckMouthFlag) {
@@ -702,12 +716,12 @@ void Radio_Draw(void) {
                 (gCurrentRadioPortrait != RCID_1000)) {
                 RCP_SetupDL(&gMasterDisp, SETUPDL_76_POINT);
                 gDPSetPrimColor(gMasterDisp++, 0x00, 0x00, 255, 255, 0, 255);
-                Graphics_DisplaySmallText(31, 167, 1.0f, 1.0f, "DOWN");
+                Graphics_DisplaySmallText(OTRGetRectDimensionFromLeftEdgeOverride(31.0f), 167, 1.0f, 1.0f, "DOWN");
                 HUD_TeamDownWrench_Draw(1);
             }
             if (((gCurrentRadioPortrait != RCID_STATIC) && (gCurrentRadioPortrait != RCID_STATIC + 1)) &&
                 (gCurrentRadioPortrait != RCID_1000)) {
-                HUD_TeamShields_Draw(22.0f, 165.0f, gTeamShields[idx]);
+                HUD_TeamShields_Draw(OTRGetRectDimensionFromLeftEdgeOverride(22.0f), 165.0f, gTeamShields[idx]);
             }
         }
 
@@ -747,15 +761,15 @@ void Radio_Draw(void) {
             }
 
             if ((gActors[idx].obj.status != OBJ_ACTIVE) && (gGameFrameCount & 4) &&
-                (gPlayer[0].state_1C8 == PLAYERSTATE_1C8_ACTIVE) && (gCurrentRadioPortrait != RCID_STATIC) &&
+                (gPlayer[0].state == PLAYERSTATE_ACTIVE) && (gCurrentRadioPortrait != RCID_STATIC) &&
                 (gCurrentRadioPortrait != RCID_STATIC + 1) && (gCurrentRadioPortrait != RCID_1000)) {
                 RCP_SetupDL(&gMasterDisp, SETUPDL_76_POINT);
                 gDPSetPrimColor(gMasterDisp++, 0x00, 0x00, 255, 255, 0, 255);
-                Graphics_DisplaySmallText(31, 167, 1.0f, 1.0f, "DOWN");
+                Graphics_DisplaySmallText(OTRGetRectDimensionFromLeftEdgeOverride(31.0f), 167, 1.0f, 1.0f, "DOWN");
             }
             if (((gCurrentRadioPortrait != RCID_STATIC) && (gCurrentRadioPortrait != RCID_STATIC + 1)) &&
                 (gCurrentRadioPortrait != RCID_1000)) {
-                HUD_TeamShields_Draw(22.0f, 165.0f, gActors[idx].health * 2.55f);
+                HUD_TeamShields_Draw(OTRGetRectDimensionFromLeftEdgeOverride(22.0f), 165.0f, gActors[idx].health * 2.55f);
             }
         }
         if (((gCurrentRadioPortrait != RCID_STATIC) && (gCurrentRadioPortrait != RCID_STATIC + 1)) &&
@@ -769,6 +783,7 @@ void Radio_Draw(void) {
     }
 }
 
+// Unused in VERSION_US and absent in VERSION_EU, probably a leftover from VERSION_JP ?
 void func_radio_800BC040(void) {
     if (gPlayState != PLAY_PAUSE) {
         if (gRadioStateTimer > 0) {

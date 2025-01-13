@@ -107,8 +107,8 @@ D_arwing_3010448:
 aAwLaserGun1DL:
   { type: GFX, offset: 0x3011720, symbol: aAwLaserGun1DL }
 
-aAwLaserGun2L:
-  { type: GFX, offset: 0x3011450, symbol: aAwLaserGun2L }
+aAwLaserGun2DL:
+  { type: GFX, offset: 0x3011450, symbol: aAwLaserGun2DL }
 
 D_arwing_30119F0:
   { type: TEXTURE, format: RGBA16, offset: 0x30119F0, width: 32, height: 32, ctype: u16, symbol: D_arwing_30119F0 }

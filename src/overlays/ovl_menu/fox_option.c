@@ -971,6 +971,11 @@ void Option_MainMenu_Update(void) {
             }
 
             if (gControllerPress[gMainController].button & (A_BUTTON | START_BUTTON)) {
+#if DEBUG_VERSUS == 0
+                if (sMainMenuCursor == 2) {
+                    break;
+                }
+#endif
                 AUDIO_PLAY_SFX(NA_SE_ARWING_DECIDE, gDefaultSfxSource, 4);
                 sLightningYpos = sOptionCardPosY[sMainMenuCursor];
                 sDrawCursor = false;
@@ -1421,33 +1426,33 @@ void Option_Sound_SetSoundMode(void) {
 }
 
 void Option_Sound_SetVolumeLevels(void) {
-    s32 var_v1;
+    s32 volume;
 
     D_menu_801B924C = D_menu_801AE99C[D_menu_801B9288 - 1];
 
     if (Option_Input_Sound_X(&(D_menu_801AEB48[D_menu_801B9288 - 1].xPos), 146.0f, 245.0f, &D_menu_801B9268)) {
-        var_v1 = D_menu_801AEB48[D_menu_801B9288 - 1].xPos - 146.0f;
+        volume = D_menu_801AEB48[D_menu_801B9288 - 1].xPos - 146.0f;
 
-        gVolumeSettings[D_menu_801B9288 - 1] = var_v1;
+        gVolumeSettings[D_menu_801B9288 - 1] = volume;
 
-        if (var_v1 > 99) {
-            var_v1 = 99;
+        if (volume > 99) {
+            volume = 99;
         }
 
         switch (D_menu_801B9288 - 1) {
             case 0:
-                gSaveFile.save.data.musicVolume = var_v1;
+                gSaveFile.save.data.musicVolume = volume;
                 break;
 
             case 1:
-                gSaveFile.save.data.voiceVolume = var_v1;
+                gSaveFile.save.data.voiceVolume = volume;
                 break;
 
             case 2:
-                gSaveFile.save.data.sfxVolume = var_v1;
+                gSaveFile.save.data.sfxVolume = volume;
                 break;
         }
-        Audio_SetVolume(D_menu_801B924C, var_v1);
+        Audio_SetVolume(D_menu_801B924C, volume);
     }
 }
 
@@ -2158,6 +2163,7 @@ void Option_RankingMenu_Draw(void) {
         Option_Color_FlashRed(&D_menu_801B93F0);
         colorGB = D_menu_801B93F0;
         gDPSetPrimColor(gMasterDisp++, 0, 0, 255, colorGB, colorGB, 255);
+        // Selection arrow
         Lib_TextureRect_IA8(&gMasterDisp, D_VS_MENU_7004010, 8, 8, 70.0f, (D_menu_801B93E4 * 17.0f) + 55.0f, 1.0f,
                             1.0f);
     }
@@ -2240,13 +2246,19 @@ void Option_80197914(void) {
 
     for (i = 0, vec1 = D_menu_801AF100, vec2 = D_menu_801AF118; i < 2; i++, vec1++, vec2++) {
         Matrix_Push(&gGfxMatrix);
-        Matrix_Translate(gGfxMatrix, vec1->x, vec1->y, -500.0f, MTXF_APPLY);
+        // @port: Tag the transform.
+        FrameInterpolation_RecordOpenChild("RANKING_BORDERS", i);
+
+                Matrix_Translate(gGfxMatrix, vec1->x, vec1->y, -500.0f, MTXF_APPLY);
 
         // @port: Increase the scale by 2.5f to compensate for missing borders
         Matrix_Scale(gGfxMatrix, vec2->x * 4, vec2->y + 2.5f, 1.0f, MTXF_APPLY);
         Matrix_SetGfxMtx(&gMasterDisp);
         gSPDisplayList(gMasterDisp++, D_menu_801AEF30);
         Matrix_Pop(&gGfxMatrix);
+
+        // @port Pop the transform id.
+        FrameInterpolation_RecordCloseChild();
     }
 }
 
@@ -2402,7 +2414,7 @@ void Option_RankingHitCount_Draw(s32 rankIdx, s32 routeIdx, f32 xPos, f32 yPos) 
     if ((yPos > 22.0f) && (yPos < 162.0f)) {
         RCP_SetupDL(&gMasterDisp, SETUPDL_83);
         gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 0, 255);
-        hitCount = (gSaveFile.save.data.stats[rankIdx][routeIdx].unk_C & 1) << 8;
+        hitCount = (gSaveFile.save.data.stats[rankIdx][routeIdx].hitCountOver256 & 1) << 8;
         hitCount |= gSaveFile.save.data.stats[rankIdx][routeIdx].hitCount;
         Graphics_DisplaySmallNumber(xPos + 15.0f - (HUD_CountDigits(hitCount) - 1) * 8, yPos + 24.0f + 1.0f, hitCount);
     }
@@ -2452,7 +2464,7 @@ void Option_RankingPlanetRoute_Draw(s32 rankIdx, f32 y, s32 routeMax) {
     static f32 xAdvance = 40.1f;
     s32 i;
     PlanetId planet;
-    bool gotMedal;
+    u16 gotMedal;
     bool drawPlanetMedal;
     f32 x;
     s32 pad[2];
@@ -2605,11 +2617,17 @@ f32 D_menu_801AF144 = 2.7f;
 void Option_RankingRouteMedal_Draw(f32 xPos, f32 yPos, f32 zPos) {
     RCP_SetupDL(&gMasterDisp, SETUPDL_53);
     Matrix_Push(&gGfxMatrix);
+    // @port: Tag the transform.
+    FrameInterpolation_RecordOpenChild("Option_RankingRouteMedal_Draw", (u32) xPos << 8 | (u32) yPos);
+
     Matrix_Translate(gGfxMatrix, xPos - D_menu_801AF140, yPos + D_menu_801AF144, zPos, MTXF_APPLY);
     Matrix_Scale(gGfxMatrix, D_menu_801AF13C, D_menu_801AF13C, D_menu_801AF13C, MTXF_APPLY);
     Matrix_SetGfxMtx(&gMasterDisp);
     gSPDisplayList(gMasterDisp++, aMapMedalDL);
     Matrix_Pop(&gGfxMatrix);
+
+    // @port Pop the transform id.
+    FrameInterpolation_RecordCloseChild();
 }
 
 s32 Option_GetRouteLineColor(PlanetId start, PlanetId end) {
@@ -4300,13 +4318,13 @@ void Option_Ranking_SaveData(void) {
     }
 
     for (j = 0; j < ROUTE_MAX; j++) {
-        planetStats[10][j].unk_C = 0;
+        planetStats[10][j].hitCountOver256 = 0;
 
         missionHitCount = gMissionHitCount[j];
 
         if (missionHitCount > 255) {
             missionHitCount -= 256;
-            planetStats[10][j].unk_C = 1;
+            planetStats[10][j].hitCountOver256 = 1;
         }
 
         planetStats[10][j].hitCount = missionHitCount;
@@ -4339,7 +4357,7 @@ void Option_Ranking_SaveData(void) {
         for (j = 0; j < ROUTE_MAX; j++) {
             planetStats[i][j].hitCount = gSaveFile.save.data.stats[i][j].hitCount;
             planetStats[i][j].planetId = gSaveFile.save.data.stats[i][j].planetId;
-            planetStats[i][j].unk_C = gSaveFile.save.data.stats[i][j].unk_C;
+            planetStats[i][j].hitCountOver256 = gSaveFile.save.data.stats[i][j].hitCountOver256;
             planetStats[i][j].peppyAlive = gSaveFile.save.data.stats[i][j].peppyAlive;
             planetStats[i][j].falcoAlive = gSaveFile.save.data.stats[i][j].falcoAlive;
             planetStats[i][j].slippyAlive = gSaveFile.save.data.stats[i][j].slippyAlive;
@@ -4362,7 +4380,7 @@ void Option_Ranking_SaveData(void) {
         for (j = 0; j < ROUTE_MAX; j++) {
             gSaveFile.save.data.stats[i][j].hitCount = planetStats[currentRankIdx][j].hitCount;
             gSaveFile.save.data.stats[i][j].planetId = planetStats[currentRankIdx][j].planetId;
-            gSaveFile.save.data.stats[i][j].unk_C = planetStats[currentRankIdx][j].unk_C;
+            gSaveFile.save.data.stats[i][j].hitCountOver256 = planetStats[currentRankIdx][j].hitCountOver256;
             gSaveFile.save.data.stats[i][j].peppyAlive = planetStats[currentRankIdx][j].peppyAlive;
             gSaveFile.save.data.stats[i][j].falcoAlive = planetStats[currentRankIdx][j].falcoAlive;
             gSaveFile.save.data.stats[i][j].slippyAlive = planetStats[currentRankIdx][j].slippyAlive;
@@ -4561,7 +4579,7 @@ void Option_InvoiceDraw(void) {
 
     Graphics_FillRectangle(&gMasterDisp, 25, 18, SCREEN_WIDTH - 25, SCREEN_HEIGHT - 18, 255, 255, 255, 255);
 
-    RCP_SetupDL(&gMasterDisp, SETUPDL_78);
+    RCP_SetupDL(&gMasterDisp, SETUPDL_78_POINT);
     gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, 255);
 
     Lib_TextureRect_CI4(&gMasterDisp, D_OPT_8000000, D_OPT_8000680, 128, 26, D_menu_801AF3D0[0], D_menu_801AF3F0[0],
@@ -4573,7 +4591,7 @@ void Option_InvoiceDraw(void) {
     Lib_TextureRect_CI4(&gMasterDisp, D_OPT_80017C0, D_OPT_80038C0, 256, 66, D_menu_801AF3D0[2], D_menu_801AF3F0[2],
                         1.0f, 1.0f);
 
-    RCP_SetupDL(&gMasterDisp, SETUPDL_76);
+    RCP_SetupDL(&gMasterDisp, SETUPDL_76_POINT);
     gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, 255);
 
     Lib_TextureRect_RGBA16(&gMasterDisp, D_OPT_800E170, 188, 60, D_menu_801AF3D0[3], D_menu_801AF3F0[3], 1.0f, 1.0f);
@@ -4586,6 +4604,8 @@ void Option_InvoiceDraw(void) {
 
     Graphics_DisplayLargeNumber(D_menu_801AF3D0[7] - ((HUD_CountDigits(temp_a0) - 1) * 13), D_menu_801AF3F0[7],
                                 temp_a0);
+
+    RCP_SetupDL(&gMasterDisp, SETUPDL_76);
 
     if (D_menu_801B9090) {
         gDPSetPrimColor(gMasterDisp++, 0, 0, 120, 0, 0, 192);

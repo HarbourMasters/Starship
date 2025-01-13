@@ -1,0 +1,188 @@
+:config:
+  segments:
+    - [0x06, 0x9CE5E0]
+  header:
+    code:
+      - '#include "assets/ast_titania.h"'
+    header:
+      - '#include "gfx.h"'
+      - '#include "sf64object.h"'
+      - '#include "sf64level.h"'
+      - '#include "sf64event.h"'
+      - '#include "sf64player.h"'
+      - '#include "sf64audio_external.h"'
+      - '#include "sf64mesg.h"'
+
+aTiTitleCardTex:
+  {type: TEXTURE, format: IA8, ctype: u8, width: 96, height: 28, offset: 0x6000000, symbol: aTiTitleCardTex}
+
+D_TI_6000A80:
+  {type: GFX, offset: 0x6000A80, symbol: D_TI_6000A80}
+
+D_TI_6000B10:
+  {type: TEXTURE, format: RGBA16, ctype: u16, width: 64, height: 32, offset: 0x6000B10, symbol: D_TI_6000B10}
+
+D_TI_6001B10:
+  {type: GFX, offset: 0x6001B10, symbol: D_TI_6001B10}
+
+D_TI_6001BA8:
+  {type: TEXTURE, format: RGBA16, ctype: u16, width: 32, height: 32, offset: 0x6001BA8, symbol: D_TI_6001BA8}
+
+aTiCactusDL:
+  {type: GFX, offset: 0x60023B0, symbol: aTiCactusDL}
+
+D_TI_6002438:
+  {type: TEXTURE, format: RGBA16, ctype: u16, width: 32, height: 64, offset: 0x6002438, symbol: D_TI_6002438}
+
+D_TI_6003440:
+  {type: GFX, offset: 0x6003440, symbol: D_TI_6003440}
+
+D_TI_60034E0:
+  {type: GFX, offset: 0x60034E0, symbol: D_TI_60034E0}
+
+D_TI_6003580:
+  {type: GFX, offset: 0x6003580, symbol: D_TI_6003580}
+
+D_TI_6003620:
+  {type: GFX, offset: 0x6003620, symbol: D_TI_6003620}
+
+D_TI_60036C0:
+  {type: GFX, offset: 0x60036C0, symbol: D_TI_60036C0}
+
+D_TI_6003760:
+  {type: GFX, offset: 0x6003760, symbol: D_TI_6003760}
+
+D_TI_6003800:
+  {type: TEXTURE, format: IA8, ctype: u8, width: 32, height: 32, offset: 0x6003800, symbol: D_TI_6003800}
+
+D_TI_6003C00:
+  {type: TEXTURE, format: IA8, ctype: u8, width: 32, height: 32, offset: 0x6003C00, symbol: D_TI_6003C00}
+
+D_TI_6004000:
+  {type: TEXTURE, format: IA8, ctype: u8, width: 32, height: 32, offset: 0x6004000, symbol: D_TI_6004000}
+
+D_TI_6004400:
+  {type: TEXTURE, format: IA8, ctype: u8, width: 32, height: 32, offset: 0x6004400, symbol: D_TI_6004400}
+
+D_TI_6004800:
+  {type: TEXTURE, format: IA8, ctype: u8, width: 32, height: 32, offset: 0x6004800, symbol: D_TI_6004800}
+
+D_TI_6004C00:
+  {type: TEXTURE, format: IA8, ctype: u8, width: 32, height: 32, offset: 0x6004C00, symbol: D_TI_6004C00}
+
+D_TI_6005000:
+  {type: SF64:ENVIRONMENT, offset: 0x6005000, symbol: D_TI_6005000}
+
+D_TI_600631C:
+  {type: SF64:SCRIPT, offset: 0x600631C, symbol: D_TI_600631C}
+
+aTi1LandmineHitbox:
+  {type: SF64:HITBOX, offset: 0x60064AC, symbol: aTi1LandmineHitbox}
+
+aTiDesertRoverHitbox:
+  {type: SF64:HITBOX, offset: 0x60064C8, symbol: aTiDesertRoverHitbox}
+
+aTiSkullHitbox:
+  {type: SF64:HITBOX, offset: 0x60064FC, symbol: aTiSkullHitbox}
+
+aTiRib0Hitbox:
+  {type: SF64:HITBOX, offset: 0x6006518, symbol: aTiRib0Hitbox}
+
+aTiRib1Hitbox:
+  {type: SF64:HITBOX, offset: 0x6006564, symbol: aTiRib1Hitbox}
+
+aTiRib2Hitbox:
+  {type: SF64:HITBOX, offset: 0x60065B0, symbol: aTiRib2Hitbox}
+
+aTiRib3Hitbox:
+  {type: SF64:HITBOX, offset: 0x60065FC, symbol: aTiRib3Hitbox}
+
+aTiRib4Hitbox:
+  {type: SF64:HITBOX, offset: 0x6006648, symbol: aTiRib4Hitbox}
+
+aTiRib5Hitbox:
+  {type: SF64:HITBOX, offset: 0x6006694, symbol: aTiRib5Hitbox}
+
+aTiRib6Hitbox:
+  {type: SF64:HITBOX, offset: 0x60066E0, symbol: aTiRib6Hitbox}
+
+aTiRib7Hitbox:
+  {type: SF64:HITBOX, offset: 0x600672C, symbol: aTiRib7Hitbox}
+
+aTiRib8Hitbox:
+  {type: SF64:HITBOX, offset: 0x6006778, symbol: aTiRib8Hitbox}
+
+aTiDelphorHitbox:
+  {type: SF64:HITBOX, offset: 0x60067C4, symbol: aTiDelphorHitbox}
+
+aTiDelphorHeadHitbox:
+  {type: SF64:HITBOX, offset: 0x6006808, symbol: aTiDelphorHeadHitbox}
+
+aTiDesertCrawlerHitbox:
+  {type: SF64:HITBOX, offset: 0x6006A3C, symbol: aTiDesertCrawlerHitbox}
+
+aTiBoulderHitbox:
+  {type: SF64:HITBOX, offset: 0x600683C, symbol: aTiBoulderHitbox}
+
+aTiBombHitbox:
+  {type: SF64:HITBOX, offset: 0x6006858, symbol: aTiBombHitbox}
+
+D_TI_6006874:
+  {type: SF64:HITBOX, offset: 0x6006874, symbol: D_TI_6006874}
+
+aTiRascoHitbox:
+  {type: SF64:HITBOX, offset: 0x6006890, symbol: aTiRascoHitbox}
+
+aTiCactusHitbox:
+  {type: SF64:HITBOX, offset: 0x60068BC, symbol: aTiCactusHitbox}
+
+aTiFekudaHitbox:
+  {type: SF64:HITBOX, offset: 0x60068F0, symbol: aTiFekudaHitbox}
+
+D_TI_6006940:
+  {type: SF64:HITBOX, offset: 0x6006940, symbol: D_TI_6006940}
+
+D_TI_600695C:
+  {type: SF64:HITBOX, offset: 0x600695C, symbol: D_TI_600695C}
+
+D_TI_6006978:
+  {type: SF64:HITBOX, offset: 0x6006978, symbol: D_TI_6006978}
+
+D_TI_6006994:
+  {type: SF64:HITBOX, offset: 0x6006994, symbol: D_TI_6006994}
+
+D_TI_60069B0:
+  {type: SF64:HITBOX, offset: 0x60069B0, symbol: D_TI_60069B0}
+
+D_TI_60069CC:
+  {type: SF64:HITBOX, offset: 0x60069CC, symbol: D_TI_60069CC}
+
+D_TI_60069E8:
+  {type: SF64:HITBOX, offset: 0x60069E8, symbol: D_TI_60069E8}
+
+D_TI_6006A04:
+  {type: SF64:HITBOX, offset: 0x6006A04, symbol: D_TI_6006A04}
+
+D_TI_6006A20:
+  {type: SF64:HITBOX, offset: 0x6006A20, symbol: D_TI_6006A20}
+
+aTiPillarHitbox:
+  {type: SF64:HITBOX, offset: 0x6006BF0, symbol: aTiPillarHitbox}
+
+D_TI_6006924:
+  {type: SF64:HITBOX, offset: 0x6006924, symbol: D_TI_6006924}
+
+D_TI_6006C0C:
+  {type: SF64:HITBOX, offset: 0x6006C0C, symbol: D_TI_6006C0C}
+
+D_TI_6006C28:
+  {type: SF64:HITBOX, offset: 0x6006C28, symbol: D_TI_6006C28}
+
+aTiBridgeHitbox:
+  {type: SF64:HITBOX, offset: 0x6006C44, symbol: aTiBridgeHitbox}
+
+D_TI_6006C60:
+  {type: SF64:OBJECT_INIT, offset: 0x6006C60, symbol: D_TI_6006C60}
+
+D_TI_6009BB8:
+  {type: TEXTURE, format: RGBA16, ctype: u16, width: 32, height: 32, offset: 0x6009BB8, symbol: D_TI_6009BB8}

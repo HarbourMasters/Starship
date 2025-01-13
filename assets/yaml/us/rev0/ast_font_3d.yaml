@@ -1,0 +1,128 @@
+:config:
+  segments:
+    - [0x09, 0xCD92B0]
+  header:
+    code:
+      - '#include "assets/ast_font_3d.h"'
+    header:
+      - '#include "gfx.h"'
+      - '#include "sf64object.h"'
+
+aFont3D_DOT:
+  { type: GFX, offset: 0x9000000, symbol: aFont3D_DOT }
+
+aFont3D_1:
+  { type: GFX, offset: 0x90001F0, symbol: aFont3D_1 }
+
+D_FONT3D_9000528:
+  { type: TEXTURE, ctype: u8, format: CI4, width: 8, height: 8, offset: 0x09000528, symbol: D_FONT3D_9000528, tlut: 0x09000548 }
+
+D_FONT3D_9000548:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 16, offset: 0x09000548, symbol: D_FONT3D_9000548 }
+
+aFont3D_O:
+  { type: GFX, offset: 0x9000570, symbol: aFont3D_O }
+
+aFont3D_D:
+  { type: GFX, offset: 0x9000980, symbol: aFont3D_D }
+
+aFont3D_J:
+  { type: GFX, offset: 0x9001120, symbol: aFont3D_J }
+
+aFont3D_P:
+  { type: GFX, offset: 0x90014E0, symbol: aFont3D_P }
+
+aFont3D_Z:
+  { type: GFX, offset: 0x9001A10, symbol: aFont3D_Z }
+
+aFont3D_Y:
+  { type: GFX, offset: 0x9001E90, symbol: aFont3D_Y }
+
+aFont3D_X:
+  { type: GFX, offset: 0x90022A0, symbol: aFont3D_X }
+
+aFont3D_W:
+  { type: GFX, offset: 0x9002890, symbol: aFont3D_W }
+
+aFont3D_V:
+  { type: GFX, offset: 0x9002EA0, symbol: aFont3D_V }
+
+aFont3D_U:
+  { type: GFX, offset: 0x9003230, symbol: aFont3D_U }
+
+aFont3D_T:
+  { type: GFX, offset: 0x9003620, symbol: aFont3D_T }
+
+aFont3D_S:
+  { type: GFX, offset: 0x9003A30, symbol: aFont3D_S }
+
+aFont3D_R:
+  { type: GFX, offset: 0x9004230, symbol: aFont3D_R }
+
+aFont3D_Q:
+  { type: GFX, offset: 0x9004920, symbol: aFont3D_Q }
+
+aFont3D_N:
+  { type: GFX, offset: 0x9004E10, symbol: aFont3D_N }
+
+aFont3D_M:
+  { type: GFX, offset: 0x9005380, symbol: aFont3D_M }
+
+aFont3D_L:
+  { type: GFX, offset: 0x9005980, symbol: aFont3D_L }
+
+aFont3D_K:
+  { type: GFX, offset: 0x9005CA0, symbol: aFont3D_K }
+
+aFont3D_I:
+  { type: GFX, offset: 0x90062D0, symbol: aFont3D_I }
+
+aFont3D_H:
+  { type: GFX, offset: 0x9006500, symbol: aFont3D_H }
+
+aFont3D_G:
+  { type: GFX, offset: 0x9006AE0, symbol: aFont3D_G }
+
+aFont3D_F:
+  { type: GFX, offset: 0x90070C0, symbol: aFont3D_F }
+
+aFont3D_E:
+  { type: GFX, offset: 0x90075A0, symbol: aFont3D_E }
+
+aFont3D_C:
+  { type: GFX, offset: 0x9007BB0, symbol: aFont3D_C }
+
+aFont3D_B:
+  { type: GFX, offset: 0x9007FD0, symbol: aFont3D_B }
+
+aFont3D_A:
+  { type: GFX, offset: 0x90086F0, symbol: aFont3D_A }
+
+aFont3D_9:
+  { type: GFX, offset: 0x9008C60, symbol: aFont3D_9 }
+
+aFont3D_8:
+  { type: GFX, offset: 0x9009280, symbol: aFont3D_8 }
+
+aFont3D_7:
+  { type: GFX, offset: 0x9009990, symbol: aFont3D_7 }
+
+aFont3D_6:
+  { type: GFX, offset: 0x9009CB0, symbol: aFont3D_6 }
+
+aFont3D_5:
+  { type: GFX, offset: 0x900A290, symbol: aFont3D_5 }
+
+aFont3D_4:
+  { type: GFX, offset: 0x900A870, symbol: aFont3D_4 }
+
+aFont3D_3:
+  { type: GFX, offset: 0x900AF60, symbol: aFont3D_3 }
+
+aFont3D_2:
+  { type: GFX, offset: 0x900B580, symbol: aFont3D_2 }
+
+aFont3D_0:
+  { type: GFX, offset: 0x900BB90, symbol: aFont3D_0 }
+
+# size = 0xC1D0

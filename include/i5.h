@@ -37,7 +37,7 @@ void Titania_TiDelphorHead_Init(Actor *);
 void Titania_TiCactus_Init(Sprite *);
 void Titania_TiPillar_Init(Scenery *);
 void Titania_TiGoras_Init(Boss *);
-void Titania_801990DC(Boss *);
+void Titania_TiGoras_Dying(Boss *);
 void Macbeth_InitLevel(void);
 void Macbeth_Train_Init(Actor *);
 void Macbeth_MaMaRailroadSwitch_Init(Actor *);

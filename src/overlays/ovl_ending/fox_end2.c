@@ -9,6 +9,8 @@ Vec3f D_ending_801985E0;
 Vec3f D_ending_801985F0;
 Vec3f D_ending_80198600[300];
 
+bool sTagged = false;
+
 #include "fox_end2_data.c"
 
 void Ending_8018CE20(u32 arg0) {
@@ -167,7 +169,7 @@ void Ending_8018D814(u32 arg0, AssetInfo* asset) {
         alpha = (asset->unk_0C + asset->unk_10 - arg0) * 255 / asset->fogFar;
     }
 
-    RCP_SetupDL(&gMasterDisp, asset->unk_08);
+    RCP_SetupDL(&gMasterDisp, SETUPDL_76_POINT);
 
     gDPSetPrimColor(gMasterDisp++, 0, 0, asset->prim.r, asset->prim.g, asset->prim.b, alpha);
 
@@ -187,7 +189,7 @@ void Ending_8018DA0C(u32 arg0, AssetInfo* asset) {
         alpha = (arg0 - asset->unk_0C) * 255 / asset->fogNear;
     }
 
-    RCP_SetupDL(&gMasterDisp, asset->unk_08);
+    RCP_SetupDL(&gMasterDisp, SETUPDL_76_POINT);
     gDPSetPrimColor(gMasterDisp++, 0, 0, asset->prim.r, asset->prim.g, asset->prim.b, alpha);
 
     Graphics_DisplaySmallText((s16) asset->unk_18.x, (s16) asset->unk_18.y, asset->unk_30.x, asset->unk_30.y,
@@ -237,12 +239,13 @@ bool Ending_8018DCB4(void) {
         teamAlive += (gMissionTeamStatus[i] & TEAMSTATUS_FALCO) & 1;
     }
 
-    for (i = 0; i < 10; i += 1) {
+    for (i = 0; i < 10; i++) {
         temp4[i] = 0;
         unk40[i] = gSaveFile.save.data.rankingLives[i];
 
-        for (j = 0; j < 7; j += 1) {
-            temp4[i] += gSaveFile.save.data.stats[i][j].hitCount + (gSaveFile.save.data.stats[i][j].unk_C * 256);
+        for (j = 0; j < 7; j++) {
+            temp4[i] +=
+                gSaveFile.save.data.stats[i][j].hitCount + (gSaveFile.save.data.stats[i][j].hitCountOver256 * 256);
             stats[i][0] += gSaveFile.save.data.stats[i][j].peppyAlive & 1;
             stats[i][1] += gSaveFile.save.data.stats[i][j].slippyAlive & 1;
             stats[i][2] += gSaveFile.save.data.stats[i][j].falcoAlive & 1;
@@ -421,6 +424,9 @@ void Ending_8018E7B8(u32 arg0, AssetInfo* asset) {
 void Ending_8018EDB8(u32 arg0, AssetInfo* asset) {
     f32 temp;
 
+    // @port: Tag the transform.
+    FrameInterpolation_RecordOpenChild("Running Scene Floor", 0);
+
     gStarCount = 0;
 
     RCP_SetupDL(&gMasterDisp, asset->unk_08);
@@ -456,6 +462,7 @@ void Ending_8018EDB8(u32 arg0, AssetInfo* asset) {
     gSPDisplayList(gMasterDisp++, D_END_700E9E0);
 }
 
+// Draw Great Fox
 void Ending_8018F2A8(u32 arg0, AssetInfo* asset) {
     f32 temp;
 
@@ -493,7 +500,8 @@ void Ending_8018F2A8(u32 arg0, AssetInfo* asset) {
 void Ending_8018F64C(u32 arg0, AssetInfo* asset) {
     f32 temp;
 
-    if (gLeveLClearStatus[LEVEL_ZONESS] == 0) {
+    // @port: Avoid drawing Katt after 1800 ending frames to avoid interpolation issues
+    if ((gLeveLClearStatus[LEVEL_ZONESS] == 0) || (D_ending_80192E70 >= 1800)) {
         return;
     }
 
@@ -560,7 +568,8 @@ void Ending_8018F64C(u32 arg0, AssetInfo* asset) {
 void Ending_8018FC60(u32 arg0, AssetInfo* asset) {
     f32 temp;
 
-    if (gLeveLClearStatus[LEVEL_KATINA] == 0) {
+    // @port: Avoid drawing Bill after 1800 ending frames to avoid interpolation issues
+    if ((gLeveLClearStatus[LEVEL_KATINA] == 0) || (D_ending_80192E70 >= 1800)) {
         return;
     }
 
@@ -627,6 +636,9 @@ void Ending_8018FC60(u32 arg0, AssetInfo* asset) {
 void Ending_80190274(u32 arg0, AssetInfo* asset) {
     f32 temp;
 
+    // @port: Tag the transform.
+    FrameInterpolation_RecordOpenChild("Corneria_Planet", 0);
+
     RCP_SetupDL(&gMasterDisp, asset->unk_08);
 
     gSPFogPosition(gMasterDisp++, asset->fogNear, asset->fogFar);
@@ -667,7 +679,11 @@ void Ending_80190648(s32 arg0, AssetInfo* asset) {
     Matrix_Scale(gGfxMatrix, asset->unk_30.x, asset->unk_30.y, asset->unk_30.z, MTXF_APPLY);
 
     Matrix_SetGfxMtx(&gMasterDisp);
-    gSPDisplayList(gMasterDisp++, D_END_7002120);
+
+    // @port: Hide Venom under 1700 frames
+    if (D_ending_80192E70 < 1700) {
+        gSPDisplayList(gMasterDisp++, D_END_7002120);
+    }
 }
 
 void Ending_80190778(u32 arg0, AssetInfo* asset) {
@@ -794,7 +810,7 @@ void Ending_80190CF0(u32 arg0, AssetInfo* asset) {
     gSPDisplayList(gMasterDisp++, D_END_7000000);
 }
 
-void Ending_80191234(s32 arg0, s32 arg1) {
+void Ending_80191234(u32 arg0, AssetInfo* asset) {
     gLastGameState = GSTATE_ENDING;
     gGameState = GSTATE_MENU;
     gNextGameStateTimer = 2;
@@ -859,9 +875,11 @@ void Ending_80191294(u32 arg0, AssetInfo* asset) {
     Display_ArwingWings(&D_ending_80198590);
 }
 
+// Stubbed
 void Ending_80191700(u32 arg0, AssetInfo* asset) {
 }
 
+// Draws obj displaylist
 void Ending_80191710(u32 arg0, AssetInfo* asset) {
     f32 temp;
 
@@ -917,10 +935,12 @@ void Ending_80191710(u32 arg0, AssetInfo* asset) {
     gSPDisplayList(gMasterDisp++, asset->unk_00);
 }
 
+// Function pointer execution
 void Ending_80191C58(u32 arg0, AssetInfo* asset) {
     ((void (*)(u32, AssetInfo*)) asset->unk_04)(arg0, asset);
 }
 
+// Draws skeleton
 void Ending_80191C7C(u32 arg0, AssetInfo* asset) {
     f32 temp;
 
@@ -967,6 +987,9 @@ void Ending_80192164(u32 arg0) {
             if ((D_ending_801934B4[i].unk_00 == NULL) && (D_ending_801934B4[i].unk_04 == NULL)) {
                 Ending_80191700(arg0, &D_ending_801934B4[i]);
             } else if ((D_ending_801934B4[i].unk_00 != NULL) && (D_ending_801934B4[i].unk_04 == NULL)) {
+                // @port: Tag the transform.
+                FrameInterpolation_RecordOpenChild(&D_ending_801934B4[i], arg0);
+                sTagged = true;
                 Ending_80191710(arg0, &D_ending_801934B4[i]);
             } else if ((D_ending_801934B4[i].unk_00 == NULL) && (D_ending_801934B4[i].unk_04 != NULL)) {
                 Ending_80191C58(arg0, &D_ending_801934B4[i]);
@@ -974,6 +997,11 @@ void Ending_80192164(u32 arg0) {
                 Ending_80191C7C(arg0, &D_ending_801934B4[i]);
             }
             Matrix_Pop(&gGfxMatrix);
+            if (sTagged) {
+                // @port Pop the transform id.
+                FrameInterpolation_RecordCloseChild();
+                sTagged = false;
+            }
         }
     }
 }

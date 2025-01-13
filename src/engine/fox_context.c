@@ -365,10 +365,10 @@ s32 gVsMatchWon;
 bool gVsMatchStart;
 bool gChangeTo360;
 Vec3f gTeamArrowsViewPos[10];
-f32 D_ctx_80177F20[65]; // Seem to be an early implementation of RadarMark
-f32 D_ctx_80178028[65];
-f32 D_ctx_80178130[65];
-u8 D_ctx_80178238[65];
+// f32 D_ctx_80177F20[65]; // Seem to be an early implementation of RadarMark
+// f32 D_ctx_80178028[65];
+// f32 D_ctx_80178130[65];
+// u8 D_ctx_80178238[65];
 Player* gPlayer;
 f32* gStarOffsetsX;
 f32* gStarOffsetsY;

@@ -35,7 +35,7 @@
  * Use D-PAD to move the cursor
  * Use C buttons to edit values
  */
-#define MODS_SFX_JUKEBOX 0
+#define MODS_SFX_JUKEBOX 1
 
 /**
  * Auto debugger:
@@ -47,7 +47,7 @@
  * FPS Counter:
  * Press L to toggle FPS Display
 */
-#define MODS_FPS_COUNTER 1
+#define MODS_FPS_COUNTER 0
 
 /**
  * RAM modifier:
@@ -96,8 +96,8 @@ void RamMod_Update(void);
 void Spawner(void);
 #endif
 
-#define DEBUG_SKIP_BRIEFING 1
 #define DEBUG_BOSS_KILLER 0
+#define DEBUG_VERSUS 0
 
 /*
 

@@ -99,8 +99,8 @@ void AudioHeap_DiscardFont(s32 fontId) {
                 note->playbackState.parentLayer->enabled = false;
                 note->playbackState.parentLayer->finished = true;
             }
-            func_80011F4C(note);
-            func_80012C40(note);
+            Audio_NoteDisable(note);
+            Audio_AudioListRemove(note);
             AudioSeq_AudioListPushBack(&gNoteFreeLists.disabled, &note->listItem);
         }
     }
@@ -451,7 +451,7 @@ uintptr_t AudioHeap_SearchCaches(s32 tableType, s32 cache, s32 id) {
         return (uintptr_t) ramAddr;
     }
     if (cache == CACHE_PERMANENT) {
-        //return (uintptr_t) NULL;
+        // return (uintptr_t) NULL;
     }
     return (uintptr_t) AudioHeap_SearchRegularCaches(tableType, cache, id);
 }
@@ -597,7 +597,7 @@ s32 AudioHeap_ResetStep(void) {
                 gResetFadeoutFramesLeft--;
                 AudioHeap_UpdateReverbs();
             } else {
-//                memset(audio_buffer, 0, (1056 * 2 * 3) * 2 * 2);
+                //                memset(audio_buffer, 0, (1056 * 2 * 3) * 2 * 2);
                 gResetFadeoutFramesLeft = 4 / sp24;
                 gAudioResetStep--;
                 break; // needed to match
@@ -615,7 +615,7 @@ s32 AudioHeap_ResetStep(void) {
         case 1:
             AudioHeap_Init();
             gAudioResetStep = 0;
-//            memset(audio_buffer, 0, (1056 * 2 * 3) * 2 * 2);
+            //            memset(audio_buffer, 0, (1056 * 2 * 3) * 2 * 2);
             break;
     }
     if (gAudioResetStep < 3) {
@@ -628,8 +628,6 @@ void AudioHeap_Init(void) {
     s32 i;
     s32 j;
     AudioSpec* spec = &gAudioSpecs[gAudioSpecId];
-    ReverbSettings* settings;
-    SynthesisReverb* reverb;
     s16* ramAddr;
     u32 persistentSize;
     u32 temporarySize;
@@ -652,7 +650,7 @@ void AudioHeap_Init(void) {
     gAudioBufferParams.resampleRate = 32000.0f / (s32) gAudioBufferParams.samplingFrequency;
     gAudioBufferParams.ticksPerUpdateInvScaled = (3.0f / 2560.0f) / gAudioBufferParams.ticksPerUpdate;
     gAudioBufferParams.ticksPerUpdateInv = 1.0f / gAudioBufferParams.ticksPerUpdate;
-    
+
     gNumNotes = spec->numNotes;
     D_8014C1B0 = spec->unk_14;
 
@@ -665,7 +663,6 @@ void AudioHeap_Init(void) {
     gAudioBufferParams.maxAiBufferLength *= gAudioBufferParams.numBuffers;
     gAudioBufferParams.minAiBufferLength *= gAudioBufferParams.numBuffers;
     gAudioBufferParams.ticksPerUpdate *= gAudioBufferParams.numBuffers;
-
     if (gAudioBufferParams.numBuffers >= 2) {
         gAudioBufferParams.maxAiBufferLength -= 0x10;
     }
@@ -679,7 +676,7 @@ void AudioHeap_Init(void) {
     miscPoolSize = gSessionPool.size - cachePoolSize - 0x100;
     gSessionPoolSplit.miscPoolSize = miscPoolSize;
     gSessionPoolSplit.cachePoolSize = cachePoolSize;
-    
+
     AudioHeap_InitSessionPools(&gSessionPoolSplit);
 
     gCachePoolSplit.persistentCommonPoolSize = persistentSize;
@@ -702,12 +699,10 @@ void AudioHeap_Init(void) {
     AudioHeap_ResetLoadStatus();
 
     gNotes = AudioHeap_AllocZeroed(&gMiscPool, gNumNotes * sizeof(Note));
-
-    func_800132E8();
-    func_800128B4();
-
+    Audio_NoteInitAll();
+    Audio_InitNoteFreeList();
     gNoteSubsEu = AudioHeap_AllocZeroed(&gMiscPool, gAudioBufferParams.ticksPerUpdate * gNumNotes * sizeof(NoteSubEu));
-    
+
     for (i = 0; i != 2; i++) {
         gAbiCmdBuffs[i] = AudioHeap_AllocZeroed(&gMiscPool, gMaxAudioCmds * 8);
     }
@@ -715,12 +710,10 @@ void AudioHeap_Init(void) {
         gSynthReverbs[i].useReverb = 0;
     }
 
-    // LTODO: Reverbs are causing distortion.
-    /*
     gNumSynthReverbs = spec->numReverbs;
     for (i = 0; i < gNumSynthReverbs; i++) {
-        settings = &spec->reverbSettings[i];
-        reverb = &gSynthReverbs[i];
+        ReverbSettings* settings = &spec->reverbSettings[i];
+        SynthesisReverb* reverb = &gSynthReverbs[i];
         reverb->downsampleRate = settings->downsampleRate;
         reverb->windowSize = settings->windowSize * 64;
         reverb->decayRatio = settings->decayRatio;
@@ -736,6 +729,7 @@ void AudioHeap_Init(void) {
 
         reverb->bufSizePerChan = reverb->windowSize;
         reverb->framesToIgnore = 2;
+
         if (reverb->downsampleRate != 1) {
             reverb->resampleFlags = 1;
             reverb->unk_0A = (0x8000 / reverb->downsampleRate);
@@ -753,7 +747,7 @@ void AudioHeap_Init(void) {
             }
         }
     }
-    */
+
     AudioLoad_InitSampleDmaBuffers(gNumNotes);
     gPreloadSampleStackTop = 0;
     D_8014C1B4 = 0x1000;
@@ -933,8 +927,9 @@ void AudioHeap_DiscardSampleCacheEntry(SampleCacheEntry* entry) {
         sampleBankId1 = gSoundFontList[fondId].sampleBankId1;
         sampleBankId2 = gSoundFontList[fondId].sampleBankId2;
         if (((sampleBankId1 != SAMPLES_NONE) && (entry->sampleBankId == sampleBankId1)) ||
-            ((sampleBankId2 != SAMPLES_NONE) && (entry->sampleBankId == sampleBankId2)) || (entry->sampleBankId == SAMPLES_SFX)) {
-            if (((void*) AudioHeap_SearchCaches(FONT_TABLE, CACHE_EITHER, fondId) != NULL) && 
+            ((sampleBankId2 != SAMPLES_NONE) && (entry->sampleBankId == sampleBankId2)) ||
+            (entry->sampleBankId == SAMPLES_SFX)) {
+            if (((void*) AudioHeap_SearchCaches(FONT_TABLE, CACHE_EITHER, fondId) != NULL) &&
                 (gFontLoadStatus[fondId] > 1) != 0) {
                 for (instId = 0; instId < gSoundFontList[fondId].numInstruments; instId++) {
                     instrument = Audio_GetInstrument(fondId, instId);

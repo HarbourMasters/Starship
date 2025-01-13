@@ -50,11 +50,12 @@ typedef union {
 
 #ifdef __cplusplus
 extern "C" {
-#endif
+f32 __sinf(f32) throw();
+f32 __cosf(f32) throw();
+}
+#else
 f32 __sinf(f32);
 f32 __cosf(f32);
-#ifdef __cplusplus
-}
 #endif
 
 #endif

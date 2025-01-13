@@ -2,6 +2,7 @@
 #include "fox_hud.h"
 #include "prevent_bss_reordering.h"
 #include "port/interpolation/FrameInterpolation.h"
+#include "port/hooks/Events.h"
 
 Vec3f D_801616A0;
 Vec3f D_801616B0;
@@ -13,7 +14,7 @@ s32 D_801616D0[13];
 s32 D_hud_80161704;
 s32 D_hud_80161708;
 s32 D_hud_8016170C;
-s32 D_hud_80161710;
+s32 gRadarMissileAlarmTimer;
 s32 gTotalHits;
 s32 D_80161718;
 s32 D_8016171C;
@@ -117,10 +118,15 @@ Gfx sRadioDamageDL[] = {
     gsSPEndDisplayList(),
 };
 
+void HUD_MatrixTranslateCoordLeft(f32* transX, f32* transY) {
+    *transX = OTRGetRectDimensionFromLeftEdgeOverride(*transX) - (SCREEN_WIDTH / 2.0f);
+    *transY = (SCREEN_HEIGHT / 2.0f) - *transY;
+}
+
 // Used in the status screen, and when losing a life
 void HUD_LivesCount1_Draw(f32 xPos, f32 yPos, s32 lifeCount) {
-    u8* sLifeIconTex[] = { aArwingLifeIconTex, aBlueMarineLifeIconTex, aLandmasterLifeIconTex };
-    u16* sLifeIconTLUT[] = { aArwingLifeIconTLUT, aBlueMarineLifeIconTLUT, aLandmasterLifeIconTLUT };
+    u8* sLifeIconTex[] = { aArwingLifeIconTex, aLandmasterLifeIconTex, aBlueMarineLifeIconTex };
+    u16* sLifeIconTLUT[] = { aArwingLifeIconTLUT, aLandmasterLifeIconTLUT, aBlueMarineLifeIconTLUT };
     Player* player;
     s32 lifeIconIdx;
     s32 maxLives;
@@ -187,7 +193,7 @@ void HUD_TeamDownWrench_Draw(s32 arg0) {
     RCP_SetupDL(&gMasterDisp, SETUPDL_36);
     if (arg0 == 0) {
         for (i = 1; i < 4; i++) {
-            if (((gTeamShields[i] != 0) || (gPlayer[0].state_1C8 != PLAYERSTATE_1C8_LEVEL_COMPLETE)) &&
+            if (((gTeamShields[i] != 0) || (gPlayer[0].state != PLAYERSTATE_LEVEL_COMPLETE)) &&
                 (gTeamShields[i] <= 0) && (gTeamShields[i] != -2)) {
                 Matrix_Push(&gGfxMatrix);
                 Matrix_Translate(gGfxMatrix, sTeamDownWrenchPos[i - 1].x, sTeamDownWrenchPos[i - 1].y,
@@ -203,16 +209,22 @@ void HUD_TeamDownWrench_Draw(s32 arg0) {
             }
         }
     } else {
+        f32 x = 48.0f;
+        f32 y = 0.0f;
+        HUD_MatrixTranslateCoordLeft(&x, &y);
+        y = -81.0f;
+        Lib_InitOrtho(&gMasterDisp);
         Matrix_Push(&gGfxMatrix);
-        Matrix_Translate(gGfxMatrix, -234.0f, -167.0f, -600.0f, MTXF_APPLY);
+        Matrix_Translate(gGfxMatrix, x, y, -600.0f, MTXF_APPLY);
         Matrix_RotateZ(gGfxMatrix, M_PI / 4, MTXF_APPLY);
-        Matrix_Scale(gGfxMatrix, 0.68f, 0.68f, 1.0f, MTXF_APPLY);
+        Matrix_Scale(gGfxMatrix, 0.31f, 0.31f, 1.0f, MTXF_APPLY);
         Matrix_SetGfxMtx(&gMasterDisp);
         gSPDisplayList(gMasterDisp++, aDownWrenchDL);
         Matrix_RotateZ(gGfxMatrix, 3 * M_PI / 2, MTXF_APPLY);
         Matrix_SetGfxMtx(&gMasterDisp);
         gSPDisplayList(gMasterDisp++, aDownWrenchDL);
         Matrix_Pop(&gGfxMatrix);
+        Lib_InitPerspective(&gMasterDisp);
     }
 }
 
@@ -304,11 +316,6 @@ void HUD_BoostGaugeCool_Draw(f32 xPos, f32 yPos, f32 xScale, f32 yScale) {
     }
 }
 
-void HUD_MatrixTranslateCoord(f32* transX, f32* transY) {
-    *transX = OTRGetRectDimensionFromLeftEdge(*transX) - (SCREEN_WIDTH / 2.0f);
-    *transY = (SCREEN_HEIGHT / 2.0f) - *transY;
-}
-
 void HUD_GoldRings_Draw(void) {
     Gfx* sGoldRingDLs[] = {
         aGoldRingFrame1DL, aGoldRingFrame2DL,  aGoldRingFrame3DL,  aGoldRingFrame4DL,
@@ -381,7 +388,7 @@ void HUD_GoldRings_Draw(void) {
                     scale += 0.06f;
                 }
 
-                HUD_MatrixTranslateCoord(&x, &y);
+                HUD_MatrixTranslateCoordLeft(&x, &y);
                 Matrix_Translate(gGfxMatrix, x, y, -100.0f, MTXF_NEW);
                 Matrix_Scale(gGfxMatrix, scale, scale, scale, MTXF_APPLY);
                 Matrix_Scale(gGfxMatrix, ringScale, ringScale, ringScale, MTXF_APPLY);
@@ -403,7 +410,7 @@ void HUD_GoldRings_Draw(void) {
                     RCP_SetupDL(&gMasterDisp, SETUPDL_62);
                     gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, 255);
 
-                    HUD_MatrixTranslateCoord(&D_800D1AC4[i + 1], &D_800D1AD8[i + 1]);
+                    HUD_MatrixTranslateCoordLeft(&D_800D1AC4[i + 1], &D_800D1AD8[i + 1]);
 
                     Matrix_Push(&gGfxMatrix);
                     Matrix_Translate(gGfxMatrix, D_800D1AC4[i + 1], D_800D1AD8[i + 1], -100.0f, MTXF_NEW);
@@ -436,7 +443,7 @@ void HUD_GoldRings_Draw(void) {
                         scale += 0.06f;
                     }
 
-                    HUD_MatrixTranslateCoord(&x, &y);
+                    HUD_MatrixTranslateCoordLeft(&x, &y);
                     Matrix_Translate(gGfxMatrix, x, y, -100.0f, MTXF_NEW);
                     Matrix_Scale(gGfxMatrix, scale, scale, scale, MTXF_APPLY);
                     Matrix_Scale(gGfxMatrix, ringScale, ringScale, ringScale, MTXF_APPLY);
@@ -486,21 +493,21 @@ void HUD_TeamShields_Draw(f32 xPos, f32 yPos, s32 arg2) {
     gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, 255);
 
     if (arg2 != 0) {
-        HUD_ShieldGaugeBars_Draw((8.0f * xScale) + xPos, yPos + 2.0f, xScale, 1.0f, arg2 / 255.0f);
+        HUD_ShieldGaugeBars_Draw((7.0f * xScale) + xPos, yPos + 2.0f, xScale, 1.0f, arg2 / 255.0f);
     }
 
     if ((arg2 <= 0) && (arg2 != -2) &&
         ((gPlayState == PLAY_PAUSE) || (gShowLevelClearStatusScreen == 1) || (gLevelStartStatusScreenTimer != 0))) {
         RCP_SetupDL(&gMasterDisp, SETUPDL_76_POINT);
         gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 0, 255);
-        if ((arg2 == 0) && (gPlayer[0].state_1C8 == PLAYERSTATE_1C8_LEVEL_COMPLETE)) {
+        if ((arg2 == 0) && (gPlayer[0].state == PLAYERSTATE_LEVEL_COMPLETE)) {
             Graphics_DisplaySmallText(xPos + (8.0f * xScale) + 4.0f, yPos + 2.0f, 1.0f, 1.0f, " OK ");
         } else {
             Graphics_DisplaySmallText(xPos + (8.0f * xScale) + 4.0f, yPos + 2.0f, 1.0f, 1.0f, "DOWN");
         }
     }
 
-    RCP_SetupDL(&gMasterDisp, SETUPDL_76_POINT);
+    RCP_SetupDL(&gMasterDisp, SETUPDL_76);
     gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, 255);
     HUD_ShieldGaugeEdgeLeft_Draw(xPos, yPos, xScale, 1.0f);
     HUD_ShieldGaugeEdgeRight_Draw(xPos + (7.0f * xScale) + (xScale * 6.0f) * 8.0f, yPos, 1.0f, 1.0f);
@@ -913,8 +920,8 @@ void HUD_DrawLevelClearScreen(void) {
 
 // Used in gameplay hud
 void HUD_LivesCount2_Draw(f32 x, f32 y, s32 number) {
-    u8* sLivesCounterTexs[] = { aArwingLifeIconTex, aBlueMarineLifeIconTex, aLandmasterLifeIconTex };
-    u16* sLivesCounterTLUTs[] = { aArwingLifeIconTLUT, aBlueMarineLifeIconTLUT, aLandmasterLifeIconTLUT };
+    u8* sLivesCounterTexs[] = { aArwingLifeIconTex, aLandmasterLifeIconTex, aBlueMarineLifeIconTex };
+    u16* sLivesCounterTLUTs[] = { aArwingLifeIconTLUT, aLandmasterLifeIconTLUT, aBlueMarineLifeIconTLUT };
     Player* player = &gPlayer[0];
     f32 x0;
     f32 x1;
@@ -969,9 +976,9 @@ void HUD_LivesCount2_Draw(f32 x, f32 y, s32 number) {
     x2 += (2 - i) * 4;
 
     if (gShowLevelClearStatusScreen == 0) {
-        x0 = OTRGetDimensionFromRightEdge(x0);
-        x1 = OTRGetDimensionFromRightEdge(x1);
-        x2 = OTRGetDimensionFromRightEdge(x2);
+        x0 = OTRGetDimensionFromRightEdgeOverride(x0);
+        x1 = OTRGetDimensionFromRightEdgeOverride(x1);
+        x2 = OTRGetDimensionFromRightEdgeOverride(x2);
     }
 
     Lib_TextureRect_CI4(&gMasterDisp, sLivesCounterTexs[form], sLivesCounterTLUTs[form], 16, 16, x0, y0, 1.0f, 1.0f);
@@ -1229,7 +1236,7 @@ void HUD_LevelClearStatusScreen_Draw(void) {
         RCP_SetupDL(&gMasterDisp, SETUPDL_76_POINT);
 
         gDPSetPrimColor(gMasterDisp++, 0, 0, 90, 160, 200, 255);
-        HUD_Number_Draw(OTRGetDimensionFromLeftEdge(24.0f), 30.0f + 3.0f, D_801617C0[5], 1.0f, false, 999);
+        HUD_Number_Draw(OTRGetRectDimensionFromLeftEdgeOverride(24.0f), 30.0f + 3.0f, D_801617C0[5], 1.0f, false, 999);
 
         gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, 255);
         Lib_TextureRect_IA8(&gMasterDisp, aTextEnemiesDown, 64, 25, x0, y0 + 4.0f, 1.0f, 1.0f);
@@ -1461,7 +1468,7 @@ void HUD_PauseScreen_Update(void) {
                 break;
 
             case 2:
-                gPlayer[0].state_1C8 = PLAYERSTATE_1C8_STANDBY;
+                gPlayer[0].state = PLAYERSTATE_STANDBY;
                 gFillScreenRed = gFillScreenGreen = gFillScreenBlue = 0;
                 gFillScreenAlphaTarget = 255;
                 gFillScreenAlphaStep = 32;
@@ -1491,9 +1498,8 @@ void HUD_PauseScreen_Update(void) {
                 sPauseScreenTimer[0] = 0;
 
             case 3:
-                Graphics_FillRectangle(&gMasterDisp, OTRGetRectDimensionFromLeftEdge(0), 0,
-                                       OTRGetRectDimensionFromRightEdge(SCREEN_WIDTH), SCREEN_HEIGHT, 0, 0, 0,
-                                       255);
+                Graphics_FillRectangle(&gMasterDisp, OTRGetRectDimensionFromLeftEdgeOverride(0), 0,
+                                       OTRGetDimensionFromRightEdgeOverride(SCREEN_WIDTH), SCREEN_HEIGHT, 0, 0, 0, 255);
 
                 gFillScreenAlphaTarget = 0;
 
@@ -1542,9 +1548,8 @@ void HUD_PauseScreen_Update(void) {
                 break;
 
             case 4:
-                Graphics_FillRectangle(&gMasterDisp, OTRGetRectDimensionFromLeftEdge(0), 0,
-                                       OTRGetRectDimensionFromRightEdge(SCREEN_WIDTH), SCREEN_HEIGHT, 0, 0, 0,
-                                       255);
+                Graphics_FillRectangle(&gMasterDisp, OTRGetRectDimensionFromLeftEdgeOverride(0), 0,
+                                       OTRGetDimensionFromRightEdgeOverride(SCREEN_WIDTH), SCREEN_HEIGHT, 0, 0, 0, 255);
                 if (sPauseScreenTimer[0] < 140) {
                     break;
                 }
@@ -1562,9 +1567,8 @@ void HUD_PauseScreen_Update(void) {
                 }
 
             case 5:
-                Graphics_FillRectangle(&gMasterDisp, OTRGetRectDimensionFromLeftEdge(0), 0,
-                                       OTRGetRectDimensionFromRightEdge(SCREEN_WIDTH ), SCREEN_HEIGHT, 0, 0, 0,
-                                       255);
+                Graphics_FillRectangle(&gMasterDisp, OTRGetRectDimensionFromLeftEdgeOverride(0), 0,
+                                       OTRGetDimensionFromRightEdgeOverride(SCREEN_WIDTH), SCREEN_HEIGHT, 0, 0, 0, 255);
 
                 for (i = 0; i < 6; i++) {
                     if (gPrevPlanetTeamShields[i] == -1) {
@@ -1586,7 +1590,7 @@ void HUD_PauseScreen_Update(void) {
                 gSavedHitCount = gSavedObjectLoadIndex = 0;
 
                 Audio_StopPlayerNoise(0);
-                gPlayer[0].state_1C8 = PLAYERSTATE_1C8_NEXT;
+                gPlayer[0].state = PLAYERSTATE_NEXT;
                 gScreenFlashTimer = 0;
                 gPlayer[0].csTimer = 0;
                 gFillScreenAlpha = gFillScreenAlphaTarget = 255;
@@ -1755,7 +1759,7 @@ void HUD_RadarMark_KaSaucerer_Draw(void) {
     gDPSetPrimColor(gMasterDisp++, 0, 0, 0, 0, 0, 255);
     Matrix_Scale(gGfxMatrix, 125.0f, 125.0f, 1.0f, MTXF_APPLY);
     Matrix_SetGfxMtx(&gMasterDisp);
-    gSPDisplayList(gMasterDisp++, aRadarMarkKaSaucererDL);
+    gSPDisplayList(gMasterDisp++, aBallDL);
 }
 
 void HUD_RadarMark_Missile_Draw(void) {
@@ -1871,7 +1875,7 @@ void HUD_RadarMark_Draw(s32 type) {
                     arwingMarkColor = 1;
                 }
 
-                if (gPlayer[type].state_1C8 == PLAYERSTATE_1C8_VS_STANDBY) {
+                if (gPlayer[type].state == PLAYERSTATE_VS_STANDBY) {
                     break;
                 }
             }
@@ -1968,7 +1972,7 @@ void HUD_RadarMarks_Setup(void) {
     Item* item;
 
     for (i = 0; i < gCamCount; i++) {
-        if (gPlayer[i].state_1C8 == PLAYERSTATE_1C8_NEXT) {
+        if (gPlayer[i].state == PLAYERSTATE_NEXT) {
             continue;
         }
         gRadarMarks[i].enabled = true;
@@ -1985,7 +1989,7 @@ void HUD_RadarMarks_Setup(void) {
             continue;
         }
 
-        if (gPlayer[i].state_1C8 != PLAYERSTATE_1C8_ACTIVE) {
+        if (gPlayer[i].state != PLAYERSTATE_ACTIVE) {
             continue;
         }
 
@@ -2012,6 +2016,9 @@ void HUD_RadarMarks_Setup(void) {
     }
 }
 
+static f32 gHudOffsetRect = 0.0f;
+static f32 gHudOffsetPers = 0.0f;
+
 s32 HUD_RadarMarks_Update(void) {
     s32 i;
     f32 scale;
@@ -2020,10 +2027,31 @@ s32 HUD_RadarMarks_Update(void) {
     f32 z1;
     f32 x = 0;
     f32 y = 0;
-    s32 pad;
     f32 temp;
     f32 temp2;
     f32 temp3;
+
+    switch (gCurrentLevel) {
+        case LEVEL_CORNERIA:
+            gHudOffsetRect = OTRGetDimensionFromRightEdgeOverride(0.0f);
+            gHudOffsetPers = gHudOffsetRect * 2.15f;
+            break;
+
+        case LEVEL_SECTOR_Z:
+            gHudOffsetRect = OTRGetDimensionFromRightEdgeOverride(0.0f);
+            gHudOffsetPers = gHudOffsetRect * 5.50f;
+            break;
+
+        case LEVEL_BOLSE:
+            gHudOffsetRect = OTRGetDimensionFromRightEdgeOverride(0.0f);
+            gHudOffsetPers = gHudOffsetRect * 2.70f;
+            break;
+
+        default:
+            gHudOffsetRect = OTRGetDimensionFromRightEdgeOverride(0.0f);
+            gHudOffsetPers = gHudOffsetRect * 3.35f;
+            break;
+    }
 
     if (!gVersusMode) {
         if (gLevelMode != LEVELMODE_ALL_RANGE) {
@@ -2098,7 +2126,7 @@ s32 HUD_RadarMarks_Update(void) {
     }
 
     HUD_RadarMarks_Setup();
-    HUD_RadarWindow_Draw(x, y);
+    HUD_RadarWindow_Draw(x + gHudOffsetRect, y);
 
     if (!gVersusMode &&
         ((gCurrentLevel == LEVEL_SECTOR_Z) || (gCurrentLevel == LEVEL_FORTUNA) || (gCurrentLevel == LEVEL_VENOM_2) ||
@@ -2109,15 +2137,18 @@ s32 HUD_RadarMarks_Update(void) {
 
         switch (gCurrentLevel) {
             case LEVEL_SECTOR_Z:
-                Lib_TextureRect_IA8(&gMasterDisp, D_SZ_60012D0, 16, 9, 251.0f + D_800D1E10, 181.0f, 1.00f, 1.00f);
+                Lib_TextureRect_IA8(&gMasterDisp, D_SZ_60012D0, 16, 9, gHudOffsetRect + 251.0f + D_800D1E10, 181.0f,
+                                    1.00f, 1.00f);
                 break;
 
             case LEVEL_FORTUNA:
-                Lib_TextureRect_IA8(&gMasterDisp, D_FO_6001260, 16, 16, 251.0f + D_800D1E10, 178.0f, 1.00f, 1.00f);
+                Lib_TextureRect_IA8(&gMasterDisp, D_FO_6001260, 16, 16, gHudOffsetRect + 251.0f + D_800D1E10, 178.0f,
+                                    1.00f, 1.00f);
                 break;
 
             case LEVEL_BOLSE:
-                Lib_TextureRect_IA8(&gMasterDisp, D_BO_6000C80, 16, 16, 251.0f + D_800D1E10, 178.0f, 1.00f, 1.00f);
+                Lib_TextureRect_IA8(&gMasterDisp, D_BO_6000C80, 16, 16, gHudOffsetRect + (251.0f + D_800D1E10), 178.0f,
+                                    1.00f, 1.00f);
                 break;
 
             case LEVEL_SECTOR_Y:
@@ -2128,28 +2159,31 @@ s32 HUD_RadarMarks_Update(void) {
                     if ((y < 150.0f) || (y > 206.0f)) {
                         break;
                     }
-                    Lib_TextureRect_IA8(&gMasterDisp, D_SY_6000840, 64, 64, 250.0f + D_800D1E10, temp, 0.25f, 0.25f);
+                    Lib_TextureRect_IA8(&gMasterDisp, D_SY_6000840, 64, 64, gHudOffsetRect + 250.0f + D_800D1E10, temp,
+                                        0.25f, 0.25f);
                 }
                 break;
 
             case LEVEL_KATINA:
-                Lib_TextureRect_IA8(&gMasterDisp, D_KA_6001260, 8, 8, 254.0f + D_800D1E10, 182.0f, 1.00f, 1.00f);
+                Lib_TextureRect_IA8(&gMasterDisp, D_KA_6001260, 8, 8, 254.0f + D_800D1E10 + gHudOffsetRect, 182.0f,
+                                    1.00f, 1.00f);
                 break;
 
             case LEVEL_VENOM_2:
-                Lib_TextureRect_IA8(&gMasterDisp, D_VE2_6002890, 16, 16, 251.0f + D_800D1E10, 178.0f, 1.00f, 1.00f);
+                Lib_TextureRect_IA8(&gMasterDisp, D_VE2_6002890, 16, 16, gHudOffsetRect + 251.0f + D_800D1E10, 178.0f,
+                                    1.00f, 1.00f);
                 break;
         }
     }
 
     Matrix_Push(&gGfxMatrix);
-    Matrix_Translate(gGfxMatrix, x1, y1, z1, MTXF_APPLY);
+    Matrix_Translate(gGfxMatrix, x1 + gHudOffsetPers, y1, z1, MTXF_APPLY);
 
-    if ((gCurrentLevel == LEVEL_SECTOR_Z) && (D_hud_80161710 != 0)) {
+    if ((gCurrentLevel == LEVEL_SECTOR_Z) && (gRadarMissileAlarmTimer != 0)) {
         Matrix_Push(&gGfxMatrix);
         HUD_RadarMissileAlarm_Draw();
         Matrix_Pop(&gGfxMatrix);
-        D_hud_80161710--;
+        gRadarMissileAlarmTimer--;
     }
 
     for (i = ARRAY_COUNT(gRadarMarks) - 1; i >= 0; i--) {
@@ -2187,19 +2221,20 @@ s32 ActorMissileSeek_ModeCheck(ActorMissileSeekMode mode) {
     for (i = 0, actor = &gActors[0]; i < 60; i++, actor++) {
         switch (mode) {
             case MISSILE_SEEK_TEAMMATES:
-                if ((actor->obj.status == OBJ_ACTIVE) && (actor->obj.id == OBJ_MISSILE_SEEK_TEAM)) {
+                if ((actor->obj.status == OBJ_ACTIVE) && (actor->obj.id == OBJ_ACTOR_MISSILE_SEEK_TEAM)) {
                     ret++;
                 }
                 break;
 
             case MISSILE_SEEK_PLAYER:
-                if ((actor->obj.status == OBJ_ACTIVE) && (actor->obj.id == OBJ_MISSILE_SEEK_PLAYER)) {
+                if ((actor->obj.status == OBJ_ACTIVE) && (actor->obj.id == OBJ_ACTOR_MISSILE_SEEK_PLAYER)) {
                     ret++;
                 }
                 break;
 
             case MISSILE_SEEK_EITHER:
-                if (((actor->obj.id == OBJ_MISSILE_SEEK_TEAM) || (actor->obj.id == OBJ_MISSILE_SEEK_PLAYER)) &&
+                if (((actor->obj.id == OBJ_ACTOR_MISSILE_SEEK_TEAM) ||
+                     (actor->obj.id == OBJ_ACTOR_MISSILE_SEEK_PLAYER)) &&
                     (actor->obj.status == OBJ_ACTIVE)) {
                     ret++;
                 }
@@ -2215,49 +2250,51 @@ void HUD_RadioCharacterName_Draw(void) {
         RCP_SetupDL(&gMasterDisp, SETUPDL_76_POINT);
         gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 0, 255);
 
+        f32 xPos = OTRGetRectDimensionFromLeftEdgeOverride(73.0f);
+
         switch ((s32) gRadioMsgRadioId) {
             case RCID_FOX:
-                Graphics_DisplaySmallText(73, 173, 1.0f, 1.0f, "FOX");
+                Graphics_DisplaySmallText(xPos, 173, 1.0f, 1.0f, "FOX");
                 break;
 
             case RCID_FALCO:
-                Graphics_DisplaySmallText(73, 173, 1.0f, 1.0f, "FALCO");
+                Graphics_DisplaySmallText(xPos, 173, 1.0f, 1.0f, "FALCO");
                 break;
 
             case RCID_SLIPPY:
-                Graphics_DisplaySmallText(73, 173, 1.0f, 1.0f, "SLIPPY");
+                Graphics_DisplaySmallText(xPos, 173, 1.0f, 1.0f, "SLIPPY");
                 break;
 
             case RCID_PEPPY:
-                Graphics_DisplaySmallText(73, 173, 1.0f, 1.0f, "PEPPY");
+                Graphics_DisplaySmallText(xPos, 173, 1.0f, 1.0f, "PEPPY");
                 break;
 
             case RCID_WOLF:
             case RCID_WOLF_2:
-                Graphics_DisplaySmallText(73, 173, 1.0f, 1.0f, "WOLF");
+                Graphics_DisplaySmallText(xPos, 173, 1.0f, 1.0f, "WOLF");
                 break;
 
             case RCID_LEON:
             case RCID_LEON_2:
-                Graphics_DisplaySmallText(73, 173, 1.0f, 1.0f, "LEON");
+                Graphics_DisplaySmallText(xPos, 173, 1.0f, 1.0f, "LEON");
                 break;
 
             case RCID_PIGMA:
             case RCID_PIGMA_2:
-                Graphics_DisplaySmallText(73, 173, 1.0f, 1.0f, "PIGMA");
+                Graphics_DisplaySmallText(xPos, 173, 1.0f, 1.0f, "PIGMA");
                 break;
 
             case RCID_ANDREW:
             case RCID_ANDREW_2:
-                Graphics_DisplaySmallText(73, 173, 1.0f, 1.0f, "ANDREW");
+                Graphics_DisplaySmallText(xPos, 173, 1.0f, 1.0f, "ANDREW");
                 break;
 
             case RCID_BILL:
-                Graphics_DisplaySmallText(73, 173, 1.0f, 1.0f, "BILL");
+                Graphics_DisplaySmallText(xPos, 173, 1.0f, 1.0f, "BILL");
                 break;
 
             case RCID_KATT:
-                Graphics_DisplaySmallText(73, 173, 1.0f, 1.0f, "KATT");
+                Graphics_DisplaySmallText(xPos, 173, 1.0f, 1.0f, "KATT");
                 break;
         }
     }
@@ -2398,12 +2435,12 @@ void HUD_PlayerShieldGauge_Update(void) {
 }
 
 void HUD_PlayerShieldGauge_Draw(f32 x, f32 y) {
-    x = OTRGetDimensionFromLeftEdge(x);
-    RCP_SetupDL(&gMasterDisp, SETUPDL_75_POINT);
+    x = OTRGetRectDimensionFromLeftEdgeOverride(x);
+    RCP_SetupDL(&gMasterDisp, SETUPDL_75);
     gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, 255);
-    HUD_ShieldGaugeBars_Draw(x + 8.0f, y + 2.0f, D_801617A8, 1.0f, D_801617AC);
+    HUD_ShieldGaugeBars_Draw(x + 7.0f, y + 2.0f, D_801617A8, 1.0f, D_801617AC);
 
-    RCP_SetupDL(&gMasterDisp, SETUPDL_76_POINT);
+    RCP_SetupDL(&gMasterDisp, SETUPDL_76);
     gDPSetPrimColor(gMasterDisp++, 0, 0, D_800D1EB4, D_800D1EB8, D_800D1EBC, 255);
     HUD_ShieldGaugeEdgeLeft_Draw(x, y, 1.0f, 1.0f);
     HUD_ShieldGaugeEdgeRight_Draw(x + 7.0f + (D_801617A8 * 6.0f * 8.0f), y, 1.0f, 1.0f);
@@ -2588,12 +2625,18 @@ void HUD_RadioDamage_Draw(void) {
     if ((D_80161788 != 0) || (D_8016178C != 0)) {
         RCP_SetupDL(&gMasterDisp, SETUPDL_12);
         gDPSetPrimColor(gMasterDisp++, 0, 0, r, g, b, alpha);
+        f32 x = 48.0f;
+        f32 y = 0.0f;
+        HUD_MatrixTranslateCoordLeft(&x, &y);
+        y = -81.0f;
+        Lib_InitOrtho(&gMasterDisp);
         Matrix_Push(&gGfxMatrix);
-        Matrix_Translate(gGfxMatrix, -53.9f, -38.5f, -139.4f, MTXF_APPLY);
-        Matrix_Scale(gGfxMatrix, 1.0f, 1.0f, 1.0f, MTXF_APPLY);
+        Matrix_Translate(gGfxMatrix, x, y, -139.4f, MTXF_APPLY);
+        Matrix_Scale(gGfxMatrix, 2.25f, 2.25f, 2.25f, MTXF_APPLY);
         Matrix_SetGfxMtx(&gMasterDisp);
         gSPDisplayList(gMasterDisp++, sRadioDamageDL);
         Matrix_Pop(&gGfxMatrix);
+        Lib_InitPerspective(&gMasterDisp);
     }
 }
 
@@ -2751,7 +2794,6 @@ void HUD_VsModePortraitTex_Draw(f32 xPos, f32 yPos, f32 scale, s32 idx) {
     Lib_TextureRect_RGBA16(&gMasterDisp, sVsModeFaceDL[idx], 44, 44, xPos, yPos, scale, scale);
 }
 
-// LTODO: Align these
 void HUD_EdgeArrows_Draw(s32 idx, bool arg1) {
     f32 D_800D1EF8[] = { 0.0f, 0.0f, -9.0f, 9.0f, 10.0f, 10.0f, 10.0f, 10.0f, 0.0f, 0.0f, -8.0f, 8.0f };
     f32 D_800D1F28[] = { -7.0f, 7.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 8.0f, -8.0f, 0.0f, 0.0f };
@@ -2773,11 +2815,20 @@ void HUD_EdgeArrows_Draw(s32 idx, bool arg1) {
         Matrix_RotateZ(gGfxMatrix, M_DTOR * D_800D1F88[idx], MTXF_APPLY);
     }
 
+    // Simplified perspective alignment based on X position
+    f32 xPos = D_800D1EF8[idx];
+
+    if (xPos < 0.0f) {
+        xPos = xPos * OTRGetAspectRatio() + 1;
+    } else if (xPos > 0.0f) {
+        xPos = xPos * OTRGetAspectRatio() - 1;
+    }
+
     if (arg1) {
-        Matrix_Translate(gGfxMatrix, D_800D1EF8[idx] + D_800D1FE8[idx], D_800D1F28[idx] + D_800D2018[idx],
-                         D_800D1F58[idx], MTXF_APPLY);
+        Matrix_Translate(gGfxMatrix, xPos + D_800D1FE8[idx], D_800D1F28[idx] + D_800D2018[idx], D_800D1F58[idx],
+                         MTXF_APPLY);
     } else {
-        Matrix_Translate(gGfxMatrix, D_800D1EF8[idx], D_800D1F28[idx], D_800D1F58[idx], MTXF_APPLY);
+        Matrix_Translate(gGfxMatrix, xPos, D_800D1F28[idx], D_800D1F58[idx], MTXF_APPLY);
     }
 
     Matrix_RotateZ(gGfxMatrix, M_DTOR * D_800D1FB8[idx], MTXF_APPLY);
@@ -2897,8 +2948,7 @@ void HUD_KillCountStars_Update(void) {
 }
 
 void HUD_VS_ShieldGaugeFrame_Draw(f32 xPos, f32 yPos, f32 xScale, f32 yScale) {
-    Lib_TextureRect_IA8(&gMasterDisp, aVsShieldGaugeFrameTex, 80, 26, xPos, yPos, xScale,
-                        yScale);
+    Lib_TextureRect_IA8(&gMasterDisp, aVsShieldGaugeFrameTex, 80, 26, xPos, yPos, xScale, yScale);
 }
 
 void HUD_VS_ShieldGaugeTex_Draw(f32 xPos, f32 yPos, f32 xScale, f32 yScale, f32 width) {
@@ -2961,16 +3011,16 @@ void HUD_BoostGauge_Draw(f32 xPos, f32 yPos) {
         sp68 = 24.0f;
         switch (gPlayerNum) {
             case 1:
-                xPos = OTRGetDimensionFromLeftEdge(xPos);
+                xPos = OTRGetRectDimensionFromLeftEdgeOverride(xPos);
                 break;
             case 2:
-                xPos = OTRGetDimensionFromLeftEdge(xPos);
+                xPos = OTRGetRectDimensionFromLeftEdgeOverride(xPos);
                 break;
             case 3:
-                xPos = OTRGetDimensionFromRightEdge(xPos);
+                xPos = OTRGetDimensionFromRightEdgeOverride(xPos);
                 break;
             case 4:
-                xPos = OTRGetDimensionFromRightEdge(xPos);
+                xPos = OTRGetDimensionFromRightEdgeOverride(xPos);
                 break;
         }
     } else {
@@ -2978,7 +3028,7 @@ void HUD_BoostGauge_Draw(f32 xPos, f32 yPos) {
         sp60 = 2.0f;
         sp68 = 40.0f;
         playerNum = 4; // index for Single Player
-        xPos = OTRGetDimensionFromRightEdge(xPos);
+        xPos = OTRGetDimensionFromRightEdgeOverride(xPos);
         boostGaugeXpos[playerNum] = xPos;
         boostGaugeYpos[playerNum] = yPos;
     }
@@ -3124,14 +3174,14 @@ void HUD_DrawBossHealth(void) {
         temp4 = sp3C + 6.0f;
         temp5 = temp1 + 10.0f;
 
-        temp2 = OTRGetDimensionFromLeftEdge(temp2);
-        temp4 = OTRGetDimensionFromLeftEdge(temp4);
+        temp2 = OTRGetRectDimensionFromLeftEdgeOverride(temp2);
+        temp4 = OTRGetRectDimensionFromLeftEdgeOverride(temp4);
 
         RCP_SetupDL(&gMasterDisp, SETUPDL_78_POINT);
         gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, 255);
         Lib_TextureRect_CI4(&gMasterDisp, D_1011A40, D_1011AB0, 32, 7, temp2, temp3, 1.0f, 1.0f);
         f32 border = sp3C;
-        border = OTRGetDimensionFromLeftEdge(border);
+        border = OTRGetRectDimensionFromLeftEdgeOverride(border);
         RCP_SetupDL(&gMasterDisp, SETUPDL_76_POINT);
         Lib_TextureRect_IA8(&gMasterDisp, D_1002040, 40, 12, border, temp1, 1.0f, 1.0f);
 
@@ -3164,7 +3214,7 @@ void HUD_DrawBossHealth(void) {
         if (D_801616C4 >= 0.88f) {
             temp6 = sp3C + 8.0f;
             temp7 = 101.0f - ((2200.0f / 69.0f) * D_801616C8) + temp1;
-            temp6 = OTRGetDimensionFromLeftEdge(temp6);
+            temp6 = OTRGetRectDimensionFromLeftEdgeOverride(temp6);
             if (D_801616C8 > 0.0f) {
                 // LTODO: FIX BOSS BAR
                 Lib_TextureRect_RGBA16(&gMasterDisp, D_Tex_800D99F8, 32, 32, temp6 + 0.5f, temp7, 0.2f, D_801616C8);
@@ -3247,7 +3297,7 @@ void HUD_Radar(void) {
     HUD_RadarMarks_Update();
 }
 
-void HUD_Hitpoints_Update(f32 xPos, f32 yPos) {
+void HUD_Score_Update(f32 xPos, f32 yPos) {
     f32 r;
     f32 g;
     f32 b;
@@ -3333,24 +3383,22 @@ void HUD_Hitpoints_Update(f32 xPos, f32 yPos) {
         r = 255;
         g = 255;
         b = 255;
+    } else if (medalStatus) {
+        r = 200;
+        g = 100;
+        b = 50;
     } else {
-        if (medalStatus) {
-            r = 200;
-            g = 100;
-            b = 50;
-        } else {
-            r = 90;
-            g = 160;
-            b = 200;
-        }
+        r = 90;
+        g = 160;
+        b = 200;
     }
     RCP_SetupDL(&gMasterDisp, SETUPDL_76_POINT);
     gDPSetPrimColor(gMasterDisp++, 0, 0, r, g, b, 255);
-    HUD_Hitpoints_Draw(xPos, yPos);
+    HUD_Score_Draw(xPos, yPos);
 }
 
-void HUD_Shield_GoldRings_HitPoints(f32 xPos, f32 yPos) {
-    HUD_Hitpoints_Update(xPos, yPos);
+void HUD_Shield_GoldRings_Score(f32 xPos, f32 yPos) {
+    HUD_Score_Update(xPos, yPos);
     HUD_PlayerShield_GoldRings();
 }
 
@@ -3360,7 +3408,7 @@ void HUD_BombCounter_Draw(f32 x, f32 y) {
     f32 temp_fv0;
     f32 temp;
 
-    x = OTRGetDimensionFromRightEdge(x);
+    x = OTRGetDimensionFromRightEdgeOverride(x);
 
     // Max bombs
     if (gBombCount[gPlayerNum] > 9) {
@@ -3565,27 +3613,40 @@ void HUD_VS_Radar(void) {
 }
 
 void HUD_SinglePlayer(void) {
-    if (gPlayState != PLAY_PAUSE) {
-        HUD_Radar();
+    CALL_CANCELLABLE_EVENT(DrawRadarHUDEvent){
+        if (gPlayState != PLAY_PAUSE) {
+            HUD_Radar();
+        }
     }
 
     RCP_SetupDL_36();
     if ((gLevelMode != LEVELMODE_TURRET) && (D_hud_80161708 != 0)) {
-        HUD_BoostGauge_Draw(246.0f, 28.0f);
-        HUD_BombCounter_Draw(250.0f, 38.0f);
-    }
-
-    HUD_IncomingMsg();
-
-    if (D_hud_80161708 != 0) {
-        HUD_Shield_GoldRings_HitPoints(24.0f, 30.0f);
-        if (gCurrentLevel != LEVEL_TRAINING) {
-            HUD_LivesCount2_Draw(248.0f, 11.0f, gLifeCount[gPlayerNum]);
+        CALL_CANCELLABLE_EVENT(DrawBoostGaugeHUDEvent) {
+            HUD_BoostGauge_Draw(246.0f, 28.0f);
+        }
+        CALL_CANCELLABLE_EVENT(DrawBombCounterHUDEvent) {
+            HUD_BombCounter_Draw(250.0f, 38.0f);
         }
     }
 
-    if (gCurrentLevel == LEVEL_TRAINING) {
-        Training_RingPassCount_Draw();
+    CALL_CANCELLABLE_EVENT(DrawIncomingMsgHUDEvent) {
+        HUD_IncomingMsg();
+    }
+
+    if (D_hud_80161708 != 0) {
+        CALL_CANCELLABLE_EVENT(DrawGoldRingsHUDEvent) {
+            HUD_Shield_GoldRings_Score(24.0f, 30.0f);
+        }
+        CALL_CANCELLABLE_EVENT(DrawLivesCounterHUDEvent) {
+            if (gCurrentLevel != LEVEL_TRAINING) {
+                HUD_LivesCount2_Draw(248.0f, 11.0f, gLifeCount[gPlayerNum]);
+            }
+        }
+    }
+    CALL_CANCELLABLE_EVENT(DrawTrainingRingPassCountHUDEvent) {
+        if (gCurrentLevel == LEVEL_TRAINING) {
+            Training_RingPassCount_Draw();
+        }
     }
 }
 
@@ -3593,6 +3654,8 @@ void HUD_Draw(void) {
     s32 i;
     s32 goldRings;
     bool medalStatus;
+    CALL_CANCELLABLE_RETURN_EVENT(DrawGlobalHUDPreEvent);
+
     gDPSetTextureFilter(gMasterDisp++, G_TF_POINT);
 
     if (D_hud_80161730 == 0) {
@@ -3703,15 +3766,16 @@ void HUD_Draw(void) {
     HUD_RadioDamage();
     HUD_PauseScreen_Update();
     gDPSetTextureFilter(gMasterDisp++, G_TF_BILERP);
+    CALL_EVENT(DrawGlobalHUDPostEvent);
 }
 
-void FoBase_Draw(Boss* boss) {
+void FoBase_Draw(Boss* this) {
     RCP_SetupDL_29(gFogRed, gFogGreen, gFogBlue, gFogAlpha, gFogNear, gFogFar);
     gSPDisplayList(gMasterDisp++, aFoBaseDL2);
     RCP_SetupDL_34(gFogRed, gFogGreen, gFogBlue, gFogAlpha, gFogNear, gFogFar);
     gSPSetGeometryMode(gMasterDisp++, G_CULL_BACK);
     gDPSetTextureFilter(gMasterDisp++, G_TF_POINT);
-    gDPSetPrimColor(gMasterDisp++, 0, 0, 0, (s32) boss->fwork[1], (s32) boss->fwork[2], 255);
+    gDPSetPrimColor(gMasterDisp++, 0, 0, 0, (s32) this->fwork[1], (s32) this->fwork[2], 255);
     gSPDisplayList(gMasterDisp++, aFoBaseDL1);
     gDPSetTextureFilter(gMasterDisp++, G_TF_BILERP);
 }
@@ -4199,7 +4263,7 @@ void ActorTeamBoss_SetAction(ActorTeamBoss* this) {
         this->state = 3;
     }
 
-    if (gPlayer[0].state_1C8 == PLAYERSTATE_1C8_LEVEL_COMPLETE) {
+    if (gPlayer[0].state == PLAYERSTATE_LEVEL_COMPLETE) {
         if ((this->state != 2) && (this->state != 3)) {
             this->iwork[4] = 1;
             this->state = 2;
@@ -4486,7 +4550,7 @@ void ActorTeamBoss_Radarmarks_Init(ActorTeamBoss* this) {
 void ActorTeamBoss_DmgEffect(ActorTeamBoss* this) {
     s32 mask;
 
-    if ((gTeamShields[this->aiType] < 64) && (gPlayer[0].state_1C8 != PLAYERSTATE_1C8_LEVEL_COMPLETE)) {
+    if ((gTeamShields[this->aiType] < 64) && (gPlayer[0].state != PLAYERSTATE_LEVEL_COMPLETE)) {
         mask = 8 - 1;
         if (gTeamShields[this->aiType] > 16) {
             mask = 16 - 1;
@@ -4782,14 +4846,14 @@ void ActorTeamBoss_Update(ActorTeamBoss* this) {
             }
 
             if ((this->iwork[10] != 0) && (gLevelMode == LEVELMODE_ALL_RANGE) && (this->iwork[9] == 0) &&
-                (gPlayer[0].state_1C8 != PLAYERSTATE_1C8_LEVEL_COMPLETE)) {
+                (gPlayer[0].state != PLAYERSTATE_LEVEL_COMPLETE)) {
                 this->work_048 = 2;
                 this->work_04A = 0;
             }
 
             if ((gLevelMode == LEVELMODE_ALL_RANGE) &&
                 (fabsf(this->obj.pos.x > range) || fabsf(this->obj.pos.z > range)) &&
-                (gPlayer[0].state_1C8 != PLAYERSTATE_1C8_LEVEL_COMPLETE)) {
+                (gPlayer[0].state != PLAYERSTATE_LEVEL_COMPLETE)) {
                 this->work_048 = 2;
                 this->work_04A = 1;
             }
@@ -4829,7 +4893,7 @@ void Aquas_CsIntroActors_Update(ActorCutscene* this) {
     if (this->state == 0) {
         switch (this->animFrame) {
             case 1:
-                if ((player->state_1C8 != PLAYERSTATE_1C8_LEVEL_INTRO) || (this->animFrame != 1)) {
+                if ((player->state != PLAYERSTATE_LEVEL_INTRO) || (this->animFrame != 1)) {
                     if (gCsFrameCount > 1588) {
                         this->fwork[0] = 5.0f;
                     } else {
@@ -4894,8 +4958,7 @@ void Aquas_Effect363_Spawn(f32 x, f32 y, f32 z, f32 arg3) {
             effect->obj.pos.y = y;
             effect->obj.pos.z = z;
 
-            if ((player->state_1C8 == PLAYERSTATE_1C8_LEVEL_INTRO) && (gCurrentLevel == LEVEL_AQUAS) &&
-                (player->csState < 2)) {
+            if ((player->state == PLAYERSTATE_LEVEL_INTRO) && (gCurrentLevel == LEVEL_AQUAS) && (player->csState < 2)) {
                 effect->scale1 = 0.4f;
                 effect->unk_44 = 0;
                 effect->unk_46 = 24;
@@ -5314,7 +5377,7 @@ void Aquas_CsLevelStart(Player* player) {
             if (player->csTimer <= 900) {
                 gLevelStartStatusScreenTimer = 50;
 
-                player->state_1C8 = PLAYERSTATE_1C8_ACTIVE;
+                player->state = PLAYERSTATE_ACTIVE;
                 player->csState = 0;
                 player->csTimer = 0;
 
@@ -5370,7 +5433,7 @@ f32 D_800D24CC = 0.02f;
 void Aquas_Effect363_Update(Effect363* this) {
     Player* player = &gPlayer[0];
 
-    if ((player->state_1C8 == PLAYERSTATE_1C8_LEVEL_INTRO) && (gCurrentLevel == LEVEL_AQUAS) && (player->csState < 2)) {
+    if ((player->state == PLAYERSTATE_LEVEL_INTRO) && (gCurrentLevel == LEVEL_AQUAS) && (player->csState < 2)) {
         switch (this->state) {
             case 0:
                 this->unk_44 += this->unk_46;
@@ -5401,12 +5464,12 @@ void Aquas_Effect363_Update(Effect363* this) {
         }
         this->obj.rot.z += this->unk_48;
     } else {
-        if (player->state_1C8 == PLAYERSTATE_1C8_LEVEL_COMPLETE) {
+        if (player->state == PLAYERSTATE_LEVEL_COMPLETE) {
             this->obj.rot.x = RAD_TO_DEG(player->camPitch);
             this->obj.rot.y = RAD_TO_DEG(-player->camYaw);
         }
 
-        if (player->state_1C8 == PLAYERSTATE_1C8_NEXT) {
+        if (player->state == PLAYERSTATE_NEXT) {
             this->unk_46 = 2;
             if (player->csState >= 4) {
                 this->vel.y -= 0.13f;
@@ -5416,8 +5479,8 @@ void Aquas_Effect363_Update(Effect363* this) {
         this->scale2 += 0.8f;
         this->unk_4A -= this->unk_46;
 
-        if ((this->unk_4A < 0) || ((player->state_1C8 == PLAYERSTATE_1C8_LEVEL_INTRO) &&
-                                   (gCurrentLevel == LEVEL_AQUAS) && (player->csState == 5))) {
+        if ((this->unk_4A < 0) ||
+            ((player->state == PLAYERSTATE_LEVEL_INTRO) && (gCurrentLevel == LEVEL_AQUAS) && (player->csState == 5))) {
             Object_Kill(&this->obj, this->sfxSource);
         }
         this->obj.rot.z += this->unk_48;
@@ -5425,8 +5488,7 @@ void Aquas_Effect363_Update(Effect363* this) {
 }
 
 void Aquas_Effect363_Draw(Effect363* this) {
-    if ((gPlayer[0].state_1C8 == PLAYERSTATE_1C8_LEVEL_INTRO) && (gCurrentLevel == LEVEL_AQUAS) &&
-        (gPlayer[0].csState < 2)) {
+    if ((gPlayer[0].state == PLAYERSTATE_LEVEL_INTRO) && (gCurrentLevel == LEVEL_AQUAS) && (gPlayer[0].csState < 2)) {
         RCP_SetupDL(&gMasterDisp, SETUPDL_68);
         gDPSetPrimColor(gMasterDisp++, 0, 0, 0, 21, 34, this->unk_4A);
         gDPSetEnvColor(gMasterDisp++, 255, 255, 251, 0);
@@ -5444,7 +5506,7 @@ void stub_80094D10(void) {
 void stub_80094D18(void) {
 }
 
-void HUD_Hitpoints_Draw(f32 x, f32 y) {
+void HUD_Score_Draw(f32 x, f32 y) {
     u8* D_800D24DC[] = { aLargeText_0, aLargeText_1, aLargeText_2, aLargeText_3, aLargeText_4,
                          aLargeText_5, aLargeText_6, aLargeText_7, aLargeText_8, aLargeText_9 };
     s32 D_800D2504[] = { 100, 10, 1 };
@@ -5459,7 +5521,7 @@ void HUD_Hitpoints_Draw(f32 x, f32 y) {
     f32 y1;
     f32 xScale;
 
-    x = OTRGetDimensionFromLeftEdge(x);
+    x = OTRGetRectDimensionFromLeftEdgeOverride(x);
 
     if (gHitCount > gDisplayedHitCount) {
         temp3 = gDisplayedHitCount + 1;
@@ -5617,7 +5679,7 @@ void Aquas_AqCoralReef2_Setup(ActorCutscene* this, s32 posIdx) {
     this->obj.id = OBJ_ACTOR_CUTSCENE;
     this->obj.pos = sAqCoralReef2Pos[posIdx];
     this->obj.pos.z -= gPathProgress;
-    this->animFrame = 46;
+    this->animFrame = ACTOR_CS_AQ_CORAL_REEF_2;
     Object_SetInfo(&this->info, this->obj.id);
 }
 
@@ -5632,7 +5694,7 @@ void Aquas_AqRock_Setup(ActorCutscene* this, s32 posIdx) {
     this->obj.id = OBJ_ACTOR_CUTSCENE;
     this->obj.pos = sAqRockPos[posIdx];
     this->obj.pos.z -= gPathProgress;
-    this->animFrame = 47;
+    this->animFrame = ACTOR_CS_AQ_ROCK;
     Object_SetInfo(&this->info, this->obj.id);
 }
 
@@ -5918,7 +5980,7 @@ void Aquas_CsLevelComplete(Player* player) {
 
                 if (gFillScreenAlpha == 255) {
                     gLeveLClearStatus[LEVEL_AQUAS] = Play_CheckMedalStatus(150) + 1;
-                    player->state_1C8 = PLAYERSTATE_1C8_NEXT;
+                    player->state = PLAYERSTATE_NEXT;
                     player->csTimer = 0;
                     Audio_FadeOutAll(10);
                     gFadeoutType = 4;
@@ -6141,7 +6203,7 @@ void Venom1_LevelStart2(Player* player) {
             if (gCsFrameCount == 300) {
                 gPathTexScroll = 0;
                 gLevelStartStatusScreenTimer = 50;
-                player->state_1C8 = PLAYERSTATE_1C8_ACTIVE;
+                player->state = PLAYERSTATE_ACTIVE;
                 player->baseSpeed = gArwingSpeed;
                 player->csState = 0;
                 player->csTimer = 0;

@@ -32,8 +32,8 @@ typedef struct {
     /* 0x70 */ f32 unk_70;
     /* 0x74 */ f32 unk_74;
     /* 0x78 */ f32 unk_78;
-    /* 0x7C */ u16 unk_7C;
-} UnkStruct_i1_8019B838; // size = 0x80
+    /* 0x7C */ u16 flag;
+} GoleMechLimbInfo; // size = 0x80
 
 typedef struct {
     /* 0x0 */ f32 unk_0;
@@ -42,9 +42,9 @@ typedef struct {
 } UnkStruct_i1_8019AE00; // size = 0x8
 
 typedef struct {
-    /* 0x0 */ s16 unk_0;
-    /* 0x2 */ u8 unk_2;
-} UnkStruct_i1_8019ACF8; // size = 0x4
+    /* 0x0 */ s16 index;
+    /* 0x2 */ u8 unk_2; // enabled? finished? some sort of flag?
+} GoleMechAnimInfo;     // size = 0x4
 
 typedef struct {
     /* 0x0 */ s16 limb;
@@ -59,9 +59,9 @@ typedef struct {
 } UnkStruct_i1_8019A058; // size = 0x10
 
 typedef struct {
-    /* 0x0 */ UnkStruct_i1_8019ACF8* unk_0;
-    /* 0x4 */ s32 unk_4;
-} UnkStruct_i1_8019AD2C; // size = 0x8
+    /* 0x0 */ GoleMechAnimInfo* anim;
+    /* 0x4 */ s32 pad;
+} GoleMechAnimList; // size = 0x8
 
 typedef struct {
     /* 0x0 */ f32 x;
@@ -184,7 +184,7 @@ UnkStruct_i1_80199B40 D_i1_80199E6C[5][5] = {
 };
 
 s16 D_i1_8019B7F0[33];
-UnkStruct_i1_8019B838 D_i1_8019B838[17];
+GoleMechLimbInfo sGoleMechLimbInfo[17];
 s32 D_i1_8019C0B8;
 s32 D_i1_8019C0BC;
 s32 D_i1_8019C0C0;
@@ -783,23 +783,31 @@ f32 aVe1GolemechHitbox[199] = {
     0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
     0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
 };
+
 Animation* D_i1_8019ACD4[9] = {
     &D_VE1_9018BD0, &D_VE1_901A4B8, &D_VE1_901BDA8, &D_VE1_901DA38, &D_VE1_9024738,
     &D_VE1_9024738, &D_VE1_9018BD0, &D_VE1_9010FC4, NULL,
 };
-UnkStruct_i1_8019ACF8 D_i1_8019ACF8[2] = { { 0, 1 }, { -1, 0 } };
-UnkStruct_i1_8019ACF8 D_i1_8019AD00[4] = { { 1, 0 }, { 2, 1 }, { 3, 0 }, { -1, 0 } };
-UnkStruct_i1_8019ACF8 D_i1_8019AD10[3] = { { 4, 0 }, { 5, 0 }, { -1, 0 } };
-UnkStruct_i1_8019ACF8 D_i1_8019AD1C[2] = { { 7, 0 }, { -1, 0 } };
-UnkStruct_i1_8019ACF8 D_i1_8019AD24[2] = { { 6, 1 }, { -1, 0 } };
-UnkStruct_i1_8019AD2C D_i1_8019AD2C[5] = {
-    { D_i1_8019ACF8, 0 }, { D_i1_8019AD00, 0 }, { D_i1_8019AD10, 0 }, { D_i1_8019AD24, 0 }, { D_i1_8019AD1C, 0 },
+
+GoleMechAnimInfo sVe1GolemethAnim1[2] = { { 0, 1 }, { -1, 0 } };
+GoleMechAnimInfo sVe1GolemethAnim2[4] = { { 1, 0 }, { 2, 1 }, { 3, 0 }, { -1, 0 } };
+GoleMechAnimInfo sVe1GolemethAnim3[3] = { { 4, 0 }, { 5, 0 }, { -1, 0 } };
+GoleMechAnimInfo sVe1GolemethAnim4[2] = { { 7, 0 }, { -1, 0 } };
+GoleMechAnimInfo sVe1GolemethAnim5[2] = { { 6, 1 }, { -1, 0 } };
+
+GoleMechAnimList sVe1GolemethAnimList[5] = {
+    { sVe1GolemethAnim1, 0 }, { sVe1GolemethAnim2, 0 }, { sVe1GolemethAnim3, 0 },
+    { sVe1GolemethAnim5, 0 }, { sVe1GolemethAnim4, 0 },
 };
+
 s16 D_i1_8019AD54[3] = { 0, 1, -1 };
+
 Vec3f D_i1_8019AD5C = { 162.0f, 50.0f, 0.0f };
+
 u8 D_i1_8019AD68[24] = {
     0, 33, 64, 97, 128, 143, 161, 192, 223, 255, 234, 213, 192, 171, 153, 129, 108, 87, 66, 45, 22, 0, 0, 0,
 };
+
 typedef struct {
     s16 unk_0;
     s16 unk_2;
@@ -812,15 +820,18 @@ s16 D_i1_8019AD80[16][4] = {
     { 0, 0, 0, 1 }, { 0, 0, 0, 1 }, { 0, 1, 0, 1 }, { 0, 0, 8, 1 }, { 0, 0, 0, 1 }, { 0, 1, 0, 1 },
     { 0, 0, 0, 1 }, { 1, 0, 0, 1 }, { 0, 1, 0, 1 }, { 0, 0, 8, 1 },
 };
+
 UnkStruct_i1_8019AE00 D_i1_8019AE00[4] = {
     { 270.0f, 3, 2 },
     { 90.0f, 2, 3 },
     { 180.0f, 0, 1 },
     { 0.0f, 1, 0 },
 };
+
 f32 D_i1_8019AE20[6] = {
     258.0f, 0.0f, 0.0f, 133.0f, 0.0f, 0.0f,
 };
+
 Vec3f D_i1_8019AE38 = { 130.0f, 0.0f, 0.0f };
 
 void Venom1_Ve1Golemech_Init(Ve1Golemech* this) {
@@ -848,21 +859,23 @@ void Venom1_Ve1Golemech_Init(Ve1Golemech* this) {
     this->fwork[17] = this->obj.rot.y;
     this->obj.rot.y = 0.0f;
 
-    for (i = 0; i < ARRAY_COUNTU(D_i1_8019B838); i++) {
-        D_i1_8019B838[i].unk_00 = D_i1_8019A820[i].unk_02;
-        D_i1_8019B838[i].unk_02[0] = 0;
+    for (i = 0; i < ARRAY_COUNTU(sGoleMechLimbInfo); i++) {
+        sGoleMechLimbInfo[i].unk_00 = D_i1_8019A820[i].unk_02;
+        sGoleMechLimbInfo[i].unk_02[0] = 0;
 
-        for (j = 0; j < 5; j++) {
-            D_i1_8019B838[i].unk_02[j] = 0;
+        for (j = 0; j < ARRAY_COUNT(sGoleMechLimbInfo->unk_02); j++) {
+            sGoleMechLimbInfo[i].unk_02[j] = 0;
         }
-        for (j = 0; j < 3; j++) {
-            D_i1_8019B838[i].unk_0C[j].x = D_i1_8019B838[i].unk_0C[j].y = D_i1_8019B838[i].unk_0C[j].z = 0.0f;
+        for (j = 0; j < ARRAY_COUNT(sGoleMechLimbInfo->unk_0C); j++) {
+            sGoleMechLimbInfo[i].unk_0C[j].x = sGoleMechLimbInfo[i].unk_0C[j].y = sGoleMechLimbInfo[i].unk_0C[j].z =
+                0.0f;
         }
-        for (j = 0; j < 3; j++) {
-            D_i1_8019B838[i].unk_30[j].x = D_i1_8019B838[i].unk_30[j].y = D_i1_8019B838[i].unk_30[j].z = 0.0f;
+        for (j = 0; j < ARRAY_COUNT(sGoleMechLimbInfo->unk_30); j++) {
+            sGoleMechLimbInfo[i].unk_30[j].x = sGoleMechLimbInfo[i].unk_30[j].y = sGoleMechLimbInfo[i].unk_30[j].z =
+                0.0f;
         }
-        D_i1_8019B838[i].unk_74 = D_i1_8019B838[i].unk_78 = 0.0f;
-        D_i1_8019B838[i].unk_7C = 0;
+        sGoleMechLimbInfo[i].unk_74 = sGoleMechLimbInfo[i].unk_78 = 0.0f;
+        sGoleMechLimbInfo[i].flag = 0;
     }
 
     this->fwork[11] = 1.0f;
@@ -871,7 +884,7 @@ void Venom1_Ve1Golemech_Init(Ve1Golemech* this) {
         D_i1_8019B7F0[i] = 0;
     }
 
-    for (var_v0 = 0, i = 0; i < ARRAY_COUNTU(D_i1_8019B838); i++) {
+    for (var_v0 = 0, i = 0; i < ARRAY_COUNTU(sGoleMechLimbInfo); i++) {
         var_v0 += D_i1_8019A820[i].unk_02;
     }
     this->swork[29] = this->swork[30] = var_v0 + 100;
@@ -902,7 +915,7 @@ bool Venom1_801937F4(s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3f* rot, void* t
 
     override = false;
 
-    for (i = 0; i < 18; i++) {
+    for (i = 0; i < ARRAY_COUNT(D_i1_8019A748); i++) {
         if (limbIndex == D_i1_8019A748[i].limb) {
             Matrix_Translate(gCalcMatrix, pos->x, pos->y, pos->z, MTXF_APPLY);
             Matrix_RotateZ(gCalcMatrix, rot->z * M_DTOR, MTXF_APPLY);
@@ -911,9 +924,9 @@ bool Venom1_801937F4(s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3f* rot, void* t
             Matrix_Mult(gGfxMatrix, gCalcMatrix, MTXF_APPLY);
             Matrix_SetGfxMtx(&gMasterDisp);
 
-            if (!(D_i1_8019B838[D_i1_8019A748[i].index].unk_7C & 1)) {
-                if (D_i1_8019B838[D_i1_8019A748[i].index].unk_00 > 0) {
-                    if ((D_i1_8019B838[D_i1_8019A748[i].index].unk_02[2] & 2) == 2) {
+            if (!(sGoleMechLimbInfo[D_i1_8019A748[i].index].flag & 1)) {
+                if (sGoleMechLimbInfo[D_i1_8019A748[i].index].unk_00 > 0) {
+                    if ((sGoleMechLimbInfo[D_i1_8019A748[i].index].unk_02[2] & 2) == 2) {
                         RCP_SetupDL(&gMasterDisp, SETUPDL_30);
                         gDPSetPrimColor(gMasterDisp++, 0x00, 0x00, 255, 0, 0, 255);
                         if (*dList != NULL) {
@@ -934,10 +947,10 @@ bool Venom1_801937F4(s32 limbIndex, Gfx** dList, Vec3f* pos, Vec3f* rot, void* t
                         }
                     }
                 } else if (!D_i1_8019A748[i].flag) {
-                    blue = D_i1_8019B838[D_i1_8019A748[i].index].unk_74;
+                    blue = sGoleMechLimbInfo[D_i1_8019A748[i].index].unk_74;
                     if ((blue != 0) && ((gGameFrameCount & 2) == 2)) {
-                        green = D_i1_8019B838[D_i1_8019A748[i].index].unk_6C;
-                        red = D_i1_8019B838[D_i1_8019A748[i].index].unk_64;
+                        green = sGoleMechLimbInfo[D_i1_8019A748[i].index].unk_6C;
+                        red = sGoleMechLimbInfo[D_i1_8019A748[i].index].unk_64;
                         if (*dList != NULL) {
                             RCP_SetupDL(&gMasterDisp, SETUPDL_31);
                             if (blue > 128) {
@@ -978,7 +991,7 @@ void Venom1_80193D64(s32 limbIndex, Vec3f* rot, void* thisx) {
     Ve1Golemech* this = (Ve1Golemech*) thisx;
     Vec3f spAC;
     UnkStruct_i1_8019A058* var_s1;
-    UnkStruct_i1_8019B838* var_s7;
+    GoleMechLimbInfo* var_s7;
     UnkStruct_i1_8019A820* var_s6;
     f32* var_s0;
     s32 temp_s3;
@@ -988,11 +1001,11 @@ void Venom1_80193D64(s32 limbIndex, Vec3f* rot, void* thisx) {
 
     var_s0 = this->info.hitbox;
     *var_s0++ = 33.0f;
-    for (spBC = 0; spBC < ARRAY_COUNTU(D_i1_8019B838); spBC++) {
+    for (spBC = 0; spBC < ARRAY_COUNTU(sGoleMechLimbInfo); spBC++) {
         temp_s3 = D_i1_8019A478[spBC][2];
         if (limbIndex == D_i1_8019A478[spBC][0]) {
             temp1 = D_i1_8019A478[spBC][1];
-            if (D_i1_8019B838[spBC].unk_00 > 0) {
+            if (sGoleMechLimbInfo[spBC].unk_00 > 0) {
                 var_s1 = &D_i1_8019A058[temp1];
             } else {
                 var_s1 = &D_i1_8019A268[temp1];
@@ -1015,32 +1028,32 @@ void Venom1_80193D64(s32 limbIndex, Vec3f* rot, void* thisx) {
     }
 
     var_s6 = D_i1_8019A820;
-    var_s7 = D_i1_8019B838;
+    var_s7 = sGoleMechLimbInfo;
 
-    for (spBC = 0; spBC < ARRAY_COUNTU(D_i1_8019B838); spBC++, var_s6++, var_s7++) {
+    for (spBC = 0; spBC < ARRAY_COUNTU(sGoleMechLimbInfo); spBC++, var_s6++, var_s7++) {
         if (limbIndex == var_s6->unk_00) {
-            if (var_s7->unk_7C & 8) {
+            if (var_s7->flag & 8) {
                 temp2 = var_s6->unk_04;
                 for (var_s4 = 0; var_s4 < var_s6->unk_06; var_s4++) {
                     Matrix_MultVec3f(gCalcMatrix, &D_i1_8019A544[temp2 + var_s4], &var_s7->unk_0C[var_s4]);
                 }
-                var_s7->unk_7C &= ~8;
-                var_s7->unk_7C |= 0x10;
+                var_s7->flag &= ~8;
+                var_s7->flag |= 0x10;
             }
-            if (var_s7->unk_7C & 0x20) {
+            if (var_s7->flag & 0x20) {
                 Matrix_MultVec3f(gCalcMatrix, &D_tank_800C9F2C, &var_s7->unk_0C[0]);
                 Matrix_GetYRPAngles(gCalcMatrix, &var_s7->unk_30[0]);
-                var_s7->unk_7C &= ~0x20;
-                var_s7->unk_7C |= 0x40;
+                var_s7->flag &= ~0x20;
+                var_s7->flag |= 0x40;
             }
-            if (var_s7->unk_7C & 0x100) {
-                var_s7->unk_7C &= ~0x100;
-                var_s7->unk_7C |= 0x200;
+            if (var_s7->flag & 0x100) {
+                var_s7->flag &= ~0x100;
+                var_s7->flag |= 0x200;
             }
-            if (var_s7->unk_7C & 0x800) {
+            if (var_s7->flag & 0x800) {
                 Matrix_MultVec3f(gCalcMatrix, &D_tank_800C9F2C, &var_s7->unk_0C[1]);
-                var_s7->unk_7C &= ~0x800;
-                var_s7->unk_7C |= 0x1000;
+                var_s7->flag &= ~0x800;
+                var_s7->flag |= 0x1000;
             }
         }
     }
@@ -1065,14 +1078,15 @@ void Venom1_80193D64(s32 limbIndex, Vec3f* rot, void* thisx) {
             }
             break;
     }
+
     RCP_SetupDL(&gMasterDisp, SETUPDL_64);
     gSPClearGeometryMode(gMasterDisp++, G_CULL_BACK);
 
     var_s6 = D_i1_8019A820;
-    var_s7 = D_i1_8019B838;
+    var_s7 = sGoleMechLimbInfo;
 
-    for (spBC = 0; spBC < ARRAY_COUNTU(D_i1_8019B838); spBC++, var_s6++, var_s7++) {
-        if ((limbIndex == var_s6->unk_00) && (var_s7->unk_7C & 0x200) && !((gGameFrameCount + spBC) & 2)) {
+    for (spBC = 0; spBC < ARRAY_COUNTU(sGoleMechLimbInfo); spBC++, var_s6++, var_s7++) {
+        if ((limbIndex == var_s6->unk_00) && (var_s7->flag & 0x200) && !((gGameFrameCount + spBC) & 2)) {
             temp2 = var_s6->unk_04;
             for (var_s4 = 0; var_s4 < var_s6->unk_06; var_s4++) {
                 Matrix_Push(&gGfxMatrix);
@@ -1098,30 +1112,28 @@ void Venom1_80193D64(s32 limbIndex, Vec3f* rot, void* thisx) {
     RCP_SetupDL(&gMasterDisp, SETUPDL_29);
 }
 
-#ifdef NON_MATCHING
-// Lots of problems with loop at 2082. Seems related to spE8. https://decomp.me/scratch/gOy2L
 void Venom1_Ve1Golemech_Update(Ve1Golemech* this) {
-    s32 is0;
+    GoleMechAnimInfo* animation;
     Vec3f sp118[27];
     Actor* actor;
     Effect* effect;
     Vec3f sp104;
     Vec3f spF8;
     s32 spF4;
-    f32 temp_fv1;
-    f32 var_fv0;
+    s32 is0;
+    s32 ia0;
     s32 spE8;
     s32 spE4;
-    s32 is5;
-    s32 ia0;
     s32 is1;
     s32 is3;
     s32 is2;
-    f32 spCC;
     s32 is4;
+    s32 is5;
+    f32 spCC;
+    s32 temp;
+    f32 temp_fv1;
+    f32 var_fv0;
     s32 is7;
-    s32 pad1;
-    UnkStruct_i1_8019ACF8* pad2;
     s32 spB8;
     s32 spB4;
     f32 temp_fs0;
@@ -1130,12 +1142,16 @@ void Venom1_Ve1Golemech_Update(Ve1Golemech* this) {
     spE4 = 0;
     spB8 = 0;
     spB4 = 0;
+
     gBossFrameCount++;
+
     if (this->state >= 3) {
         D_i1_8019C0B8 = 0;
         D_i1_8019C0BC = 0;
     }
+
     this->swork[32]++;
+
     if (this->swork[31] == 0) {
         switch (this->swork[32]) {
             case 901:
@@ -1143,6 +1159,7 @@ void Venom1_Ve1Golemech_Update(Ve1Golemech* this) {
                     Radio_PlayMessage(gMsg_ID_4092, RCID_SLIPPY);
                 }
                 break;
+
             case 1001:
                 if (gTeamShields[TEAM_ID_SLIPPY] > 0) {
                     gShowBossHealth = true;
@@ -1153,21 +1170,26 @@ void Venom1_Ve1Golemech_Update(Ve1Golemech* this) {
                 break;
         }
     }
-    for (spF4 = 0; spF4 < ARRAY_COUNTU(D_i1_8019B838); spF4++) {
-        if (D_i1_8019B838[spF4].unk_02[2] > 0) {
-            D_i1_8019B838[spF4].unk_02[2]--;
+
+    for (spF4 = 0; spF4 < ARRAY_COUNTU(sGoleMechLimbInfo); spF4++) {
+        if (sGoleMechLimbInfo[spF4].unk_02[2] > 0) {
+            sGoleMechLimbInfo[spF4].unk_02[2]--;
         }
     }
+
     if (this->swork[10] > 0) {
         this->swork[10]--;
     }
+
     if (this->swork[28] > 0) {
         gControllerRumbleFlags[0] = 1;
         this->swork[28]--;
     }
+
     if (this->swork[16] > 0) {
         this->swork[16]--;
     }
+
     if ((this->swork[16] & 3) == 1) {
         for (spF4 = 0; spF4 < (RAND_INT(5.0f) + 2); spF4++) {
             effect = Effect_Load(OBJ_EFFECT_394);
@@ -1189,11 +1211,12 @@ void Venom1_Ve1Golemech_Update(Ve1Golemech* this) {
             }
         }
     }
+
     if (this->swork[10] & 2) {
         effect = Effect_Load(OBJ_EFFECT_394);
         if (effect != NULL) {
-            effect->obj.status = OBJ_ACTIVE;
             effect->unk_78 = effect->unk_7A = 11;
+            effect->obj.status = OBJ_ACTIVE;
             effect->obj.pos.x = this->obj.pos.x + 125.0f;
             effect->obj.pos.y = this->obj.pos.y;
             effect->obj.pos.z = this->obj.pos.z;
@@ -1208,10 +1231,11 @@ void Venom1_Ve1Golemech_Update(Ve1Golemech* this) {
                 effect->unk_60.z = -effect->unk_60.z;
             }
         }
+
         effect = Effect_Load(OBJ_EFFECT_394);
         if (effect != NULL) {
-            effect->obj.status = OBJ_ACTIVE;
             effect->unk_78 = effect->unk_7A = 11;
+            effect->obj.status = OBJ_ACTIVE;
             effect->obj.pos.x = this->obj.pos.x - 125.0f;
             effect->obj.pos.y = this->obj.pos.y;
             effect->obj.pos.z = this->obj.pos.z;
@@ -1228,20 +1252,21 @@ void Venom1_Ve1Golemech_Update(Ve1Golemech* this) {
             effect->unk_4A = 50;
         }
     }
+
     if (this->state <= 0) {
         switch (this->swork[20]) {
             case 0:
                 break;
+
             case 1:
                 this->fwork[13] = D_i1_8019AE00[this->swork[21]].unk_0;
                 this->swork[22] = this->swork[21];
                 this->swork[20]++;
-                /* fallthrough */
-            case 2:
 
+            case 2:
                 this->fwork[14] = 0.0f;
                 this->swork[20]++;
-                /* fallthrough */
+
             case 3:
                 Math_SmoothStepToF(&this->fwork[14], 12.0f, 1.0f, 1.0f, 0.01f);
                 Venom1_801920F0(&this->fwork[6], this->fwork[13], 1.0f, this->fwork[14], 0.01f, &spCC);
@@ -1250,6 +1275,7 @@ void Venom1_Ve1Golemech_Update(Ve1Golemech* this) {
                     this->swork[20]++;
                 }
                 break;
+
             case 4:
                 Math_SmoothStepToF(&this->fwork[14], 12.0f, 1.0f, 1.0f, 0.01f);
                 Math_SmoothStepToAngle(&this->fwork[12], this->fwork[13], 1.0f, this->fwork[14] / 5.0f, 0.01f);
@@ -1260,96 +1286,103 @@ void Venom1_Ve1Golemech_Update(Ve1Golemech* this) {
                 break;
         }
     }
-    Matrix_RotateY(gCalcMatrix, this->obj.rot.y * M_DTOR, MTXF_NEW);
 
-    for (spF4 = 0; spF4 < ARRAY_COUNTU(D_i1_8019B838); spF4++) {
-        if (D_i1_8019B838[spF4].unk_74 < D_i1_8019B838[spF4].unk_78) {
-            Math_SmoothStepToF(&D_i1_8019B838[spF4].unk_74, D_i1_8019B838[spF4].unk_78, 1.0f, 10.0f, 0.01f);
+    Matrix_RotateY(gCalcMatrix, this->obj.rot.y * M_DTOR, 0);
+
+    for (spF4 = 0; spF4 < ARRAY_COUNTU(sGoleMechLimbInfo); spF4++) {
+        if (sGoleMechLimbInfo[spF4].unk_74 < sGoleMechLimbInfo[spF4].unk_78) {
+            Math_SmoothStepToF(&sGoleMechLimbInfo[spF4].unk_74, sGoleMechLimbInfo[spF4].unk_78, 1.0f, 10.0f, 0.01f);
         } else {
-            Math_SmoothStepToF(&D_i1_8019B838[spF4].unk_74, D_i1_8019B838[spF4].unk_78, 1.0f, 4.0f, 0.01f);
+            Math_SmoothStepToF(&sGoleMechLimbInfo[spF4].unk_74, sGoleMechLimbInfo[spF4].unk_78, 1.0f, 4.0f, 0.01f);
         }
-        if (D_i1_8019B838[spF4].unk_64 < D_i1_8019B838[spF4].unk_68) {
-            Math_SmoothStepToF(&D_i1_8019B838[spF4].unk_64, D_i1_8019B838[spF4].unk_68, 1.0f, 10.0f, 0.01f);
+        if (sGoleMechLimbInfo[spF4].unk_64 < sGoleMechLimbInfo[spF4].unk_68) {
+            Math_SmoothStepToF(&sGoleMechLimbInfo[spF4].unk_64, sGoleMechLimbInfo[spF4].unk_68, 1.0f, 10.0f, 0.01f);
         } else {
-            Math_SmoothStepToF(&D_i1_8019B838[spF4].unk_64, D_i1_8019B838[spF4].unk_68, 1.0f, 4.0f, 0.01f);
+            Math_SmoothStepToF(&sGoleMechLimbInfo[spF4].unk_64, sGoleMechLimbInfo[spF4].unk_68, 1.0f, 4.0f, 0.01f);
         }
-        if (D_i1_8019B838[spF4].unk_6C < D_i1_8019B838[spF4].unk_70) {
-            Math_SmoothStepToF(&D_i1_8019B838[spF4].unk_6C, D_i1_8019B838[spF4].unk_70, 1.0f, 10.0f, 0.01f);
+        if (sGoleMechLimbInfo[spF4].unk_6C < sGoleMechLimbInfo[spF4].unk_70) {
+            Math_SmoothStepToF(&sGoleMechLimbInfo[spF4].unk_6C, sGoleMechLimbInfo[spF4].unk_70, 1.0f, 10.0f, 0.01f);
         } else {
-            Math_SmoothStepToF(&D_i1_8019B838[spF4].unk_6C, D_i1_8019B838[spF4].unk_70, 1.0f, 4.0f, 0.01f);
+            Math_SmoothStepToF(&sGoleMechLimbInfo[spF4].unk_6C, sGoleMechLimbInfo[spF4].unk_70, 1.0f, 4.0f, 0.01f);
         }
-        if (D_i1_8019B838[spF4].unk_7C & 4) {
-            if (D_i1_8019B838[spF4].unk_02[1] <= 0) {
-                D_i1_8019B838[spF4].unk_7C |= 8;
-                if (D_i1_8019B838[spF4].unk_02[0] == 8) {
+
+        if (sGoleMechLimbInfo[spF4].flag & 4) {
+            if (sGoleMechLimbInfo[spF4].unk_02[1] <= 0) {
+                sGoleMechLimbInfo[spF4].flag |= 8;
+                if (sGoleMechLimbInfo[spF4].unk_02[0] == 8) {
                     is4 = D_i1_8019A820[spF4].unk_08;
-                    if ((is4 != -1) && (D_i1_8019B838[is4].unk_00 > 0)) {
-                        D_i1_8019B838[is4].unk_00 = -1;
-                        D_i1_8019B838[is4].unk_02[0] = 16;
-                        D_i1_8019B838[is4].unk_02[1] = D_i1_8019A820[spF4].unk_0C;
-                        D_i1_8019B838[is4].unk_7C |= 4;
+                    if ((is4 != -1) && (sGoleMechLimbInfo[is4].unk_00 > 0)) {
+                        sGoleMechLimbInfo[is4].unk_00 = -1;
+                        sGoleMechLimbInfo[is4].unk_02[0] = 16;
+                        sGoleMechLimbInfo[is4].unk_02[1] = D_i1_8019A820[spF4].unk_0C;
+                        sGoleMechLimbInfo[is4].flag |= 4;
                         AUDIO_PLAY_SFX(NA_SE_EN_EXPLOSION_S, this->sfxSource, 4);
                         AUDIO_PLAY_SFX(NA_SE_EN_VEBOSS_BROKEN, this->sfxSource, 4);
                     }
+
                     is4 = D_i1_8019A820[spF4].unk_0A;
                     if (is4 != -1) {
-                        if (D_i1_8019B838[is4].unk_00 > 0) {
-                            D_i1_8019B838[is4].unk_00 = -1;
-                            D_i1_8019B838[is4].unk_02[0] = 16;
-                            D_i1_8019B838[is4].unk_02[1] = D_i1_8019A820[spF4].unk_0C;
-
-                            D_i1_8019B838[is4].unk_7C |= 4;
+                        if (sGoleMechLimbInfo[is4].unk_00 > 0) {
+                            sGoleMechLimbInfo[is4].unk_00 = -1;
+                            sGoleMechLimbInfo[is4].unk_02[0] = 16;
+                            sGoleMechLimbInfo[is4].unk_02[1] = D_i1_8019A820[spF4].unk_0C;
+                            sGoleMechLimbInfo[is4].flag |= 4;
                         }
                     }
                 }
-                D_i1_8019B838[spF4].unk_02[0]--;
-                if (D_i1_8019B838[spF4].unk_02[0] <= 0) {
-                    D_i1_8019B838[spF4].unk_7C &= ~4;
+
+                sGoleMechLimbInfo[spF4].unk_02[0]--;
+                if (sGoleMechLimbInfo[spF4].unk_02[0] <= 0) {
+                    sGoleMechLimbInfo[spF4].flag &= ~4;
                 }
             } else {
-                D_i1_8019B838[spF4].unk_02[1]--;
+                sGoleMechLimbInfo[spF4].unk_02[1]--;
             }
         }
-        if (D_i1_8019B838[spF4].unk_7C & 0x10) {
-            if ((spF4 != 14) || (D_i1_8019B838[spF4].unk_00 <= 0)) {
-                is4 = D_i1_8019B838[spF4].unk_02[0];
+
+        if (sGoleMechLimbInfo[spF4].flag & 0x10) {
+            if ((spF4 != 14) || (sGoleMechLimbInfo[spF4].unk_00 <= 0)) {
+                is4 = sGoleMechLimbInfo[spF4].unk_02[0];
                 for (is7 = 0; is7 < D_i1_8019A820[spF4].unk_06; is7++) {
-                    Matrix_MultVec3f(gCalcMatrix, &D_i1_8019B838[spF4].unk_0C[is7], &spF8);
+                    Matrix_MultVec3f(gCalcMatrix, &sGoleMechLimbInfo[spF4].unk_0C[is7], &spF8);
                     spF8.x += this->obj.pos.x + RAND_FLOAT_CENTERED(60.0f);
                     spF8.y += this->obj.pos.y + RAND_FLOAT_CENTERED(60.0f);
                     spF8.z += this->obj.pos.z;
-                    if (D_i1_8019AD80[is4][2] > 0) {
-                        func_effect_8007D2C8(spF8.x, spF8.y, spF8.z, D_i1_8019AD80[is4][2]);
+
+                    is3 = D_i1_8019AD80[is4][2];
+                    if (is3 > 0) {
+                        func_effect_8007D2C8(spF8.x, spF8.y, spF8.z, is3);
                     }
+
                     for (is1 = 0; is1 < D_i1_8019AD80[is4][0]; is1++) {
-                        if (this->sfxSource) {}
                         actor = Game_SpawnActor(OBJ_ACTOR_DEBRIS);
                         if (actor != NULL) {
                             actor->obj.status = OBJ_ACTIVE;
                             actor->obj.pos.x = spF8.x + RAND_FLOAT_CENTERED(60.0f);
                             actor->obj.pos.y = spF8.y + RAND_FLOAT_CENTERED(60.0f);
-
                             actor->obj.pos.z = spF8.z;
                             actor->obj.rot.x = RAND_FLOAT(360.0f);
                             actor->obj.rot.y = RAND_FLOAT(360.0f);
                             actor->obj.rot.z = RAND_FLOAT(360.0f);
                             actor->state = 50;
                             actor->iwork[0] = 0;
+
                             if (spF4 == 14) {
                                 actor->iwork[1] = 1;
                             } else {
                                 actor->iwork[1] = 0;
                             }
+
                             actor->vel.x = RAND_FLOAT_CENTERED(5.0f);
                             actor->vel.y = RAND_FLOAT_CENTERED(2.0f);
                             actor->vel.z = 20.0f + RAND_FLOAT_CENTERED(2.0f);
                             actor->fwork[0] = 5.0f + RAND_FLOAT_CENTERED(1.0f);
                             actor->fwork[1] = 5.0f + RAND_FLOAT_CENTERED(1.0f);
-                            D_i1_8019C0B8 += 0;
                             actor->fwork[2] = 5.0f + RAND_FLOAT_CENTERED(1.0f);
                             actor->gravity = 1.0f;
                         }
                     }
+
                     for (is1 = 0; is1 < D_i1_8019AD80[is4][1]; is1++) {
                         actor = Game_SpawnActor(OBJ_ACTOR_DEBRIS);
                         if (actor != NULL) {
@@ -1362,15 +1395,16 @@ void Venom1_Ve1Golemech_Update(Ve1Golemech* this) {
                             actor->obj.rot.z = RAND_FLOAT(360.0f);
                             actor->state = 50;
                             actor->iwork[0] = 1;
+
                             if (spF4 == 14) {
                                 actor->iwork[1] = 1;
                             } else {
                                 actor->iwork[1] = 0;
                             }
+
                             actor->vel.x = RAND_FLOAT_CENTERED(20.0f);
                             actor->vel.y = 5.0f + RAND_FLOAT_CENTERED(20.0f);
                             actor->vel.z = 20.0f + RAND_FLOAT_CENTERED(2.0f);
-
                             actor->fwork[0] = 5.0f + RAND_FLOAT_CENTERED(1.0f);
                             actor->fwork[1] = 5.0f + RAND_FLOAT_CENTERED(1.0f);
                             actor->fwork[2] = 5.0f + RAND_FLOAT_CENTERED(1.0f);
@@ -1380,10 +1414,11 @@ void Venom1_Ve1Golemech_Update(Ve1Golemech* this) {
                 }
             } else {
                 for (is7 = 0; is7 < D_i1_8019A820[spF4].unk_06; is7++) {
-                    Matrix_MultVec3f(gCalcMatrix, &D_i1_8019B838[spF4].unk_0C[is7], &spF8);
+                    Matrix_MultVec3f(gCalcMatrix, &sGoleMechLimbInfo[spF4].unk_0C[is7], &spF8);
                     spF8.x += this->obj.pos.x + RAND_FLOAT_CENTERED(60.0f);
                     spF8.y += this->obj.pos.y + RAND_FLOAT_CENTERED(60.0f);
                     spF8.z += this->obj.pos.z;
+
                     for (is1 = 0; is1 < 5; is1++) {
                         actor = Game_SpawnActor(OBJ_ACTOR_DEBRIS);
                         if (actor != NULL) {
@@ -1391,7 +1426,6 @@ void Venom1_Ve1Golemech_Update(Ve1Golemech* this) {
                             actor->obj.pos.x = spF8.x + RAND_FLOAT_CENTERED(60.0f);
                             actor->obj.pos.y = spF8.y + RAND_FLOAT_CENTERED(60.0f);
                             actor->obj.pos.z = spF8.z;
-
                             actor->obj.rot.x = RAND_FLOAT(360.0f);
                             actor->obj.rot.y = RAND_FLOAT(360.0f);
                             actor->obj.rot.z = RAND_FLOAT(360.0f);
@@ -1409,21 +1443,24 @@ void Venom1_Ve1Golemech_Update(Ve1Golemech* this) {
                     }
                 }
             }
-            D_i1_8019B838[spF4].unk_7C &= ~0x10;
+            sGoleMechLimbInfo[spF4].flag &= ~0x10;
         }
-        if (D_i1_8019B838[spF4].unk_7C & 0x40) {
+
+        if (sGoleMechLimbInfo[spF4].flag & 0x40) {
             actor = Game_SpawnActor(OBJ_ACTOR_DEBRIS);
             if (actor != NULL) {
                 actor->obj.status = OBJ_ACTIVE;
-                actor->obj.pos.x = this->obj.pos.x + D_i1_8019B838[spF4].unk_0C[0].x;
-                actor->obj.pos.y = this->obj.pos.y + D_i1_8019B838[spF4].unk_0C[0].y;
-                actor->obj.pos.z = this->obj.pos.z + D_i1_8019B838[spF4].unk_0C[0].z;
-                actor->obj.rot.x = D_i1_8019B838[spF4].unk_30[0].x;
-                actor->obj.rot.y = D_i1_8019B838[spF4].unk_30[0].y;
-                actor->obj.rot.z = D_i1_8019B838[spF4].unk_30[0].z;
+                actor->obj.pos.x = this->obj.pos.x + sGoleMechLimbInfo[spF4].unk_0C[0].x;
+                actor->obj.pos.y = this->obj.pos.y + sGoleMechLimbInfo[spF4].unk_0C[0].y;
+
+                actor->obj.pos.z = this->obj.pos.z + sGoleMechLimbInfo[spF4].unk_0C[0].z;
+                actor->obj.rot.x = sGoleMechLimbInfo[spF4].unk_30[0].x;
+                actor->obj.rot.y = sGoleMechLimbInfo[spF4].unk_30[0].y;
+                actor->obj.rot.z = sGoleMechLimbInfo[spF4].unk_30[0].z;
                 actor->state = 57;
                 actor->iwork[0] = 0;
                 actor->work_048 = spF4;
+
                 if (this->swork[25] == 0) {
                     actor->vel.x = RAND_FLOAT_CENTERED(5.0f);
                     actor->vel.y = 10.0f + RAND_FLOAT_CENTERED(2.0f);
@@ -1432,7 +1469,7 @@ void Venom1_Ve1Golemech_Update(Ve1Golemech* this) {
                     actor->fwork[1] = 5.0f + RAND_FLOAT_CENTERED(1.0f);
                     actor->fwork[2] = 5.0f + RAND_FLOAT_CENTERED(1.0f);
                 } else {
-                    Matrix_RotateY(gCalcMatrix, RAND_FLOAT(2.0f) * M_PI, MTXF_NEW);
+                    Matrix_RotateY(gCalcMatrix, RAND_FLOAT(2.0f) * M_PI, 0);
                     sp104.x = 15.0f + RAND_FLOAT(10.0f);
                     sp104.z = 0.0f;
                     sp104.y = 0.0f;
@@ -1446,18 +1483,20 @@ void Venom1_Ve1Golemech_Update(Ve1Golemech* this) {
                 }
                 actor->gravity = 2.0f;
             }
+
             for (is1 = 0; is1 < 6; is1++) {
                 actor = Game_SpawnActor(OBJ_ACTOR_DEBRIS);
                 if (actor != NULL) {
                     actor->obj.status = OBJ_ACTIVE;
-                    actor->obj.pos.x = this->obj.pos.x + D_i1_8019B838[spF4].unk_0C[0].x;
-                    actor->obj.pos.y = this->obj.pos.y + D_i1_8019B838[spF4].unk_0C[0].y;
-                    actor->obj.pos.z = this->obj.pos.z + D_i1_8019B838[spF4].unk_0C[0].z;
+                    actor->obj.pos.x = this->obj.pos.x + sGoleMechLimbInfo[spF4].unk_0C[0].x;
+                    actor->obj.pos.y = this->obj.pos.y + sGoleMechLimbInfo[spF4].unk_0C[0].y;
+                    actor->obj.pos.z = this->obj.pos.z + sGoleMechLimbInfo[spF4].unk_0C[0].z;
                     actor->obj.rot.x = RAND_FLOAT(360.0f);
                     actor->obj.rot.y = RAND_FLOAT(360.0f);
                     actor->obj.rot.z = RAND_FLOAT(360.0f);
                     actor->state = 50;
                     actor->iwork[0] = RAND_INT(2) + 2;
+
                     if (this->swork[25] == 0) {
                         actor->vel.x = RAND_FLOAT_CENTERED(6.0f);
                         actor->vel.y = RAND_FLOAT_CENTERED(6.0f);
@@ -1466,7 +1505,7 @@ void Venom1_Ve1Golemech_Update(Ve1Golemech* this) {
                         actor->fwork[1] = 5.0f + RAND_FLOAT_CENTERED(1.0f);
                         actor->fwork[2] = 5.0f + RAND_FLOAT_CENTERED(1.0f);
                     } else {
-                        Matrix_RotateY(gCalcMatrix, RAND_FLOAT(2.0f) * M_PI, MTXF_NEW);
+                        Matrix_RotateY(gCalcMatrix, RAND_FLOAT(2.0f) * M_PI, 0);
                         sp104.x = RAND_FLOAT(10.0f) + 15.0f;
                         sp104.z = 0.0f;
                         sp104.y = 0.0f;
@@ -1481,110 +1520,120 @@ void Venom1_Ve1Golemech_Update(Ve1Golemech* this) {
                     }
                 }
             }
-            D_i1_8019B838[spF4].unk_7C &= ~0x40;
-            D_i1_8019B838[spF4].unk_7C |= 1;
-        }
-        if (D_i1_8019B838[spF4].unk_7C & 0x80) {
-            if (D_i1_8019B838[spF4].unk_02[4] <= 0) {
-                D_i1_8019B838[spF4].unk_78 = 128.0f;
-                D_i1_8019B838[spF4].unk_68 = D_i1_8019B838[spF4].unk_70 = 16.0f;
 
-                D_i1_8019B838[spF4].unk_7C |= 0x100;
-                if (D_i1_8019B838[spF4].unk_02[3] == 7) {
-                    for (is7 = 0; is7 < 4; is7++) {
+            sGoleMechLimbInfo[spF4].flag &= ~0x40;
+            sGoleMechLimbInfo[spF4].flag |= 1;
+        }
+
+        if (sGoleMechLimbInfo[spF4].flag & 0x80) {
+            if (sGoleMechLimbInfo[spF4].unk_02[4] <= 0) {
+                sGoleMechLimbInfo[spF4].unk_78 = 128.0f;
+                sGoleMechLimbInfo[spF4].unk_68 = (sGoleMechLimbInfo[spF4].unk_70 = 16.0f);
+                sGoleMechLimbInfo[spF4].flag |= 0x100;
+                if (sGoleMechLimbInfo[spF4].unk_02[3] == 7) {
+                    for (is7 = 0; is7 < ARRAY_COUNT(D_i1_8019A820->unk_0E); is7++) {
                         is4 = D_i1_8019A820[spF4].unk_0E[is7];
                         if (is4 != -1) {
-                            D_i1_8019B838[is4].unk_02[3] = 8;
-                            D_i1_8019B838[is4].unk_02[4] = D_i1_8019A820[spF4].unk_16;
-                            D_i1_8019B838[is4].unk_7C |= 0x80;
+                            sGoleMechLimbInfo[is4].unk_02[3] = 8;
+                            sGoleMechLimbInfo[is4].unk_02[4] = D_i1_8019A820[spF4].unk_16;
+                            sGoleMechLimbInfo[is4].flag |= 0x80;
                         }
                     }
                 }
+
                 for (is7 = 0; is7 < D_i1_8019A820[spF4].unk_06; is7++) {
-                    D_i1_8019B838[spF4].unk_0C[is7].x = RAND_DOUBLE_CENTERED(4.0);
-                    D_i1_8019B838[spF4].unk_0C[is7].y = RAND_DOUBLE_CENTERED(4.0);
-                    D_i1_8019B838[spF4].unk_0C[is7].z = RAND_DOUBLE_CENTERED(4.0);
-                    D_i1_8019B838[spF4].unk_30[is7].x = RAND_FLOAT(360.0f);
-                    D_i1_8019B838[spF4].unk_30[is7].y = RAND_FLOAT(360.0f);
-                    D_i1_8019B838[spF4].unk_30[is7].z = RAND_FLOAT(360.0f);
+                    sGoleMechLimbInfo[spF4].unk_0C[is7].x = RAND_DOUBLE_CENTERED(4.0);
+                    sGoleMechLimbInfo[spF4].unk_0C[is7].y = RAND_DOUBLE_CENTERED(4.0);
+                    sGoleMechLimbInfo[spF4].unk_0C[is7].z = RAND_DOUBLE_CENTERED(4.0);
+                    sGoleMechLimbInfo[spF4].unk_30[is7].x = RAND_FLOAT(360.0f);
+                    sGoleMechLimbInfo[spF4].unk_30[is7].y = RAND_FLOAT(360.0f);
+                    sGoleMechLimbInfo[spF4].unk_30[is7].z = RAND_FLOAT(360.0f);
                 }
-                D_i1_8019B838[spF4].unk_02[3]--;
-                if (D_i1_8019B838[spF4].unk_02[3] <= 0) {
-                    D_i1_8019B838[spF4].unk_68 = D_i1_8019B838[spF4].unk_70 = D_i1_8019B838[spF4].unk_78 = 0.0f;
-                    D_i1_8019B838[spF4].unk_7C &= ~0x80;
+
+                sGoleMechLimbInfo[spF4].unk_02[3]--;
+                if (sGoleMechLimbInfo[spF4].unk_02[3] <= 0) {
+                    sGoleMechLimbInfo[spF4].unk_68 =
+                        (sGoleMechLimbInfo[spF4].unk_70 = (sGoleMechLimbInfo[spF4].unk_78 = 0.0f));
+                    sGoleMechLimbInfo[spF4].flag &= ~0x80;
                 }
             } else {
-                D_i1_8019B838[spF4].unk_02[4]--;
+                sGoleMechLimbInfo[spF4].unk_02[4]--;
             }
         }
-        if (D_i1_8019B838[spF4].unk_7C & 0x200) {
-            D_i1_8019B838[spF4].unk_7C &= ~0x200;
+
+        if (sGoleMechLimbInfo[spF4].flag & 0x200) {
+            sGoleMechLimbInfo[spF4].flag &= ~0x200;
         }
-        if (D_i1_8019B838[spF4].unk_7C & 0x1000) {
+
+        if (sGoleMechLimbInfo[spF4].flag & 0x1000) {
             Matrix_MultVec3f(gCalcMatrix, &D_tank_800C9F2C, &spF8);
-            spF8.x += this->obj.pos.x + D_i1_8019B838[spF4].unk_0C[1].x + RAND_FLOAT_CENTERED(60.0f);
-            spF8.y += this->obj.pos.y + D_i1_8019B838[spF4].unk_0C[1].y + RAND_FLOAT_CENTERED(60.0f);
-            spF8.z += this->obj.pos.z + D_i1_8019B838[spF4].unk_0C[1].z;
-            func_effect_8007D2C8(spF8.x, spF8.y, spF8.z, D_i1_8019B838[spF4].unk_60);
-            D_i1_8019B838[spF4].unk_7C &= ~0x1000;
+            spF8.x += (this->obj.pos.x + sGoleMechLimbInfo[spF4].unk_0C[1].x) + RAND_FLOAT_CENTERED(60.0f);
+            spF8.y += (this->obj.pos.y + sGoleMechLimbInfo[spF4].unk_0C[1].y) + RAND_FLOAT_CENTERED(60.0f);
+            spF8.z += this->obj.pos.z + sGoleMechLimbInfo[spF4].unk_0C[1].z;
+            func_effect_8007D2C8(spF8.x, spF8.y, spF8.z, sGoleMechLimbInfo[spF4].unk_60);
+            sGoleMechLimbInfo[spF4].flag &= ~0x1000;
         }
     }
-    if ((this->state == 0) || (this->state == 1)) {
-        is4 = 0;
-        for (spF4 = 0; spF4 < ARRAY_COUNTU(D_i1_8019B838); spF4++) {
-            if (D_i1_8019B838[spF4].unk_00 <= 0) {
-                is4++;
-            }
-        }
-        if ((this->state == 0) && (this->swork[20] == 0)) {
-            if ((is4 > 0) && (this->swork[21] < (is4 - 1) / 5)) {
-                this->swork[21] = (is4 - 1) / 5;
-                this->swork[20] = 1;
-            }
-            if (D_i1_8019C0C0 == 1) {
-                D_i1_8019C0C0 = 0;
-                if (this->swork[21] < 5) {
-                    this->swork[21]++;
-                    this->swork[20] = 1;
+
+    switch (this->state) {
+        case 0:
+        case 1:
+            is4 = 0;
+            for (spF4 = 0; spF4 < ARRAY_COUNTU(sGoleMechLimbInfo); spF4++) {
+                if (sGoleMechLimbInfo[spF4].unk_00 <= 0) {
+                    is4++;
                 }
             }
-        }
-        if (is4 == 17) {
-            this->swork[9] = 2;
-            this->swork[22] = 4;
-            this->fwork[6] = this->fwork[12] = this->fwork[13] = 0.0f;
-        } else if ((is4 == 16) && (this->state == 0)) {
-            this->swork[9] = 1;
-            this->fwork[16] = 0.0f;
-            this->fwork[15] = 255.0f;
 
-            if (this->swork[22] < 3) {
-                this->swork[22] = 3;
+            if ((this->state == 0) && (this->swork[20] == 0)) {
+                if ((is4 > 0) && (this->swork[21] < ((is4 - 1) / 5))) {
+                    this->swork[21] = (is4 - 1) / 5;
+                    this->swork[20] = 1;
+                }
+                if (D_i1_8019C0C0 == 1) {
+                    D_i1_8019C0C0 = 0;
+                    if (this->swork[21] < 5) {
+                        this->swork[21]++;
+                        this->swork[20] = 1;
+                    }
+                }
             }
-        }
+
+            if (is4 == 17) {
+                this->swork[9] = 2;
+                this->swork[22] = 4;
+                this->fwork[6] = (this->fwork[12] = (this->fwork[13] = 0.0f));
+            } else if ((is4 == 16) && (this->state == 0)) {
+                this->swork[9] = 1;
+                this->fwork[16] = 0.0f;
+                this->fwork[15] = 255.0f;
+                if (this->swork[22] < 3) {
+                    this->swork[22] = 3;
+                }
+            }
     }
+
     if (this->dmgType == DMG_BEAM) {
         this->dmgType = DMG_NONE;
         switch (this->state) {
             case 0:
             case 1:
                 is4 = D_i1_8019A500[this->dmgPart];
-                if (D_i1_8019B838[is4].unk_00 > 0) {
+                if (sGoleMechLimbInfo[is4].unk_00 > 0) {
                     if ((is4 != 14) || (this->state != 0)) {
-                        D_i1_8019B838[is4].unk_00 -= this->damage;
-                        D_i1_8019B838[is4].unk_02[2] = 15;
-
-                        if (D_i1_8019B838[is4].unk_00 <= 0) {
+                        sGoleMechLimbInfo[is4].unk_00 -= this->damage;
+                        sGoleMechLimbInfo[is4].unk_02[2] = 15;
+                        if (sGoleMechLimbInfo[is4].unk_00 <= 0) {
                             AUDIO_PLAY_SFX(NA_SE_EN_EXPLOSION_S, this->sfxSource, 4);
                             AUDIO_PLAY_SFX(NA_SE_EN_VEBOSS_BROKEN, this->sfxSource, 4);
-                            D_i1_8019B838[is4].unk_00 = -1;
-                            D_i1_8019B838[is4].unk_02[0] = 16;
-                            D_i1_8019B838[is4].unk_02[1] = 0;
-                            D_i1_8019B838[is4].unk_7C |= 0xC;
+                            sGoleMechLimbInfo[is4].unk_00 = -1;
+                            sGoleMechLimbInfo[is4].unk_02[0] = 16;
+                            sGoleMechLimbInfo[is4].unk_02[1] = 0;
+                            sGoleMechLimbInfo[is4].flag |= 0xC;
                         } else {
                             AUDIO_PLAY_SFX(NA_SE_EN_DAMAGE_S, this->sfxSource, 4);
                             if (is4 == 14) {
-                                D_i1_8019B838[is4].unk_7C |= 8;
+                                sGoleMechLimbInfo[is4].flag |= 8;
                             }
                         }
                     } else {
@@ -1594,16 +1643,18 @@ void Venom1_Ve1Golemech_Update(Ve1Golemech* this) {
                     AUDIO_PLAY_SFX(NA_SE_EN_REFLECT, this->sfxSource, 4);
                 }
                 break;
+
             case 2:
-                if (D_i1_8019A500[this->dmgPart] == 15) {
+                is4 = D_i1_8019A500[this->dmgPart];
+                if (is4 == 15) {
                     AUDIO_PLAY_SFX(NA_SE_EN_VEBOSS_DAMAGE, this->sfxSource, 4);
-                    D_i1_8019B838[15].unk_02[2] = 10;
-                    D_i1_8019B838[15].unk_02[3] = 0;
-                    D_i1_8019B838[15].unk_7C |= 0x80;
+                    sGoleMechLimbInfo[15].unk_02[3] = 10;
+                    sGoleMechLimbInfo[15].unk_02[4] = 0;
+                    sGoleMechLimbInfo[15].flag |= 0x80;
+
                     if (this->health > 0) {
                         this->health -= this->damage;
                         this->timer_05A = 18;
-
                         if (this->health <= 0) {
                             gScreenFlashTimer = 8;
                             gTeamLowHealthMsgTimer = -1;
@@ -1622,34 +1673,36 @@ void Venom1_Ve1Golemech_Update(Ve1Golemech* this) {
     switch (this->state) {
         case 0:
         case 1:
-            for (spF4 = 0; spF4 < 33U; spF4++) {
+            for (spF4 = 0; spF4 < ARRAY_COUNT(D_i1_8019A500); spF4++) {
                 if (((gGameFrameCount % 4) == 0) && (D_i1_8019B7F0[spF4] != 0)) {
                     is4 = D_i1_8019A500[spF4];
-                    if ((D_i1_8019B838[is4].unk_00 > 0) && ((is4 != 14) || (this->state != 0))) {
-                        D_i1_8019B838[is4].unk_00 -= 2;
-                        if (D_i1_8019B838[is4].unk_00 <= 0) {
-                            D_i1_8019B838[is4].unk_00 = -1;
-                            D_i1_8019B838[is4].unk_02[0] = 16;
-                            D_i1_8019B838[is4].unk_02[1] = 0;
-                            D_i1_8019B838[is4].unk_7C |= 0xC;
+                    if ((sGoleMechLimbInfo[is4].unk_00 > 0) && ((is4 != 14) || (this->state != 0))) {
+                        sGoleMechLimbInfo[is4].unk_00 -= 2;
+                        if (sGoleMechLimbInfo[is4].unk_00 <= 0) {
+                            sGoleMechLimbInfo[is4].unk_00 = -1;
+                            sGoleMechLimbInfo[is4].unk_02[0] = 16;
+                            sGoleMechLimbInfo[is4].unk_02[1] = 0;
+                            sGoleMechLimbInfo[is4].flag |= 0xC;
                             AUDIO_PLAY_SFX(NA_SE_EN_EXPLOSION_S, this->sfxSource, 4);
                             AUDIO_PLAY_SFX(NA_SE_EN_VEBOSS_BROKEN, this->sfxSource, 4);
                         } else if (is4 == 14) {
-                            D_i1_8019B838[is4].unk_7C |= 8;
+                            sGoleMechLimbInfo[is4].flag |= 8;
                         }
                     }
                     D_i1_8019B7F0[spF4] = 0;
                 }
             }
             break;
+
         case 2:
             if (((gGameFrameCount % 4) == 0) && (this->timer_05A == 0)) {
-                for (spF4 = 0; spF4 < 33U; spF4++) {
-                    if ((D_i1_8019A500[spF4] == 15) && (D_i1_8019B7F0[spF4] != 0)) {
+                for (spF4 = 0; spF4 < ARRAY_COUNT(D_i1_8019A500); spF4++) {
+                    is4 = D_i1_8019A500[spF4];
+                    if ((is4 == 15) && (D_i1_8019B7F0[spF4] != 0)) {
                         AUDIO_PLAY_SFX(NA_SE_EN_VEBOSS_DAMAGE, this->sfxSource, 4);
-                        D_i1_8019B838[15].unk_02[3] = 10;
-                        D_i1_8019B838[15].unk_02[4] = 0;
-                        D_i1_8019B838[15].unk_7C |= 0x80;
+                        sGoleMechLimbInfo[15].unk_02[3] = 10;
+                        sGoleMechLimbInfo[15].unk_02[4] = 0;
+                        sGoleMechLimbInfo[15].flag |= 0x80;
                         if (this->health > 0) {
                             this->health -= 10;
                             this->timer_05A = 35;
@@ -1667,20 +1720,26 @@ void Venom1_Ve1Golemech_Update(Ve1Golemech* this) {
             }
             break;
     }
+
     is4 = 0;
-    for (spF4 = 0; spF4 < 17U; spF4++) {
-        is4 += (D_i1_8019B838[spF4].unk_00 < 0) ? 0 : D_i1_8019B838[spF4].unk_00;
+    for (spF4 = 0; spF4 < ARRAY_COUNTU(sGoleMechLimbInfo); spF4++) {
+        is4 += sGoleMechLimbInfo[spF4].unk_00 < 0 ? 0 : sGoleMechLimbInfo[spF4].unk_00;
     }
+
     this->swork[30] = this->health + is4;
-    gBossHealthBar = 255.0f * this->swork[30] / this->swork[29];
+
+    gBossHealthBar = (255.0f * this->swork[30]) / this->swork[29];
+
     switch (this->state) {
         case 4:
         case 5:
             break;
+
         case 1:
             this->fwork[6] += 5.0f;
             Math_SmoothStepToF(&this->fwork[16], this->fwork[15], 1.0f, 4.0f, 0.01f);
             break;
+
         case 2:
             this->fwork[9] = 200.0f / (this->health + 100.0f);
             this->fwork[8] -= this->fwork[9];
@@ -1688,6 +1747,7 @@ void Venom1_Ve1Golemech_Update(Ve1Golemech* this) {
                 this->fwork[8] = 22.0f;
             }
             break;
+
         case 3:
             this->fwork[9] = 200.0f / ((2.0f * this->health) + 100.0f);
             this->fwork[8] -= this->fwork[9];
@@ -1696,9 +1756,11 @@ void Venom1_Ve1Golemech_Update(Ve1Golemech* this) {
             }
             break;
     }
+
     switch (this->swork[6]) {
         case 0:
             temp_fs0 = gPlayer[0].trueZpos + this->fwork[2];
+
             if (this->swork[15] == 0) {
                 if (this->obj.pos.z >= temp_fs0) {
                     if (this->obj.pos.z > (gPlayer[0].trueZpos - 200.0f)) {
@@ -1709,16 +1771,19 @@ void Venom1_Ve1Golemech_Update(Ve1Golemech* this) {
                 } else {
                     var_fv0 = Math_SmoothStepToF(&this->obj.pos.z, temp_fs0, 0.2f, 25.0f, 0.01f);
                 }
+
                 this->fwork[11] = (-40.0f + var_fv0) / -40.0f;
                 if (this->fwork[11] < 0.8f) {
                     this->fwork[11] = 0.8f;
                 }
+
                 if (fabsf(var_fv0) <= 2.0f) {
                     this->swork[15] = 1;
                     this->swork[14] = D_i1_8019A04C[this->swork[13]][1];
                 }
             } else {
-                if ((gPlayer[0].pos.z - this->obj.pos.z < 500.0f) || (gPlayer[0].pos.z - this->obj.pos.z > 8000.0f)) {
+                if (((gPlayer[0].pos.z - this->obj.pos.z) < 500.0f) ||
+                    ((gPlayer[0].pos.z - this->obj.pos.z) > 8000.0f)) {
                     this->swork[14] = 0;
                 }
                 if (this->swork[14] <= 0) {
@@ -1735,10 +1800,12 @@ void Venom1_Ve1Golemech_Update(Ve1Golemech* this) {
             }
             this->vel.z = -40.0f;
             break;
+
         case 1:
             if ((this->vel.y <= -10.0f) && (this->swork[5] != 5)) {
                 spE8 = 1;
             }
+
             if (this->obj.pos.y < 0.f) {
                 this->obj.pos.y = 0.f;
                 this->vel.y = 0.f;
@@ -1752,9 +1819,11 @@ void Venom1_Ve1Golemech_Update(Ve1Golemech* this) {
                 this->swork[28] = 5;
             }
             break;
+
         case 2:
             this->vel.z *= 0.7f;
             break;
+
         case 4:
             temp_fs0 = gPlayer[0].pos.z + this->fwork[2];
             if (temp_fs0 <= this->obj.pos.z) {
@@ -1762,16 +1831,20 @@ void Venom1_Ve1Golemech_Update(Ve1Golemech* this) {
             } else {
                 var_fv0 = Math_SmoothStepToF(&this->obj.pos.z, temp_fs0, 0.2f, 30.0f, 0.01f);
             }
+
             if (this->state < 4) {
-                this->fwork[11] = (-40.0f + var_fv0) / -40.0f;
+                this->fwork[11] = ((-40.0f) + var_fv0) / (-40.0f);
                 if (this->fwork[11] < 0.8f) {
                     this->fwork[11] = 0.8f;
                 }
             }
+
             temp_fs0 = gPlayer[0].trueZpos + this->fwork[2] - this->obj.pos.z;
+
             if ((fabsf(temp_fs0) <= 70.0f) && (this->state == 3)) {
-                this->swork[5] = D_i1_8019AD2C[4].unk_0->unk_0;
-                this->swork[4] = this->swork[4];
+                animation = sVe1GolemethAnimList[4].anim;
+                is2 = animation->index;
+                is1 = this->swork[4];
                 this->fwork[0] = 0.0f;
                 this->fwork[10] = 0.0f;
                 this->fwork[11] = 1.0f;
@@ -1780,20 +1853,26 @@ void Venom1_Ve1Golemech_Update(Ve1Golemech* this) {
                 this->swork[1] = 4;
                 this->swork[2] = 0;
                 this->swork[6] = 5;
+                this->swork[4] = is1;
+                this->swork[5] = is2;
                 this->timer_050 = 3;
                 this->timer_052 = 150;
             }
             this->vel.z = -40.0f;
             break;
+
         case 5:
             this->vel.z = gPlayer[0].vel.z;
             break;
+
         case 3:
             Math_SmoothStepToF(&this->vel.z, 0.0f, 0.5f, 0.3f, 0.01f);
             break;
+
         case 6:
             break;
     }
+
     switch (this->swork[5]) {
         case 0:
         case 1:
@@ -1805,28 +1884,36 @@ void Venom1_Ve1Golemech_Update(Ve1Golemech* this) {
         case 7:
             Animation_GetFrameData(D_i1_8019ACD4[this->swork[5]], this->fwork[10], sp118);
             break;
+
         case 8:
             break;
     }
-    if ((this->swork[5] == 0) || (this->swork[5] == 1) || (this->swork[5] == 3)) {
-        if (1) {}
-        switch (this->swork[27]) {
-            case 0:
-                if (this->fwork[10] > 14.0f) {
-                    AUDIO_PLAY_SFX(NA_SE_OB_VEBOSS_WALK, this->sfxSource, 4);
-                    this->swork[27]++;
-                }
-                break;
-            case 1:
-                if (this->fwork[10] > 45.0f) {
-                    AUDIO_PLAY_SFX(NA_SE_OB_VEBOSS_WALK, this->sfxSource, 4);
-                    this->swork[27]++;
-                }
-                break;
-            case 2:
-                break;
-        }
+
+    switch (this->swork[5]) {
+        case 0:
+        case 1:
+        case 3:
+            switch (this->swork[27]) {
+                case 0:
+                    if (this->fwork[10] > 14.0f) {
+                        AUDIO_PLAY_SFX(NA_SE_OB_VEBOSS_WALK, this->sfxSource, 4);
+                        this->swork[27]++;
+                    }
+                    break;
+
+                case 1:
+                    if (this->fwork[10] > 45.0f) {
+                        AUDIO_PLAY_SFX(NA_SE_OB_VEBOSS_WALK, this->sfxSource, 4);
+                        this->swork[27]++;
+                    }
+                    break;
+
+                case 2:
+                    break;
+            }
+            break;
     }
+
     switch (this->swork[5]) {
         case 0:
         case 1:
@@ -1835,6 +1922,7 @@ void Venom1_Ve1Golemech_Update(Ve1Golemech* this) {
         case 5:
         case 6:
             break;
+
         case 7:
             if (this->timer_052 >= 37) {
                 if (this->timer_050 == 1) {
@@ -1847,94 +1935,114 @@ void Venom1_Ve1Golemech_Update(Ve1Golemech* this) {
                     this->timer_050 = 3;
                 }
             }
+
             switch (this->timer_052) {
                 case 126:
-                    D_i1_8019B838[6].unk_7C |= 0x800;
-                    D_i1_8019B838[6].unk_60 = 10.0f;
+                    sGoleMechLimbInfo[6].flag |= 0x800;
+                    sGoleMechLimbInfo[6].unk_60 = 10.0f;
                     break;
+
                 case 123:
-                    D_i1_8019B838[6].unk_7C |= 0x20;
+                    sGoleMechLimbInfo[6].flag |= 0x20;
                     break;
+
                 case 122:
                     gCameraShake = 20;
                     this->swork[28] = 7;
                     AUDIO_PLAY_SFX(NA_SE_OB_VEBOSS_BOUND, this->sfxSource, 4);
-                    D_i1_8019B838[2].unk_60 = 5.0f;
-                    D_i1_8019B838[2].unk_7C |= 0x800;
-                    D_i1_8019B838[5].unk_7C |= 0x800;
-                    D_i1_8019B838[5].unk_60 = 5.0f;
+                    sGoleMechLimbInfo[2].unk_60 = 5.0f;
+                    sGoleMechLimbInfo[2].flag |= 0x800;
+                    sGoleMechLimbInfo[5].flag |= 0x800;
+                    sGoleMechLimbInfo[5].unk_60 = 5.0f;
                     break;
+
                 case 121:
-                    D_i1_8019B838[8].unk_7C |= 0x800;
-                    D_i1_8019B838[8].unk_60 = 10.0f;
+                    sGoleMechLimbInfo[8].flag |= 0x800;
+                    sGoleMechLimbInfo[8].unk_60 = 10.0f;
                     break;
+
                 case 119:
-                    D_i1_8019B838[8].unk_7C |= 0x20;
+                    sGoleMechLimbInfo[8].flag |= 0x20;
                     break;
+
                 case 118:
                     gCameraShake = 30;
                     this->swork[28] = 7;
                     AUDIO_PLAY_SFX(NA_SE_OB_VEBOSS_BOUND, this->sfxSource, 4);
-                    D_i1_8019B838[8].unk_7C |= 0x800;
-                    D_i1_8019B838[8].unk_60 = 10.0f;
+                    sGoleMechLimbInfo[8].flag |= 0x800;
+                    sGoleMechLimbInfo[8].unk_60 = 10.0f;
                     break;
+
                 case 115:
-                    D_i1_8019B838[7].unk_7C |= 0x20;
+                    sGoleMechLimbInfo[7].flag |= 0x20;
                     break;
+
                 case 91:
                     this->swork[28] = 7;
                     AUDIO_PLAY_SFX(NA_SE_OB_VEBOSS_BOUND, this->sfxSource, 4);
                     break;
+
                 case 78:
                     this->swork[28] = 7;
                     AUDIO_PLAY_SFX(NA_SE_OB_VEBOSS_BOUND, this->sfxSource, 4);
                     gCameraShake = 20;
-                    D_i1_8019B838[10].unk_7C |= 0x800;
-                    D_i1_8019B838[10].unk_60 = 10.0f;
+                    sGoleMechLimbInfo[10].flag |= 0x800;
+                    sGoleMechLimbInfo[10].unk_60 = 10.0f;
                     break;
+
                 case 69:
-                    D_i1_8019B838[9].unk_7C |= 0x20;
+                    sGoleMechLimbInfo[9].flag |= 0x20;
                     break;
+
                 case 66:
                     this->swork[28] = 7;
                     AUDIO_PLAY_SFX(NA_SE_OB_VEBOSS_BOUND, this->sfxSource, 4);
-                    D_i1_8019B838[11].unk_7C |= 0x20;
+                    sGoleMechLimbInfo[11].flag |= 0x20;
                     break;
+
                 case 65:
-                    D_i1_8019B838[2].unk_7C |= 0x20;
+                    sGoleMechLimbInfo[2].flag |= 0x20;
                     break;
+
                 case 63:
-                    D_i1_8019B838[10].unk_7C |= 0x20;
+                    sGoleMechLimbInfo[10].flag |= 0x20;
                     break;
+
                 case 62:
-                    D_i1_8019B838[1].unk_7C |= 0x20;
+                    sGoleMechLimbInfo[1].flag |= 0x20;
                     break;
+
                 case 61:
-                    D_i1_8019B838->unk_7C |= 0x20;
+                    sGoleMechLimbInfo->flag |= 0x20;
                     break;
+
                 case 60:
                     spF8.x = this->obj.pos.x + this->fwork[3];
                     spF8.y = this->obj.pos.y + this->fwork[4];
                     spF8.z = this->obj.pos.z + this->fwork[5];
                     Effect386_Spawn1(spF8.x, spF8.y, spF8.z, 0, 0, 0, 25.0f, 5);
-                    gFillScreenRed = gFillScreenGreen = gFillScreenBlue = 255;
-                    gFillScreenAlpha = gFillScreenAlphaTarget = 255;
+                    gFillScreenRed = (gFillScreenGreen = (gFillScreenBlue = 255));
+                    gFillScreenAlpha = (gFillScreenAlphaTarget = 255);
                     break;
+
                 case 59:
                     gFillScreenRed = gFillScreenGreen = gFillScreenBlue = 255;
                     gFillScreenAlpha = gFillScreenAlphaTarget = 128;
                     break;
+
                 case 58:
-                    gFillScreenAlpha = gFillScreenAlphaTarget = 0;
+                    gFillScreenAlpha = (gFillScreenAlphaTarget = 0);
                     break;
+
                 case 50:
                     this->swork[25] = 1;
-                    for (spF4 = 0; spF4 < ARRAY_COUNTU(D_i1_8019B838); spF4++) {
-                        if (!(D_i1_8019B838[spF4].unk_7C & 1)) {
-                            D_i1_8019B838[spF4].unk_7C |= 0x20;
+                    for (spF4 = 0; spF4 < ARRAY_COUNTU(sGoleMechLimbInfo); spF4++) {
+                        if (!(sGoleMechLimbInfo[spF4].flag & 1)) {
+                            sGoleMechLimbInfo[spF4].flag |= 0x20;
                         }
                     }
                     break;
+
                 case 49:
                     Boss_AwardBonus(this);
                     gShowBossHealth = false;
@@ -1946,6 +2054,7 @@ void Venom1_Ve1Golemech_Update(Ve1Golemech* this) {
                     Effect_Effect383_Spawn(this->obj.pos.x, this->obj.pos.y + 10.0f, this->obj.pos.z, 40.0f);
                     gCameraShake = 40;
                     break;
+
                 case 12:
                     gFillScreenRed = gFillScreenGreen = gFillScreenBlue = 255;
                     gFillScreenAlpha = 0;
@@ -1956,44 +2065,52 @@ void Venom1_Ve1Golemech_Update(Ve1Golemech* this) {
                     break;
             }
             break;
+
         case 2:
             if (this->fwork[10] >= 16.0f) {
                 switch (this->swork[18]) {
                     case 0:
-                        this->swork[18]++;
                         this->swork[11] |= 1;
+                        this->swork[18]++;
                         break;
+
                     case 1:
                         AUDIO_PLAY_SFX(NA_SE_OB_VEBOSS_ATTACK, this->sfxSource, 4);
                         gCameraShake = 40;
                         this->swork[28] = 5;
-                        spB8 = spB4 = 1;
+                        spB8 = 1;
+                        spB4 = 1;
                         this->swork[18]++;
                         break;
+
                     case 2:
                         break;
                 }
             }
+
             if (this->fwork[10] >= 43.0f) {
                 switch (this->swork[19]) {
                     case 0:
-                        this->swork[19]++;
                         this->swork[11] |= 2;
+                        this->swork[19]++;
                         break;
+
                     case 1:
-                        spB4 = 1;
                         AUDIO_PLAY_SFX(NA_SE_OB_VEBOSS_ATTACK, this->sfxSource, 4);
                         gCameraShake = 40;
                         this->swork[28] = 5;
                         spB8 = 2;
+                        spB4 = 1;
                         this->swork[19]++;
                         break;
+
                     case 2:
                         break;
                 }
             }
             break;
     }
+
     switch (this->swork[7]) {
         case 0:
             if (this->fwork[11] < 0.9f) {
@@ -2004,15 +2121,18 @@ void Venom1_Ve1Golemech_Update(Ve1Golemech* this) {
                 Math_SmoothStepToVec3fArray(sp118, this->vwork, 1, 27, this->fwork[0], 360.0f, 0.01f);
             }
             break;
+
         case 1:
             Math_SmoothStepToF(&this->fwork[0], 1.0f, 0.1f, 0.05f, 0.01f);
             Math_SmoothStepToVec3fArray(sp118, this->vwork, 1, 27, this->fwork[0], 360.0f, 0.01f);
             break;
+
         case 2:
             Math_SmoothStepToF(&this->fwork[0], 0.7f, 0.07f, 0.05f, 0.01f);
             Math_SmoothStepToVec3fArray(sp118, this->vwork, 1, 27, this->fwork[0], 45.0f, 0.01f);
             break;
     }
+
     switch (this->swork[5]) {
         case 0:
         case 1:
@@ -2024,9 +2144,10 @@ void Venom1_Ve1Golemech_Update(Ve1Golemech* this) {
                 spE8 = 1;
             }
             break;
+
         case 4:
             if ((s32) this->fwork[10] == 17) {
-                if (gPlayer[0].vel.z < 0.0f) {
+                if (gPlayer[0].vel.z < 0) {
                     this->vel.z = 2.0f * gPlayer[0].vel.z;
                 } else {
                     this->vel.z = 0.0f;
@@ -2039,8 +2160,9 @@ void Venom1_Ve1Golemech_Update(Ve1Golemech* this) {
                 this->fwork[10] += 1.0f;
             }
             break;
+
         case 5:
-            if ((s32) this->fwork[10] == 2) {
+            if (((s32) this->fwork[10]) == 2) {
                 this->swork[17] = 5;
             }
             if (this->fwork[10] > 1.0f) {
@@ -2051,6 +2173,7 @@ void Venom1_Ve1Golemech_Update(Ve1Golemech* this) {
                 spE8 = 1;
             }
             break;
+
         case 7:
             if (this->fwork[10] < (Animation_GetFrameCount(D_i1_8019ACD4[this->swork[5]]) - 1.0f)) {
                 this->fwork[10] += this->fwork[11];
@@ -2062,16 +2185,16 @@ void Venom1_Ve1Golemech_Update(Ve1Golemech* this) {
                 this->swork[9] = 5;
             }
             break;
+
         case 8:
             break;
     }
+
     temp_fv1 = gPlayer[0].pos.z - this->obj.pos.z;
-    // is0 = this->swork[1];
-    // is5 = this->swork[2];
-    // pad1 = spE8; // probably fake, but unclear how to resolve
+
     if (spE8 != 0) {
-        pad2 = D_i1_8019AD2C[this->swork[1]].unk_0;
-        if ((pad2[this->swork[2]].unk_2 & 1) && (this->swork[3] != 0)) {
+        animation = sVe1GolemethAnimList[this->swork[1]].anim;
+        if (((this->swork[2] + animation)->unk_2 & 1) && (this->swork[3] != 0)) {
             spE4 = 1;
             if (this->swork[3] > 0) {
                 this->swork[3]--;
@@ -2080,46 +2203,51 @@ void Venom1_Ve1Golemech_Update(Ve1Golemech* this) {
     }
 
     if ((D_i1_8019C0BC != 0) && (this->state >= 3)) {
-        D_i1_8019C0BC = 0;
+        D_i1_8019C0BC = (this->fwork[10] > 14.0f) * 0; //! FAKE
     }
-    if ((D_i1_8019C0BC != 0) && (this->swork[1] != 2) && (this->state < 3)) {
+
+    if (((D_i1_8019C0BC != 0) && (this->swork[1] != 2)) && (this->state < 3)) {
         spE8 |= 2;
         spE4 = 1;
     }
+
     if (spE8 != 0) {
         is0 = this->swork[1];
-        is5 = this->swork[2] - spE4 + 1;
+        animation = sVe1GolemethAnimList[is0].anim;
+        is5 = (this->swork[2] - spE4) + 1;
         is1 = this->swork[4];
         if (D_i1_8019C0BC != 0) {
             if (temp_fv1 < 5000.0f) {
                 this->swork[24] = D_i1_8019C0BC - 1;
                 is5 = 0;
                 is0 = 2;
+                animation = sVe1GolemethAnimList[is0].anim;
             } else {
                 spE8 &= ~2;
             }
             D_i1_8019C0BC = 0;
         }
-        pad2 = D_i1_8019AD2C[is0].unk_0;
-        if (((spE8 & 1) == 1) && (pad2[is5].unk_0 == -1)) {
-            is5 = 0;
-            // spE8 = pad1;
+
+        if (((spE8 & 1) == 1) && ((animation + is5)->index == -1)) {
             do {
+                is5 = 0;
                 is4 = 0;
                 is1 = this->swork[4] + 1;
-                is0 = D_i1_8019AD54[is1];
-                if (is0 == -1) {
-                    is0 = D_i1_8019AD54[0];
+
+                if (D_i1_8019AD54[is1] == -1) {
                     is1 = 0;
                 }
-                if (((is0 == 2) && (temp_fv1 < 5000.0f)) || ((is0 == 1) && (D_i1_8019C0B8 == 0)) ||
+
+                is0 = D_i1_8019AD54[is1];
+                if ((((is0 == 2) && (temp_fv1 < 5000.0f)) || ((is0 == 1) && (D_i1_8019C0B8 == 0))) ||
                     ((is0 == 0) && (D_i1_8019C0B8 == 1))) {
                     this->swork[4] = is1;
                     is4 = 1;
                 }
+
                 if (D_i1_8019C0B8 >= 2) {
-                    is3 = ((D_i1_8019C0B8 - 1) / 10);
-                    ia0 = ((D_i1_8019C0B8 - 1) % 10);
+                    is3 = (D_i1_8019C0B8 - 1) / 10;
+                    ia0 = (D_i1_8019C0B8 - 1) % 10;
                     switch (is0) {
                         case 1:
                             if (is3 > 0) {
@@ -2129,6 +2257,7 @@ void Venom1_Ve1Golemech_Update(Ve1Golemech* this) {
                                 this->swork[4] = is1;
                             }
                             break;
+
                         case 0:
                             if (ia0 > 0) {
                                 this->swork[3] = ia0 - 1;
@@ -2137,19 +2266,22 @@ void Venom1_Ve1Golemech_Update(Ve1Golemech* this) {
                                 this->swork[4] = is1;
                             }
                             break;
+
                         case 3:
                             this->swork[3] = -1;
                             break;
                     }
                 }
+
                 if ((is0 == 0) && (D_i1_8019C0B8 == 1)) {
                     D_i1_8019C0B8 = 0;
                 }
             } while (is4 != 0);
-            // pad1 = spE8;
         }
-        pad2 = D_i1_8019AD2C[is0].unk_0;
-        is2 = pad2[is5].unk_0;
+
+        animation = sVe1GolemethAnimList[is0].anim;
+        is2 = (is5 + animation)->index;
+
         if (spE8 != 0) {
             this->swork[27] = 0;
 
@@ -2158,7 +2290,7 @@ void Venom1_Ve1Golemech_Update(Ve1Golemech* this) {
                     this->swork[23] = RAND_FLOAT(2.0f);
                     this->swork[18] = 0;
                     this->swork[19] = 0;
-                    /* fallthrough */
+
                 case 3:
                     if ((is2 == 3) && (D_i1_8019C0B8 == 2)) {
                         is2 = 2;
@@ -2166,19 +2298,20 @@ void Venom1_Ve1Golemech_Update(Ve1Golemech* this) {
                         this->swork[18] = 0;
                         this->swork[19] = 0;
                     }
-                    /* fallthrough */
+
                 case 0:
+
                 case 1:
                     this->swork[6] = 0;
                     this->fwork[10] = 0;
                     if (this->swork[5] == 5) {
                         this->fwork[0] = 0;
                         this->swork[7] = 1;
-
                     } else {
                         this->swork[7] = 0;
                     }
                     break;
+
                 case 4:
                     AUDIO_PLAY_SFX(NA_SE_OB_VEBOSS_JUMP, this->sfxSource, 4);
                     this->swork[7] = 1;
@@ -2186,27 +2319,33 @@ void Venom1_Ve1Golemech_Update(Ve1Golemech* this) {
                     this->gravity = 0;
                     this->fwork[0] = 0;
                     break;
+
                 case 5:
                     this->fwork[10] = Animation_GetFrameCount(D_i1_8019ACD4[this->swork[5]]) - 1;
                     this->swork[7] = 1;
                     this->gravity = 0;
                     this->fwork[0] = 0;
                     break;
+
                 case 6:
                     this->fwork[10] = 0;
                     break;
+
                 case 7:
                     break;
             }
+
             this->swork[4] = is1;
             this->swork[1] = is0;
             this->swork[2] = is5;
             this->swork[5] = is2;
         }
     }
+
     if ((this->health <= 0) && (this->state == 2) && (this->swork[1] != 2) && (this->obj.pos.y <= 0)) {
-        this->swork[5] = D_i1_8019AD2C[3].unk_0->unk_0;
-        this->swork[4] = this->swork[4];
+        animation = sVe1GolemethAnimList[3].anim;
+        is2 = animation->index;
+        is1 = this->swork[4];
         this->swork[9] = 3;
         this->swork[3] = -1;
         this->fwork[10] = 0;
@@ -2215,31 +2354,38 @@ void Venom1_Ve1Golemech_Update(Ve1Golemech* this) {
         this->swork[7] = 0;
         this->swork[1] = 3;
         this->swork[2] = 0;
+        this->swork[5] = is2;
+        this->swork[4] = is1;
         this->swork[6] = 4;
         SEQCMD_STOP_SEQUENCE(SEQ_PLAYER_BGM, 0);
         SEQCMD_STOP_SEQUENCE(SEQ_PLAYER_FANFARE, 0);
     }
-    if ((spB4 == 1) || (spB4 == 2)) {
-        effect = Effect_Load(OBJ_EFFECT_394);
-        if (effect != NULL) {
-            Matrix_MultVec3f(gCalcMatrix, (Vec3f*) &this->fwork[3], &spF8);
-            effect->unk_78 = effect->unk_7A = 11;
-            effect->obj.pos.x = this->obj.pos.x + spF8.x;
-            effect->obj.pos.y = this->obj.pos.y + spF8.y;
-            effect->obj.pos.z = this->obj.pos.z + spF8.z;
-            effect->scale2 = 8.0f;
 
-            effect->obj.rot.z = RAND_FLOAT(360.0f);
-            effect->vel.x = RAND_FLOAT_CENTERED(5.0f);
-            effect->vel.y = RAND_FLOAT_CENTERED(3.0f);
-            effect->unk_60.z = 3.0f + RAND_FLOAT(2.0f);
-            effect->unk_44 = 100;
-            effect->unk_46 = -5;
-            if (Rand_ZeroOne() < 0.5f) {
-                effect->unk_60.z = -effect->unk_60.z;
+    switch (spB4) {
+        case 1:
+        case 2:
+            effect = Effect_Load(OBJ_EFFECT_394);
+            if (effect != NULL) {
+                Matrix_MultVec3f(gCalcMatrix, (Vec3f*) (&this->fwork[3]), &spF8);
+                effect->unk_78 = (effect->unk_7A = 11);
+                effect->obj.pos.x = this->obj.pos.x + spF8.x;
+                effect->obj.pos.y = this->obj.pos.y + spF8.y;
+                effect->obj.pos.z = this->obj.pos.z + spF8.z;
+                effect->scale2 = 8.0f;
+                effect->obj.rot.z = RAND_FLOAT(360.0f);
+                effect->vel.x = RAND_FLOAT_CENTERED(5.0f);
+                effect->vel.y = RAND_FLOAT_CENTERED(3.0f);
+                effect->unk_60.z = 3.0f + RAND_FLOAT(2.0f);
+                effect->unk_44 = 100;
+                effect->unk_46 = -5;
+
+                if (Rand_ZeroOne() < 0.5f) {
+                    effect->unk_60.z = -effect->unk_60.z;
+                }
             }
-        }
+            break;
     }
+
     switch (spB8) {
         case 1:
             is3 = 0;
@@ -2247,13 +2393,14 @@ void Venom1_Ve1Golemech_Update(Ve1Golemech* this) {
             is4 = this->swork[23];
             temp_fs0 = this->obj.pos.z;
             var_fv0 = -1500.0f;
+
             for (spF4 = 0; spF4 < ARRAY_COUNT(gActors); spF4++, actor++) {
                 if (actor->obj.status == OBJ_FREE) {
-
                     while ((is3 <= this->swork[22]) &&
                            ((temp_fs0 + D_i1_80199CD0[is4][is3].z) >= (var_fv0 + gPlayer[0].trueZpos))) {
                         is3++;
                     }
+
                     if (is3 <= this->swork[22]) {
                         Actor_Initialize(actor);
                         actor->obj.status = OBJ_ACTIVE;
@@ -2271,8 +2418,8 @@ void Venom1_Ve1Golemech_Update(Ve1Golemech* this) {
                 }
                 this->swork[16] = 8;
             }
-
             break;
+
         case 2:
             is3 = 0;
             actor = &gActors[0];
@@ -2282,9 +2429,10 @@ void Venom1_Ve1Golemech_Update(Ve1Golemech* this) {
             for (spF4 = 0; spF4 < ARRAY_COUNT(gActors); spF4++, actor++) {
                 if (actor->obj.status == OBJ_FREE) {
                     while ((is3 < this->swork[22]) &&
-                           (D_i1_80199B40[is4][is3].z + temp_fs0) >= (gPlayer[0].pos.z + var_fv0)) {
+                           ((D_i1_80199B40[is4][is3].z + temp_fs0) >= (gPlayer[0].pos.z + var_fv0))) {
                         is3++;
                     }
+
                     if (is3 <= this->swork[22]) {
                         Actor_Initialize(actor);
                         actor->obj.status = OBJ_ACTIVE;
@@ -2296,6 +2444,7 @@ void Venom1_Ve1Golemech_Update(Ve1Golemech* this) {
                         actor->state = 1;
                         Object_SetInfo(&actor->info, actor->obj.id);
                     }
+
                     is3++;
                     if (is3 > this->swork[22]) {
                         break;
@@ -2304,18 +2453,21 @@ void Venom1_Ve1Golemech_Update(Ve1Golemech* this) {
             }
             this->swork[16] = 8;
             break;
+
         case 3:
             if (this->swork[24] == 1) {
                 is3 = 0;
                 actor = &gActors[0];
                 is4 = this->swork[23];
                 temp_fs0 = this->obj.pos.z;
-                var_fv0 = gPlayer[0].pos.z + -1500.0f;
+                var_fv0 = gPlayer[0].pos.z + (-1500.0f);
+
                 for (spF4 = 0; spF4 < ARRAY_COUNT(gActors); spF4++, actor++) {
                     if (actor->obj.status == OBJ_FREE) {
-                        while ((is3 < D_i1_80199E60[is4]) && (D_i1_80199E6C[is4][is3].z + temp_fs0 >= var_fv0)) {
+                        while ((is3 < D_i1_80199E60[is4]) && ((D_i1_80199E6C[is4][is3].z + temp_fs0) >= var_fv0)) {
                             is3++;
                         }
+
                         if (is3 <= D_i1_80199E60[is4]) {
                             Actor_Initialize(actor);
                             actor->obj.status = OBJ_ACTIVE;
@@ -2326,17 +2478,18 @@ void Venom1_Ve1Golemech_Update(Ve1Golemech* this) {
                             actor->state = 1;
                             Object_SetInfo(&actor->info, actor->obj.id);
                         }
-                        is3++;
-                        if (is3 > D_i1_80199E60[is4]) {
+
+                        if (++is3 > D_i1_80199E60[is4]) {
                             break;
                         }
                     }
                 }
             }
-            actor = &gActors[0];
-            for (spF4 = 0; spF4 < ARRAY_COUNT(gActors); spF4++, actor++) {
-                if (((actor->obj.id == OBJ_ACTOR_VE1_PILLAR_2) || (actor->obj.id == OBJ_ACTOR_VE1_PILLAR_3)) &&
-                    (actor->state == 0) && (100.f <= (actor->obj.pos.z - this->obj.pos.z)) &&
+
+            for (actor = &gActors[0], spF4 = 0; spF4 < ARRAY_COUNT(gActors); spF4++, actor++) {
+                if (((((actor->obj.id == OBJ_ACTOR_VE1_PILLAR_2) || (actor->obj.id == OBJ_ACTOR_VE1_PILLAR_3)) &&
+                      (actor->state == 0)) &&
+                     (100.f <= (actor->obj.pos.z - this->obj.pos.z))) &&
                     ((actor->obj.pos.z - this->obj.pos.z) <= 2400.0f)) {
                     actor->state = 1;
                 }
@@ -2344,10 +2497,6 @@ void Venom1_Ve1Golemech_Update(Ve1Golemech* this) {
             this->swork[16] = 8;
     }
 }
-#else
-void Venom1_Ve1Golemech_Update(Ve1Golemech* this);
-#pragma GLOBAL_ASM("asm/us/rev1/nonmatchings/overlays/ovl_i1/fox_ve1/Venom1_Ve1Golemech_Update.s")
-#endif
 
 void Venom1_Ve1Golemech_SetShadow(Ve1Golemech* this) {
     RCP_SetupDL(&gMasterDisp, SETUPDL_65);
@@ -2385,7 +2534,7 @@ void Venom1_80198414(void) {
 
 void Venom1_Ve1Golemech_Dying(Ve1Golemech* this) {
     this->obj.pos.z = gPlayer[0].pos.z;
-    if ((this->timer_052 <= 0) && (gPlayer[0].state_1C8 == PLAYERSTATE_1C8_ACTIVE)) {
+    if ((this->timer_052 <= 0) && (gPlayer[0].state == PLAYERSTATE_ACTIVE)) {
         Venom1_80198414();
     }
 }

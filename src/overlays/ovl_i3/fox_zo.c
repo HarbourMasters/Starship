@@ -9,6 +9,8 @@
 #include "assets/ast_zoness.h"
 #include "port/interpolation/FrameInterpolation.h"
 
+#define TRAP_ENEMY_LASERS (1000)
+
 typedef struct {
     f32 id;
     Vec3f tilt;
@@ -2583,10 +2585,9 @@ void Zoness_ZoSarumarine_Update(ZoSarumarine* this) {
                 sZoFwork[ZO_BSF_23] = 10.0f;
                 gShowBossHealth = false;
                 Effect_Effect383_Spawn(this->obj.pos.x, this->obj.pos.y, this->obj.pos.z, 80.0f);
-                if ((gPlayer[0].state_1C8 == PLAYERSTATE_1C8_ACTIVE) ||
-                    (gPlayer[0].state_1C8 == PLAYERSTATE_1C8_U_TURN)) {
+                if ((gPlayer[0].state == PLAYERSTATE_ACTIVE) || (gPlayer[0].state == PLAYERSTATE_U_TURN)) {
                     gCsFrameCount = 0;
-                    gPlayer[0].state_1C8 = PLAYERSTATE_1C8_LEVEL_COMPLETE;
+                    gPlayer[0].state = PLAYERSTATE_LEVEL_COMPLETE;
                     gPlayer[0].csState = gPlayer[0].csTimer = 0;
                     gPlayer[0].rot.y += gPlayer[0].yRot_114;
                     if (gPlayer[0].rot.y > 360.0f) {
@@ -3213,7 +3214,7 @@ void Zoness_ZoSarumarine_Update(ZoSarumarine* this) {
 }
 
 void Zoness_801986FC(ZoSarumarine* this, s32 arg1, f32 xOff, f32 yOff, f32 zOff, f32 yRot) {
-    ZoBall* actor245 = NULL;
+    ZoBall* zoBall = NULL;
     Vec3f src = { 0.0f, 0.0f, 50.0f };
     Vec3f dest = { 0 };
     s32 i = 0;
@@ -3229,18 +3230,18 @@ void Zoness_801986FC(ZoSarumarine* this, s32 arg1, f32 xOff, f32 yOff, f32 zOff,
             sZoSwork[ZO_BSS_0 + arg1] = 40;
         }
 
-        for (i = 0, actor245 = &gActors[0]; i < ARRAY_COUNT(gActors); i++, actor245++) {
-            if (actor245->obj.status == OBJ_FREE) {
+        for (i = 0, zoBall = &gActors[0]; i < ARRAY_COUNT(gActors); i++, zoBall++) {
+            if (zoBall->obj.status == OBJ_FREE) {
                 D_ctx_801779A8[0] = 20.0f;
-                Actor_Initialize(actor245);
-                actor245->obj.status = OBJ_INIT;
-                actor245->obj.id = OBJ_ACTOR_ZO_BALL;
+                Actor_Initialize(zoBall);
+                zoBall->obj.status = OBJ_INIT;
+                zoBall->obj.id = OBJ_ACTOR_ZO_BALL;
 
-                actor245->obj.pos.x = this->obj.pos.x + xOff;
-                actor245->obj.pos.y = this->obj.pos.y + yOff;
-                actor245->obj.pos.z = this->obj.pos.z + zOff;
+                zoBall->obj.pos.x = this->obj.pos.x + xOff;
+                zoBall->obj.pos.y = this->obj.pos.y + yOff;
+                zoBall->obj.pos.z = this->obj.pos.z + zOff;
 
-                actor245->health = 10;
+                zoBall->health = 10;
 
                 Matrix_RotateY(gCalcMatrix, this->obj.rot.y * M_DTOR, MTXF_NEW);
                 Matrix_RotateX(gCalcMatrix, this->obj.rot.x * M_DTOR, MTXF_APPLY);
@@ -3250,19 +3251,18 @@ void Zoness_801986FC(ZoSarumarine* this, s32 arg1, f32 xOff, f32 yOff, f32 zOff,
 
                 Matrix_MultVec3fNoTranslate(gCalcMatrix, &src, &dest);
 
-                actor245->vel.x = dest.x;
-                actor245->vel.y = dest.y;
-                actor245->vel.z = this->vel.z + dest.z;
+                zoBall->vel.x = dest.x;
+                zoBall->vel.y = dest.y;
+                zoBall->vel.z = this->vel.z + dest.z;
 
-                Object_SetInfo(&actor245->info, actor245->obj.id);
+                Object_SetInfo(&zoBall->info, zoBall->obj.id);
                 sZoFwork[ZO_BSF_35 + arg1] = 40.0f;
 
                 AUDIO_PLAY_SFX(NA_SE_EN_S_BALL_SHOT, this->sfxSource, 4);
 
                 for (i = 0; i < 4; i++) {
-                    Zoness_Effect394_Spawn3(actor245->obj.pos.x + (dest.x * 4.3f),
-                                            actor245->obj.pos.y + (dest.y * 4.3f),
-                                            actor245->obj.pos.z + (dest.z * 4.3f) + 100.0f, 30.0f);
+                    Zoness_Effect394_Spawn3(zoBall->obj.pos.x + (dest.x * 4.3f), zoBall->obj.pos.y + (dest.y * 4.3f),
+                                            zoBall->obj.pos.z + (dest.z * 4.3f) + 100.0f, 30.0f);
                 }
                 break;
             }
@@ -3271,9 +3271,9 @@ void Zoness_801986FC(ZoSarumarine* this, s32 arg1, f32 xOff, f32 yOff, f32 zOff,
 
 #ifndef AVOID_UB
     // @Bug: checking out of bounds
-    // If this passes the boss kills himself.
+    // If this passes the boss kills himself, since gActors[60] overflows to gBosses[0].
     if (i >= ARRAY_COUNT(gActors)) {
-        actor245->obj.status = OBJ_FREE;
+        zoBall->obj.status = OBJ_FREE;
     }
 #endif
 }
@@ -4003,38 +4003,42 @@ void Zoness_ZoSpikeBall_Draw(ZoSpikeBall* this) {
     gSPDisplayList(gMasterDisp++, D_ZO_601BCC0);
 }
 
-Vec3f D_i3_801BF744[3] = {
-    { 0.0f, 50.0f, -200.0f },
+Vec3f sTankerContainerInitPos[3] = {
+    { 0.0f, 50.0f, -200.0f }, // first position seems unused
     { 0.0f, 50.0f, 200.0f },
     { 0.0f, 50.0f, 600.0f },
 };
-Vec3f D_i3_801BF768[3] = {
-    { 0.0f, 300.0f, 0.0f },
+Vec3f sSupplyCraneContainerInitPos[3] = {
+    { 0.0f, 300.0f, 0.0f }, // first position seems unused
     { 0.0f, 300.0f, -200.0f },
     { 0.0f, 300.0f, 300.0f },
 };
 s32 D_i3_801BF78C[30] = {
     0, 7, 7, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 4, 7, 0, 0, 0, 0, 327, 324, 0, 322, 327, 0, 324, 324, 0, 336, 0,
 };
-f32 D_i3_801BF804[8] = { 0.0f, 0.0f, 270.0f, 90.0f, 0.0f, 180.0f, 400.0f, 400.0f };
+f32 sZoSupplyCraneXRots[8] = { 0.0f, 0.0f, 270.0f, 90.0f, 0.0f, 180.0f, 400.0f, 400.0f };
 
 void Zoness_ZoTanker_Init(ZoTanker* actor) {
     s32 temp_v1;
     s32 containerIdx;
     s32 i;
     s32 j;
-    Vec3f sp84;
-    Vec3f sp78;
-    Vec3f sp6C;
+    Vec3f containerOffsetPos;
+    Vec3f tankerVelSrc;
+    Vec3f tankerVelDest;
 
     actor->obj.pos.y = 120.0f;
     actor->scale = -1.0f;
+
     Matrix_RotateY(gCalcMatrix, actor->obj.rot.y * M_DTOR, MTXF_NEW);
-    sp78.x = sp78.y = 0.0f;
-    sp78.z = actor->obj.rot.z;
-    Matrix_MultVec3fNoTranslate(gCalcMatrix, &sp78, &sp6C);
-    actor->vel.x = sp6C.x;
-    actor->vel.z = sp6C.z;
+
+    tankerVelSrc.x = tankerVelSrc.y = 0.0f;
+    tankerVelSrc.z = actor->obj.rot.z;
+
+    Matrix_MultVec3fNoTranslate(gCalcMatrix, &tankerVelSrc, &tankerVelDest);
+
+    actor->vel.x = tankerVelDest.x;
+    actor->vel.z = tankerVelDest.z;
     actor->obj.rot.z = 0.0f;
 
     containerIdx = 1;
@@ -4047,9 +4051,9 @@ void Zoness_ZoTanker_Init(ZoTanker* actor) {
     for (i = 0, j = 0; (containerIdx < 3) && (i < ARRAY_COUNT(gActors)); i++) {
         if (gActors[i].obj.status == OBJ_FREE) {
             if (actor->state == 0) {
-                Matrix_MultVec3f(gCalcMatrix, &D_i3_801BF744[containerIdx], &sp84);
+                Matrix_MultVec3f(gCalcMatrix, &sTankerContainerInitPos[containerIdx], &containerOffsetPos);
             } else {
-                Matrix_MultVec3f(gCalcMatrix, &D_i3_801BF768[containerIdx], &sp84);
+                Matrix_MultVec3f(gCalcMatrix, &sSupplyCraneContainerInitPos[containerIdx], &containerOffsetPos);
             }
 
             Actor_Initialize(&gActors[i]);
@@ -4060,10 +4064,13 @@ void Zoness_ZoTanker_Init(ZoTanker* actor) {
             } else {
                 gActors[i].obj.id = OBJ_ACTOR_ZO_SUPPLYCRANE;
             }
-            gActors[i].obj.pos.x = actor->obj.pos.x + sp84.x;
-            gActors[i].obj.pos.y = actor->obj.pos.y + sp84.y;
-            gActors[i].obj.pos.z = actor->obj.pos.z + sp84.z;
+
+            gActors[i].obj.pos.x = actor->obj.pos.x + containerOffsetPos.x;
+            gActors[i].obj.pos.y = actor->obj.pos.y + containerOffsetPos.y;
+            gActors[i].obj.pos.z = actor->obj.pos.z + containerOffsetPos.z;
+
             ((s32*) &actor->iwork[7])[containerIdx] = (s32) (actor->obj.rot.x * 3.0f) + containerIdx;
+
             gActors[i].obj.rot.y = actor->obj.rot.y;
             gActors[i].iwork[0] = D_i3_801BF78C[((s32*) &actor->iwork[7])[containerIdx]];
             gActors[i].iwork[1] = actor->index;
@@ -4072,11 +4079,11 @@ void Zoness_ZoTanker_Init(ZoTanker* actor) {
 
             if (actor->state != 0) {
                 gActors[i].state = 3;
-                if (D_i3_801BF804[actor->iwork[3]] >= 361.0f) {
+                if (sZoSupplyCraneXRots[actor->iwork[3]] >= 361.0f) {
                     gActors[i].obj.rot.x = actor->obj.rot.y;
                 } else {
                     temp_v1 = (actor->iwork[3] * 2) + j;
-                    gActors[i].obj.rot.x = D_i3_801BF804[temp_v1];
+                    gActors[i].obj.rot.x = sZoSupplyCraneXRots[temp_v1];
                 }
                 j++;
             }
@@ -4103,7 +4110,7 @@ void Zoness_ZoTanker_Update(ZoTanker* this) {
                 actor = &gActors[this->iwork[i]];
                 if ((actor->obj.status != OBJ_FREE) && (actor->iwork[1] == this->index) &&
                     (actor->obj.id == OBJ_ACTOR_ZO_CONTAINER)) {
-                    Matrix_MultVec3f(gCalcMatrix, &D_i3_801BF744[i], &sp58);
+                    Matrix_MultVec3f(gCalcMatrix, &sTankerContainerInitPos[i], &sp58);
                     actor->obj.pos.x = this->obj.pos.x + sp58.x;
                     actor->obj.pos.y = this->obj.pos.y + sp58.y;
                     actor->obj.pos.z = this->obj.pos.z + sp58.z;
@@ -4116,7 +4123,7 @@ void Zoness_ZoTanker_Update(ZoTanker* this) {
                 actor = &gActors[this->iwork[i]];
                 if ((actor->obj.status != OBJ_FREE) && (actor->obj.id == OBJ_ACTOR_ZO_SUPPLYCRANE) &&
                     (actor->iwork[1] == this->index)) {
-                    Matrix_MultVec3f(gCalcMatrix, &D_i3_801BF768[i], &sp58);
+                    Matrix_MultVec3f(gCalcMatrix, &sSupplyCraneContainerInitPos[i], &sp58);
                     actor->obj.pos.x = this->obj.pos.x + sp58.x;
                     actor->obj.pos.y = this->obj.pos.y + sp58.y;
                     actor->obj.pos.z = this->obj.pos.z + sp58.z;
@@ -4143,9 +4150,10 @@ void Zoness_ZoContainer_Init(ZoContainer* this) {
     this->health = 30;
 }
 
-s32 D_i3_801BF824[10] = { DROP_SILVER_RING, DROP_BOMB,        DROP_LASERS, DROP_GOLD_RING_1, DROP_GOLD_RING_2,
-                          DROP_GOLD_RING_3, DROP_GOLD_RING_4, DROP_NONE,   DROP_1UP,         1000 };
-Vec3f D_i3_801BF84C[6] = {
+ItemDrop sZoContainerItemDrops[10] = { DROP_SILVER_RING, DROP_BOMB,        DROP_LASERS,      DROP_GOLD_RING_1,
+                                       DROP_GOLD_RING_2, DROP_GOLD_RING_3, DROP_GOLD_RING_4, DROP_NONE,
+                                       DROP_1UP,         TRAP_ENEMY_LASERS };
+Vec3f sZoContainerTrapLaserPos[6] = {
     { 5.0f, -10.0f, 0.0f },  { 10.0f, 0.0f, 0.0f },  { 5.0f, 10.0f, 0.0f },
     { -5.0f, -10.0f, 0.0f }, { -10.0f, 0.0f, 0.0f }, { -5.0f, 10.0f, 0.0f },
 };
@@ -4190,18 +4198,18 @@ void Zoness_ZoContainer_Update(ZoContainer* this) {
             }
             this->obj.pos.y += 100.0f;
 
-            if (D_i3_801BF824[this->iwork[0]] < 1000) {
-                this->itemDrop = D_i3_801BF824[this->iwork[0]];
+            if (sZoContainerItemDrops[this->iwork[0]] < 1000) {
+                this->itemDrop = sZoContainerItemDrops[this->iwork[0]];
                 Actor_Despawn(this);
             } else {
-                if (D_i3_801BF824[this->iwork[0]] == 1000) {
+                if (sZoContainerItemDrops[this->iwork[0]] == 1000) {
                     for (i = 0, j = 0; i < 10; i++, j++) {
                         if (j > 5) {
                             j = 0;
                         }
-                        spB4.x = D_i3_801BF84C[j].x + this->obj.pos.x;
-                        spB4.y = D_i3_801BF84C[j].y + this->obj.pos.y;
-                        spB4.z = D_i3_801BF84C[j].z + this->obj.pos.z;
+                        spB4.x = sZoContainerTrapLaserPos[j].x + this->obj.pos.x;
+                        spB4.y = sZoContainerTrapLaserPos[j].y + this->obj.pos.y;
+                        spB4.z = sZoContainerTrapLaserPos[j].z + this->obj.pos.z;
                         sp9C.x = RAND_FLOAT_CENTERED(10.0f);
                         sp9C.y = RAND_FLOAT_CENTERED(10.0f);
                         sp9C.z = 50.0f;
@@ -4747,7 +4755,7 @@ void Zoness_LevelStart(Player* player) {
             if (gCsFrameCount >= 270) {
                 AUDIO_PLAY_BGM(NA_BGM_STAGE_ZO);
                 gLevelStartStatusScreenTimer = 80;
-                player->state_1C8 = PLAYERSTATE_1C8_ACTIVE;
+                player->state = PLAYERSTATE_ACTIVE;
                 player->csState = 0;
                 player->csTimer = 0;
                 player->csEventTimer = 0;
@@ -4935,7 +4943,7 @@ void Zoness_LevelComplete(Player* player) {
                 if (gFillScreenAlpha == 255) {
                     Audio_StopPlayerNoise(0);
                     Audio_FadeOutAll(10);
-                    player->state_1C8 = PLAYERSTATE_1C8_NEXT;
+                    player->state = PLAYERSTATE_NEXT;
                     player->csTimer = 0;
                     gFadeoutType = 4;
                     gLeveLClearStatus[LEVEL_ZONESS] = Play_CheckMedalStatus(250) + 1;

@@ -15,10 +15,10 @@
 #define ROUND_UP_8(v) (((v) + 7) & ~7)
 #define ROUND_DOWN_16(v) ((v) & ~0xf)
 
-//#define DMEM_BUF_SIZE (0x1000 - 0x0330 - 0x10 - 0x40)
-#define DMEM_BUF_SIZE 0xC80
-#define BUF_U8(a) (rspa.buf.as_u8 + ((a)-0x0330))
-#define BUF_S16(a) (rspa.buf.as_s16 + ((a)-0x0330) / sizeof(int16_t))
+#define DMEM_BUF_SIZE (0x1000)
+// #define DMEM_BUF_SIZE 0xC90
+#define BUF_U8(a) (rspa.buf.as_u8 + ((a)-0x450))
+#define BUF_S16(a) (rspa.buf.as_s16 + ((a)-0x450) / sizeof(int16_t))
 
 static struct {
     uint16_t in;
@@ -127,6 +127,55 @@ void aSetBufferImpl(uint8_t flags, uint16_t in, uint16_t out, uint16_t nbytes) {
     rspa.nbytes = nbytes;
 }
 
+#if 1
+// old abi impl
+void aInterleaveImpl(uint16_t left, uint16_t right) {
+    if(rspa.nbytes == 0) { // Added
+        return;
+    }
+
+    int count = ROUND_UP_16(rspa.nbytes) >> 3;
+    int16_t *l = BUF_S16(left);
+    int16_t *r = BUF_S16(right);
+    int16_t *d = BUF_S16(rspa.out);
+    while (count > 0) {
+        int16_t l0 = *l++;
+        int16_t l1 = *l++;
+        int16_t l2 = *l++;
+        int16_t l3 = *l++;
+        int16_t l4 = *l++;
+        int16_t l5 = *l++;
+        int16_t l6 = *l++;
+        int16_t l7 = *l++;
+        int16_t r0 = *r++;
+        int16_t r1 = *r++;
+        int16_t r2 = *r++;
+        int16_t r3 = *r++;
+        int16_t r4 = *r++;
+        int16_t r5 = *r++;
+        int16_t r6 = *r++;
+        int16_t r7 = *r++;
+        *d++ = l0;
+        *d++ = r0;
+        *d++ = l1;
+        *d++ = r1;
+        *d++ = l2;
+        *d++ = r2;
+        *d++ = l3;
+        *d++ = r3;
+        *d++ = l4;
+        *d++ = r4;
+        *d++ = l5;
+        *d++ = r5;
+        *d++ = l6;
+        *d++ = r6;
+        *d++ = l7;
+        *d++ = r7;
+        --count;
+    }
+}
+#else
+// new abi
 void aInterleaveImpl(uint16_t dest, uint16_t left, uint16_t right, uint16_t c) {
     if(rspa.nbytes == 0){
         return;
@@ -158,6 +207,7 @@ void aInterleaveImpl(uint16_t dest, uint16_t left, uint16_t right, uint16_t c) {
         --count;
     }
 }
+#endif
 
 void aDMEMMoveImpl(uint16_t in_addr, uint16_t out_addr, int nbytes) {
     nbytes = ROUND_UP_16(nbytes);
@@ -419,6 +469,18 @@ void aDuplicateImpl(uint16_t count, uint16_t in_addr, uint16_t out_addr) {
         memcpy(out, tmp, 128);
         out += 128;
     } while (count-- > 0);
+}
+
+void aDMEMMove2Impl(uint8_t t, uint16_t in_addr, uint16_t out_addr, uint16_t count) {
+    uint8_t *in = BUF_U8(in_addr);
+    uint8_t *out = BUF_U8(out_addr);
+    int nbytes = ROUND_UP_32(count);
+
+    do {
+        memmove(out, in, nbytes);
+        in += nbytes;
+        out += nbytes;
+    } while (t-- > 0);
 }
 
 void aResampleZohImpl(uint16_t pitch, uint16_t start_fract) {

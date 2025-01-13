@@ -228,7 +228,7 @@
       - [0xCB690, data, engine/fox_tank]
       - [0xCB6F0, data, engine/fox_demo]
       - [0xCB9B0, data, engine/fox_display]
-      - [0xCBB40, .data, engine/fox_load]
+      - [0xCBB40, data, engine/fox_load]
       - [0xCD860, data, engine/fox_edata]
       - [0xD1360, data, engine/fox_edisplay]
       - [0xD1790, data, engine/fox_enmy]

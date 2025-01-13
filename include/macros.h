@@ -12,6 +12,10 @@
 
 #define TIME_IN_SECONDS(x) (x * 30);
 
+#define CLAMP(x, min, max) ((x) < (min) ? (min) : (x) > (max) ? (max) : (x))
+#define CLAMP_MAX(x, max) ((x) > (max) ? (max) : (x))
+#define CLAMP_MIN(x, min) ((x) < (min) ? (min) : (x))
+
 #define RAND_FLOAT(max) (Rand_ZeroOne()*(max))
 #define RAND_INT(max) ((s32)(Rand_ZeroOne()*(max)))
 #define RAND_FLOAT_CENTERED(width) ((Rand_ZeroOne()-0.5f)*(width))

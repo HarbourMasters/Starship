@@ -229,10 +229,12 @@ void Animation_DrawSkeleton(s32 mode, Limb** skeletonSegment, Vec3f* jointTable,
 
     Matrix_Push(&gCalcMatrix);
     Matrix_Copy(gCalcMatrix, transform);
-    skeleton = LOAD_ASSET(skeletonSegment);
+
+    skeleton = SEGMENTED_TO_VIRTUAL(skeletonSegment);
     rootLimb = SEGMENTED_TO_VIRTUAL(skeleton[0]);
     rootIndex = Animation_GetLimbIndex(skeleton[0], skeleton);
     baseRot = jointTable[rootIndex];
+
     if (mode & 1) {
         baseTrans.x = rootLimb->trans.x;
         baseTrans.y = rootLimb->trans.y;
@@ -242,6 +244,7 @@ void Animation_DrawSkeleton(s32 mode, Limb** skeletonSegment, Vec3f* jointTable,
         baseTrans.y = jointTable[0].y;
         baseTrans.z = jointTable[0].z;
     }
+
     dList = rootLimb->dList;
     Matrix_Push(&gGfxMatrix);
 
@@ -249,11 +252,11 @@ void Animation_DrawSkeleton(s32 mode, Limb** skeletonSegment, Vec3f* jointTable,
     FrameInterpolation_RecordOpenChild(TAG_LIMB(rootLimb, data), rootIndex);
 
     if (overrideLimbDraw == NULL) {
-        override = 0;
+        override = false;
     } else {
         override = overrideLimbDraw(rootIndex - 1, &dList, &baseTrans, &baseRot, data);
     }
-    if (override == 0) {
+    if (!override) {
         Matrix_Translate(gCalcMatrix, baseTrans.x, baseTrans.y, baseTrans.z, MTXF_APPLY);
         Matrix_RotateZ(gCalcMatrix, baseRot.z * M_DTOR, MTXF_APPLY);
         Matrix_RotateY(gCalcMatrix, baseRot.y * M_DTOR, MTXF_APPLY);
@@ -272,10 +275,12 @@ void Animation_DrawSkeleton(s32 mode, Limb** skeletonSegment, Vec3f* jointTable,
     FrameInterpolation_RecordCloseChild();
 
     Matrix_Pop(&gGfxMatrix);
+
     if (rootLimb->child != NULL) {
         Animation_DrawLimb(mode, rootLimb->child, skeleton, jointTable, overrideLimbDraw, postLimbDraw, data);
     }
     Matrix_Pop(&gCalcMatrix);
+
     if (mode >= 2) {
         Matrix_Mult(gGfxMatrix, gCalcMatrix, MTXF_APPLY);
     }
@@ -642,7 +647,7 @@ void Lib_TextureRect_RGBA16_MirX(Gfx** gfxPtr, u16* texture, u32 width, u32 heig
 
     gSPWideTextureRectangle((*gfxPtr)++, (s32) (xPos * 4.0f), (s32) (yPos * 4.0f),
                             (s32) ((xPos + width * xScale) * 4.0f), (s32) ((yPos + height * yScale) * 4.0f),
-                            G_TX_RENDERTILE, (width - 1) * 32, 0, (u16) (s32) (-1.0f / xScale * 1024.0f),
+                            G_TX_RENDERTILE, (width /* - 1*/) * 32, 0, (u16) (s32) (-1.0f / xScale * 1024.0f),
                             (s32) (1.0f / yScale * 1024.0f));
 }
 

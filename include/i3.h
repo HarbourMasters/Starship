@@ -36,7 +36,6 @@ void Zoness_ZGull_Draw(Actor* this);
 void Zoness_ZoEnergyBall_Init2(Actor* actor);
 void Zoness_ZoEnergyBall_Update(Actor* this);
 void Zoness_ZoEnergyBall_Draw(Actor* this);
-void Zoness_ZoEnergyBall_Draw(Actor* this);
 void Zoness_ZoTroika_Draw(Actor* this);
 void Zoness_ZoTroika_Update(Actor* this);
 void Zoness_ZoShrimp_Update(Actor* this);

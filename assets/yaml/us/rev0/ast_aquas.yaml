@@ -1,0 +1,777 @@
+:config:
+  segments:
+    - [0x06, 0xA54570]
+  header:
+    code:
+      - '#include "assets/ast_aquas.h"'
+    header:
+      - '#include "gfx.h"'
+      - '#include "sf64object.h"'
+      - '#include "sf64level.h"'
+      - '#include "sf64event.h"'
+      - '#include "sf64player.h"'
+      - '#include "sf64audio_external.h"'
+      - '#include "sf64mesg.h"'
+
+aAqTitleCardTex:
+  { type: TEXTURE, ctype: u8, format: IA8, width: 96, height: 13, offset: 0x6000000, symbol: aAqTitleCardTex }
+
+aAqSquidAnim:
+  { type: SF64:ANIM, offset: 0x6000AE4, symbol: aAqSquidAnim }
+
+aAqSquidSkel:
+  { type: SF64:SKELETON, offset: 0x6000DB0, symbol: aAqSquidSkel }
+
+aAqShellDL:
+  { type: GFX, offset: 0x6000E10, symbol: aAqShellDL }
+
+D_AQ_6001130:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x6001130, symbol: D_AQ_6001130 }
+
+aAqAnglerFishAnim:
+  { type: SF64:ANIM, offset: 0x6002628, symbol: aAqAnglerFishAnim }
+
+aAqAnglerFishSkel:
+  { type: SF64:SKELETON, offset: 0x6002874, symbol: aAqAnglerFishSkel }
+
+# 
+aAqOysterDL:
+  { type: GFX, offset: 0x6002C10, symbol: aAqOysterDL }
+
+D_AQ_6002D58:
+  { type: TEXTURE, ctype: u8, format: CI8, width: 32, height: 32, offset: 0x6002D58, symbol: D_AQ_6002D58, tlut: 0x6003158 }
+
+D_AQ_6003158:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 248, offset: 0x6003158, symbol: D_AQ_6003158 }
+
+D_AQ_6003350:
+  { type: GFX, offset: 0x6003350, symbol: D_AQ_6003350 }
+
+D_AQ_6003610:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x6003610, symbol: D_AQ_6003610 }
+
+D_AQ_60043B0:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x60043B0, symbol: D_AQ_60043B0 }
+
+D_AQ_6004BB0:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x6004BB0, symbol: D_AQ_6004BB0 }
+
+D_AQ_60040F0:
+  { type: GFX, offset: 0x60040F0, symbol: D_AQ_60040F0 }
+
+D_AQ_6004DB0:
+  { type: GFX, offset: 0x6004DB0, symbol: D_AQ_6004DB0 }
+
+D_AQ_60050F0:
+  { type: GFX, offset: 0x60050F0, symbol: D_AQ_60050F0 }
+
+aAqSculpinAnim:
+  { type: SF64:ANIM, offset: 0x6005954, symbol: aAqSculpinAnim }
+
+aAqSculpinSkel:
+  { type: SF64:SKELETON, offset: 0x6005A80, symbol: aAqSculpinSkel }
+
+D_AQ_6006160:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x6006160, symbol: D_AQ_6006160 }
+
+D_AQ_6006960:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x6006960, symbol: D_AQ_6006960 }
+
+D_AQ_6007160:
+  { type: GFX, offset: 0x6007160, symbol: D_AQ_6007160 }
+
+D_AQ_6007378:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x6007378, symbol: D_AQ_6007378 }
+
+D_AQ_6007B80:
+  { type: GFX, offset: 0x6007B80, symbol: D_AQ_6007B80 }
+
+D_AQ_6007D70:
+  { type: GFX, offset: 0x6007D70, symbol: D_AQ_6007D70 }
+
+D_AQ_6007F68:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x6007F68, symbol: D_AQ_6007F68 }
+
+D_AQ_6003FF0:
+  { type: TEXTURE, ctype: u8, format: IA8, width: 8, height: 32, offset: 0x6003FF0, symbol: D_AQ_6003FF0 }
+
+D_AQ_6008168:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x6008168, symbol: D_AQ_6008168 }
+
+aAqStarfishDL:
+  { type: GFX, offset: 0x6008970, symbol: aAqStarfishDL }
+
+D_AQ_6008EC8:
+  { type: TEXTURE, ctype: u8, format: CI8, width: 16, height: 16, offset: 0x6008EC8, symbol: D_AQ_6008EC8, tlut: 0x6008FC8 }
+
+D_AQ_6008FC8:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 224, offset: 0x6008FC8, symbol: D_AQ_6008FC8 }
+
+D_AQ_6009188:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x6009188, symbol: D_AQ_6009188 }
+
+D_AQ_6009990:
+  { type: GFX, offset: 0x6009990, symbol: D_AQ_6009990 }
+
+D_AQ_6009C28:
+  { type: TEXTURE, ctype: u8, format: CI8, width: 32, height: 32, offset: 0x6009C28, symbol: D_AQ_6009C28, tlut: 0x600A028 }
+
+D_AQ_600A028:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 248, offset: 0x600A028, symbol: D_AQ_600A028 }
+
+D_AQ_600A220:
+  { type: GFX, offset: 0x600A220, symbol: D_AQ_600A220 }
+
+D_AQ_600A480:
+  { type: GFX, offset: 0x600A480, symbol: D_AQ_600A480 }
+
+D_AQ_600A520:
+  { type: GFX, offset: 0x600A520, symbol: D_AQ_600A520 }
+
+D_AQ_600A720:
+  { type: GFX, offset: 0x600A720, symbol: D_AQ_600A720 }
+
+D_AQ_600A840:
+  { type: GFX, offset: 0x600A840, symbol: D_AQ_600A840 }
+
+D_AQ_600A8E0:
+  { type: GFX, offset: 0x600A8E0, symbol: D_AQ_600A8E0 }
+
+D_AQ_600A970:
+  { type: GFX, offset: 0x600A970, symbol: D_AQ_600A970 }
+
+D_AQ_600AB10:
+  { type: GFX, offset: 0x600AB10, symbol: D_AQ_600AB10 }
+
+D_AQ_600AB68:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x600AB68, symbol: D_AQ_600AB68 }
+
+D_AQ_600BD20:
+  { type: GFX, offset: 0x600BD20, symbol: D_AQ_600BD20 }
+
+D_AQ_600B518:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x600B518, symbol: D_AQ_600B518 }
+
+aAqTunnel2DL:
+  { type: GFX, offset: 0x600BF80, symbol: aAqTunnel2DL }
+
+D_AQ_600C530:
+  { type: TEXTURE, ctype: u8, format: CI8, width: 32, height: 32, offset: 0x600C530, symbol: D_AQ_600C530, tlut: 0x600C930 }
+
+D_AQ_600C930:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 248, offset: 0x600C930, symbol: D_AQ_600C930 }
+
+D_AQ_600CB20:
+  { type: TEXTURE, ctype: u8, format: CI8, width: 32, height: 32, offset: 0x600CB20, symbol: D_AQ_600CB20, tlut: 0x600CF20 }
+
+D_AQ_600CF20:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 104, offset: 0x600CF20, symbol: D_AQ_600CF20 }
+
+D_AQ_600CFF0:
+  { type: GFX, offset: 0x600CFF0, symbol: D_AQ_600CFF0 }
+
+D_AQ_600D390:
+  { type: GFX, offset: 0x600D390, symbol: D_AQ_600D390 }
+
+D_AQ_600D4A0:
+  { type: GFX, offset: 0x600D4A0, symbol: D_AQ_600D4A0 }
+
+D_AQ_600D720:
+  { type: GFX, offset: 0x600D720, symbol: D_AQ_600D720 }
+
+D_AQ_600D810:
+  { type: GFX, offset: 0x600D810, symbol: D_AQ_600D810 }
+
+D_AQ_600D900:
+  { type: GFX, offset: 0x600D900, symbol: D_AQ_600D900 }
+
+D_AQ_600DB80:
+  { type: GFX, offset: 0x600DB80, symbol: D_AQ_600DB80 }
+
+D_AQ_600DF48:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x600DF48, symbol: D_AQ_600DF48 }
+
+D_AQ_600E150:
+  { type: GFX, offset: 0x600E150, symbol: D_AQ_600E150 }
+
+D_AQ_600E368:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x600E368, symbol: D_AQ_600E368 }
+
+aAqWall1DL:
+  { type: GFX, offset: 0x600EE10, symbol: aAqWall1DL }
+
+aAqBump2DL:
+  { type: GFX, offset: 0x600EEF0, symbol: aAqBump2DL }
+
+D_AQ_600F030:
+  { type: GFX, offset: 0x600F030, symbol: D_AQ_600F030 }
+
+D_AQ_600F1A0:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x600F1A0, symbol: D_AQ_600F1A0 }
+
+D_AQ_600F9A0:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x600F9A0, symbol: D_AQ_600F9A0 }
+
+D_AQ_60101A0:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x60101A0, symbol: D_AQ_60101A0 }
+
+D_AQ_60109A0:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x60109A0, symbol: D_AQ_60109A0 }
+
+D_AQ_60111A0:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x60111A0, symbol: D_AQ_60111A0 }
+
+D_AQ_60119A0:
+  { type: GFX, offset: 0x60119A0, symbol: D_AQ_60119A0 }
+
+D_AQ_6011A78:
+  { type: VTX, count: 38, offset: 0x6011A78, symbol: D_AQ_6011A78 }
+
+D_AQ_6011CD8:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x6011CD8, symbol: D_AQ_6011CD8 }
+
+aAqTunnel1DL:
+  { type: GFX, offset: 0x6011EE0, symbol: aAqTunnel1DL }
+
+aAqRoofDL:
+  { type: GFX, offset: 0x60120F0, symbol: aAqRoofDL }
+
+D_AQ_60126A8:
+  { type: TEXTURE, ctype: u8, format: CI8, width: 16, height: 64, offset: 0x60126A8, symbol: D_AQ_60126A8, tlut: 0x6012AA8 }
+
+D_AQ_6012AA8:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 248, offset: 0x6012AA8, symbol: D_AQ_6012AA8 }
+
+D_AQ_6012C98:
+  { type: TEXTURE, ctype: u8, format: CI8, width: 16, height: 16, offset: 0x6012C98, symbol: D_AQ_6012C98, tlut: 0x6012D98 }
+
+D_AQ_6012D98:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 136, offset: 0x6012D98, symbol: D_AQ_6012D98 }
+
+D_AQ_6012EA8:
+  { type: TEXTURE, ctype: u8, format: CI8, width: 32, height: 32, offset: 0x6012EA8, symbol: D_AQ_6012EA8, tlut: 0x60132A8 }
+
+D_AQ_60132A8:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 240, offset: 0x60132A8, symbol: D_AQ_60132A8 }
+
+aAqFishGroupAnim:
+  { type: SF64:ANIM, offset: 0x60135E0, symbol: aAqFishGroupAnim }
+
+aAqFishGroupSkel1:
+  { type: SF64:SKELETON, offset: 0x60136CC, symbol: aAqFishGroupSkel1 }
+
+aAqFishGroupSkel2:
+  { type: SF64:SKELETON, offset: 0x60137CC, symbol: aAqFishGroupSkel2 }
+
+D_AQ_60137F0:
+  { type: GFX, offset: 0x60137F0, symbol: D_AQ_60137F0 }
+
+D_AQ_6013CC0:
+  { type: TEXTURE, ctype: u8, format: CI8, width: 16, height: 32, offset: 0x6013CC0, symbol: D_AQ_6013CC0, tlut: 0x6013EC0 }
+
+D_AQ_6013EC0:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 184, offset: 0x6013EC0, symbol: D_AQ_6013EC0 }
+
+D_AQ_6014030:
+  { type: GFX, offset: 0x6014030, symbol: D_AQ_6014030 }
+
+aAqStoneColumnAnim:
+  { type: SF64:ANIM, offset: 0x6014438, symbol: aAqStoneColumnAnim }
+
+aAqStoneColumnSkel:
+  { type: SF64:SKELETON, offset: 0x6014504, symbol: aAqStoneColumnSkel }
+
+D_AQ_6014520:
+  { type: GFX, offset: 0x6014520, symbol: D_AQ_6014520 }
+
+D_AQ_60148B0:
+  { type: GFX, offset: 0x60148B0, symbol: D_AQ_60148B0 }
+
+D_AQ_6014CD0:
+  { type: GFX, offset: 0x6014CD0, symbol: D_AQ_6014CD0 }
+
+D_AQ_6014E50:
+  { type: GFX, offset: 0x6014E50, symbol: D_AQ_6014E50 }
+
+aAqBoulderDL:
+  { type: GFX, offset: 0x6014FD0, symbol: aAqBoulderDL }
+
+D_AQ_6015430:
+  { type: GFX, offset: 0x6015430, symbol: D_AQ_6015430 }
+
+D_AQ_60154F8:
+  { type: TEXTURE, ctype: u8, format: CI8, width: 16, height: 16, offset: 0x60154F8, symbol: D_AQ_60154F8, tlut: 0x60155F8 }
+
+D_AQ_60155F8:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 152, offset: 0x60155F8, symbol: D_AQ_60155F8 }
+
+aAqArchDL:
+  { type: GFX, offset: 0x6015730, symbol: aAqArchDL }
+
+D_AQ_6015DD0:
+  { type: GFX, offset: 0x6015DD0, symbol: D_AQ_6015DD0 }
+
+D_AQ_6015FF0:
+  { type: GFX, offset: 0x6015FF0, symbol: D_AQ_6015FF0 }
+
+D_AQ_6017BD8:
+  { type: TEXTURE, ctype: u8, format: CI8, width: 16, height: 16, offset: 0x6017BD8, symbol: D_AQ_6017BD8, tlut: 0x6017CD8 }
+
+D_AQ_6017CD8:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 64, offset: 0x6017CD8, symbol: D_AQ_6017CD8 }
+
+D_AQ_6018640:
+  { type: GFX, offset: 0x6018640, symbol: D_AQ_6018640 }
+
+D_AQ_6018878:
+  { type: VTX, count: 64, offset: 0x6018878, symbol: D_AQ_6018878 }
+
+D_AQ_6018C78:
+  { type: VTX, count: 64, offset: 0x6018C78, symbol: D_AQ_6018C78 }
+
+D_AQ_6019078:
+  { type: VTX, count: 28, offset: 0x6019078, symbol: D_AQ_6019078 }
+
+D_AQ_6019238:
+  { type: TEXTURE, ctype: u8, format: CI8, width: 16, height: 16, offset: 0x6019238, symbol: D_AQ_6019238, tlut: 0x6019338 }
+
+D_AQ_6019338:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 200, offset: 0x6019338, symbol: D_AQ_6019338 }
+
+D_AQ_60194D0:
+  { type: GFX, offset: 0x60194D0, symbol: D_AQ_60194D0 }
+
+D_AQ_6019880:
+  { type: GFX, offset: 0x6019880, symbol: D_AQ_6019880 }
+
+D_AQ_6019C28:
+  { type: TEXTURE, ctype: u8, format: CI8, width: 16, height: 16, offset: 0x6019C28, symbol: D_AQ_6019C28, tlut: 0x6019D28 }
+
+D_AQ_6019D28:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 168, offset: 0x6019D28, symbol: D_AQ_6019D28 }
+
+D_AQ_6019E80:
+  { type: GFX, offset: 0x6019E80, symbol: D_AQ_6019E80 }
+
+D_AQ_601A308:
+  { type: TEXTURE, ctype: u8, format: CI8, width: 32, height: 32, offset: 0x601A308, symbol: D_AQ_601A308, tlut: 0x601A708 }
+
+D_AQ_601A708:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 248, offset: 0x601A708, symbol: D_AQ_601A708 }
+
+D_AQ_601AE70:
+  { type: TEXTURE, ctype: u8, format: CI8, width: 16, height: 16, offset: 0x601AE70, symbol: D_AQ_601AE70, tlut: 0x601AF70 }
+
+D_AQ_601AF70:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 64, offset: 0x601AF70, symbol: D_AQ_601AF70 }
+
+D_AQ_601AFF0:
+  { type: GFX, offset: 0x601AFF0, symbol: D_AQ_601AFF0 }
+
+D_AQ_601B080:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 64, height: 32, offset: 0x601C110, symbol: D_AQ_601C110 }
+
+D_AQ_601C080:
+  { type: GFX, offset: 0x601C080, symbol: D_AQ_601C080 }
+
+D_AQ_601C110:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 64, height: 32, offset: 0x601B080, symbol: D_AQ_601B080 }
+
+D_AQ_601D110:
+  { type: GFX, offset: 0x601D110, symbol: D_AQ_601D110 }
+
+D_AQ_601DE50:
+  { type: SF64:ANIM, offset: 0x601DE50, symbol: D_AQ_601DE50 }
+
+aAqCoralReef2DL:
+  { type: GFX, offset: 0x601DE60, symbol: aAqCoralReef2DL }
+
+D_AQ_601E1F0:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x601E1F0, symbol: D_AQ_601E1F0 }
+
+D_AQ_601E9F0:
+  { type: GFX, offset: 0x601E9F0, symbol: D_AQ_601E9F0 }
+
+aAqCoralAnim:
+  { type: SF64:ANIM, offset: 0x601EC68, symbol: aAqCoralAnim }
+
+aAqCoralSkel:
+  { type: SF64:SKELETON, offset: 0x601EDB4, symbol: aAqCoralSkel }
+
+D_AQ_601EDE0:
+  { type: GFX, offset: 0x601EDE0, symbol: D_AQ_601EDE0 }
+
+D_AQ_601F2F0:
+  { type: GFX, offset: 0x601F2F0, symbol: D_AQ_601F2F0 }
+
+D_AQ_601F830:
+  { type: GFX, offset: 0x601F830, symbol: D_AQ_601F830 }
+
+D_AQ_601FD70:
+  { type: GFX, offset: 0x601FD70, symbol: D_AQ_601FD70 }
+
+aAqSeaweedAnim:
+  { type: SF64:ANIM, offset: 0x6020A40, symbol: aAqSeaweedAnim }
+
+aAqSeaweedSkel:
+  { type: SF64:SKELETON, offset: 0x6020C6C, symbol: aAqSeaweedSkel }
+
+D_AQ_6021058:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x6021058, symbol: D_AQ_6021058 }
+
+D_AQ_6021858:
+  { type: TEXTURE, ctype: u8, format: CI8, width: 32, height: 32, offset: 0x6021858, symbol: D_AQ_6021858, tlut: 0x6021C58 }
+
+D_AQ_6021C58:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 232, offset: 0x6021C58, symbol: D_AQ_6021C58 }
+
+aAqOysterAnim:
+  { type: SF64:ANIM, offset: 0x602201C, symbol: aAqOysterAnim }
+
+aAqOysterSkel:
+  { type: SF64:SKELETON, offset: 0x60220E8, symbol: aAqOysterSkel }
+
+D_AQ_6022110:
+  { type: GFX, offset: 0x6022110, symbol: D_AQ_6022110 }
+
+D_AQ_6022198:
+  { type: TEXTURE, ctype: u8, format: CI8, width: 32, height: 32, offset: 0x6022198, symbol: D_AQ_6022198, tlut: 0x6022598 }
+
+D_AQ_6022598:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 248, offset: 0x6022598, symbol: D_AQ_6022598 }
+
+D_AQ_6022788:
+  { type: TEXTURE, ctype: u8, format: CI8, width: 16, height: 16, offset: 0x6022788, symbol: D_AQ_6022788, tlut: 0x6022888 }
+
+D_AQ_6022888:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 152, offset: 0x6022888, symbol: D_AQ_6022888 }
+
+D_AQ_60229B8:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x60229B8, symbol: D_AQ_60229B8 }
+
+aAqCoralReef1DL:
+  { type: GFX, offset: 0x60231C0, symbol: aAqCoralReef1DL }
+
+aAqJellyfishAnim:
+  { type: SF64:ANIM, offset: 0x6023780, symbol: aAqJellyfishAnim }
+
+aAqJellyfishSkel:
+  { type: SF64:SKELETON, offset: 0x602390C, symbol: aAqJellyfishSkel }
+
+D_AQ_6023940:
+  { type: GFX, offset: 0x6023940, symbol: D_AQ_6023940 }
+
+D_AQ_6023B80:
+  { type: GFX, offset: 0x6023B80, symbol: D_AQ_6023B80 }
+
+D_AQ_6023D70:
+  { type: GFX, offset: 0x6023D70, symbol: D_AQ_6023D70 }
+
+D_AQ_6023EB0:
+  { type: GFX, offset: 0x6023EB0, symbol: D_AQ_6023EB0 }
+
+D_AQ_6023F38:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x6023F38, symbol: D_AQ_6023F38 }
+
+D_AQ_6024738:
+  { type: TEXTURE, ctype: u16, format: IA16, width: 16, height: 16, offset: 0x6024738, symbol: D_AQ_6024738 }
+
+D_AQ_6024938:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 8, height: 8, offset: 0x6024938, symbol: D_AQ_6024938 }
+
+D_AQ_60249C0:
+  { type: GFX, offset: 0x60249C0, symbol: D_AQ_60249C0 }
+
+aAqPearlDL:
+  { type: GFX, offset: 0x6024A50, symbol: aAqPearlDL }
+
+D_AQ_6024F80:
+  { type: SF64:ANIM, offset: 0x6024F80, symbol: D_AQ_6024F80 }
+
+aAqGaroaSkel:
+  { type: SF64:SKELETON, offset: 0x602512C, symbol: aAqGaroaSkel }
+
+aAqSpindlyFishAnim:
+  { type: SF64:ANIM, offset: 0x60260EC, symbol: aAqSpindlyFishAnim }
+
+aAqSpindlyFishSkel:
+  { type: SF64:SKELETON, offset: 0x60263F8, symbol: aAqSpindlyFishSkel }
+
+D_AQ_6026460:
+  { type: GFX, offset: 0x6026460, symbol: D_AQ_6026460 }
+
+D_AQ_60266B0:
+  { type: GFX, offset: 0x60266B0, symbol: D_AQ_60266B0 }
+
+D_AQ_6026950:
+  { type: GFX, offset: 0x6026950, symbol: D_AQ_6026950 }
+
+D_AQ_6026BF0:
+  { type: GFX, offset: 0x6026BF0, symbol: D_AQ_6026BF0 }
+
+D_AQ_6026C80:
+  { type: GFX, offset: 0x6026C80, symbol: D_AQ_6026C80 }
+
+D_AQ_6026D10:
+  { type: GFX, offset: 0x6026D10, symbol: D_AQ_6026D10 }
+
+D_AQ_6026DA0:
+  { type: GFX, offset: 0x6026DA0, symbol: D_AQ_6026DA0 }
+
+D_AQ_6026E30:
+  { type: GFX, offset: 0x6026E30, symbol: D_AQ_6026E30 }
+
+D_AQ_6026EC0:
+  { type: GFX, offset: 0x6026EC0, symbol: D_AQ_6026EC0 }
+
+D_AQ_6026F60:
+  { type: GFX, offset: 0x6026F60, symbol: D_AQ_6026F60 }
+
+D_AQ_6027330:
+  { type: GFX, offset: 0x6027330, symbol: D_AQ_6027330 }
+
+D_AQ_60273C0:
+  { type: GFX, offset: 0x60273C0, symbol: D_AQ_60273C0 }
+
+D_AQ_6027460:
+  { type: GFX, offset: 0x6027460, symbol: D_AQ_6027460 }
+
+D_AQ_60276F0:
+  { type: GFX, offset: 0x60276F0, symbol: D_AQ_60276F0 }
+
+D_AQ_6027810:
+  { type: GFX, offset: 0x6027810, symbol: D_AQ_6027810 }
+
+D_AQ_6027930:
+  { type: GFX, offset: 0x6027930, symbol: D_AQ_6027930 }
+
+D_AQ_6027C90:
+  { type: GFX, offset: 0x6027C90, symbol: D_AQ_6027C90 }
+
+D_AQ_6027FA0:
+  { type: GFX, offset: 0x6027FA0, symbol: D_AQ_6027FA0 }
+
+D_AQ_6028240:
+  { type: GFX, offset: 0x6028240, symbol: D_AQ_6028240 }
+
+D_AQ_6028550:
+  { type: GFX, offset: 0x6028550, symbol: D_AQ_6028550 }
+
+D_AQ_60287F0:
+  { type: GFX, offset: 0x60287F0, symbol: D_AQ_60287F0 }
+
+D_AQ_6028910:
+  { type: GFX, offset: 0x6028910, symbol: D_AQ_6028910 }
+
+D_AQ_6028A80:
+  { type: GFX, offset: 0x6028A80, symbol: D_AQ_6028A80 }
+
+D_AQ_6028F50:
+  { type: GFX, offset: 0x6028F50, symbol: D_AQ_6028F50 }
+
+D_AQ_60290C0:
+  { type: GFX, offset: 0x60290C0, symbol: D_AQ_60290C0 }
+
+D_AQ_60291B0:
+  { type: GFX, offset: 0x60291B0, symbol: D_AQ_60291B0 }
+
+D_AQ_6029240:
+  { type: GFX, offset: 0x6029240, symbol: D_AQ_6029240 }
+
+D_AQ_6029330:
+  { type: GFX, offset: 0x6029330, symbol: D_AQ_6029330 }
+
+D_AQ_60294A0:
+  { type: GFX, offset: 0x60294A0, symbol: D_AQ_60294A0 }
+
+D_AQ_6029530:
+  { type: GFX, offset: 0x6029530, symbol: D_AQ_6029530 }
+
+D_AQ_60296A0:
+  { type: GFX, offset: 0x60296A0, symbol: D_AQ_60296A0 }
+
+D_AQ_6029790:
+  { type: GFX, offset: 0x6029790, symbol: D_AQ_6029790 }
+
+D_AQ_6029900:
+  { type: GFX, offset: 0x6029900, symbol: D_AQ_6029900 }
+
+D_AQ_602AC28:
+  { type: SF64:ANIM, offset: 0x602AC28, symbol: D_AQ_602AC28 }
+
+D_AQ_602AC40:
+  { type: GFX, offset: 0x602AC40, symbol: D_AQ_602AC40 }
+
+D_AQ_602ACC0:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x602ACC0, symbol: D_AQ_602ACC0 }
+
+aAqRockDL:
+  { type: GFX, offset: 0x602B4C0, symbol: aAqRockDL }
+
+D_AQ_602B9D4: # unused and possibly broken
+ { type: SF64:ANIM, offset: 0x602B9D4, symbol: D_AQ_602B9D4 }
+
+D_AQ_602BD60:
+  { type: SF64:SKELETON, offset: 0x602BD60, symbol: D_AQ_602BD60 }
+
+D_AQ_602BF88:
+  { type: SF64:ANIM, offset: 0x602BF88, symbol: D_AQ_602BF88 }
+
+D_AQ_602C014:
+  { type: SF64:SKELETON, offset: 0x602C014, symbol: D_AQ_602C014 }
+
+D_AQ_602C030:
+  { type: GFX, offset: 0x602C030, symbol: D_AQ_602C030 }
+
+D_AQ_602C088:
+  { type: GFX, offset: 0x602C088, symbol: D_AQ_602C088 }
+
+D_AQ_602C160:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x602C160, symbol: D_AQ_602C160 }
+
+D_AQ_602C960:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x602C960, symbol: D_AQ_602C960 }
+
+D_AQ_602DA28:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x602DA28, symbol: D_AQ_602DA28 }
+
+D_AQ_602DC28:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x602DC28, symbol: D_AQ_602DC28 }
+
+D_AQ_602DE28:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x602DE28, symbol: D_AQ_602DE28 }
+
+D_AQ_602E028:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x602E028, symbol: D_AQ_602E028 }
+
+D_AQ_602E540:
+  { type: SF64:ENVIRONMENT, offset: 0x602E540, symbol: D_AQ_602E540 }
+
+D_AQ_602E584:
+  { type: SF64:ENVIRONMENT, offset: 0x602E584, symbol: D_AQ_602E584 }
+
+D_AQ_602E5C8:
+  { type: SF64:OBJECT_INIT, offset: 0x602E5C8, symbol: D_AQ_602E5C8 }
+
+D_AQ_60308B8:
+  { type: SF64:SCRIPT, offset: 0x60308B8, symbol: D_AQ_60308B8 }
+
+aBoss301Hitbox:
+  { type: SF64:HITBOX, offset: 0x6030B10, symbol: aBoss301Hitbox }
+
+aAqShellHitbox:
+  { type: SF64:HITBOX, offset: 0x6030B14, symbol: aAqShellHitbox }
+
+aAqStarfishHitbox:
+  { type: SF64:HITBOX, offset: 0x6030B30, symbol: aAqStarfishHitbox }
+
+aAqOysterEvHitbox:
+  { type: SF64:HITBOX, offset: 0x6030B4C, symbol: aAqOysterEvHitbox }
+
+D_AQ_6030B68:
+  { type: SF64:HITBOX, offset: 0x6030B68, symbol: D_AQ_6030B68 }
+
+D_AQ_6030BAC:
+  { type: SF64:HITBOX, offset: 0x6030BAC, symbol: D_AQ_6030BAC }
+
+aAqActor188Hitbox:
+  { type: SF64:HITBOX, offset: 0x6030BE0, symbol: aAqActor188Hitbox }
+
+aAqActor255Hitbox:
+  { type: SF64:HITBOX, offset: 0x6030BFC, symbol: aAqActor255Hitbox }
+
+aAqActor256Hitbox:
+  { type: SF64:HITBOX, offset: 0x6030C18, symbol: aAqActor256Hitbox }
+
+aAqActor257Hitbox:
+  { type: SF64:HITBOX, offset: 0x6030C44, symbol: aAqActor257Hitbox }
+
+aAqCoralReef1Hitbox:
+  { type: SF64:HITBOX, offset: 0x6030C60, symbol: aAqCoralReef1Hitbox }
+
+aAqTunnel1Hitbox:
+  { type: SF64:HITBOX, offset: 0x6030C7C, symbol: aAqTunnel1Hitbox }
+
+aAqStoneColumnHitbox:
+  { type: SF64:HITBOX, offset: 0x6030D20, symbol: aAqStoneColumnHitbox }
+
+D_AQ_6030D3C:
+  { type: SF64:HITBOX, offset: 0x6030D3C, symbol: D_AQ_6030D3C }
+
+D_AQ_6030D58:
+  { type: SF64:HITBOX, offset: 0x6030D58, symbol: D_AQ_6030D58 }
+
+aAqArchHitbox:
+  { type: SF64:HITBOX, offset: 0x6030D74, symbol: aAqArchHitbox }
+
+aAqCoralReef2Hitbox:
+  { type: SF64:HITBOX, offset: 0x6030DF8, symbol: aAqCoralReef2Hitbox }
+
+aAqRockHitbox:
+  { type: SF64:HITBOX, offset: 0x6030E14, symbol: aAqRockHitbox }
+
+aAqWall1Hitbox:
+  { type: SF64:HITBOX, offset: 0x6030E30, symbol: aAqWall1Hitbox }
+
+aAqRoofHitbox:
+  { type: SF64:HITBOX, offset: 0x6030E4C, symbol: aAqRoofHitbox }
+
+aAqTunnel2Hitbox:
+  { type: SF64:HITBOX, offset: 0x6030E68, symbol: aAqTunnel2Hitbox }
+
+aAqBacoonHitbox:
+  { type: SF64:HITBOX, offset: 0x6030F74, symbol: aAqBacoonHitbox }
+
+aAqAnglerFishHitbox:
+  { type: SF64:HITBOX, offset: 0x6031398, symbol: aAqAnglerFishHitbox }
+
+aAqGaroaHitbox:
+  { type: SF64:HITBOX, offset: 0x60313CC, symbol: aAqGaroaHitbox }
+
+aAqSculpinHitbox:
+  { type: SF64:HITBOX, offset: 0x6031400, symbol: aAqSculpinHitbox }
+
+aAqSpindlyFishHitbox:
+  { type: SF64:HITBOX, offset: 0x603144C, symbol: aAqSpindlyFishHitbox }
+
+aAqSquidHitbox:
+  { type: SF64:HITBOX, offset: 0x6031480, symbol: aAqSquidHitbox }
+
+D_AQ_60314AC:
+  { type: SF64:HITBOX, offset: 0x60314AC, symbol: D_AQ_60314AC }
+
+aAqOysterHitbox:
+  { type: SF64:HITBOX, offset: 0x60314C8, symbol: aAqOysterHitbox }
+
+D_AQ_60314E4:
+  { type: SF64:HITBOX, offset: 0x60314E4, symbol: D_AQ_60314E4 }
+
+aAqBoulderHitbox:
+  { type: SF64:HITBOX, offset: 0x6031500, symbol: aAqBoulderHitbox }
+
+D_AQ_603151C:
+  { type: SF64:HITBOX, offset: 0x603151C, symbol: D_AQ_603151C }
+
+aAqCoralHitbox:
+  { type: SF64:HITBOX, offset: 0x6031538, symbol: aAqCoralHitbox }
+
+aAqJellyfishHitbox:
+  { type: SF64:HITBOX, offset: 0x6031554, symbol: aAqJellyfishHitbox }
+
+aAqFishGroupHitbox:
+  { type: SF64:HITBOX, offset: 0x6031570, symbol: aAqFishGroupHitbox }
+
+D_AQ_603158C:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x603158C, symbol: D_AQ_603158C }
+
+D_AQ_6031D90:
+  { type: VTX, count: 34, offset: 0x6031D90, symbol: D_AQ_6031D90 }
+
+D_AQ_6031FB0:
+  { type: SF64:TRIANGLE, count: 8, offset: 0x6031FB0, symbol: D_AQ_6031FB0, mesh_symbol: D_AQ_OFFSET, mesh_count: 2}
+
+D_AQ_60320B8:
+  { type: SF64:TRIANGLE, count: 30, offset: 0x60320B8, symbol: D_AQ_60320B8, mesh_symbol: D_AQ_OFFSET }
+
+D_AQ_6032388:
+  { type: SF64:TRIANGLE, count: 28, offset: 0x6032388, symbol: D_AQ_6032388, mesh_symbol: D_AQ_OFFSET }

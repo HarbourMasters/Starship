@@ -112,7 +112,7 @@ void Map_LevelSelect(void) {
     }
 
     // Bypass briefing
-    if (CVarGetInteger("gSkipBriefing", 0) == 1) {
+    if ((CVarGetInteger("gSkipBriefing", 0) == 1) || (sCurrentPlanetId == PLANET_VENOM)) {
         if ((timer == 0) && (startLevel == 1)) {
             if ((sMapState == 2) && (sMapSubState > 0)) {
                 if (sCurrentPlanetId == PLANET_VENOM) {

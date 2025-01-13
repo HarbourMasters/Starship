@@ -484,7 +484,7 @@ void FrameInterpolation_RecordMarker(const char* file, int line) {
     if (!is_recording)
         return;
 
-    append(Op::Marker).marker = { file, line };
+    // append(Op::Marker).marker = { file, line };
 }
 
 void FrameInterpolation_RecordMatrixPop(Matrix** matrix) {

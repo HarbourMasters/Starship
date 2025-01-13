@@ -1,0 +1,110 @@
+:config:
+  segments:
+    - [0x0D, 0x950880]
+  header:
+    code:
+      - '#include "assets/ast_allies.h"'
+    header:
+      - '#include "gfx.h"'
+      - '#include "sf64object.h"'
+
+aKattMarkDL:
+  { type: GFX, offset: 0xD000000, symbol: aKattMarkDL }
+
+ast_allies_seg13_vtx_00000098:
+  { type: VTX, count: 3, offset: 0x0D000098, symbol: ast_allies_seg13_vtx_00000098 }
+
+D_D0000C8:
+  { type: BLOB, size: 0x18, offset: 0x0D0000C8, symbol: D_D0000C8 }
+
+aKattMarkTex:
+  { type: TEXTURE, ctype: u8, format: CI4, width: 16, height: 16, offset: 0x0D0000E0, symbol: aKattMarkTex, tlut: 0x0D000160 }
+
+aKattMarkTLUT:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 8, offset: 0xD000160, symbol: aKattMarkTLUT }
+
+D_D000170:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 44, height: 44, offset: 0xD000170, symbol: D_D000170 }
+
+D_D001090:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 44, height: 44, offset: 0xD001090, symbol: D_D001090 }
+
+D_D001FB0:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 44, height: 44, offset: 0xD001FB0, symbol: D_D001FB0 }
+
+D_D002ED0:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 44, height: 44, offset: 0xD002ED0, symbol: D_D002ED0 }
+
+D_D003DF0:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 44, height: 44, offset: 0xD003DF0, symbol: D_D003DF0 }
+
+D_D004D10:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 44, height: 44, offset: 0xD004D10, symbol: D_D004D10 }
+
+D_D005C30:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 44, height: 44, offset: 0xD005C30, symbol: D_D005C30 }
+
+D_D006B50:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 44, height: 44, offset: 0xD006B50, symbol: D_D006B50 }
+
+D_D007A70:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 44, height: 44, offset: 0xD007A70, symbol: D_D007A70 }
+
+D_D008990:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 44, height: 44, offset: 0xD008990, symbol: D_D008990 }
+
+aKattRadarMarkDL:
+  { type: GFX, offset: 0xD0098B0, symbol: aKattRadarMarkDL }
+
+aKattRadarMarkTex:
+  { type: TEXTURE, ctype: u8, format: IA8, width: 16, height: 16, offset: 0x0D009938, symbol: aKattRadarMarkTex }
+
+aKattShipDL:
+  { type: GFX, offset: 0xD009A40, symbol: aKattShipDL }
+
+D_D00A3B8:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 32, offset: 0x0D00A3B8, symbol: D_D00A3B8 }
+
+D_D00ABB8:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x0D00ABB8, symbol: D_D00ABB8 }
+
+D_D00ADB8:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x0D00ADB8, symbol: D_D00ADB8 }
+
+D_D00AFB8:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 32, height: 16, offset: 0x0D00AFB8, symbol: D_D00AFB8 }
+
+D_D00B3B8:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x0D00B3B8, symbol: D_D00B3B8 }
+
+aBillMarkDL:
+  { type: GFX, offset: 0xD00B5C0, symbol: aBillMarkDL }
+
+# Letter B
+aBillMarkTex:
+  { type: TEXTURE, ctype: u8, format: CI4, width: 16, height: 16, offset: 0x0D00B688, symbol: aBillMarkTex, tlut: 0xD00B708 }
+
+aBillMarkTLUT:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 8, offset: 0xD00B708, symbol: aBillMarkTLUT }
+
+aJamesMarkDL:
+  { type: GFX, offset: 0xD00B720, symbol: aJamesMarkDL }
+
+# Letter J ?
+aJamesMarkTex:
+  { type: TEXTURE, ctype: u8, format: CI4, width: 16, height: 16, offset: 0x0D00B7F0, symbol: aJamesMarkTex, tlut: 0xD00B870 }
+
+aJamesMarkTLUT:
+  { type: TEXTURE, ctype: u16, format: TLUT, colors: 8, offset: 0xD00B870, symbol: aJamesMarkTLUT }
+
+aBillShipDL:
+  { type: GFX, offset: 0xD00B880, symbol: aBillShipDL }
+
+D_D00C470:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0xD00C470, symbol: D_D00C470 }
+
+D_D00C670:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x0D00C670, symbol: D_D00C670 }
+
+D_D00C870:
+  { type: TEXTURE, ctype: u16, format: RGBA16, width: 16, height: 16, offset: 0x0D00C870, symbol: D_D00C870 }

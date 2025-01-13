@@ -404,6 +404,7 @@ if(MSVC)
           ${DEFAULT_CXX_EXCEPTION_HANDLING}
       )
       target_compile_options(${PROJECT_NAME} PRIVATE  $<$<CONFIG:Debug>:/ZI;>)
+      target_compile_options(${PROJECT_NAME} PRIVATE  $<$<CONFIG:Release>:/Zi;>)
   elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
       target_compile_options(${PROJECT_NAME} PRIVATE
           $<$<CONFIG:Debug>:
@@ -572,3 +573,67 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang|AppleClang")
       )
   endif()
 endif()
+
+include(ExternalProject)
+ExternalProject_Add(torch
+	PREFIX torch
+    SOURCE_DIR ${CMAKE_SOURCE_DIR}/tools/Torch
+    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/Torch
+)
+ExternalProject_Get_Property(torch install_dir)
+if (MSVC)
+  set(TORCH_EXECUTABLE ${install_dir}/src/torch-build/$<CONFIGURATION>/torch)
+else()
+  set(TORCH_EXECUTABLE ${install_dir}/src/torch-build/torch)
+endif()
+add_custom_target(
+    ExtractAssets
+    DEPENDS torch
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    COMMAND ${TORCH_EXECUTABLE} otr baserom.z64
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_SOURCE_DIR}/sf64.otr" "${CMAKE_BINARY_DIR}/sf64.otr"
+)
+
+add_custom_target(
+    GeneratePortOTR
+    DEPENDS torch
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    COMMAND ${TORCH_EXECUTABLE} pack port starship.otr
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_SOURCE_DIR}/starship.otr" "${CMAKE_BINARY_DIR}/starship.otr"
+)
+
+if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
+add_custom_target(CreateOSXIcons
+    COMMAND mkdir -p ${CMAKE_BINARY_DIR}/macosx/starship.iconset
+    COMMAND sips -z 16 16     logo.png --out ${CMAKE_BINARY_DIR}/macosx/starship.iconset/icon_16x16.png
+    COMMAND sips -z 32 32     logo.png --out ${CMAKE_BINARY_DIR}/macosx/starship.iconset/icon_16x16@2x.png
+    COMMAND sips -z 32 32     logo.png --out ${CMAKE_BINARY_DIR}/macosx/starship.iconset/icon_32x32.png
+    COMMAND sips -z 64 64     logo.png --out ${CMAKE_BINARY_DIR}/macosx/starship.iconset/icon_32x32@2x.png
+    COMMAND sips -z 128 128   logo.png --out ${CMAKE_BINARY_DIR}/macosx/starship.iconset/icon_128x128.png
+    COMMAND sips -z 256 256   logo.png --out ${CMAKE_BINARY_DIR}/macosx/starship.iconset/icon_128x128@2x.png
+    COMMAND sips -z 256 256   logo.png --out ${CMAKE_BINARY_DIR}/macosx/starship.iconset/icon_256x256.png
+    COMMAND sips -z 512 512   logo.png --out ${CMAKE_BINARY_DIR}/macosx/starship.iconset/icon_256x256@2x.png
+    COMMAND sips -z 512 512   logo.png --out ${CMAKE_BINARY_DIR}/macosx/starship.iconset/icon_512x512.png
+    COMMAND cp                logo.png ${CMAKE_BINARY_DIR}/macosx/starship.iconset/icon_512x512@2x.png
+    COMMAND iconutil -c icns -o ${CMAKE_BINARY_DIR}/macosx/starship.icns ${CMAKE_BINARY_DIR}/macosx/starship.iconset
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    COMMENT "Creating OSX icons ..."
+    )
+    add_dependencies(${PROJECT_NAME} CreateOSXIcons)
+    configure_file("${CMAKE_SOURCE_DIR}/Info.plist" "${CMAKE_BINARY_DIR}/Info.plist" COPYONLY)
+endif()
+
+set_property(TARGET ${PROJECT_NAME} PROPERTY APPIMAGE_DESKTOP_FILE_TERMINAL YES)
+set_property(TARGET ${PROJECT_NAME} PROPERTY APPIMAGE_DESKTOP_FILE "${CMAKE_SOURCE_DIR}/Starship.desktop")
+set_property(TARGET ${PROJECT_NAME} PROPERTY APPIMAGE_ICON_FILE "${CMAKE_SOURCE_DIR}/logo.png")
+
+if(CMAKE_SYSTEM_NAME MATCHES "Linux")
+    set(CPACK_GENERATOR "External")
+elseif(CMAKE_SYSTEM_NAME MATCHES "Windows|NintendoSwitch|CafeOS")
+    set(CPACK_GENERATOR "ZIP")
+elseif(CMAKE_SYSTEM_NAME MATCHES "Darwin")
+    set(CPACK_GENERATOR "Bundle")
+endif()
+
+set(CPACK_PROJECT_CONFIG_FILE ${CMAKE_SOURCE_DIR}/cmake/configure-packaging.cmake)
+include(cmake/packaging.cmake)

@@ -18,6 +18,7 @@
 #include "assets/ast_title.h"
 #include "assets/ast_katina.h"
 #include "assets/ast_allies.h"
+#include "port/hooks/Events.h"
 
 void func_demo_80048AC0(TeamId teamId) {
     s32 teamShield;
@@ -216,7 +217,7 @@ void Cutscene_WarpZoneComplete(Player* player) {
                     gFillScreenRed = gFillScreenGreen = gFillScreenBlue = 0;
                     gFillScreenAlphaStep = 8;
                     if (gFillScreenAlpha == 255) {
-                        player->state_1C8 = PLAYERSTATE_1C8_NEXT;
+                        player->state = PLAYERSTATE_NEXT;
                         player->csTimer = 0;
                         gFadeoutType = 4;
                         if (gCurrentLevel == LEVEL_METEO) {
@@ -570,7 +571,7 @@ void Cutscene_EnterWarpZone(Player* player) {
             if (player->csTimer == 0) {
                 gWarpZoneBgAlpha = 0.0f;
                 gStarWarpDistortion = 0.0f;
-                player->state_1C8 = PLAYERSTATE_1C8_ACTIVE;
+                player->state = PLAYERSTATE_ACTIVE;
                 player->unk_014 = 0.0f;
                 player->unk_018 = 0.0f;
                 gDrawSmallRocks = 0;
@@ -836,7 +837,7 @@ void Cutscene_AllRangeMode(Player* player) {
             }
 
             if (D_ctx_80177A48[1] > 350.0f) {
-                player->state_1C8 = PLAYERSTATE_1C8_ACTIVE;
+                player->state = PLAYERSTATE_ACTIVE;
                 player->unk_014 = 0.0f;
                 player->unk_018 = 0.1f;
                 player->unk_194 = 10.0f;
@@ -1249,7 +1250,7 @@ void Cutscene_CoComplete2(Player* player) {
             gCsCamAtZ += D_ctx_80177A48[9];
             player->draw = false;
             if (player->csTimer == 0) {
-                player->state_1C8 = PLAYERSTATE_1C8_NEXT;
+                player->state = PLAYERSTATE_NEXT;
                 player->csTimer = 0;
                 gFadeoutType = 4;
                 Audio_FadeOutAll(10);
@@ -1519,7 +1520,7 @@ void Cutscene_UTurn(Player* player) {
             }
 
             if (player->csTimer == 0) {
-                player->state_1C8 = PLAYERSTATE_1C8_ACTIVE;
+                player->state = PLAYERSTATE_ACTIVE;
                 player->unk_014 = 0.0f;
                 player->unk_018 = 0.0f;
             }
@@ -1567,7 +1568,9 @@ void Cutscene_DropVsItem(Player* player, ObjectId itemId, Item* item) {
     item->obj.pos.y = player->pos.y;
     item->obj.pos.z = player->trueZpos;
     item->obj.id = itemId;
-    Object_SetInfo(&item->info, item->obj.id);
+    CALL_CANCELLABLE_EVENT(ItemDropEvent, item) {
+        Object_SetInfo(&item->info, item->obj.id);
+    }
 }
 
 void Cutscene_KillPlayer(Player* player) {
@@ -1576,7 +1579,7 @@ void Cutscene_KillPlayer(Player* player) {
     Audio_StopPlayerNoise(player->num);
     Audio_KillSfxBySourceAndId(player->sfxSource, NA_SE_ARWING_DOWN);
     Player_PlaySfx(player->sfxSource, NA_SE_ARWING_EXPLOSION, player->num);
-    player->state_1C8 = PLAYERSTATE_1C8_NEXT;
+    player->state = PLAYERSTATE_NEXT;
     player->csTimer = 70;
     player->dmgEffectTimer = 20;
     gFadeoutType = 7;
@@ -2134,7 +2137,7 @@ void func_demo_8004F05C(ActorCutscene* this) {
         case LEVEL_BOLSE:
             switch (this->animFrame) {
                 case ACTOR_CS_TEAM_ARWING:
-                    if (gPlayer[0].state_1C8 == PLAYERSTATE_1C8_LEVEL_INTRO) {
+                    if (gPlayer[0].state == PLAYERSTATE_LEVEL_INTRO) {
                         this->rot_0F4.z += this->rot_0F4.y;
                         this->vel.x = SIN_DEG(this->rot_0F4.z) * 10.0f;
                         this->obj.rot.z = SIN_DEG(this->rot_0F4.z) * 40.0f;
@@ -2313,8 +2316,8 @@ void ActorCutscene_Update(ActorCutscene* this) {
         return;
     }
 
-    switch (gPlayer[0].state_1C8) {
-        case PLAYERSTATE_1C8_LEVEL_COMPLETE:
+    switch (gPlayer[0].state) {
+        case PLAYERSTATE_LEVEL_COMPLETE:
             switch (gCurrentLevel) {
                 case LEVEL_SECTOR_Y:
                     if (gPlayer[0].csState >= 3) {
@@ -2432,15 +2435,15 @@ void ActorCutscene_Update(ActorCutscene* this) {
             }
             break;
 
-        case PLAYERSTATE_1C8_LEVEL_INTRO:
+        case PLAYERSTATE_LEVEL_INTRO:
             func_demo_8004F05C(this);
             break;
 
-        case PLAYERSTATE_1C8_ENTER_WARP_ZONE:
+        case PLAYERSTATE_ENTER_WARP_ZONE:
             func_demo_8004F798(this);
             break;
 
-        case PLAYERSTATE_1C8_STANDBY:
+        case PLAYERSTATE_STANDBY:
             if (gCurrentLevel == LEVEL_SECTOR_Y) {
                 SectorY_8019FF00(this);
             }
@@ -2533,7 +2536,7 @@ void ActorCutscene_Draw(ActorCutscene* this) {
     f32 x;
 
     switch (this->animFrame) {
-        case ACTOR_CS_1000:
+        case ACTOR_CS_JAMES_ARWING:
             RCP_SetupDL(&gMasterDisp, SETUPDL_45);
             gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, this->work_046);
             gSPDisplayList(gMasterDisp++, D_ENMY_PLANET_40018A0);
@@ -2574,6 +2577,11 @@ void ActorCutscene_Draw(ActorCutscene* this) {
             gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, this->iwork[0]);
             gDPSetEnvColor(gMasterDisp++, 255, 255, 00, this->iwork[0]);
             gSPDisplayList(gMasterDisp++, aOrbDL);
+
+            // @port: Fix interpolation issue by killing the actor when it's done doing it's job.
+            if (gCsFrameCount >= 227) {
+                gActors[50].obj.status = OBJ_FREE;
+            }
             break;
 
         case ACTOR_CS_COMMANDER:
@@ -2650,7 +2658,7 @@ void ActorCutscene_Draw(ActorCutscene* this) {
                 break;
             }
 
-            if (gPlayer[0].state_1C8 == PLAYERSTATE_1C8_LEVEL_INTRO) {
+            if (gPlayer[0].state == PLAYERSTATE_LEVEL_INTRO) {
                 Matrix_Push(&gGfxMatrix);
                 Matrix_RotateX(gGfxMatrix, 20.0f * M_DTOR, MTXF_APPLY);
                 Matrix_RotateY(gGfxMatrix, (gGameFrameCount * 0.5f) * M_DTOR, MTXF_APPLY);
@@ -2704,7 +2712,7 @@ void ActorCutscene_Draw(ActorCutscene* this) {
 
             gDPSetPrimColor(gMasterDisp++, 0, 0, (s32) D_800CA210, (s32) D_800CA214, (s32) D_800CA218, 128);
 
-            if (gPlayer[0].state_1C8 == PLAYERSTATE_1C8_LEVEL_INTRO) {
+            if (gPlayer[0].state == PLAYERSTATE_LEVEL_INTRO) {
                 Matrix_Scale(gGfxMatrix, 1.02f, 1.02f, 1.02f, MTXF_APPLY);
             } else {
                 Matrix_Scale(gGfxMatrix, 0.97f, 0.97f, 0.97f, MTXF_APPLY);
@@ -2719,7 +2727,7 @@ void ActorCutscene_Draw(ActorCutscene* this) {
             Matrix_Pop(&gGfxMatrix);
             Matrix_Pop(&gGfxMatrix);
 
-            if (gPlayer[0].state_1C8 == PLAYERSTATE_1C8_LEVEL_COMPLETE) {
+            if (gPlayer[0].state == PLAYERSTATE_LEVEL_COMPLETE) {
                 Matrix_Scale(gGfxMatrix, 0.075f, 0.075f, 0.075f, MTXF_APPLY);
                 break;
             }
@@ -2737,7 +2745,7 @@ void ActorCutscene_Draw(ActorCutscene* this) {
             break;
 
         case ACTOR_CS_CORNERIAN_FIGHTER:
-            if ((this->index == 3) && (gPlayer[0].state_1C8 == PLAYERSTATE_1C8_LEVEL_COMPLETE)) {
+            if ((this->index == 3) && (gPlayer[0].state == PLAYERSTATE_LEVEL_COMPLETE)) {
                 gSPDisplayList(gMasterDisp++, aBillShipDL);
             } else {
                 gSPDisplayList(gMasterDisp++, aKaCornerianFighterDL);
@@ -2775,7 +2783,7 @@ void ActorCutscene_Draw(ActorCutscene* this) {
             gSPDisplayList(gMasterDisp++, aOrbDL);
             break;
 
-        case ACTOR_CS_38:
+        case ACTOR_CS_SY_ROBOT:
             animFrameData = Animation_GetFrameData(D_demo_800CA1F4[this->iwork[4]], this->iwork[5], sp144);
             Math_SmoothStepToVec3fArray(sp144, this->vwork, 1, animFrameData, this->fwork[2], 100.0f, .0f);
             RCP_SetupDL_30(gFogRed, gFogGreen, gFogBlue, gFogAlpha, gFogNear, gFogFar);
@@ -2928,7 +2936,7 @@ void Cutscene_DrawGreatFox(void) {
     }
 
     if ((gCurrentLevel != LEVEL_AQUAS) &&
-        ((gCurrentLevel != LEVEL_SECTOR_Z) || (gPlayer[0].state_1C8 == PLAYERSTATE_1C8_LEVEL_COMPLETE))) {
+        ((gCurrentLevel != LEVEL_SECTOR_Z) || (gPlayer[0].state == PLAYERSTATE_LEVEL_COMPLETE))) {
         RCP_SetupDL_49();
         gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, 255);
         for (i = 0, var_s6_2 = D_demo_800CA0BC; i < ARRAY_COUNT(sp9C); i++, var_s6_2++) {

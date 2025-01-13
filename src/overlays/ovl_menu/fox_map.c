@@ -17,6 +17,8 @@
 #include "assets/ast_font_3d.h"
 #include "port/interpolation/FrameInterpolation.h"
 
+extern bool gBackToMap;
+
 // BSS STARTS HERE
 u8 gMapVenomCloudTex[96 * 96];
 u8 gMapCorneriaTex[96 * 96];
@@ -2008,7 +2010,7 @@ s32 Map_801A05B4(void) {
         temp_a0 = gSaveFile.save.data.rankingRoute[i];
         for (j = 0; j < temp_a0; j++) {
             var_a3 = gSaveFile.save.data.stats[i][j].hitCount;
-            if (gSaveFile.save.data.stats[i][j].unk_C != 0) {
+            if (gSaveFile.save.data.stats[i][j].hitCountOver256 != 0) {
                 var_a3 += 256;
             }
             sp30[i] += var_a3;
@@ -2143,7 +2145,8 @@ void Map_Prologue_Update(void) {
             break;
     }
 
-    if (gControllerPress[gMainController].button & START_BUTTON) {
+    if ((gControllerPress[gMainController].button & START_BUTTON) || gBackToMap) {
+        gBackToMap = false;
         AUDIO_PLAY_BGM(NA_BGM_MAP);
         AUDIO_PLAY_SFX(NA_SE_MAP_MOVE_STOP, gDefaultSfxSource, 4);
 
@@ -4092,6 +4095,10 @@ bool Map_LevelPlayedStatus_Check(PlanetId planet) {
 
         case PLANET_SOLAR:
             planetSaveSlot = SAVE_SLOT_SOLAR;
+            break;
+
+        default:
+            planetSaveSlot = planet;
             break;
     }
 
@@ -6086,7 +6093,7 @@ void Map_BriefingRadio_Update(void) {
     if ((D_menu_801CF018 > 0) && (D_menu_801CF018 != 100)) {
         Map_BriefingRadio_Draw(gCurrentRadioPortrait);
         Map_BriefingRadio_Draw(D_menu_801AF420[!D_menu_801CD940]);
-        if (CVarGetInteger("gLevelSelector", 0) && (sCurrentPlanetId == 6)) {
+        if (CVarGetInteger("gLevelSelector", 0) && (gMissionNumber == 6)) {
             return;
         }
         func_radio_800BB388();
@@ -6715,6 +6722,9 @@ void Map_Idle_Update(void) {
     movingCamera = false;
 
     if (gControllerPress[gMainController].button & A_BUTTON) {
+        if (CVarGetInteger("gLevelSelector", 0) == 1) {
+            goto loadLevel;
+        }
         if ((gLastGameState == GSTATE_PLAY) && (sPrevMissionStatus != MISSION_COMPLETE) && !D_menu_801CEFD0) {
             Audio_PlayMapMenuSfx(1);
             D_menu_801CEFC4 = 1;
@@ -6723,6 +6733,7 @@ void Map_Idle_Update(void) {
             sMapState = MAP_PATH_CHANGE;
             D_menu_801CD94C = 0;
         } else {
+            loadLevel:
             for (i = 0; i < TEAM_ID_MAX; i++) {
                 D_ctx_80177C58[i] = gTeamShields[i];
             }

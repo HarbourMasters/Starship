@@ -113,7 +113,7 @@ void Fortuna_UpdateEvents(ActorEvent* this) {
     PRINTF("Enm->work[0]=%d\n", this->iwork[0]);
     PRINTF("tim %d\n", gAllRangeEventTimer);
 
-    if ((player->state_1C8 == PLAYERSTATE_1C8_DOWN) || (player->state_1C8 == PLAYERSTATE_1C8_NEXT)) {
+    if ((player->state == PLAYERSTATE_DOWN) || (player->state == PLAYERSTATE_NEXT)) {
         gAllRangeEventTimer = 20000;
         return;
     }
@@ -179,7 +179,7 @@ void Fortuna_UpdateEvents(ActorEvent* this) {
     if (gAllRangeEventTimer == 9206) {
         gShowAllRangeCountdown = false;
         this->state = 5;
-        gPlayer[0].state_1C8 = PLAYERSTATE_1C8_STANDBY;
+        gPlayer[0].state = PLAYERSTATE_STANDBY;
         this->iwork[0] = 0;
         this->fwork[0] = 0.0f;
         AllRange_ClearRadio();
@@ -197,7 +197,7 @@ void Fortuna_UpdateEvents(ActorEvent* this) {
         gShowAllRangeCountdown = 0;
         this->iwork[0] = 0;
         this->state = 6;
-        gPlayer[0].state_1C8 = PLAYERSTATE_1C8_LEVEL_COMPLETE;
+        gPlayer[0].state = PLAYERSTATE_LEVEL_COMPLETE;
         gPlayer[0].csState = 0;
         gPlayer[0].unk_000 = 0.0f;
 
@@ -235,7 +235,7 @@ void Fortuna_UpdateEvents(ActorEvent* this) {
             gAllRangeEventTimer = 0;
             gStarWolfMsgTimer = 0;
 
-            if (player->state_1C8 == PLAYERSTATE_1C8_ACTIVE) {
+            if (player->state == PLAYERSTATE_ACTIVE) {
                 this->state = 2;
                 player->pos.x = 0.0f;
                 player->pos.z = 8000.0f;
@@ -273,7 +273,7 @@ void Fortuna_UpdateEvents(ActorEvent* this) {
                 if (gCsFrameCount == 264) {
                     team->state = 2;
                     this->state = 2;
-                    player->state_1C8 = PLAYERSTATE_1C8_ACTIVE;
+                    player->state = PLAYERSTATE_ACTIVE;
                     player->unk_014 = 0.0001f;
                     AUDIO_PLAY_BGM(gBgmSeqId);
                     gLevelStartStatusScreenTimer = 80;
@@ -308,7 +308,7 @@ void Fortuna_UpdateEvents(ActorEvent* this) {
 
             if ((gControllerPress->button & START_BUTTON) || (gAllRangeEventTimer == (gAllRangeSpawnEvent + 440))) {
                 this->state = 2;
-                player->state_1C8 = PLAYERSTATE_1C8_ACTIVE;
+                player->state = PLAYERSTATE_ACTIVE;
                 Camera_Update360(player, true);
                 player->unk_014 = 0.0f;
                 D_hud_80161708 = 0;
@@ -362,7 +362,7 @@ void Fortuna_UpdateEvents(ActorEvent* this) {
 
             if (this->iwork[0] == 250) {
                 this->state = 2;
-                player->state_1C8 = PLAYERSTATE_1C8_ACTIVE;
+                player->state = PLAYERSTATE_ACTIVE;
 
                 Camera_Update360(player, true);
 
@@ -885,9 +885,9 @@ void Fortuna_LevelComplete(Player* player) {
                 D_ctx_80177A48[1] = 0.0f;
                 D_ctx_80177A48[2] = -400.0f;
                 D_ctx_80177A48[3] = 0.0f;
-                falco->iwork[14] = 2;
-                slippy->iwork[14] = 3;
-                peppy->iwork[14] = 4;
+                falco->iwork[TEAM_FACE] = FACE_FALCO;
+                slippy->iwork[TEAM_FACE] = FACE_SLIPPY;
+                peppy->iwork[TEAM_FACE] = FACE_PEPPY;
             }
 
             if (gCsFrameCount == 200) {
@@ -1114,7 +1114,7 @@ void Fortuna_LevelComplete(Player* player) {
             }
 
             if (gCsFrameCount == 1382) {
-                player->state_1C8 = PLAYERSTATE_1C8_NEXT;
+                player->state = PLAYERSTATE_NEXT;
                 player->csTimer = 0;
                 gFadeoutType = 4;
                 Audio_FadeOutAll(10);
@@ -1337,7 +1337,7 @@ void Fortuna_LevelComplete(Player* player) {
                 gFillScreenAlphaTarget = 255;
                 gFillScreenAlphaStep = 16;
                 if (gFillScreenAlpha == 255) {
-                    player->state_1C8 = PLAYERSTATE_1C8_NEXT;
+                    player->state = PLAYERSTATE_NEXT;
                     player->csTimer = 0;
                     gFadeoutType = 4;
                     Audio_FadeOutAll(10);

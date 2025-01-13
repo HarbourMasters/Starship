@@ -1,0 +1,182 @@
+:config:
+  segments:
+    - [0x6, 0xAAF610]
+  header:
+    code:
+      - '#include "assets/ast_venom_1.h"'
+    header:
+      - '#include "gfx.h"'
+      - '#include "sf64object.h"'
+      - '#include "sf64level.h"'
+      - '#include "sf64event.h"'
+      - '#include "sf64player.h"'
+      - '#include "sf64audio_external.h"'
+      - '#include "sf64mesg.h"'
+
+D_VE1_6000000:
+  { type: TEXTURE, format: IA8, width: 96, height: 28, offset: 0x6000000, ctype: u8, symbol: D_VE1_6000000 }
+
+D_VE1_6000A80:
+  { type: TEXTURE, format: IA8, width: 40, height: 19, offset: 0x6000A80, ctype: u8, symbol: D_VE1_6000A80 }
+
+aVe1TitleCardTex:
+  { type: TEXTURE, format: IA8, width: 128, height: 28, offset: 0x6000D80, ctype: u8, symbol: aVe1TitleCardTex }
+
+D_VE1_6001B80:
+  { type: TEXTURE, format: IA8, width: 128, height: 19, offset: 0x6001B80, ctype: u8, symbol: D_VE1_6001B80 }
+
+aVe1EnemyGateDL:
+  { type: GFX, offset: 0x6002500, symbol: aVe1EnemyGateDL }
+
+D_VE1_60029F8:
+  { type: TEXTURE, format: CI8, width: 8, height: 16, offset: 0x60029F8, tlut: 0x6002A78, ctype: u8, symbol: D_VE1_60029F8 }
+
+D_VE1_6002A78:
+  { type: TEXTURE, format: TLUT, colors: 24, offset: 0x6002A78, ctype: u16, symbol: D_VE1_6002A78 }
+
+D_VE1_6002AA8:
+  { type: TEXTURE, format: CI8, width: 32, height: 32, offset: 0x6002AA8, tlut: 0x6002EA8, ctype: u8, symbol: D_VE1_6002AA8 }
+
+D_VE1_6002EA8:
+  { type: TEXTURE, format: TLUT, colors: 232, offset: 0x6002EA8, ctype: u16, symbol: D_VE1_6002EA8 }
+
+D_VE1_6003078:
+  { type: TEXTURE, format: CI8, width: 32, height: 32, offset: 0x6003078, tlut: 0x6003478, ctype: u8, symbol: D_VE1_6003078 }
+
+D_VE1_6003478:
+  { type: TEXTURE, format: TLUT, colors: 204, offset: 0x6003478, ctype: u16, symbol: D_VE1_6003478 }
+
+aVe1WatchPostDL:
+  { type: GFX, offset: 0x6003610, symbol: aVe1WatchPostDL }
+
+D_VE1_6003B10:
+  { type: TEXTURE, format: RGBA16, width: 32, height: 32, offset: 0x6003B10, ctype: u16, symbol: D_VE1_6003B10 }
+
+aVe1EnemyGateDoorLeftDL:
+  { type: GFX, offset: 0x6004310, symbol: aVe1EnemyGateDoorLeftDL }
+
+aVe1EnemyGateDoorRightDL:
+  { type: GFX, offset: 0x60043F0, symbol: aVe1EnemyGateDoorRightDL }
+
+D_VE1_60044D0:
+  { type: TEXTURE, format: CI8, width: 16, height: 16, offset: 0x60044D0, tlut: 0x60045D0, ctype: u8, symbol: D_VE1_60044D0 }
+
+D_VE1_60045D0:
+  { type: TEXTURE, format: TLUT, colors: 144, offset: 0x60045D0, ctype: u16, symbol: D_VE1_60045D0 }
+
+D_VE1_60046F0:
+  { type: GFX, offset: 0x60046F0, symbol: D_VE1_60046F0 }
+
+D_VE1_6004780:
+  { type: TEXTURE, format: RGBA16, width: 64, height: 32, offset: 0x6004780, ctype: u16, symbol: D_VE1_6004780 }
+
+aVe1GeneratorDL:
+  { type: GFX, offset: 0x6005780, symbol: aVe1GeneratorDL }
+
+D_VE1_6005E50:
+  { type: TEXTURE, format: TLUT, colors: 160, offset: 0x6005E50, ctype: u16, symbol: D_VE1_6005E50 }
+
+D_VE1_6005D50:
+  { type: TEXTURE, format: CI8, width: 16, height: 16, offset: 0x6005D50, tlut: 0x6005E50, ctype: u8, symbol: D_VE1_6005D50 }
+
+D_VE1_6005F90:
+  { type: TEXTURE, format: CI8, width: 32, height: 32, offset: 0x6005F90, tlut: 0x6006390, ctype: u8, symbol: D_VE1_6005F90 }
+
+D_VE1_6006390:
+  { type: TEXTURE, format: TLUT, colors: 208, offset: 0x6006390, ctype: u16, symbol: D_VE1_6006390 }
+
+D_VE1_6006530:
+  { type: TEXTURE, format: CI8, width: 16, height: 16, offset: 0x6006530, ctype: u8, symbol: D_VE1_6006530 }
+
+D_VE1_6006630:
+  { type: TEXTURE, format: TLUT, colors: 80, offset: 0x6006630, ctype: u16, symbol: D_VE1_6006630 }
+
+D_VE1_60066D0:
+  { type: GFX, offset: 0x60066D0, symbol: D_VE1_60066D0 }
+
+D_VE1_6006750:
+  { type: TEXTURE, format: RGBA16, width: 32, height: 32, offset: 0x6006750, ctype: u16, symbol: D_VE1_6006750 }
+
+aVe1HallwayObstacleDL:
+  { type: GFX, offset: 0x6006F50, symbol: aVe1HallwayObstacleDL }
+
+aVe1SceneryWall3DL:
+  { type: GFX, offset: 0x6007410, symbol: aVe1SceneryWall3DL }
+
+D_VE1_60074E8:
+  { type: TEXTURE, format: RGBA16, width: 32, height: 32, offset: 0x60074E8, ctype: u16, symbol: D_VE1_60074E8 }
+
+aVe1Wall2DL:
+  { type: GFX, offset: 0x6007CF0, symbol: aVe1Wall2DL }
+
+aVe1Wall1DL:
+  { type: GFX, offset: 0x6007D90, symbol: aVe1Wall1DL }
+
+D_VE1_6007E30:
+  { type: SF64:ENVIRONMENT, offset: 0x6007E30, symbol: D_VE1_6007E30 }
+
+D_VE1_6007E74:
+  { type: SF64:OBJECT_INIT, offset: 0x6007E74, symbol: D_VE1_6007E74 }
+
+aVe1EventScript:
+  { type: SF64:SCRIPT, offset: 0x601B1D8, symbol: aVe1EventScript }
+
+D_VE1_6010088:
+  { type: SF64:OBJECT_INIT, offset: 0x6010088, symbol: D_VE1_6010088 }
+
+aVe1Pillar5Hitbox:
+  { type: SF64:HITBOX, offset: 0x601B430, symbol: aVe1Pillar5Hitbox }
+
+D_VE1_601B474:
+  { type: SF64:HITBOX, offset: 0x601B468, symbol: D_VE1_601B474 }
+
+D_VE1_601B4C4:
+  { type: SF64:HITBOX, offset: 0x601B4B8, symbol: D_VE1_601B4C4 }
+
+Ve1Wall1Hitbox:
+  { type: SF64:HITBOX, offset: 0x601B4D4, symbol: Ve1Wall1Hitbox }
+
+aVe1Wall2Hitbox:
+  { type: SF64:HITBOX, offset: 0x601B4F0, symbol: aVe1Wall2Hitbox }
+
+aVe1SceneryWall3Hitbox:
+  { type: SF64:HITBOX, offset: 0x601B50C, symbol: aVe1SceneryWall3Hitbox }
+
+aVe1HallwayObstacleHitbox:
+  { type: SF64:HITBOX, offset: 0x601B578, symbol: aVe1HallwayObstacleHitbox }
+
+aVe1GeneratorHitbox:
+  { type: SF64:HITBOX, offset: 0x601B5E8, symbol: aVe1GeneratorHitbox }
+
+aVe1WatchPostHitbox:
+  { type: SF64:HITBOX, offset: 0x601B638, symbol: aVe1WatchPostHitbox }
+
+aVe1TempleEntranceHitbox:
+  { type: SF64:HITBOX, offset: 0x601B66C, symbol: aVe1TempleEntranceHitbox }
+
+aVe1TempleInterior1Hitbox:
+  { type: SF64:HITBOX, offset: 0x601B6B8, symbol: aVe1TempleInterior1Hitbox }
+
+aVe1TempleInterior2Hitbox:
+  { type: SF64:HITBOX, offset: 0x601B704, symbol: aVe1TempleInterior2Hitbox }
+
+aVe1TempleInterior3Hitbox:
+  { type: SF64:HITBOX, offset: 0x601B750, symbol: aVe1TempleInterior3Hitbox }
+
+aVe1Pillar1Hitbox:
+  { type: SF64:HITBOX, offset: 0x601B7EC, symbol: aVe1Pillar1Hitbox }
+
+aVe1Pillar2Hitbox:
+  { type: SF64:HITBOX, offset: 0x601B824, symbol: aVe1Pillar2Hitbox }
+
+aVe1Pillar3Hitbox:
+  { type: SF64:HITBOX, offset: 0x601B85C, symbol: aVe1Pillar3Hitbox }
+
+aVe1Pillar4Hitbox:
+  { type: SF64:HITBOX, offset: 0x601B894, symbol: aVe1Pillar4Hitbox }
+
+aVe1MonkeyStatueHitbox:
+  { type: SF64:HITBOX, offset: 0x601B8CC, symbol: aVe1MonkeyStatueHitbox }
+
+aVe1EnemyGateHitbox:
+  { type: SF64:HITBOX, offset: 0x601B938, symbol: aVe1EnemyGateHitbox }
