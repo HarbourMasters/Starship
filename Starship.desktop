@@ -1,7 +1,7 @@
 [Desktop Entry]
 Version=1.0
-Name=2SHIP
-Exec=Starship
+Name=Starship
+Exec=Starship.sh
 Terminal=false
 Icon=logo
 Type=Application
