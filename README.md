@@ -70,13 +70,6 @@ If you're interested in creating and/or packing your own custom asset `.o2r`/`.o
 
 If you want to manually compile Starship, please consult the [building instructions](https://github.com/HarbourMasters/Starship/blob/main/docs/BUILDING.md).
 
-<a href="https://github.com/Kenix3/libultraship/">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="./docs/poweredbylus.darkmode.png">
-    <img alt="Powered by libultraship" src="./docs/poweredbylus.lightmode.png">
-  </picture>
-</a>
-
 ### Playtesting
 If you want to playtest a continuous integration build, you can find them at the links below. Keep in mind that these are for playtesting only, and you will likely encounter bugs and possibly crashes. 
 
@@ -101,3 +94,11 @@ If you want to playtest a continuous integration build, you can find them at the
 * [Thar0](https://github.com/Thar0) : for contributing with an improved Starfield that can be interpolated to any framerate.
 * [TheBoy181](https://github.com/TheBoy181) : for contributing to this project with various widescreen enhancements such as level floors, an extended Starfield among other things.
 * [Wiseguy](https://github.com/Mr-Wiseguy) : for providing important information about the inner workings of the N64 platform, as well as helping with the decompilation process.
+
+
+<a href="https://github.com/Kenix3/libultraship/">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="./docs/poweredbylus.darkmode.png">
+    <img alt="Powered by libultraship" src="./docs/poweredbylus.lightmode.png">
+  </picture>
+</a>
