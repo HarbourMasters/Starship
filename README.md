@@ -59,7 +59,6 @@ Congratulations, you are now sailing with Starship! Have fun!
 Currently, there are three rendering APIs supported: DirectX11 (Windows), OpenGL (all platforms), and Metal (macOS). You can change which API to use in the `Settings` menu of the menubar, which requires a restart.  If you're having an issue with crashing, you can change the API in the `starship.cfg.json` file by finding the line `"Backend":{`... and changing the `id` value to `3` and set the `Name` to `OpenGL`. `DirectX 11` with id `2` is the default on Windows. `Metal` with id `4` is the default on macOS.
 
 # Custom Assets
-
 Custom assets are packed in `.o2r` or `.otr` files. To use custom assets, place them in the `mods` folder.
 
 If you're interested in creating and/or packing your own custom asset `.o2r`/`.otr` files, check out the following tools:
@@ -77,6 +76,13 @@ If you want to manually compile Starship, please consult the [building instructi
     <img alt="Powered by libultraship" src="./docs/poweredbylus.lightmode.png">
   </picture>
 </a>
+
+### Playtesting
+If you want to playtest a continuous integration build, you can find them at the links below. Keep in mind that these are for playtesting only, and you will likely encounter bugs and possibly crashes. 
+
+* [Windows](https://nightly.link/HarbourMasters/Starship/workflows/main/main/starship-windows.zip)
+* [macOS](https://nightly.link/HarbourMasters/Starship/workflows/main/main/starship-mac-x64.zip)
+* [Linux](https://nightly.link/HarbourMasters/Starship/workflows/main/main/Starship-linux.zip)
 
 # Special Thanks:
 
