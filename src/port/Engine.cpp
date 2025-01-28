@@ -4,6 +4,7 @@
 
 #include "extractor/GameExtractor.h"
 #include "libultraship/src/Context.h"
+#include "libultraship/src/controller/controldevice/controller/mapping/ControllerDefaultMappings.h"
 #include "resource/type/ResourceType.h"
 #include "resource/importers/AnimFactory.h"
 #include "resource/importers/ColPolyFactory.h"
@@ -121,7 +122,36 @@ GameEngine::GameEngine() {
     this->context->InitConsoleVariables(); // without this line the controldeck constructor failes in
                                            // ShipDeviceIndexMappingManager::UpdateControllerNamesFromConfig()
 
-    auto controlDeck = std::make_shared<LUS::ControlDeck>();
+    auto defaultMappings = std::make_shared<Ship::ControllerDefaultMappings>(
+        // KeyboardKeyToButtonMappings - use built-in LUS defaults
+        std::unordered_map<CONTROLLERBUTTONS_T, std::unordered_set<Ship::KbScancode>>(),
+        // KeyboardKeyToAxisDirectionMappings - use built-in LUS defaults
+        std::unordered_map<Ship::StickIndex, std::vector<std::pair<Ship::Direction, Ship::KbScancode>>>(),
+        // SDLButtonToButtonMappings
+        std::unordered_map<CONTROLLERBUTTONS_T, std::unordered_set<SDL_GameControllerButton>>{
+            { BTN_A, { SDL_CONTROLLER_BUTTON_A } },
+            { BTN_B, { SDL_CONTROLLER_BUTTON_X } },
+            { BTN_START, { SDL_CONTROLLER_BUTTON_START } },
+            { BTN_CLEFT, { SDL_CONTROLLER_BUTTON_Y } },
+            { BTN_CDOWN, { SDL_CONTROLLER_BUTTON_B } },
+            { BTN_DUP, { SDL_CONTROLLER_BUTTON_DPAD_UP } },
+            { BTN_DDOWN, { SDL_CONTROLLER_BUTTON_DPAD_DOWN } },
+            { BTN_DLEFT, { SDL_CONTROLLER_BUTTON_DPAD_LEFT } },
+            { BTN_DRIGHT, { SDL_CONTROLLER_BUTTON_DPAD_RIGHT } },
+            { BTN_R, { SDL_CONTROLLER_BUTTON_RIGHTSHOULDER } },
+            { BTN_Z, { SDL_CONTROLLER_BUTTON_LEFTSHOULDER } }
+        },
+        // SDLButtonToAxisDirectionMappings - use built-in LUS defaults
+        std::unordered_map<Ship::StickIndex, std::vector<std::pair<Ship::Direction, SDL_GameControllerButton>>>(),
+        // SDLAxisDirectionToButtonMappings
+        std::unordered_map<CONTROLLERBUTTONS_T, std::vector<std::pair<SDL_GameControllerAxis, int32_t>>>{
+            { BTN_R, { { SDL_CONTROLLER_AXIS_TRIGGERRIGHT, 1 } } },
+            { BTN_Z, { { SDL_CONTROLLER_AXIS_TRIGGERLEFT, 1 } } }
+        },
+        // SDLAxisDirectionToAxisDirectionMappings - use built-in LUS defaults
+        std::unordered_map<Ship::StickIndex, std::vector<std::pair<Ship::Direction, std::pair<SDL_GameControllerAxis, int32_t>>>>()
+    );
+    auto controlDeck = std::make_shared<LUS::ControlDeck>(std::vector<CONTROLLERBUTTONS_T>(), defaultMappings);
 
     this->context->InitResourceManager(archiveFiles, {}, 3); // without this line InitWindow fails in Gui::Init()
     this->context->InitConsole(); // without this line the GuiWindow constructor fails in ConsoleWindow::InitElement()
