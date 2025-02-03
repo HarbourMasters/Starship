@@ -274,6 +274,8 @@ void aSetLoopImpl(ADPCM_STATE *adpcm_loop_state) {
     rspa.adpcm_loop_state = adpcm_loop_state;
 }
 
+#ifndef SSE2_AVAILABLE
+
 void aADPCMdecImpl(uint8_t flags, ADPCM_STATE state) {
     uint8_t *in = BUF_U8(rspa.in);
     int16_t *out = BUF_S16(rspa.out);
@@ -324,6 +326,131 @@ void aADPCMdecImpl(uint8_t flags, ADPCM_STATE state) {
     }
     memcpy(state, out - 16, 16 * sizeof(int16_t));
 }
+
+#else
+
+static uint16_t lower_4bit[] = {
+    0xf,
+    0xf,
+    0xf,
+    0xf,
+};
+
+static uint16_t lower_2bit[] = {
+    0x3,
+    0x3,
+};
+
+void aADPCMdecImpl(uint8_t flags, ADPCM_STATE state) {
+    uint8_t* in = BUF_U8(rspa.in);
+    int16_t* out = BUF_S16(rspa.out);
+    int nbytes = ROUND_UP_32(rspa.nbytes);
+    if (flags & A_INIT) {
+        memset(out, 0, 16 * sizeof(int16_t));
+    } else if (flags & A_LOOP) {
+        memcpy(out, rspa.adpcm_loop_state, 16 * sizeof(int16_t));
+    } else {
+        memcpy(out, state, 16 * sizeof(int16_t));
+    }
+    out += 16;
+
+    __m128i mask_4bit = _mm_loadl_epi64((__m128i*) lower_4bit);
+    __m128i mask_2bit = _mm_loadl_epi64((__m128i*) lower_2bit);
+
+    while (nbytes > 0) {
+        int shift = *in >> 4; // should be in 0..12 or 0..14
+        __m128i shift_vec = _mm_set1_epi16(shift);
+        int table_index = *in++ & 0xf; // should be in 0..7
+        int16_t(*tbl)[8] = rspa.adpcm_table[table_index];
+
+        for (int i = 0; i < 2; i++) {
+            int16_t ins[8];
+            int16_t prev1 = out[-1];
+            int16_t prev2 = out[-2];
+            __m128i prev1_vec = _mm_set1_epi16(prev1);
+            __m128i prev2_vec = _mm_set1_epi16(prev2);
+
+            __m128i ins_vec;
+            if (flags & 4) {
+                ins_vec = _mm_loadu_si16((__m128i*) in);
+                ins_vec = _mm_unpacklo_epi8(ins_vec, _mm_setzero_si128());
+                __m128i in_vec_up2bit = _mm_srli_epi16(ins_vec, 6);
+                __m128i in_vec_uplower2bit = _mm_and_si128(_mm_srli_epi16(ins_vec, 4), mask_2bit);
+                __m128i in_vec_lowerup2bit = _mm_and_si128(_mm_srli_epi16(ins_vec, 2), mask_2bit);
+                __m128i in_vec_lower2bit = _mm_and_si128(ins_vec, mask_2bit);
+                __m128i in_vec_up = _mm_unpacklo_epi16(in_vec_up2bit, in_vec_uplower2bit);
+                in_vec_up = _mm_shuffle_epi32(in_vec_up, _MM_SHUFFLE(3, 1, 2, 0));
+                __m128i in_vec_low = _mm_unpacklo_epi16(in_vec_lower2bit, in_vec_lowerup2bit);
+                in_vec_low = _mm_shuffle_epi32(in_vec_low, _MM_SHUFFLE(3, 1, 2, 0));
+                ins_vec = _mm_unpacklo_epi32(in_vec_up, in_vec_low);
+                ins_vec = _mm_slli_epi16(ins_vec, 14);
+                ins_vec = _mm_srai_epi16(ins_vec, 14);
+                ins_vec = _mm_slli_epi16(ins_vec, shift);
+                
+                in += 2;
+            } else {
+                ins_vec = _mm_loadu_si32((__m128i*) in);
+                ins_vec = _mm_unpacklo_epi8(ins_vec, _mm_setzero_si128());
+                __m128i in_vec_up4bit = _mm_srli_epi16(ins_vec, 4);
+                __m128i in_vec_lower4bit = _mm_and_si128(ins_vec, mask_4bit);
+                ins_vec = _mm_unpacklo_epi16(in_vec_up4bit, in_vec_lower4bit);
+                ins_vec = _mm_slli_epi16(ins_vec, 12);
+                ins_vec = _mm_srai_epi16(ins_vec, 12);
+                ins_vec = _mm_slli_epi16(ins_vec, shift);
+
+                in += 4;
+            }
+            _mm_storeu_si128((__m128i*) ins, ins_vec);
+
+            for (int j = 0; j < 2; j++) {
+                __m128i tbl0_vec = _mm_loadu_si64((__m128i*) (tbl[0] + (j * 4)));
+                __m128i tbl1_vec = _mm_loadu_si64((__m128i*) (tbl[1] + (j * 4)));
+
+                m256i res;
+                res.lo = _mm_mullo_epi16(tbl0_vec, prev2_vec);
+                res.hi = _mm_mulhi_epi16(tbl0_vec, prev2_vec);
+
+                tbl0_vec = _mm_unpacklo_epi16(res.lo, res.hi);
+
+                res.lo = _mm_mullo_epi16(tbl1_vec, prev1_vec);
+                res.hi = _mm_mulhi_epi16(tbl1_vec, prev1_vec);
+
+                tbl1_vec = _mm_unpacklo_epi16(res.lo, res.hi);
+                __m128i acc_vec = _mm_add_epi32(tbl0_vec, tbl1_vec);
+
+                __m128i shift_ins = _mm_srai_epi32(j ? _mm_unpackhi_epi16(_mm_setzero_si128(), ins_vec)
+                                                     : _mm_unpacklo_epi16(_mm_setzero_si128(), ins_vec),
+                                                   5);
+                acc_vec = _mm_add_epi32(acc_vec, shift_ins);
+
+                tbl1_vec = _mm_loadu_si128((__m128i*) tbl[1]);
+                if (j == 0) {
+                    tbl1_vec = _mm_slli_si128(tbl1_vec, (1 - 0) * 8 + 2);
+                } else {
+                    tbl1_vec = _mm_slli_si128(tbl1_vec, (1 - 1) * 8 + 2);
+                }
+                for (int k = 0; k < ((j + 1) * 4); k++) {
+                    __m128i ins_vec2 = _mm_set1_epi16(ins[k]);
+                    res.lo = _mm_mullo_epi16(tbl1_vec, ins_vec2);
+                    res.hi = _mm_mulhi_epi16(tbl1_vec, ins_vec2);
+
+                    __m128i mult = _mm_unpackhi_epi16(res.lo, res.hi);
+                    acc_vec = _mm_add_epi32(acc_vec, mult);
+                    tbl1_vec = _mm_slli_si128(tbl1_vec, 2);
+                }
+
+                acc_vec = _mm_srai_epi32(acc_vec, 11);
+                acc_vec = _mm_packs_epi32(acc_vec, _mm_setzero_si128());
+                _mm_storeu_si64((__m128*) out, acc_vec);
+                out += 4;
+            }
+        }
+        nbytes -= 16 * sizeof(int16_t);
+    }
+    memcpy(state, out - 16, 16 * sizeof(int16_t));
+}
+
+#endif
 
 #ifndef SSE2_AVAILABLE
 
