@@ -649,6 +649,8 @@ void aEnvMixerImpl(uint16_t in_addr, uint16_t n_samples, bool swap_reverb,
 }
 #endif
 
+#ifndef SSE2_AVAILABLE
+
 void aMixImpl(uint16_t count, int16_t gain, uint16_t in_addr, uint16_t out_addr) {
     int nbytes = ROUND_UP_32(ROUND_DOWN_16(count << 4));
     int16_t *in = BUF_S16(in_addr);
@@ -675,6 +677,71 @@ void aMixImpl(uint16_t count, int16_t gain, uint16_t in_addr, uint16_t out_addr)
         nbytes -= 16 * sizeof(int16_t);
     }
 }
+
+#else
+
+static const ALIGN_ASSET(16) int16_t x7fff[8] = {
+    0x7FFF, 0x7FFF, 0x7FFF, 0x7FFF, 0x7FFF, 0x7FFF, 0x7FFF, 0x7FFF,
+};
+
+void aMixImpl(uint16_t count, int16_t gain, uint16_t in_addr, uint16_t out_addr) {
+    int nbytes = ROUND_UP_32(ROUND_DOWN_16(count << 4));
+    int16_t* in = BUF_S16(in_addr);
+    int16_t* out = BUF_S16(out_addr);
+    int i;
+    int32_t sample;
+
+    if (gain == -0x8000) {
+        while (nbytes > 0) {
+            for (unsigned int i = 0; i < 2; i++) {
+                __m128i outVec = _mm_loadu_si128((__m128i*) out);
+                __m128i inVec = _mm_loadu_si128((__m128i*) in);
+                __m128i subsVec = _mm_subs_epi16(outVec, inVec);
+                _mm_storeu_si128((__m128i*) out, subsVec);
+                nbytes -= 8 * sizeof(int16_t);
+                in += 8;
+                out += 8;
+            }
+        }
+    }
+
+    __m128i x7fffVec = _mm_load_si128((__m128i*) x7fff);
+    __m128i x4000Vec = _mm_load_si128((__m128i*) x4000);
+    __m128i gainVec = _mm_set1_epi16(gain);
+
+    while (nbytes > 0) {
+        for (i = 0; i < 2; i++) {
+            // Load input and output data into vectors
+            __m128i outVec = _mm_loadu_si128((__m128i*) out);
+            __m128i inVec = _mm_loadu_si128((__m128i*) in);
+            // Multiply `out` by `0x7FFF` producing 32 bit results, and store the upper and lower bits in each vector.
+            // Equivalent to `out[0..8] * 0x7FFF`
+            m256i outx7fff = m256i_mul_epi16(outVec, x7fffVec);
+            // Same as above but for in and gain. Equivalent to `in[0..8] * gain`
+            m256i inxGain = m256i_mul_epi16(inVec, gainVec);
+            in += 8;
+
+            // Now we have 4 32 bit elements.  Continue the calculaton per the reference implementation.
+            // We already did out + 0x7fff and in * gain.
+            // *out * 0x7fff + *in++ * gain is the final result of these two calculations.
+            m256i addVec = m256i_add_m256i_epi32(outx7fff, inxGain);
+            // Add 0x4000
+            addVec = m256i_add_m128i_epi32(addVec, x4000Vec);
+            // Shift over by 15
+            m256i shiftedVec = m256i_srai(addVec, 15);
+            // Convert each 32 bit element to 16 bit with saturation (clamp) and store in `outVec`
+            outVec = m256i_clamp_to_m128i(shiftedVec);
+            // Write the final vector back to memory
+            // The final calculation is ((out[0..8] * 0x7fff + in[0..8] * gain) + 0x4000) >> 15;
+            _mm_storeu_si128((__m128i*) out, outVec);
+            out += 8;
+        }
+
+        nbytes -= 16 * sizeof(int16_t);
+    }
+}
+
+#endif
 
 void aS8DecImpl(uint8_t flags, ADPCM_STATE state) {
     uint8_t *in = BUF_U8(rspa.in);
