@@ -7161,8 +7161,9 @@ void Play_Main(void) {
             }
 
             gDrawMode = DRAW_PLAY;
-
-            Play_Update();
+            if (CVarGetInteger("gDebugPause", 0) == 0){
+                Play_Update();
+            }
 
             if ((gControllerPress[gMainController].button & START_BUTTON) &&
                 (gPlayer[0].state == PLAYERSTATE_LEVEL_INTRO) &&

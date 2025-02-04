@@ -331,6 +331,9 @@ void PortEnhancements_Init() {
     REGISTER_LISTENER(PlayerActionBrakeEvent, OnPlayerBrake, EVENT_PRIORITY_NORMAL);
     REGISTER_LISTENER(PlayerActionPostShootEvent, OnPlayerShootPost, EVENT_PRIORITY_NORMAL);
     REGISTER_LISTENER(PlayerActionPreShootChargedEvent, OnPlayerShootChargedPre, EVENT_PRIORITY_NORMAL);
+
+    //If we close the game while debug pause is active, we want it to be deactivated when we run again.
+    CVarSetInteger("gDebugPause", 0);
 }
 
 void PortEnhancements_Register() {
