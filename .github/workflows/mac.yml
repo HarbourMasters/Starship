@@ -12,7 +12,7 @@ jobs:
         with:
           submodules: recursive
       - name: Install dependencies
-        run: brew install sdl2 libpng glew ninja cmake libzip nlohmann-json tinyxml2 spdlog
+        run: brew install sdl2 libpng glew ninja cmake libzip nlohmann-json tinyxml2 spdlog vorbis-tools
       - name: Build
         run: |
           cmake -H. -Bbuild-cmake -GNinja -DCMAKE_BUILD_TYPE=Release

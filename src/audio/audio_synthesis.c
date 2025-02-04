@@ -1036,23 +1036,12 @@ Acmd* AudioSynth_ProcessNote(s32 noteIndex, NoteSubEu* noteSub, NoteSynthesisSta
                         goto skip;
 
                     case CODEC_S16:
+                        aLoadBuffer(aList++, OS_K0_TO_PHYSICAL(bookSample->sampleAddr + synthState->samplePosInt * 2), DMEM_UNCOMPRESSED_NOTE,
+                                    (numSamplesToLoadAdj + SAMPLES_PER_FRAME) * 2);
+                        flags = A_CONTINUE;
                         skipBytes = 0;
-                        size_t bytesToRead;
-                        numSamplesProcessed += numSamplesToLoadAdj;
+                        numSamplesProcessed = numSamplesToLoadAdj;
                         dmemUncompressedAddrOffset1 = numSamplesToLoadAdj;
-
-                        if (((synthState->samplePosInt * 2) + (numSamplesToLoadAdj)*SAMPLE_SIZE) < bookSample->size) {
-                            bytesToRead = (numSamplesToLoadAdj)*SAMPLE_SIZE;
-                        } else {
-                            bytesToRead = bookSample->size - (synthState->samplePosInt * 2);
-                        }
-                        // @port [Custom audio]
-                        // TLDR samples are loaded async and might be null the first time they are played.
-                        // See note in AudioSampleFactory.cpp
-                        if (sampleAddr != NULL) {
-                            aLoadBuffer(cmd++, sampleAddr + (synthState->samplePosInt * 2), DMEM_UNCOMPRESSED_NOTE,
-                                        bytesToRead);
-                        }
 
                         goto skip;
                 }
