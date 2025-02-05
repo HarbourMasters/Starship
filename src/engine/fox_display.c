@@ -7,6 +7,7 @@
 #include "assets/ast_sector_z.h"
 #include "port/interpolation/FrameInterpolation.h"
 #include "port/hooks/list/EngineEvent.h"
+#include "port/ui/CosmeticEditor.h"
 
 // f32 path1 = 0.0f;
 // f32 path2 = 0.0f;
@@ -898,6 +899,13 @@ void Display_DrawEngineGlow(EngineGlowColor color) {
     }
     gSPDisplayList(gMasterDisp++, aOrbDL);
 }
+void Display_DrawEngineGlowCustom(Color_RGBA8 primary, Color_RGBA8 secondary){
+    RCP_SetupDL(&gMasterDisp, SETUPDL_67);
+    //Despite the names primary/secondary not matching, that's their behavior in game. Maybe rename them to inner and outer glows would work better
+    gDPSetPrimColor(gMasterDisp++, 0x00, 0x00, secondary.r, secondary.g, secondary.b, secondary.a);
+    gDPSetEnvColor(gMasterDisp++, primary.r, primary.g, primary.b, primary.a);
+    gSPDisplayList(gMasterDisp++, aOrbDL);
+}
 
 void Display_LandmasterEngineGlow_Draw(Player* player) {
     RCP_SetupDL_64();
@@ -920,7 +928,15 @@ void Display_LandmasterEngineGlow_Draw(Player* player) {
         Matrix_Scale(gGfxMatrix, 0.9f * 0.9f, 0.9f * 0.63f, 1.0f, MTXF_APPLY);
     }
     Matrix_SetGfxMtx(&gMasterDisp);
-    Display_DrawEngineGlow(gLevelType);
+    if (gCosmeticEngineGlowChanged(gLevelType, COSMETIC_GLOW_ARWING)){
+        Color_RGBA8 customColorPrimary = gCosmeticEngineGlowColor(gLevelType, COSMETIC_GLOW_ARWING, false);
+        Color_RGBA8 customColorSecondary = gCosmeticEngineGlowColor(gLevelType, COSMETIC_GLOW_ARWING, true);
+
+        Display_DrawEngineGlowCustom(customColorPrimary,customColorSecondary);
+    }
+    else{
+        Display_DrawEngineGlow(gLevelType);
+    }
     Matrix_Pop(&gGfxMatrix);
 }
 
