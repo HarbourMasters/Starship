@@ -617,6 +617,18 @@ void DrawCheatsMenu() {
     }
 }
 
+void DrawModsMenu() {
+    if (UIWidgets::BeginMenu("Mods")) {
+        UIWidgets::CVarCheckbox("Score penalty on Katina Friendly Fire", "gKatinaPunishFF", {
+            .tooltip = "Shooting down a friendly fighter on Katina reduces your score.",
+            .defaultValue = false
+        });
+
+
+        ImGui::EndMenu();
+    }
+}
+
 static const char* debugInfoPages[6] = {
     "Object",
     "Check Surface",
@@ -760,6 +772,8 @@ void GameMenuBar::DrawElement() {
         DrawCheatsMenu();
 
         ImGui::SetCursorPosY(0.0f);
+
+        DrawModsMenu();
 
         ImGui::SetCursorPosY(0.0f);
 

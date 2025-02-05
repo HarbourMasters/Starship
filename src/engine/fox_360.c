@@ -993,6 +993,9 @@ void ActorAllRange_ApplyDamage(ActorAllRange* this) {
                     if (gKaAllyKillCount < 2) {
                         ActorAllRange_PlayMessage(gMsg_ID_18018, RCID_BILL);
                     }
+                    if (CVarGetInteger("gKatinaPunishFF", 0) == 1 && gHitCount > 0) {
+                        gHitCount--;
+                    }
                     gKaAllyKillCount++;
                 }
                 switch (this->aiType) {
