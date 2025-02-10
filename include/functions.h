@@ -89,6 +89,7 @@ void Cutscene_DrawGreatFox(void);
 // fox_display
 void Display_ArwingWings(ArwingInfo*);
 void Display_DrawEngineGlow(EngineGlowColor);
+void Display_DrawEngineGlowCustom(Color_RGBA8 primary, Color_RGBA8 secondary); //u8 r, u8 g, u8 b, u8 a);
 void Display_SetupPlayerSfxPos(Player*);
 void Display_Update(void);
 
@@ -114,6 +115,8 @@ void CoBuilding10_Draw(Scenery*);
 void ActorDebris_Draw(Actor*);
 void Actor_DrawEngineAndContrails(Actor*);
 void Actor_DrawEngineGlow(Actor*, EngineGlowColor);
+void Actor_DrawEngineAndContrailsCustom(Actor*, Color_RGBA8 primary, Color_RGBA8 secondary);
+void Actor_DrawEngineGlowCustom(Actor*,Color_RGBA8 primary, Color_RGBA8 secondary);
 void ActorTeamArwing_Draw(Actor*);
 void MeMolarRock_Draw(Actor*);
 void MeMeteor2_Draw(MeMeteor2*);

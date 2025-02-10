@@ -29,6 +29,7 @@
 #include "assets/ast_zoness.h"
 #include "port/interpolation/FrameInterpolation.h"
 #include "port/hooks/Events.h"
+#include "port/ui/CosmeticEditor.h"
 
 Vec3f D_edisplay_801615D0;
 Vec3f sViewPos;
@@ -529,7 +530,65 @@ void Actor_DrawEngineAndContrails(Actor* this) {
         Matrix_Pop(&gGfxMatrix);
     }
 }
+void Actor_DrawEngineAndContrailsCustom(Actor* this, Color_RGBA8 primary, Color_RGBA8 secondary) {
+    f32 sp5C;
+    f32 temp1;
+    f32 sp54;
+    s32 pad[5];
 
+    if ((this->iwork[11] != 0) && (this->obj.status == OBJ_ACTIVE)) {
+        temp1 = 652.5f * 0.001f; // 0.65250003f;
+        if (this->iwork[11] >= 2) {
+            temp1 = 1.3050001f;
+        }
+
+        Math_SmoothStepToF(&this->fwork[29], temp1, 0.3f, 5.0f, 0.0f);
+
+        sp5C = this->fwork[29];
+        if ((gGameFrameCount % 2) != 0) {
+            sp5C *= 1.111f;
+        }
+        Matrix_Push(&gGfxMatrix);
+        Matrix_Translate(gGfxMatrix, 0.0f, 0.0f, -60.0f, MTXF_APPLY);
+        Matrix_Scale(gGfxMatrix, sp5C, sp5C * 0.7f, sp5C, MTXF_APPLY);
+        Matrix_RotateZ(gGfxMatrix, -this->obj.rot.z * M_DTOR, MTXF_APPLY);
+        Matrix_RotateX(gGfxMatrix, -this->obj.rot.x * M_DTOR, MTXF_APPLY);
+        Matrix_RotateY(gGfxMatrix, -this->obj.rot.y * M_DTOR, MTXF_APPLY);
+        Matrix_RotateY(gGfxMatrix, -gPlayer[gPlayerNum].camYaw, MTXF_APPLY);
+        Matrix_RotateX(gGfxMatrix, gPlayer[gPlayerNum].camPitch, MTXF_APPLY);
+        Matrix_SetGfxMtx(&gMasterDisp);
+        Display_DrawEngineGlowCustom(primary, secondary);
+        Matrix_Pop(&gGfxMatrix);
+    }
+
+    sp5C = this->fwork[21];
+    if ((sp5C != 0.0f) && (gLevelType == LEVELTYPE_PLANET)) {
+        sp54 = 0.0f;
+        if ((gGameFrameCount % 2) != 0) {
+            sp54 = 180.0f;
+        }
+        RCP_SetupDL_64_2();
+        gDPSetPrimColor(gMasterDisp++, 0x00, 0x00, 255, 255, 255, 100);
+        Matrix_Push(&gGfxMatrix);
+        Matrix_Translate(gGfxMatrix, 70.0f, -10.0f, -100.0f, MTXF_APPLY);
+        Matrix_Scale(gGfxMatrix, sp5C, 1.0f, 50.0f, MTXF_APPLY);
+        Matrix_Translate(gGfxMatrix, 0.0f, 0.0f, -17.5f, MTXF_APPLY);
+        Matrix_RotateX(gGfxMatrix, M_PI / 2, MTXF_APPLY);
+        Matrix_RotateY(gGfxMatrix, M_DTOR * sp54, MTXF_APPLY);
+        Matrix_SetGfxMtx(&gMasterDisp);
+        gSPDisplayList(gMasterDisp++, aBallDL);
+        Matrix_Pop(&gGfxMatrix);
+        Matrix_Push(&gGfxMatrix);
+        Matrix_Translate(gGfxMatrix, -70.0f, -10.0f, -100.0f, MTXF_APPLY);
+        Matrix_Scale(gGfxMatrix, sp5C, 1.0f, 50.0f, MTXF_APPLY);
+        Matrix_Translate(gGfxMatrix, 0.0f, 0.0f, -17.5f, MTXF_APPLY);
+        Matrix_RotateX(gGfxMatrix, M_PI / 2, MTXF_APPLY);
+        Matrix_RotateY(gGfxMatrix, M_DTOR * sp54, MTXF_APPLY);
+        Matrix_SetGfxMtx(&gMasterDisp);
+        gSPDisplayList(gMasterDisp++, aBallDL);
+        Matrix_Pop(&gGfxMatrix);
+    }
+}
 f32 D_edisplay_800CFCA0[] = {
     1.7f, 1.8f, 2.0f, 3.0f, 3.0f, 3.0f, 3.0f, 3.0f,
 };
@@ -556,7 +615,28 @@ void Actor_DrawEngineGlow(Actor* actor, EngineGlowColor color) {
         Matrix_Pop(&gGfxMatrix);
     }
 }
+void Actor_DrawEngineGlowCustom(Actor* actor, Color_RGBA8 primary, Color_RGBA8 secondary){
+        f32 scale;
 
+    if ((actor->iwork[11] != 0) && (actor->obj.status == OBJ_ACTIVE)) {
+        scale = 0.63f;
+        if (actor->iwork[11] >= 2) {
+            scale = D_edisplay_800CFCA0[actor->iwork[11] - 2] * 0.45f;
+        }
+        if ((gGameFrameCount % 2) != 0) {
+            scale *= 1.2f;
+        }
+        Matrix_Push(&gGfxMatrix);
+        Matrix_Scale(gGfxMatrix, scale, scale, scale, MTXF_APPLY);
+        Matrix_RotateZ(gGfxMatrix, -actor->obj.rot.z * M_DTOR, MTXF_APPLY);
+        Matrix_RotateX(gGfxMatrix, -actor->obj.rot.x * M_DTOR, MTXF_APPLY);
+        Matrix_RotateY(gGfxMatrix, -actor->obj.rot.y * M_DTOR, MTXF_APPLY);
+        Matrix_RotateY(gGfxMatrix, -gPlayer[gPlayerNum].camYaw, MTXF_APPLY);
+        Matrix_SetGfxMtx(&gMasterDisp);
+        Display_DrawEngineGlowCustom(primary, secondary);
+        Matrix_Pop(&gGfxMatrix);
+    }
+}
 void ActorTeamArwing_Draw(ActorTeamArwing* this) {
     Vec3f src = { 0.0f, 0.0f, 0.0f };
     Vec3f dest;
@@ -606,7 +686,15 @@ void ActorTeamArwing_Draw(ActorTeamArwing* this) {
     } else {
         gSPDisplayList(gMasterDisp++, D_ENMY_SPACE_4007870);
     }
-    Actor_DrawEngineAndContrails(this);
+    if (gCosmeticEngineGlowChanged(gLevelType, COSMETIC_GLOW_ARWING)){
+        Color_RGBA8 customColorPrimary = gCosmeticEngineGlowColor(gLevelType, COSMETIC_GLOW_ARWING, false);
+        Color_RGBA8 customColorSecondary = gCosmeticEngineGlowColor(gLevelType, COSMETIC_GLOW_ARWING, true);
+
+        Actor_DrawEngineAndContrailsCustom(this, customColorPrimary, customColorSecondary);
+    }
+    else{
+        Actor_DrawEngineAndContrails(this);
+    }
 }
 
 void MeMolarRock_Draw(MeMolarRock* this) {

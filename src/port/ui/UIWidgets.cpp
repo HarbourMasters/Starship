@@ -678,7 +678,7 @@ namespace UIWidgets {
         if (Button(buttonText.c_str(), options)) {
             windowPtr->ToggleVisibility();
             dirty = true;
-        }
+        }        
         ImGui::PopStyleVar();
         return dirty;
     }

@@ -1,6 +1,7 @@
 #include "ImguiUI.h"
 #include "UIWidgets.h"
 #include "ResolutionEditor.h"
+#include "CosmeticEditor.h"
 
 #include <spdlog/spdlog.h>
 #include <imgui.h>
@@ -26,6 +27,7 @@ std::shared_ptr<Ship::GuiWindow> mConsoleWindow;
 std::shared_ptr<Ship::GuiWindow> mStatsWindow;
 std::shared_ptr<Ship::GuiWindow> mInputEditorWindow;
 std::shared_ptr<Ship::GuiWindow> mGfxDebuggerWindow;
+std::shared_ptr<CosmeticEditor::CosmeticEditorWindow> mCosmeticEditorWindow;
 std::shared_ptr<Notification::Window> mNotificationWindow;
 std::shared_ptr<AdvancedResolutionSettings::AdvancedResolutionSettingsWindow> mAdvancedResolutionSettingsWindow;
 
@@ -74,6 +76,8 @@ void SetupGuiElements() {
     mNotificationWindow = std::make_shared<Notification::Window>("gNotifications", "Notifications Window");
     gui->AddGuiWindow(mNotificationWindow);
     mNotificationWindow->Show();
+    mCosmeticEditorWindow = std::make_shared<CosmeticEditor::CosmeticEditorWindow>("gCosmeticEditor", "Cosmetic Editor");
+    gui->AddGuiWindow(mCosmeticEditorWindow);
 }
 
 void Destroy() {
@@ -85,6 +89,7 @@ void Destroy() {
     mStatsWindow = nullptr;
     mInputEditorWindow = nullptr;
     mNotificationWindow = nullptr;
+    mCosmeticEditorWindow = nullptr;
 }
 
 std::string GetWindowButtonText(const char* text, bool menuOpen) {
@@ -573,6 +578,20 @@ void DrawEnhancementsMenu() {
     }
 }
 
+void DrawCosmeticsMenu(){
+    
+    if (UIWidgets::BeginMenu("Cosmetics")) {
+
+        ImGui::Dummy(ImVec2(150.0f, 0.0f));
+        UIWidgets::WindowButton("Cosmetic Editor", "gCosmeticsWindow", GameUI::mCosmeticEditorWindow, {
+            .tooltip = "Shows the cosmetic editor"
+        });
+
+        UIWidgets::Spacer(0);
+        ImGui::EndMenu();
+    }
+}
+
 void DrawCheatsMenu() {
     if (UIWidgets::BeginMenu("Cheats")) {
         UIWidgets::CVarCheckbox("Infinite Lives", "gInfiniteLives");
@@ -757,9 +776,11 @@ void GameMenuBar::DrawElement() {
 
         ImGui::SetCursorPosY(0.0f);
 
-        DrawCheatsMenu();
-
+        DrawCosmeticsMenu();
+        
         ImGui::SetCursorPosY(0.0f);
+
+        DrawCheatsMenu();
 
         ImGui::SetCursorPosY(0.0f);
 
