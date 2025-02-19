@@ -23,6 +23,7 @@
 #include "assets/ast_enmy_planet.h"
 #include "assets/ast_zoness.h"
 #include "port/interpolation/FrameInterpolation.h"
+#include "port/mods/PortEnhancements.h"
 
 // rodata
 const char D_800D7230[] = "Enm->wrk3=<%d>\n";
@@ -140,7 +141,7 @@ void BonusText_DrawAll(void) {
     BonusText* bonus;
     s32 i;
 
-    RCP_SetupDL(&gMasterDisp, SETUPDL_62_POINT);
+    RCP_SetupDL(&gMasterDisp, SETUPDL_62_OPTIONAL);
     gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, 255);
 
     for (i = 0, bonus = gBonusText; i < ARRAY_COUNT(gBonusText); i++, bonus++) {

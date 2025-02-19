@@ -19,6 +19,7 @@
 #include "assets/ast_title.h"
 #include "assets/ast_zoness.h"
 #include "port/hooks/Events.h"
+#include "port/mods/PortEnhancements.h"
 
 u16** gRadioMsgList;
 s32 gRadioMsgListIndex;
@@ -435,7 +436,7 @@ void func_radio_800BAAE8(void) {
             D_800D4A74 = -1.0f;
         }
         sp38 = gRadioPortraitScaleY * 20.0f * D_800D4A74;
-        gSPDisplayList(gMasterDisp++, gRcpSetupDLs[SETUPDL_76_POINT]);
+        gSPDisplayList(gMasterDisp++, gRcpSetupDLs[SETUPDL_76_OPTIONAL]);
         gDPSetPrimColor(gMasterDisp++, 0x00, 0x00, 255, 255, 255, 255);
 
         if (mirror) {
@@ -470,7 +471,7 @@ void func_radio_800BB388(void) {
 
         sp30 = temp_fa0 * D_800D4A78;
 
-        RCP_SetupDL(&gMasterDisp, SETUPDL_85);
+        RCP_SetupDL(&gMasterDisp, SETUPDL_85_OPTIONAL);
 
         switch (gGameState) {
             case GSTATE_TITLE:
@@ -496,7 +497,7 @@ void func_radio_800BB388(void) {
     }
 
     if (gRadioTextBoxScaleY == 1.3f) {
-        RCP_SetupDL(&gMasterDisp, SETUPDL_85);
+        RCP_SetupDL(&gMasterDisp, SETUPDL_85_OPTIONAL);
         gMsgCharIsPrinting =
             Message_DisplayText(&gMasterDisp, gRadioMsg, gRadioPrintPosX, gRadioPrintPosY, gRadioMsgCharIndex);
     }
@@ -715,7 +716,7 @@ void Radio_Draw(void) {
             if ((gTeamShields[idx] <= 0) && (gGameFrameCount & 4) && (gTeamShields[idx] != -2) &&
                 (gCurrentRadioPortrait != RCID_STATIC) && (gCurrentRadioPortrait != RCID_STATIC + 1) &&
                 (gCurrentRadioPortrait != RCID_1000)) {
-                RCP_SetupDL(&gMasterDisp, SETUPDL_76_POINT);
+                RCP_SetupDL(&gMasterDisp, SETUPDL_76_OPTIONAL);
                 gDPSetPrimColor(gMasterDisp++, 0x00, 0x00, 255, 255, 0, 255);
                 Graphics_DisplaySmallText(OTRGetRectDimensionFromLeftEdgeOverride(31.0f), 167, 1.0f, 1.0f, "DOWN");
                 HUD_TeamDownWrench_Draw(1);
@@ -764,7 +765,7 @@ void Radio_Draw(void) {
             if ((gActors[idx].obj.status != OBJ_ACTIVE) && (gGameFrameCount & 4) &&
                 (gPlayer[0].state == PLAYERSTATE_ACTIVE) && (gCurrentRadioPortrait != RCID_STATIC) &&
                 (gCurrentRadioPortrait != RCID_STATIC + 1) && (gCurrentRadioPortrait != RCID_1000)) {
-                RCP_SetupDL(&gMasterDisp, SETUPDL_76_POINT);
+                RCP_SetupDL(&gMasterDisp, SETUPDL_76_OPTIONAL);
                 gDPSetPrimColor(gMasterDisp++, 0x00, 0x00, 255, 255, 0, 255);
                 Graphics_DisplaySmallText(OTRGetRectDimensionFromLeftEdgeOverride(31.0f), 167, 1.0f, 1.0f, "DOWN");
             }

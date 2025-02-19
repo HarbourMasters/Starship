@@ -7,6 +7,7 @@
 #include "assets/ast_sector_z.h"
 #include "port/interpolation/FrameInterpolation.h"
 #include "port/hooks/list/EngineEvent.h"
+#include "port/mods/PortEnhancements.h"
 
 // f32 path1 = 0.0f;
 // f32 path2 = 0.0f;
@@ -144,7 +145,7 @@ void Display_DrawHelpAlert(void) {
 
         switch (centered) {
             case false:
-                RCP_SetupDL(&gMasterDisp, SETUPDL_76_POINT);
+                RCP_SetupDL(&gMasterDisp, SETUPDL_76_OPTIONAL);
                 gDPSetPrimColor(gMasterDisp++, 0x00, 0x00, 255, 255, 0, 255);
                 if (sp78 < 0.0f) {
                     Graphics_DisplaySmallText(OTRGetRectDimensionFromLeftEdgeOverride(38.0f), 106, 1.0f, 1.0f, "HELP!!");
@@ -154,7 +155,7 @@ void Display_DrawHelpAlert(void) {
                 break;
 
             case true:
-                RCP_SetupDL(&gMasterDisp, SETUPDL_76_POINT);
+                RCP_SetupDL(&gMasterDisp, SETUPDL_76_OPTIONAL);
                 gDPSetPrimColor(gMasterDisp++, 0x00, 0x00, 255, 255, 0, 255);
                 Graphics_DisplaySmallText(OTRGetRectDimensionFromLeftEdgeOverride(38.0f), 106, 1.0f, 1.0f, "HELP!!");
                 Graphics_DisplaySmallText(OTRGetRectDimensionFromRightEdgeOverride(248), 106, 1.0f, 1.0f, "HELP!!");
@@ -779,7 +780,7 @@ void Display_Reticle(Player* player) {
             Matrix_Push(&gGfxMatrix);
             Matrix_Translate(gGfxMatrix, translate->x, translate->y, translate->z, MTXF_APPLY);
             if (gChargeTimers[player->num] >= 20) {
-                RCP_SetupDL(&gMasterDisp, SETUPDL_63_POINT);
+                RCP_SetupDL(&gMasterDisp, SETUPDL_63_OPTIONAL);
                 if (i == 1) {
                     gDPSetPrimColor(gMasterDisp++, 0x00, 0x00, 255, 0, 0, 255);
                     gDPSetEnvColor(gMasterDisp++, 255, 0, 0, 255);
@@ -789,7 +790,7 @@ void Display_Reticle(Player* player) {
                     gDPSetEnvColor(gMasterDisp++, 255, 255, 0, 255);
                 }
             } else {
-                gSPDisplayList(gMasterDisp++, gRcpSetupDLs[SETUPDL_36_POINT]);
+                gSPDisplayList(gMasterDisp++, gRcpSetupDLs[SETUPDL_36_OPTIONAL]);
             }
 
             if (i == 1) {
@@ -1685,7 +1686,7 @@ void Display_LockOnIndicator(void) {
                 Matrix_Scale(gGfxMatrix, var_fs0 * 1.5f, var_fs0 * 1.5f, 1.0f, MTXF_APPLY);
                 Matrix_RotateZ(gGfxMatrix, D_display_801615A8[i] * M_DTOR, MTXF_APPLY);
                 Matrix_SetGfxMtx(&gMasterDisp);
-                RCP_SetupDL(&gMasterDisp, SETUPDL_67_POINT);
+                RCP_SetupDL(&gMasterDisp, SETUPDL_67_OPTIONAL);
                 gDPSetPrimColor(gMasterDisp++, 0x00, 0x00, 255, 0, 0, 255);
                 gDPSetEnvColor(gMasterDisp++, 255, 0, 0, 255);
                 gSPDisplayList(gMasterDisp++, D_1024F60);

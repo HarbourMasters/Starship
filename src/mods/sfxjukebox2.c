@@ -197,7 +197,7 @@ void Jukebox_Update(void) {
 
     /* Draw */
 
-    RCP_SetupDL(&gMasterDisp, SETUPDL_83_POINT);
+    RCP_SetupDL(&gMasterDisp, SETUPDL_83_OPTIONAL);
     gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 0, 255);
 
     Graphics_Printf("SFX ID: %08X", sfx);
