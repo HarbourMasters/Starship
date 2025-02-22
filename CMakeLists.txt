@@ -111,6 +111,8 @@ if (UNIX AND NOT APPLE)
 find_package(OpenGL REQUIRED)
 endif()
 
+configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/properties.h.in ${CMAKE_CURRENT_SOURCE_DIR}/properties.h @ONLY)
+
 # Include directories
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}
@@ -141,6 +143,7 @@ file(GLOB_RECURSE ALL_FILES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
     "src/dmatable.c"
     "src/libc_math64.c"
     "src/libc_sprintf.c"
+    "Resource.rc"
 )
 
 # Exclude specific files from the ALL_FILES list
