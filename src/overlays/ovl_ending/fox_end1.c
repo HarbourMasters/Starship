@@ -6,6 +6,7 @@
 #include "assets/ast_great_fox.h"
 #include "assets/ast_ending.h"
 #include "prevent_bss_reordering.h"
+#include "port/mods/PortEnhancements.h"
 
 void Ending_8018CE20(s32);
 void Ending_801926D4(void);
@@ -420,7 +421,7 @@ void Ending_801886F4(void) {
         return;
     }
 
-    RCP_SetupDL(&gMasterDisp, SETUPDL_78_POINT);
+    RCP_SetupDL(&gMasterDisp, SETUPDL_78_OPTIONAL);
     gDPSetPrimColor(gMasterDisp++, 0x00, 0x00, 255, 255, 255, 255);
 
     switch ((D_ending_80196F90 % 8) / 2) {

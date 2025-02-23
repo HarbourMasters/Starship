@@ -6,10 +6,11 @@
 
 #include "global.h"
 #include "assets/ast_training.h"
+#include "port/mods/PortEnhancements.h"
 
 void Training_RingPassCount_Draw(void) {
     if (gRingPassCount != 0) {
-        RCP_SetupDL(&gMasterDisp, SETUPDL_83_POINT);
+        RCP_SetupDL(&gMasterDisp, SETUPDL_83_OPTIONAL);
         gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, 255);
         HUD_Number_Draw(OTRGetDimensionFromRightEdgeOverride(250.0f), 50.0f, gRingPassCount, 1.0f, 0, 999);
     }

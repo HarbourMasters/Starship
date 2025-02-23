@@ -2,6 +2,7 @@
 #include "assets/ast_arwing.h"
 #include "assets/ast_ending_expert.h"
 #include "assets/ast_allies.h"
+#include "port/mods/PortEnhancements.h"
 
 ArwingInfo D_ending_80198590;
 Vec3f D_ending_801985D0;
@@ -50,7 +51,7 @@ void Ending_8018CE20(u32 arg0) {
                                             1.0f);
                     } else {
                         xPos = (320 - Graphics_GetSmallTextWidth(D_ending_80192E74[i].unk_00)) / 2;
-                        RCP_SetupDL(&gMasterDisp, SETUPDL_83_POINT);
+                        RCP_SetupDL(&gMasterDisp, SETUPDL_83_OPTIONAL);
                         gDPSetTextureFilter(gMasterDisp++, G_TF_POINT);
                         gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 155, 155, alpha);
                         Graphics_DisplaySmallText(xPos, D_ending_80192E74[i].unk_0E, 1.0f, 1.0f,
@@ -169,7 +170,7 @@ void Ending_8018D814(u32 arg0, AssetInfo* asset) {
         alpha = (asset->unk_0C + asset->unk_10 - arg0) * 255 / asset->fogFar;
     }
 
-    RCP_SetupDL(&gMasterDisp, SETUPDL_76_POINT);
+    RCP_SetupDL(&gMasterDisp, SETUPDL_76_OPTIONAL);
 
     gDPSetPrimColor(gMasterDisp++, 0, 0, asset->prim.r, asset->prim.g, asset->prim.b, alpha);
 
@@ -189,7 +190,7 @@ void Ending_8018DA0C(u32 arg0, AssetInfo* asset) {
         alpha = (arg0 - asset->unk_0C) * 255 / asset->fogNear;
     }
 
-    RCP_SetupDL(&gMasterDisp, SETUPDL_76_POINT);
+    RCP_SetupDL(&gMasterDisp, SETUPDL_76_OPTIONAL);
     gDPSetPrimColor(gMasterDisp++, 0, 0, asset->prim.r, asset->prim.g, asset->prim.b, alpha);
 
     Graphics_DisplaySmallText((s16) asset->unk_18.x, (s16) asset->unk_18.y, asset->unk_30.x, asset->unk_30.y,
