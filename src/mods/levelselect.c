@@ -85,7 +85,7 @@ void Map_LevelSelect(void) {
 
     /* Draw */
     if ((sCurrentPlanetId >= 0) && (sCurrentPlanetId < PLANET_MAX)) {
-        RCP_SetupDL(&gMasterDisp, SETUPDL_83_POINT);
+        RCP_SetupDL(&gMasterDisp, SETUPDL_83_OPTIONAL);
         gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 0, 255);
 
         Graphics_DisplaySmallText(20, y, 1.0f, 1.0f, "PLANET:");

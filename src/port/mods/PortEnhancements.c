@@ -224,7 +224,7 @@ void OnItemGoldRingDraw(ObjectDrawPostSetupEvent* event) {
     }
 
     event->event.cancelled = true;
-    RCP_SetupDL(&gMasterDisp, SETUPDL_29_POINT);
+    RCP_SetupDL(&gMasterDisp, SETUPDL_29_OPTIONAL);
     Graphics_SetScaleMtx(item->width * 2.0f);
     gSPDisplayList(gMasterDisp++, D_101D870);
 }
@@ -297,7 +297,7 @@ void OnBoostGaugeDraw(IEvent* event){
     f32 x = 70;
     f32 y = 30;
 
-    RCP_SetupDL(&gMasterDisp, SETUPDL_76_POINT);
+    RCP_SetupDL(&gMasterDisp, SETUPDL_76_OPTIONAL);
     gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, 255);
     Lib_TextureRect_CI8(&gMasterDisp, D_1012290, D_10126B0, 48, 22, OTRGetRectDimensionFromRightEdgeOverride(SCREEN_WIDTH - x), y, 1.0f, 1.0f);
     Lib_TextureRect_CI8(&gMasterDisp, D_10126F0, D_1012750, 24, 4, OTRGetRectDimensionFromRightEdgeOverride(SCREEN_WIDTH - (x - 9)), y + 3, 1.0f, 1.0f);

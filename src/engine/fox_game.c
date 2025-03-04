@@ -5,6 +5,7 @@
 #include "mods.h"
 #include "port/interpolation/FrameInterpolation.h"
 #include "port/hooks/list/EngineEvent.h"
+#include "port/mods/PortEnhancements.h"
 
 f32 gNextVsViewScale;
 f32 gVsViewScale;
@@ -381,7 +382,7 @@ void Game_Update(void) {
                 break;
 
             case GSTATE_SHOW_LOGO:
-                RCP_SetupDL(&gMasterDisp, SETUPDL_76_POINT);
+                RCP_SetupDL(&gMasterDisp, SETUPDL_76_OPTIONAL);
                 gDPSetPrimColor(gMasterDisp++, 0x00, 0x00, 255, 255, 255, 255);
                 Lib_TextureRect_IA8(&gMasterDisp, gNintendoLogo, 128, 74, 100.0f, 86.0f, 1.0f, 1.0f);
                 gGameState++;
@@ -401,7 +402,7 @@ void Game_Update(void) {
                 Timer_CreateTask(MSEC_TO_CYCLES(1000), Timer_Increment, (s32*) &gGameState, 1);
                 /* fallthrough */
             case GSTATE_LOGO_WAIT:
-                RCP_SetupDL(&gMasterDisp, SETUPDL_76_POINT);
+                RCP_SetupDL(&gMasterDisp, SETUPDL_76_OPTIONAL);
                 gDPSetPrimColor(gMasterDisp++, 0x00, 0x00, 255, 255, 255, 255);
                 Lib_TextureRect_IA8(&gMasterDisp, gNintendoLogo, 128, 74, 100.0f, 86.0f, 1.0f, 1.0f);
                 break;

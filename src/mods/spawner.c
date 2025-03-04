@@ -397,7 +397,7 @@ void Spawner(void) {
         gPlayer[0].baseSpeed = gArwingSpeed;
     }
 
-    RCP_SetupDL(&gMasterDisp, SETUPDL_83_POINT);
+    RCP_SetupDL(&gMasterDisp, SETUPDL_83_OPTIONAL);
     gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 0, 255);
 
     /* Spawners */

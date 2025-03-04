@@ -14,6 +14,7 @@
 #include "assets/ast_vs_menu.h"
 #include "assets/ast_map.h"
 #include "port/interpolation/FrameInterpolation.h"
+#include "port/mods/PortEnhancements.h"
 
 extern s32 gRankingTeamAlive[][3];
 extern Gfx gMapVenomCloudDL[];
@@ -1472,12 +1473,12 @@ void Option_Sound_Draw(void) {
 
     Option_Sound_Speaker_Draw();
 
-    RCP_SetupDL(&gMasterDisp, SETUPDL_76_POINT);
+    RCP_SetupDL(&gMasterDisp, SETUPDL_76_OPTIONAL);
     gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, 255);
     Lib_TextureRect_RGBA16(&gMasterDisp, aMapWhiteSquareTex, 8, 8, D_menu_801AEFA8[0], D_menu_801AEFD4[0],
                            D_menu_801AF000, 0.2f);
 
-    RCP_SetupDL(&gMasterDisp, SETUPDL_83_POINT);
+    RCP_SetupDL(&gMasterDisp, SETUPDL_83_OPTIONAL);
     gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, 255);
     Lib_TextureRect_IA8(&gMasterDisp, D_OPT_8005CD0, 112, 13, D_menu_801AEFA8[1], D_menu_801AEFD4[1], 1.0f, 1.0f);
 
@@ -1741,7 +1742,7 @@ void Option_ExpertSound_Draw(void) {
     if (!showJukebox) {
 #endif
 
-        RCP_SetupDL(&gMasterDisp, SETUPDL_83_POINT);
+        RCP_SetupDL(&gMasterDisp, SETUPDL_83_OPTIONAL);
 
         gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, 255);
         gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, 255);
@@ -1969,7 +1970,7 @@ void Option_Data_Draw(void) {
 
     Option_DrawMenuLabel();
 
-    RCP_SetupDL(&gMasterDisp, SETUPDL_83_POINT);
+    RCP_SetupDL(&gMasterDisp, SETUPDL_83_OPTIONAL);
 
     gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, 255);
 
@@ -2159,7 +2160,7 @@ void Option_RankingMenu_Draw(void) {
         Option_RankingMenu2_Draw();
     } else {
         Title_RankingData_Draw();
-        RCP_SetupDL(&gMasterDisp, SETUPDL_83_POINT);
+        RCP_SetupDL(&gMasterDisp, SETUPDL_83_OPTIONAL);
         Option_Color_FlashRed(&D_menu_801B93F0);
         colorGB = D_menu_801B93F0;
         gDPSetPrimColor(gMasterDisp++, 0, 0, 255, colorGB, colorGB, 255);
@@ -2167,7 +2168,7 @@ void Option_RankingMenu_Draw(void) {
         Lib_TextureRect_IA8(&gMasterDisp, D_VS_MENU_7004010, 8, 8, 70.0f, (D_menu_801B93E4 * 17.0f) + 55.0f, 1.0f,
                             1.0f);
     }
-    RCP_SetupDL(&gMasterDisp, SETUPDL_83_POINT);
+    RCP_SetupDL(&gMasterDisp, SETUPDL_83_OPTIONAL);
     gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 0, 255);
     Graphics_DisplaySmallText(242, 215, 1.0f, 1.0f, "PUSH A");
 }
@@ -2263,7 +2264,7 @@ void Option_80197914(void) {
 }
 
 void Option_OrdinalNumbers_Draw(s32 ordinalType, s32 xPos, s32 yPos) {
-    RCP_SetupDL(&gMasterDisp, SETUPDL_83_POINT);
+    RCP_SetupDL(&gMasterDisp, SETUPDL_83_OPTIONAL);
     gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, 255);
 
     if (ordinalType != 9) {
@@ -2273,7 +2274,7 @@ void Option_OrdinalNumbers_Draw(s32 ordinalType, s32 xPos, s32 yPos) {
         Lib_TextureRect_IA8(&gMasterDisp, aLargeText_0, 16, 15, xPos, yPos - 25.0f, 1.0f, 1.0f);
     }
 
-    RCP_SetupDL(&gMasterDisp, SETUPDL_85_POINT);
+    RCP_SetupDL(&gMasterDisp, SETUPDL_85_OPTIONAL);
     gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, 255);
 
     switch (ordinalType) {
@@ -2298,7 +2299,7 @@ void Option_OrdinalNumbers_Draw(s32 ordinalType, s32 xPos, s32 yPos) {
 void Option_RankingName_Draw(s32 rankIdx, s32 xPos, s32 yPos) {
     char rankName[4];
 
-    RCP_SetupDL(&gMasterDisp, SETUPDL_83_POINT);
+    RCP_SetupDL(&gMasterDisp, SETUPDL_83_OPTIONAL);
     gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 0, 255);
 
     rankName[0] = gSaveFile.save.data.rankNameEntry[rankIdx][0] & 0xFF;
@@ -2310,7 +2311,7 @@ void Option_RankingName_Draw(s32 rankIdx, s32 xPos, s32 yPos) {
 }
 
 void Option_RankingTotalHits_Draw(s32 rankIdx, s32 xPos, s32 yPos) {
-    RCP_SetupDL(&gMasterDisp, SETUPDL_83_POINT);
+    RCP_SetupDL(&gMasterDisp, SETUPDL_83_OPTIONAL);
 
     gDPSetPrimColor(gMasterDisp++, 0, 0, 60, 60, 255, 170);
     Lib_TextureRect_IA8(&gMasterDisp, aMapOptionBgTex, 24, 17, xPos, yPos, 3.17f, 1.05f);
@@ -2327,7 +2328,7 @@ void Option_RankingTeamAlive_Draw(s32 rankIdx, s32 xPos, s32 yPos) {
     f32 xOffset;
     s32 i;
 
-    RCP_SetupDL(&gMasterDisp, SETUPDL_83_POINT);
+    RCP_SetupDL(&gMasterDisp, SETUPDL_83_OPTIONAL);
 
     for (xOffset = 0.0f, i = 0; i < ARRAY_COUNT(sTeamAlivePrimR); i++, xOffset += 12.0f) {
         gDPSetPrimColor(gMasterDisp++, 0, 0, sTeamAlivePrimR[i], sTeamAlivePrimG[i], sTeamAlivePrimB[i], 255);
@@ -2368,7 +2369,7 @@ void Option_RankingRouteFrame_Draw(s32 rankIdx, s32 routeIdx, f32 xPos, f32 yPos
     PlanetId end;
 
     if ((yPos > 30.0f) && (yPos < 200.0f)) {
-        RCP_SetupDL(&gMasterDisp, SETUPDL_76_POINT);
+        RCP_SetupDL(&gMasterDisp, SETUPDL_76_OPTIONAL);
 
         if (routeIdx < 6) {
             r = g = b = 255;
@@ -2426,7 +2427,7 @@ void Option_RankingTeamPresence_Draw(s32 rankIdx, s32 routeIdx, f32 xPos, f32 yP
     s32 i;
 
     if ((yPos > 12.0f) && (yPos < 154.0f)) {
-        RCP_SetupDL(&gMasterDisp, SETUPDL_83_POINT);
+        RCP_SetupDL(&gMasterDisp, SETUPDL_83_OPTIONAL);
 
         teamAlive[0] = gSaveFile.save.data.stats[rankIdx][routeIdx].peppyAlive & 1;
         teamAlive[1] = gSaveFile.save.data.stats[rankIdx][routeIdx].slippyAlive & 1;
@@ -2451,7 +2452,7 @@ void Option_RankingPlanetName_Draw(s32 rankIdx, s32 routeIdx, f32 xPos, f32 yPos
         planetIdx = gSaveFile.save.data.stats[rankIdx][routeIdx].planetId & 0xF;
         planetName = D_menu_801AEEAC[planetIdx];
 
-        RCP_SetupDL(&gMasterDisp, SETUPDL_83_POINT);
+        RCP_SetupDL(&gMasterDisp, SETUPDL_83_OPTIONAL);
         gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 0, 255);
         textWidth = Graphics_GetSmallTextWidth(planetName) / 2.0f;
         Graphics_DisplaySmallText(xPos + 12.0f - textWidth, yPos - 8.0f, 1.0f, 1.0f, planetName);
@@ -2813,7 +2814,7 @@ void Option_VS_HandicapSet_Draw(s32 PlayerIdx) {
     static s32 sCharNameG[4] = { 242, 30, 255, 30 };
     static s32 sCharNameB[4] = { 12, 0, 67, 255 };
 
-    RCP_SetupDL(&gMasterDisp, SETUPDL_85);
+    RCP_SetupDL(&gMasterDisp, SETUPDL_85_OPTIONAL);
 
     gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, 255);
 
@@ -3361,7 +3362,7 @@ void Option_VsTimeTrialStageSelect_Draw(void) {
             alpha[i] = 32;
         }
 
-        RCP_SetupDL(&gMasterDisp, SETUPDL_85);
+        RCP_SetupDL(&gMasterDisp, SETUPDL_85_OPTIONAL);
 
         gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, alpha[i]);
 
@@ -3407,7 +3408,7 @@ void Option_VsStageSelect2_Draw(void) {
             alpha[i] = 32;
         }
 
-        RCP_SetupDL(&gMasterDisp, SETUPDL_85);
+        RCP_SetupDL(&gMasterDisp, SETUPDL_85_OPTIONAL);
 
         gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, alpha[i]);
 
@@ -3456,7 +3457,7 @@ void Option_VsSelectionArrows_Draw(f32 xPos, f32 yPos, f32 offset, s32 r, s32 g,
 }
 
 void Option_AcceptCancel_Draw(void) {
-    RCP_SetupDL(&gMasterDisp, SETUPDL_83_POINT);
+    RCP_SetupDL(&gMasterDisp, SETUPDL_83_OPTIONAL);
     gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, 255);
     Lib_TextureRect_IA8(&gMasterDisp, aAtoConfirmTex, 96, 10, 62.0f, 213.0f, 1.0f, 1.0f);
     Lib_TextureRect_IA8(&gMasterDisp, aBtoCancelTex, 96, 10, 166.0f, 213.0f, 1.0f, 1.0f);
@@ -3638,28 +3639,28 @@ void Option_DrawCardLabel(OptionCardTexture tex) {
     if (!(tex.xScale <= 0.0f) && !(tex.yScale <= 0.0f)) {
         switch (tex.type) {
             case 1:
-                RCP_SetupDL(&gMasterDisp, SETUPDL_78_POINT);
+                RCP_SetupDL(&gMasterDisp, SETUPDL_78_OPTIONAL);
                 gDPSetPrimColor(gMasterDisp++, 0, 0, tex.red, tex.green, tex.blue, tex.alpha);
                 Lib_TextureRect_CI4(&gMasterDisp, tex.texture, tex.palette, tex.width, tex.height, tex.xPos, tex.yPos,
                                     tex.xScale, tex.yScale);
                 break;
 
             case 2:
-                RCP_SetupDL(&gMasterDisp, SETUPDL_78_POINT);
+                RCP_SetupDL(&gMasterDisp, SETUPDL_78_OPTIONAL);
                 gDPSetPrimColor(gMasterDisp++, 0, 0, tex.red, tex.green, tex.blue, tex.alpha);
                 Lib_TextureRect_CI8(&gMasterDisp, tex.texture, tex.palette, tex.width, tex.height, tex.xPos, tex.yPos,
                                     tex.xScale, tex.yScale);
                 break;
 
             case 0:
-                RCP_SetupDL(&gMasterDisp, SETUPDL_76_POINT);
+                RCP_SetupDL(&gMasterDisp, SETUPDL_76_OPTIONAL);
                 gDPSetPrimColor(gMasterDisp++, 0, 0, tex.red, tex.green, tex.blue, tex.alpha);
                 Lib_TextureRect_IA8(&gMasterDisp, tex.texture, tex.width, tex.height, tex.xPos, tex.yPos, tex.xScale,
                                     tex.yScale);
                 break;
 
             case 3:
-                RCP_SetupDL(&gMasterDisp, SETUPDL_76_POINT);
+                RCP_SetupDL(&gMasterDisp, SETUPDL_76_OPTIONAL);
                 gDPSetPrimColor(gMasterDisp++, 0, 0, tex.red, tex.green, tex.blue, tex.alpha);
                 Lib_TextureRect_RGBA16(&gMasterDisp, tex.texture, tex.width, tex.height, tex.xPos, tex.yPos, tex.xScale,
                                        tex.yScale);
@@ -4211,7 +4212,7 @@ void Option_NameEntry_Draw(void) {
     static f32 D_menu_801AF30C[6] = { 51.0f, 138.0f, 118.0f, 166.0f, 138.0f, 267.0f };
     static f32 D_menu_801AF324[6] = { 29.0f, 49.0f, 145.0f, 155.0f, 87.0f, 127.0f };
 
-    RCP_SetupDL(&gMasterDisp, SETUPDL_76_POINT);
+    RCP_SetupDL(&gMasterDisp, SETUPDL_76_OPTIONAL);
 
     if (gLastGameState == GSTATE_ENDING) {
         gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, 255);
@@ -4579,7 +4580,7 @@ void Option_InvoiceDraw(void) {
 
     Graphics_FillRectangle(&gMasterDisp, 25, 18, SCREEN_WIDTH - 25, SCREEN_HEIGHT - 18, 255, 255, 255, 255);
 
-    RCP_SetupDL(&gMasterDisp, SETUPDL_78_POINT);
+    RCP_SetupDL(&gMasterDisp, SETUPDL_78_OPTIONAL);
     gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, 255);
 
     Lib_TextureRect_CI4(&gMasterDisp, D_OPT_8000000, D_OPT_8000680, 128, 26, D_menu_801AF3D0[0], D_menu_801AF3F0[0],
@@ -4591,7 +4592,7 @@ void Option_InvoiceDraw(void) {
     Lib_TextureRect_CI4(&gMasterDisp, D_OPT_80017C0, D_OPT_80038C0, 256, 66, D_menu_801AF3D0[2], D_menu_801AF3F0[2],
                         1.0f, 1.0f);
 
-    RCP_SetupDL(&gMasterDisp, SETUPDL_76_POINT);
+    RCP_SetupDL(&gMasterDisp, SETUPDL_76_OPTIONAL);
     gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, 255);
 
     Lib_TextureRect_RGBA16(&gMasterDisp, D_OPT_800E170, 188, 60, D_menu_801AF3D0[3], D_menu_801AF3F0[3], 1.0f, 1.0f);
