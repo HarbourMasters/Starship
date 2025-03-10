@@ -1,6 +1,7 @@
 #pragma once
 
 #include "port/lua/scripting.h"
+#include <stdint.h>
 
 typedef int32_t EventID;
 typedef uint32_t ListenerID;
