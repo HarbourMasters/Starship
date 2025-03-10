@@ -82,6 +82,10 @@
 
 /* ************************* */
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 void Map_LevelSelect(void);
 
 #if MODS_FPS_COUNTER == 1
@@ -94,6 +98,10 @@ void RamMod_Update(void);
 
 #if MODS_SPAWNER == 1
 void Spawner(void);
+#endif
+
+#ifdef __cplusplus
+}
 #endif
 
 #define DEBUG_BOSS_KILLER 0

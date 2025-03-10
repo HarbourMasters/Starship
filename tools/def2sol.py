@@ -13,7 +13,9 @@ blacklist = [
     'piint',
     'siint',
     'sf64dma',
-    'osint'
+    'osint',
+    'FrameInterpolation',
+    'mods.h'
 ]
 
 def parse_enums(header):
@@ -188,11 +190,27 @@ def parse_externs(header):
 
     for line in lines:
         line = re.sub(r'\s+', ' ', line.strip())
-        if line.startswith('extern') and not '"C"' in line and not '(' in line and not 'Matrix' in line and not 'Mtx' in line and not '*' in line and not '[' in line:
-            var_name = line.split(' ')[2].split(';')[0]
-            if '[' in var_name:
-                var_name = var_name.split('[')[0]
-            print(f'lua["{var_name}"] = &{var_name};')
+        if line.startswith('extern') and not '"C"' in line or ('(' in line and ';' in line):
+            if not '(' in line and not '[' in line:
+                var_name = line.split(' ')[2].split(';')[0]
+                if '*' in line:
+                    print(f'lua["{var_name}"] = {var_name};')
+                else:
+                    print(f'lua["{var_name}"] = &{var_name};')
+            elif '(' in line:
+                if 'ALIGN_ASSET' in line:
+                    var_name = line.split('[')[0].split(' ')[-1]
+                    print(f'lua["{var_name}"] = {var_name};')
+                    continue
+                if 'define' in line or '\\' in line or 'typedef' in line or '[' in line or 'OSMesg' in line or 'Framebuffer' in line or 'TimerAction' in line or 'TimerTask' in line:
+                    continue
+                if '_DEG' in line or 'Fault' in line:
+                    continue
+                func_name = line.split('(')[0].split(' ')[-1]
+                # print('Function:', func_name)
+                if len(func_name) == 0:
+                    continue
+                print(f'lua.set_function("{func_name}", {func_name});')
 
 def is_blacklisted(file):
     for item in blacklist:

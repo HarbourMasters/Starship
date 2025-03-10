@@ -10,15 +10,6 @@ typedef struct {
     const char* path;
 } MsgLookup;
 
-u16* Message_PtrFromId(u16 msgId);
-u16 Message_IdFromPtr(u16*);
-s32 Message_GetWidth(u16* msgPtr);
-s32 Message_GetCharCount(u16* msgPtr);
-void Message_DisplayChar(Gfx** gfxPtr, u16 msgChar, s32 xpos, s32 ypos);
-bool Message_DisplayText(Gfx** gfxPtr, u16* msgPtr, s32 xPos, s32 yPos, s32 len);
-void Message_DisplayScrollingText(Gfx** gfxPtr, u16* msgPtr, s32 xPos, s32 yPos, s32 yRangeHi, s32 yRangeLo, s32 len);
-bool Message_IsPrintingChar(u16* msgPtr, s32 charPos);
-
  // Id + 1 gives the other frame of the animation
 typedef enum RadioCharacterId {
     RCID_FOX = 0,
@@ -62,11 +53,6 @@ typedef enum RadioCharacterId {
     RCID_FOX_EXPERT = 400,
     RCID_1000 = 1000,
 } RadioCharacterId;
-
-void Radio_PlayMessage(u16*, RadioCharacterId);
-void Radio_CalculatePositions();
-void func_radio_800BB388(void);
-void Radio_Draw(void);
 
 typedef enum MsgCharCode {
     // Non-printing and whitespace
@@ -954,5 +940,26 @@ typedef enum MsgMojiCode {
     /* 734 */ MSGMOJI_734,
     /* 735 */ MSGMOJI_735,
 } MsgMojiCode;
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+u16* Message_PtrFromId(u16 msgId);
+u16 Message_IdFromPtr(u16*);
+s32 Message_GetWidth(u16* msgPtr);
+s32 Message_GetCharCount(u16* msgPtr);
+void Message_DisplayChar(Gfx** gfxPtr, u16 msgChar, s32 xpos, s32 ypos);
+bool Message_DisplayText(Gfx** gfxPtr, u16* msgPtr, s32 xPos, s32 yPos, s32 len);
+void Message_DisplayScrollingText(Gfx** gfxPtr, u16* msgPtr, s32 xPos, s32 yPos, s32 yRangeHi, s32 yRangeLo, s32 len);
+bool Message_IsPrintingChar(u16* msgPtr, s32 charPos);
+void Radio_PlayMessage(u16*, RadioCharacterId);
+void Radio_CalculatePositions();
+void func_radio_800BB388(void);
+void Radio_Draw(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

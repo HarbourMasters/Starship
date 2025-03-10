@@ -7,6 +7,10 @@
 #include "sf64player.h"
 #include "sf64mesg.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 extern f32 D_Andross_801A7F58;
 extern f32 D_Andross_801A7F60;
 extern f32 D_Andross_801A7F68;
@@ -68,5 +72,9 @@ void SectorY_SyShogun_Update(Boss*);
 void SectorY_SyShogun_Draw(Boss*);
 void SectorY_SyShip3Destroyed_Update(Scenery*);
 void SectorY_SyShip4Destroyed_Update(Scenery*);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

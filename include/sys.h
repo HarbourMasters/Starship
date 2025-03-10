@@ -20,6 +20,10 @@
 
 #define UNK_TYPE s32
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef s32 (*CompareFunc)(void*, void*);
 
 s32 Lib_vsPrintf(char* dst, const char* fmt, va_list args);
@@ -32,10 +36,6 @@ void Lib_FillScreen(u8 setFill);
 
 void Memory_FreeAll(void);
 void* Memory_Allocate(s32);
-
-OSPiHandle * osDriveRomInit(void);
-void RdRam_CheckIPL3(void);
-void Mio0_Decompress(void* header, u8* dst);
 
 void Game_Initialize(void);
 void Game_Update(void);
@@ -58,6 +58,10 @@ extern u8 gGameStandby;
 extern f32 gFovY;
 extern f32 gProjectNear;
 extern f32 gProjectFar;
+
+#ifdef __cplusplus
+}
+#endif
 
 typedef enum OptionState {
     OPTION_WAIT,

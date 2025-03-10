@@ -3,6 +3,10 @@
 #include "fox_option.h"
 #include "fox_map.h"
 #include "fox_co.h"
+#include "hit64.h"
+#include "mods.h"
+#include "hud.h"
+#include "assets.h"
 
 #define SOL_ALL_SAFETIES_ON 1
 #include <sol/sol.hpp>

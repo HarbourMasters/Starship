@@ -820,7 +820,15 @@ typedef enum ActorCutsceneModels {
     /* 1000 */ ACTOR_CS_JAMES_ARWING = 1000 // James McCloud Arwing seen for the last time in the ending CS.
 } ActorCutsceneModels;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 Actor* Game_SpawnActor(ObjectId);
+
+#ifdef __cplusplus
+}
+#endif
 
 // template enums for boss work buffers
 

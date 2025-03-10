@@ -114,6 +114,10 @@ typedef struct {
     /* 0x10 */ f32 scale;
 } TitleCorneria; // size = 0x14
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 extern CameraPoint D_menu_801B6B40[];
 extern CameraPoint D_menu_801B6C60[];
 extern f32 D_menu_801B7BB0;
@@ -310,5 +314,9 @@ void Title_TeamName_Draw(void);
 void Title_SunGlare_Draw(void);
 void Title_NextState_Check(void);
 void Title_SetLightRot(f32, f32, f32, f32*, f32*, f32*);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

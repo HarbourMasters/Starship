@@ -74,6 +74,10 @@ typedef struct {
     /* 0x23550 */ Lightsn lights[0x100 * 4];
 } GfxPool; // size = 0x2AD50, 0x8 aligned
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 void Controller_Init(void);
 void Controller_UpdateInput(void);
 void Controller_ReadData(void);
@@ -83,11 +87,8 @@ s32 Timer_CreateTask(u64, TimerAction, s32*, s32);
 void Timer_Increment(s32* address, s32 value);
 void Timer_SetValue(s32* address, s32 value);
 void Timer_CompleteTask(TimerTask*);
-void Timer_Wait(u64);
 
 void Fault_ThreadEntry(OSMesg);
-void Fault_SetFrameBuffer(FrameBuffer*, u16, u16);
-void Fault_Init(void);
 
 typedef enum {
     /* 10 */ SI_READ_CONTROLLER = 10,
@@ -185,6 +186,10 @@ extern u8 sIdleThreadStack[0x1000]; // 801390A0
 extern OSThread gMainThread; // 8013A040
 extern u8 sMainThreadStack[0x1000]; // 8013A1F0
 extern OSThread gAudioThread; //8013B1F0
+
+#ifdef __cplusplus
+}
+#endif
 
 #define MESG_QUEUE_EMPTY -1
 

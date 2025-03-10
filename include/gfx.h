@@ -130,6 +130,10 @@ typedef struct Limb {
     /* 0x01C */ struct Limb* child;
 } Limb; // size = 0x20
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 void Graphics_NMIWipe(void);
 
 void Lights_SetOneLight(Gfx** dList, s32 dirX, s32 dirY, s32 dirZ, s32 colR, s32 colG, s32 colB, s32 ambR, s32 ambG, s32 ambB);
@@ -174,7 +178,6 @@ s32 Graphics_GetLargeTextWidth(char *text);
 void Graphics_DisplayLargeNumber(s32 xPos, s32 yPos, s32 number);
 void Graphics_DisplaySmallText(s32 xPos, s32 yPos, f32 xScale, f32 yScale, char *text);
 s32 Graphics_GetSmallTextWidth(char *text);
-void func_800A1540(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
 void Texture_BlendRGBA16(f32 weight, u16 size, u16 *src1, u16 *src2, u16 *dst);
 
 void RCP_SetupDL(Gfx** gfxP, s16 i);
@@ -231,6 +234,10 @@ void RCP_SetupDL_49(void);
 void RCP_SetupDL_44(void);
 void RCP_SetupDL_50(void);
 void RCP_SetupDL_61(s32 r, s32 g, s32 b, s32 a, s32 near, s32 far);
+
+#ifdef __cplusplus
+}
+#endif
 
 typedef enum SetupDL {
     /* 0x00 */ SETUPDL_0,
