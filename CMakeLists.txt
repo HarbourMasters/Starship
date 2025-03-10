@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.30)
+cmake_minimum_required(VERSION 3.24)
 
 # Set the project version and language
 project(Starship VERSION 0.1.0 LANGUAGES C CXX ASM)
@@ -248,7 +248,7 @@ include(FetchContent)
 FetchContent_Declare(
     lua
     GIT_REPOSITORY "https://github.com/marovira/lua"
-    GIT_TAG 49a74bfe83cc1ab0f2df19a36284e437d7f94fee
+    GIT_TAG 52261cee0461a14048fa34587fde30b116303ab6
 )
 
 FetchContent_MakeAvailable(lua)
