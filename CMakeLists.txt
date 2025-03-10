@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.16.0 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.30)
 
 # Set the project version and language
 project(Starship VERSION 0.1.0 LANGUAGES C CXX ASM)
@@ -233,12 +233,33 @@ file(DOWNLOAD "https://raw.githubusercontent.com/DLTcollab/sse2neon/refs/heads/m
 
 include_directories(${SSE2NEON_DIR})
 
+option(DR_LIBS_BUILD_TESTS OFF)
 FetchContent_Declare(
     dr_libs
     GIT_REPOSITORY https://github.com/mackron/dr_libs.git
-	GIT_TAG da35f9d6c7374a95353fd1df1d394d44ab66cf01
+	GIT_TAG 1445333280272d42cf3dcf6ce850bafa83b51543
 )
 FetchContent_MakeAvailable(dr_libs)
+
+#==================== SOL2 ======================
+
+include(FetchContent)
+
+FetchContent_Declare(
+    lua
+    GIT_REPOSITORY "https://github.com/marovira/lua"
+    GIT_TAG 49a74bfe83cc1ab0f2df19a36284e437d7f94fee
+)
+
+FetchContent_MakeAvailable(lua)
+
+FetchContent_Declare(
+    sol2
+    GIT_REPOSITORY https://github.com/ThePhD/sol2.git
+	GIT_TAG c1f95a773c6f8f4fde8ca3efe872e7286afe4444
+)
+FetchContent_MakeAvailable(sol2)
+target_link_libraries(${PROJECT_NAME} PRIVATE lua::lua sol2)
 
 #==============================================================================#
 # Libultraship Integration                                                     #

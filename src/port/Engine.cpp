@@ -40,6 +40,7 @@
 #include "audio/GameAudio.h"
 #include "port/patches/DisplayListPatch.h"
 #include "port/mods/PortEnhancements.h"
+#include "port/lua/scripting.h"
 
 #include <Fast3D/interpreter.h>
 #include <filesystem>
@@ -301,6 +302,7 @@ void GameEngine::Create() {
     osSetTime(0);
 #endif
     PortEnhancements_Init();
+    ScriptingLayer::Instance->Init();
 }
 
 void GameEngine::Destroy() {

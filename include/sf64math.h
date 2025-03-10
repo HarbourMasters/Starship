@@ -8,38 +8,38 @@
 #define MTXF_NEW 0
 #define MTXF_APPLY 1
 
-typedef struct {
+typedef struct Vec3f {
     /* 0x0 */ f32 x;
     /* 0x4 */ f32 y;
     /* 0x8 */ f32 z;
 } Vec3f; // size = 0xC
 
-typedef struct {
+typedef struct Vec3s {
     /* 0x0 */ s16 x;
     /* 0x2 */ s16 y;
     /* 0x4 */ s16 z;
 } Vec3s; // size = 0x6;
 
-typedef struct {
+typedef struct PosRot {
     /* 0x00 */ Vec3f pos;
     /* 0x0C */ Vec3f rot;
 } PosRot; // size = 0x18
 
-typedef struct {
+typedef struct CameraPoint {
     /* 0x00 */ Vec3f eye;
     /* 0x0C */ Vec3f at;
 } CameraPoint; // size = 0x18
 
-typedef struct {
+typedef struct Triangle {
     /* 0x0 */ s16 vtx[3];
 } Triangle; // size = 0x6
 
-typedef struct {
+typedef struct PlaneF {
     /* 0x0 */ Vec3f normal;
     /* 0xC */ f32 dist;
 } PlaneF; // size = 0x10
 
-typedef struct {
+typedef struct PlaneI {
     /* 0x0 */ Vec3s normal;
     /* 0x8 */ s32 dist;
 } PlaneI; // size = 0xC

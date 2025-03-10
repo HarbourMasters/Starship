@@ -1,0 +1,219 @@
+import re
+import os
+
+blacklist = [
+    'audio',
+    'portable-file-dialogs.h',
+    'rmonint.h',
+    'PR/',
+    'libultra/',
+    'libc/',
+    'dbgproto',
+    'prevent',
+    'piint',
+    'siint',
+    'sf64dma',
+    'osint'
+]
+
+def parse_enums(header):
+    try:
+        with open(header, 'r') as file:
+            lines = file.readlines()
+    except IOError:
+        raise RuntimeError("Failed to open header files for enums node in config")
+
+    # Regex pattern to match enum declarations
+    enum_regex = re.compile(r"enum\s+(\w+)\s*(?:\s*:\s*(\w+))?[\s\n\r]*\{")
+    
+    in_enum = False
+    enum_index = None
+    enum_name = ""
+    enum = {}
+    
+    for line in lines:
+        line = line.strip()
+
+        if not in_enum:
+            # Check if the line matches the enum declaration pattern
+            match = enum_regex.search(line)
+            if match and len(match.groups()) > 1:
+                enum_name = match.group(1)
+                enum[enum_name] = []
+                in_enum = True
+                enum_index = -1
+            continue
+
+        if '}' in line:
+            in_enum = False
+            continue
+
+        # Remove any comments and non-alphanumeric characters
+        line = re.sub(r'(/\*.*?\*/)|(//.*$)|([^a-zA-Z0-9=_\-\.])', '', line)
+
+        if len(line) == 0:
+            continue
+
+        if '=' in line:
+            # Extract the value after the '=' sign
+            value = line.split('=')[1].strip()
+            # Extract the name before the '=' sign
+            name = line.split('=')[0].strip()
+            enum_index = int(value, 0)  # Convert the value to an integer with base 0 (detects hex, oct, etc.)
+            enum[enum_name].append(name)
+        else:
+            # Increment the enum index if no '=' is found
+            enum_index += 1
+            enum[enum_name].append(line)
+    
+    for enum_name, values in enum.items():
+        print(f'auto enum_{enum_name} = lua["{enum_name}"].force();')
+        for i, key in enumerate(values):
+            if 'ifdef' in key or 'endif' in key or 'else' in key:
+                continue
+            print(f'enum_{enum_name}["{key}"] = {key};')
+        print('')
+
+def parse_structs(header):
+    try:
+        with open(header, 'r') as file:
+            lines = file.readlines()
+    except IOError:
+        raise RuntimeError("Failed to open header files for structs node in config")
+
+    struct_regex = re.compile(r"struct\s+(\w+)\s*(?:\s*:\s*(\w+))?[\s\n\r]*\{")
+
+    in_struct = False
+    struct_name = ""
+    found_union = False
+    struct = {}
+    
+    for line in lines:
+        line = line.strip()
+
+        if not in_struct:
+            match = struct_regex.search(line)
+            if match and len(match.groups()) > 1:
+                struct_name = match.group(1)
+                struct[struct_name] = []
+                in_struct = True
+            continue
+
+        if 'union' in line:
+            found_union = True
+            continue
+
+        if '}' in line and not found_union:
+            in_struct = False
+            continue
+            
+        if '}' in line and found_union:
+            found_union = False
+            continue
+
+        line = re.sub(r'(/\*.*?\*/)', '', line)
+
+        if ';' in line and not ':' in line:
+            # if ':' in line:
+            #     member_name = line.split(' ')[-3].split(':')[0]
+            #     continue
+            if '[' in line:
+                if len(line.split('[')) > 2:
+                    continue
+                member_name = line.split('[')[0].split(' ')[-1]
+            else:
+                member_name = line.split(';')[0].split(' ')[-1]
+            struct[struct_name].append(member_name)
+
+    for struct_name, members in struct.items():
+        if len(members) == 0:
+            continue
+        print(f'lua.new_usertype<{struct_name}>("{struct_name}",')
+        for i, key in enumerate(members):
+            key = key.replace('*', '')
+            print(f'    "{key}", sol::property(&{struct_name}::{key}, &{struct_name}::{key}){"," if i < len(members) - 1 else ""}')
+        print(');')
+        print('')
+
+def parse_events(header):
+    try:
+        with open(header, 'r') as file:
+            lines = file.readlines()
+    except IOError:
+        raise RuntimeError("Failed to open header files for events node in config")
+
+    in_event = False
+    event_name = ""
+    event = {}
+
+    for line in lines:
+        line = line.strip()
+        if not in_event:
+            if 'DEFINE_EVENT' in line:
+                if ');' in line:
+                    event_name = line.split('DEFINE_EVENT(')[1].split(')')[0].strip()
+                    event[event_name] = ['event']
+                    continue
+                event_name = line.split('DEFINE_EVENT(')[1].split(',')[0].strip()
+                event[event_name] = ['event']
+                in_event = True
+            continue
+
+        if ');' in line:
+            in_event = False
+            continue
+
+        if len(line) == 0:
+            continue
+
+        if ';' in line:
+            member_name = line.split(';')[0].split(' ')[-1]
+            event[event_name].append(member_name)
+    
+    for event_name, members in event.items():
+        print(f'lua["{event_name}ID"] = {event_name}ID;')
+        print(f'lua.new_usertype<{event_name}>("{event_name}",')
+        for i, key in enumerate(members):
+            key = key.replace('*', '')
+            print(f'    "{key}", sol::property(&{event_name}::{key}, &{event_name}::{key}){"," if i < len(members) - 1 else ""}')
+        print(');')
+        print('')
+
+def parse_externs(header):
+    try:
+        with open(header, 'r') as file:
+            lines = file.readlines()
+    except IOError:
+        raise RuntimeError("Failed to open header files for events node in config")
+
+    for line in lines:
+        line = re.sub(r'\s+', ' ', line.strip())
+        if line.startswith('extern') and not '"C"' in line and not '(' in line and not 'Matrix' in line and not 'Mtx' in line and not '*' in line and not '[' in line:
+            var_name = line.split(' ')[2].split(';')[0]
+            if '[' in var_name:
+                var_name = var_name.split('[')[0]
+            print(f'lua["{var_name}"] = &{var_name};')
+
+def is_blacklisted(file):
+    for item in blacklist:
+        if item in file:
+            return True
+    return False
+
+if __name__ == "__main__":
+    for root, dirs, files in os.walk("include"):
+        for file in files:
+            # Join root and file to get full path
+            file_path = os.path.join(root, file)
+            # Check if the file is blacklisted
+            if(is_blacklisted(file_path)):
+                continue
+
+            parse_enums(file_path)
+            parse_structs(file_path)
+            parse_externs(file_path)
+    
+    for root, dirs, files in os.walk("src/port/hooks/list"):
+        for file in files:
+            parse_events(os.path.join(root, file))
+

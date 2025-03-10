@@ -7,6 +7,10 @@
 #include "sf64player.h"
 #include "sf64mesg.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 extern f32 D_AQ_801C4188;
 
 void Aquas_CsAqFishGroup_Update(Actor*);
@@ -24,51 +28,51 @@ void Area6_LevelStart(Player *player);
 void Area6_LevelComplete(Player*);
 
 void Zoness_ActorDebris_Spawn(Vec3f*, Vec3f*, f32, f32, f32, s32, f32, s32, s32);
-void Zoness_ZoBird_Draw(ZoBird* this);
-void Zoness_ZoBird_Update(ZoBird* this);
-void Zoness_ZoDodora_Update(Actor* this);
-void Zoness_ZoDodora_Draw(Actor* this);
-void Zoness_ZoFish_Update(Actor* this);
-void Zoness_ZoFish_Draw(Actor* this);
-void Zoness_ZoEnergyBall_Init(Actor* this);
-void Zoness_ZGull_Update(Actor* this);
-void Zoness_ZGull_Draw(Actor* this);
+void Zoness_ZoBird_Draw(ZoBird* thisx);
+void Zoness_ZoBird_Update(ZoBird* thisx);
+void Zoness_ZoDodora_Update(Actor* thisx);
+void Zoness_ZoDodora_Draw(Actor* thisx);
+void Zoness_ZoFish_Update(Actor* thisx);
+void Zoness_ZoFish_Draw(Actor* thisx);
+void Zoness_ZoEnergyBall_Init(Actor* thisx);
+void Zoness_ZGull_Update(Actor* thisx);
+void Zoness_ZGull_Draw(Actor* thisx);
 void Zoness_ZoEnergyBall_Init2(Actor* actor);
-void Zoness_ZoEnergyBall_Update(Actor* this);
-void Zoness_ZoEnergyBall_Draw(Actor* this);
-void Zoness_ZoTroika_Draw(Actor* this);
-void Zoness_ZoTroika_Update(Actor* this);
-void Zoness_ZoShrimp_Update(Actor* this);
-void Zoness_ZoShrimp_Draw(Actor* this);
-void Zoness_ZoObnema_Update(Actor* this);
+void Zoness_ZoEnergyBall_Update(Actor* thisx);
+void Zoness_ZoEnergyBall_Draw(Actor* thisx);
+void Zoness_ZoTroika_Draw(Actor* thisx);
+void Zoness_ZoTroika_Update(Actor* thisx);
+void Zoness_ZoShrimp_Update(Actor* thisx);
+void Zoness_ZoShrimp_Draw(Actor* thisx);
+void Zoness_ZoObnema_Update(Actor* thisx);
 void Zoness_ZoObnema_Draw(Actor* actor);
-void Zoness_ZoSarumarine_Init(Boss* this);
-void Zoness_ZoSarumarine_Draw(Boss* this);
-void Zoness_ZoSarumarine_Update(Boss* this);
-void Zoness_ZoBall_Update(ZoBall* this);
+void Zoness_ZoSarumarine_Init(Boss* thisx);
+void Zoness_ZoSarumarine_Draw(Boss* thisx);
+void Zoness_ZoSarumarine_Update(Boss* thisx);
+void Zoness_ZoBall_Update(ZoBall* thisx);
 void Zoness_ZoBall_Draw(Actor* actor);
-void Zoness_ZoMine_Update(Actor* this);
+void Zoness_ZoMine_Update(Actor* thisx);
 void Zoness_ZoMine_Draw(ZoMine* actor);
-void Zoness_ZoCraneMagnet_Update(Actor* this);
-void Zoness_ZoCraneMagnet_Draw(Actor* this);
-void Zoness_ZoSpikeBall_Update(Actor* this);
-void Zoness_ZoSpikeBall_Draw(Actor* this);
+void Zoness_ZoCraneMagnet_Update(Actor* thisx);
+void Zoness_ZoCraneMagnet_Draw(Actor* thisx);
+void Zoness_ZoSpikeBall_Update(Actor* thisx);
+void Zoness_ZoSpikeBall_Draw(Actor* thisx);
 void Zoness_ZoTanker_Init(Actor* actor);
-void Zoness_ZoTanker_Update(Actor* this);
+void Zoness_ZoTanker_Update(Actor* thisx);
 void Zoness_ZoTanker_Draw(Actor* actor);
-void Zoness_ZoContainer_Init(Actor* this);
-void Zoness_ZoContainer_Update(Actor* this);
-void Zoness_ZoContainer_Draw(Actor* this);
-void Zoness_ZoRadarBuoy_Update(Actor* this);
+void Zoness_ZoContainer_Init(Actor* thisx);
+void Zoness_ZoContainer_Update(Actor* thisx);
+void Zoness_ZoContainer_Draw(Actor* thisx);
+void Zoness_ZoRadarBuoy_Update(Actor* thisx);
 void Zoness_ZoRadarBuoy_Draw(Actor* actor);
-void Zoness_ZoSupplyCrane_Init(Actor* this);
-void Zoness_ZoSupplyCrane_Update(Actor* this);
-void Zoness_ZoSupplyCrane_Draw(Actor* this);
-void Zoness_ZoSearchLight_Update(Actor* this);
-void Zoness_ZoSearchLight_Draw(Actor* this);
-void Zoness_ZoBarrier_Init(Actor* this);
-void Zoness_ZoBarrier_Update(Actor* this);
-void Zoness_ZoBarrier_Draw(Actor* this);
+void Zoness_ZoSupplyCrane_Init(Actor* thisx);
+void Zoness_ZoSupplyCrane_Update(Actor* thisx);
+void Zoness_ZoSupplyCrane_Draw(Actor* thisx);
+void Zoness_ZoSearchLight_Update(Actor* thisx);
+void Zoness_ZoSearchLight_Draw(Actor* thisx);
+void Zoness_ZoBarrier_Init(Actor* thisx);
+void Zoness_ZoBarrier_Update(Actor* thisx);
+void Zoness_ZoBarrier_Draw(Actor* thisx);
 void Zoness_LevelStart(Player* player);
 void Zoness_LevelComplete(Player* player);
 
@@ -147,5 +151,9 @@ void Aquas_Boss301_Draw(Boss*);
 void Aquas_Actor188_Update(Actor*);
 void Aquas_Actor188_Draw(Actor*);
 void Aquas_Update360(Player*);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

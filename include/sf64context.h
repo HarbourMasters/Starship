@@ -206,7 +206,6 @@ extern s32 gLight1B;
 extern s32 gAmbientR;
 extern s32 gAmbientG;
 extern s32 gAmbientB;
-extern UNK_TYPE F_801784560;
 extern s32 gLight2R;
 extern s32 gLight2G;
 extern s32 gLight2B;

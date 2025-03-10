@@ -75,7 +75,8 @@ typedef enum OptionId {
     /*  200 */ OPTION_NAME_ENTRY = 200,
     /*  300 */ OPTION_SCORE = 300,
     /*  400 */ OPTION_INVOICE = 400,
-    /*  401 */ OPTION_MAX
+    /*  401 */ OPTION_MAX = 401,
+    /*  500 */ OPTION_LANGUAGE = 500,
 } OptionId;
 
 extern u8* gBSSMapPlanetTextures[9];

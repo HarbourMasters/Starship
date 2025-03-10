@@ -92,7 +92,10 @@ typedef enum WipeMode {
 } WipeMode;
 
 typedef struct Color_RGBA32 {
-    u8 r, g, b, a;
+    u8 r;
+    u8 g;
+    u8 b;
+    u8 a;
 } Color_RGBA32; // size = 0x4
 
 typedef union {

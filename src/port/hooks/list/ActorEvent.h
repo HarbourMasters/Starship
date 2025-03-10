@@ -1,5 +1,4 @@
-#pragma once
-
+#ifndef __LUA__
 #include "gfx.h"
 #include "sf64object.h"
 #include "port/hooks/impl/EventSystem.h"
@@ -14,28 +13,29 @@ typedef enum {
     OBJECT_TYPE_ITEM,
     OBJECT_TYPE_EFFECT,
 } ObjectEventType;
+#endif
 
 DEFINE_EVENT(ObjectInitEvent,
     ObjectEventType type;
-    void* object;
+    Object* object;
 );
 
 DEFINE_EVENT(ObjectUpdateEvent,
     ObjectEventType type;
-    void* object;
+    Object* object;
 );
 
 DEFINE_EVENT(ObjectDrawPreSetupEvent,
     ObjectEventType type;
-    void* object;
+    Object* object;
 );
 
 DEFINE_EVENT(ObjectDrawPostSetupEvent,
     ObjectEventType type;
-    void* object;
+    Object* object;
 );
 
 DEFINE_EVENT(ObjectDestroyEvent,
     ObjectEventType type;
-    void* object;
+    Object* object;
 );

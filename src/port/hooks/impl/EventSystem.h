@@ -1,10 +1,8 @@
 #pragma once
 
-#include <stdint.h>
-#include <stdbool.h>
-#include <stddef.h>
+#include "port/lua/scripting.h"
 
-typedef uint32_t EventID;
+typedef int32_t EventID;
 typedef uint32_t ListenerID;
 
 typedef enum {
@@ -19,17 +17,12 @@ typedef struct {
 
 typedef void (*EventCallback)(IEvent*);
 
-typedef struct {
-    EventPriority priority;
-    EventCallback function;
-} EventListener;
-
 #ifdef INIT_EVENT_IDS
 #define DECLARE_EVENT(eventName) \
-    uint32_t eventName##ID = -1;
+    EventID eventName##ID = -1;
 #else
 #define DECLARE_EVENT(eventName) \
-    extern uint32_t eventName##ID;
+    extern EventID eventName##ID;
 #endif
 
 #define DEFINE_EVENT(eventName, ...) \
@@ -60,7 +53,8 @@ typedef struct {
     }
 
 #define REGISTER_EVENT(eventType) \
-    eventType##ID = EventSystem_RegisterEvent();
+    eventType##ID = EventSystem_RegisterEvent(); \
+    BindEvent(#eventType, eventType##ID);
 
 #define REGISTER_LISTENER(eventType, callback, priority) \
     EventSystem_RegisterListener(eventType##ID, callback, priority);
@@ -69,12 +63,21 @@ typedef struct {
 #include <array>
 #include <vector>
 #include <unordered_map>
+#include <sol/sol.hpp>
+
+typedef std::variant<EventCallback, sol::function> SmartFunctionCallback;
+#define is_type(var, type) std::holds_alternative<type>((var))
+
+struct EventListener {
+    EventPriority priority;
+    SmartFunctionCallback function;
+};
 
 class EventSystem {
 public:
     static EventSystem* Instance;
     EventID RegisterEvent();
-    ListenerID RegisterListener(EventID id, EventCallback callback, EventPriority priority = EVENT_PRIORITY_NORMAL);
+    ListenerID RegisterListener(EventID id, const SmartFunctionCallback& callback, EventPriority priority = EVENT_PRIORITY_NORMAL);
     void UnregisterListener(EventID ev, ListenerID id);
     void CallEvent(EventID id, IEvent* event);
 private:

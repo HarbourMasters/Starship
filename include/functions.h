@@ -7,6 +7,10 @@
 #include "sf64mesg.h"
 #include "fox_hud.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 // fox_360
 void AllRange_FortunaIntro(Player*);
 void AllRange_GetStarWolfHits(Actor*);
@@ -22,15 +26,15 @@ void BoLaserCannon_Draw(Actor*);
 bool AllRange_PlayMessage(u16*, RadioCharacterId);
 void AllRange_GreatFoxRepair(Player*);
 void AllRange_ClearRadio(void);
-void ActorAllRange_SetShadowData(Actor* this);
+void ActorAllRange_SetShadowData(Actor* thisx);
 void ActorAllRange_SpawnTeam(void);
 void ActorAllRange_PlayMessage(u16* msg, RadioCharacterId character);
 void ActorAllRange_UpdateStarWolfEvents(Actor*);
 void ActorAllRange_UpdateEnemyEvents(Actor*);
 void ActorAllRange_ApplyDamage(Actor*);
 bool func_360_80031900(Actor*);
-void ActorAllRange_Update(Actor* this);
-void ActorAllRange_Draw(Actor* this);
+void ActorAllRange_Update(Actor* thisx);
+void ActorAllRange_Draw(Actor* thisx);
 
 //fox_beam
 void PlayerShot_CollisionCheck(PlayerShot* shot);
@@ -51,7 +55,7 @@ void Background_dummy_80040CDC(void);
 void Background_DrawGround(void);
 
 // fox_boss
-void Boss_AwardBonus(Boss* this);
+void Boss_AwardBonus(Boss* thisx);
 void Boss299_Init(Boss* boss);
 void Boss299_Update(Boss* boss);
 void Boss299_Draw(Boss* boss);
@@ -342,7 +346,7 @@ void Effect_Effect351_Update(Effect*);
 void Effect_Effect365_Update(Effect*);
 void Effect_Effect365_Draw(Effect*);
 void Effect_Effect367_Update(Effect*);
-void func_effect_8007E93C(Effect* this, u32 objId, f32 xPos, f32 yPos, f32 zPos, f32 speed);
+void func_effect_8007E93C(Effect* thisx, u32 objId, f32 xPos, f32 yPos, f32 zPos, f32 speed);
 void func_effect_8007EE68(ObjectId objId, Vec3f* pos, Vec3f* rot, Vec3f* arg3, Vec3f* arg4, f32 scale2);
 void func_effect_8007F04C(ObjectId objId, f32 xPos, f32 yPos, f32 zPos, f32 xRot, f32 yRot, f32 zRot, f32 unkX, f32 unkY, f32 unkZ, f32 xVel, f32 yVel, f32 zVel, f32 scale2);
 void Effect_EnemyLaser(ObjectId objId, f32 xPos, f32 yPos, f32 zPos, f32 speed);
@@ -369,7 +373,7 @@ void Effect_Effect395_Draw(Effect*);
 void Effect_Effect391_Spawn(f32, f32, f32, f32, f32);
 void Effect_Effect391_Update(Effect*);
 void Effect_Effect391_Draw(Effect*);
-void Effect_Effect399_Setup(Effect* this, f32 xPos, f32 yPos, f32 zPos, f32 xVel, f32 yVel, f32 zVel, f32 arg7, s32 arg8);
+void Effect_Effect399_Setup(Effect* thisx, f32 xPos, f32 yPos, f32 zPos, f32 xVel, f32 yVel, f32 zVel, f32 arg7, s32 arg8);
 void func_effect_80083D2C(f32 xPos, f32 yPos, f32 zPos, f32 srcZ);
 void Effect_Effect399_Update(Effect*);
 void Effect_Effect399_Draw(Effect*);
@@ -408,14 +412,14 @@ void HUD_BombCounter_Draw(f32, f32);
 void HUD_Draw(void);
 void FoBase_Draw(Boss*);
 void FoBase_BurnEffects(Boss*, s32);
-s32 FoBase_ExplodeCs(Boss* this);
+s32 FoBase_ExplodeCs(Boss* thisx);
 bool ActorTeamBoss_SetTarget(Actor*);
 void FoBase_Update(Boss*);
 bool ActorTeamBoss_ObstacleCheck(Actor*);
 bool ActorTeamBoss_SomerSault(Actor*);
 
 void ActorTeamBoss_Init(Actor*);
-void ActorTeamBoss_Update(Actor* this);
+void ActorTeamBoss_Update(Actor* thisx);
 void Aquas_CsIntroActors_Update(Actor*);
 void Aquas_CsLevelStart(Player*);
 void Aquas_AqBump2_Setup(Actor*, s32);
@@ -513,5 +517,9 @@ void gSPDisplayList(Gfx* pkt, Gfx* dl);
 void gSPDisplayListOffset(Gfx* pkt, Gfx* dl, int offset);
 void gSPVertex(Gfx* pkt, uintptr_t v, int n, int v0);
 void gSPInvalidateTexCache(Gfx* pkt, uintptr_t texAddr);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
