@@ -454,26 +454,37 @@ s8 Audio_GetSfxReverb(u8 bankId, u8 entryIndex, u8 channelId) {
 
 s8 Audio_GetSfxPan(f32 xPos, f32 zPos, u8 mode) {
     if (sSfxChannelLayout != SFXCHAN_3) {
-        f32 absx = ABSF(xPos);
-        f32 absz = ABSF(zPos);
-        f32 pan;
+        float absx = ABSF(xPos);
+        float absz = ABSF(zPos);
 
-        if ((absx < 1.0f) && (absz < 1.0f)) {
+        // [0, 0] would be a degenerate value
+        // Consider these to be close to zero and put in center
+        if (absx < 1.f && absz < 1.f) {
             return 64;
         }
-        absx = MIN(1200.0f, absx);
-        absz = MIN(1200.0f, absz);
 
-        if ((xPos == 0) && (zPos == 0)) {
-            pan = 0.5f;
-        } else if ((xPos >= 0.f) && (absz <= absx)) {
-            pan = 1.0f - ((2400.0f - absx) / (10.0f * (2400.0f - absz)));
-        } else if ((xPos < 0.0f) && (absz <= absx)) {
-            pan = (2400.0f - absx) / (10.0f * (2400.0f - absz));
+        if (GetNumAudioChannels() == 2) {
+            float pan;
+            absx = MIN(1200.0f, absx);
+            absz = MIN(1200.0f, absz);
+
+            if ((xPos == 0) && (zPos == 0)) {
+                pan = 0.5f;
+            } else if ((xPos >= 0.f) && (absz <= absx)) {
+                pan = 1.0f - ((2400.0f - absx) / (10.0f * (2400.0f - absz)));
+            } else if ((xPos < 0.0f) && (absz <= absx)) {
+                pan = (2400.0f - absx) / (10.0f * (2400.0f - absz));
+            } else {
+                pan = (xPos / (2.5f * absz)) + 0.5f;
+            }
+            return ROUND(pan * 127.0f);
         } else {
-            pan = (xPos / (2.5f * absz)) + 0.5f;
+            // Calculate the angle in radians
+            float angle = atan2f(xPos, -zPos);
+            float normalized_angle = (angle / (2 * M_PI)) + 0.5f;
+            s8 pan = (s8) (normalized_angle * 127);
+            return pan;
         }
-        return ROUND(pan * 127.0f);
     } else if (mode != 4) {
         return ((mode & 1) * 127);
     }
@@ -507,7 +518,6 @@ void Audio_SetSfxProperties(u8 bankId, u8 entryIndex, u8 channelId) {
     f32 freqMod = 1.0f;
     s8 pan = 64;
     SfxBankEntry* entry = &sSfxBanks[bankId][entryIndex];
-
     switch (bankId) {
         case SFX_BANK_PLAYER:
         case SFX_BANK_1:

@@ -37,15 +37,17 @@ void aLoadBufferImpl(const void* source_addr, uint16_t dest_addr, uint16_t nbyte
 void aSaveBufferImpl(uint16_t source_addr, int16_t* dest_addr, uint16_t nbytes);
 void aLoadADPCMImpl(int num_entries_times_16, const int16_t* book_source_addr);
 void aSetBufferImpl(uint8_t flags, uint16_t in, uint16_t out, uint16_t nbytes);
-void aInterleaveImpl(uint16_t left, uint16_t right);
+void aInterleaveImpl(uint16_t left, uint16_t right, uint16_t center, uint16_t lfe, uint16_t surround_left, uint16_t surround_right, uint16_t num_audio_channels);
 void aDMEMMoveImpl(uint16_t in_addr, uint16_t out_addr, int nbytes);
 void aSetLoopImpl(ADPCM_STATE* adpcm_loop_state);
 void aADPCMdecImpl(uint8_t flags, ADPCM_STATE state);
 void aResampleImpl(uint8_t flags, uint16_t pitch, RESAMPLE_STATE state);
-void aEnvSetup1Impl(uint8_t initial_vol_wet, uint16_t rate_wet, uint16_t rate_left, uint16_t rate_right);
-void aEnvSetup2Impl(uint16_t initial_vol_left, uint16_t initial_vol_right);
-void aEnvMixerImpl(uint16_t in_addr, uint16_t n_samples, bool swap_reverb, bool neg_3, bool neg_2, bool neg_left,
-                   bool neg_right, int32_t wet_dry_addr, u32 unk);
+void aEnvSetup1Impl(uint8_t initial_vol_wet, uint16_t rate_wet, uint16_t rate_left, uint16_t rate_right,
+    uint16_t rate_center, uint16_t rate_lfe, uint16_t rate_rear_left, uint16_t rate_rear_right);
+void aEnvSetup2Impl(uint16_t initial_vol_left, uint16_t initial_vol_right, int16_t initial_vol_center,
+    int16_t initial_vol_lfe, int16_t initial_vol_rear_left, int16_t initial_vol_rear_right);
+void aEnvMixerImpl(uint16_t in_addr, uint16_t n_samples, bool swap_reverb, bool neg_left,
+                   bool neg_right, uint32_t wet_dry_addr, uint32_t haas_temp_addr, uint32_t num_channels);
 void aMixImpl(uint16_t count, int16_t gain, uint16_t in_addr, uint16_t out_addr);
 void aS8DecImpl(uint8_t flags, ADPCM_STATE state);
 void aAddMixerImpl(uint16_t count, uint16_t in_addr, uint16_t out_addr);
@@ -65,16 +67,17 @@ void aUnkCmd19Impl(uint8_t f, uint16_t count, uint16_t out_addr, uint16_t in_add
 #define aSaveBuffer(pkt, s, d, c) aSaveBufferImpl(s, d, c)
 #define aLoadADPCM(pkt, c, d) aLoadADPCMImpl(c, d)
 #define aSetBuffer(pkt, f, i, o, c) aSetBufferImpl(f, i, o, c)
-#define aInterleave(pkt, l, r) aInterleaveImpl(l, r)
+#define aInterleave(pkt, l, r, c, lfe, sl, sr, num_channels) aInterleaveImpl(l, r, c, lfe, sl, sr, num_channels)
 #define aDMEMMove(pkt, i, o, c) aDMEMMoveImpl(i, o, c)
 #define aSetLoop(pkt, a) aSetLoopImpl(a)
 #define aADPCMdec(pkt, f, s) aADPCMdecImpl(f, s)
 #define aResample(pkt, f, p, s) aResampleImpl(f, p, s)
-#define aEnvSetup1(pkt, initialVolReverb, rampReverb, rampLeft, rampRight) \
-    aEnvSetup1Impl(initialVolReverb, rampReverb, rampLeft, rampRight)
-#define aEnvSetup2(pkt, initialVolLeft, initialVolRight) aEnvSetup2Impl(initialVolLeft, initialVolRight)
-#define aEnvMixer(pkt, inBuf, nSamples, swapReverb, negLeft, negRight, dryLeft, dryRight, wetLeft, wetRight) \
-    aEnvMixerImpl(inBuf, nSamples, swapReverb, negLeft, negRight, dryLeft, dryRight, wetLeft, wetRight)
+#define aEnvSetup1(pkt, initialVolReverb, rampReverb, rampLeft, rampRight, rampCenter, rampLfe, rampRLeft, rampRRight) \
+    aEnvSetup1Impl(initialVolReverb, rampReverb, rampLeft, rampRight, rampCenter, rampLfe, rampRLeft, rampRRight)
+#define aEnvSetup2(pkt, initialVolLeft, initialVolRight, initialVolCenter, initialVolLfe, initialVolRLeft, initialVolRRight) \
+    aEnvSetup2Impl(initialVolLeft, initialVolRight, initialVolCenter, initialVolLfe, initialVolRLeft, initialVolRRight)
+#define aEnvMixer(pkt, inAddr, nSamples, swapReverb, negLeft, negRight, wetDryAddr, haasTempAddr, numChannels) \
+    aEnvMixerImpl(inAddr, nSamples, swapReverb, negLeft, negRight, wetDryAddr, haasTempAddr, numChannels)
 #define aMix(pkt, c, g, i, o) aMixImpl(c, g, i, o)
 #define aS8Dec(pkt, f, s) aS8DecImpl(f, s)
 #define aAddMixer(pkt, s, d, c) aAddMixerImpl(s, d, c)
