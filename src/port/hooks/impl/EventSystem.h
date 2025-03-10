@@ -5,13 +5,13 @@
 typedef int32_t EventID;
 typedef uint32_t ListenerID;
 
-typedef enum {
+typedef enum EventPriority {
     EVENT_PRIORITY_LOW,
     EVENT_PRIORITY_NORMAL,
     EVENT_PRIORITY_HIGH,
 } EventPriority;
 
-typedef struct {
+typedef struct IEvent {
     bool cancelled;
 } IEvent;
 

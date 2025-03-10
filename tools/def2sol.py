@@ -18,7 +18,7 @@ blacklist = [
     'mods.h'
 ]
 
-def parse_enums(header):
+def parse_enums(header, as_value=False):
     try:
         with open(header, 'r') as file:
             lines = file.readlines()
@@ -62,18 +62,26 @@ def parse_enums(header):
             # Extract the name before the '=' sign
             name = line.split('=')[0].strip()
             enum_index = int(value, 0)  # Convert the value to an integer with base 0 (detects hex, oct, etc.)
-            enum[enum_name].append(name)
+            enum[enum_name].append({
+                'name': name,
+                'value': enum_index
+            })
         else:
             # Increment the enum index if no '=' is found
             enum_index += 1
-            enum[enum_name].append(line)
+            enum[enum_name].append({
+                'name': line,
+                'value': enum_index
+            })
     
     for enum_name, values in enum.items():
         print(f'auto enum_{enum_name} = lua["{enum_name}"].force();')
-        for i, key in enumerate(values):
-            if 'ifdef' in key or 'endif' in key or 'else' in key:
+        for i, entry in enumerate(values):
+            key = entry['name']
+            value = entry['value']
+            if 'ifdef' in key or 'endif' in entry['name'] or 'else' in key:
                 continue
-            print(f'enum_{enum_name}["{key}"] = {key};')
+            print(f'enum_{enum_name}["{key.replace('EVENT_PRIORITY_', '')}"] = {value if as_value else key};')
         print('')
 
 def parse_structs(header):
@@ -227,10 +235,13 @@ if __name__ == "__main__":
             if(is_blacklisted(file_path)):
                 continue
 
-            parse_enums(file_path)
+            parse_enums(file_path, True if 'scripting.h' in file_path else False)
             parse_structs(file_path)
             parse_externs(file_path)
     
+    parse_enums("src/port/hooks/impl/EventSystem.h")
+    parse_structs("src/port/hooks/impl/EventSystem.h")
+
     for root, dirs, files in os.walk("src/port/hooks/list"):
         for file in files:
             parse_events(os.path.join(root, file))
