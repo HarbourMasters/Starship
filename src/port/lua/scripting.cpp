@@ -7,9 +7,12 @@
 #include "hud.h"
 #include "assets.h"
 #include "fox_map.h"
+#include <filesystem>
 
 #define SOL_ALL_SAFETIES_ON 1
 #include <sol/sol.hpp>
+
+namespace fs = std::filesystem;
 
 ScriptingLayer* ScriptingLayer::Instance = new ScriptingLayer();
 sol::state lua;
@@ -23,14 +26,14 @@ void ScriptingLayer::Init() {
 
     #include "scripts/autobind.gen"
 
-    try
-    {
-        lua.safe_script_file("scripts/test.lua");
-        std::cout << "[CPP S1] Lua File read OK!\n";
-    }
-    catch (const sol::error& e)
-    {
-        // Something went wrong with loading this script
+    try {
+        // Remove this later
+        for (const auto& entry : fs::directory_iterator("scripts")) {
+            if (entry.path().extension() == ".lua") {
+                lua.safe_script_file(entry.path().string());
+            }
+        }
+    } catch (const sol::error& e) {
         std::cout << std::string(e.what()) << "\n";
         return 0;
     }
