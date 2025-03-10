@@ -170,16 +170,17 @@ void Lib_TextureRect_IA16_MirY(Gfx **gfxPtr, u16* texture, u32 width, u32 height
 void Lib_TextureRect_IA16_MirXY(Gfx **gfxPtr, u16* texture, u32 width, u32 height, f32 xPos, f32 yPos, f32 xScale, f32 yScale);
 void Lib_TextureRect_RGBA32(Gfx **gfxPtr, u32* texture, u32 width, u32 height, f32 xPos, f32 yPos, f32 xScale, f32 yScale);
 void Graphics_FillRectangle(Gfx **gfxPtr, s32 ulx, s32 uly, s32 lrx, s32 lry, u8 r, u8 g, u8 b, u8 a);
-u16*  Graphics_SetupTextureRender(Gfx **gfxPtr, u8 width, u8 height);
+u16* Graphics_SetupTextureRender(Gfx **gfxPtr, u8 width, u8 height);
 void Graphics_DisplayHUDNumber(s32 xPos, s32 yPos, s32 number);
 void Graphics_DisplaySmallNumber(s32 xPos, s32 yPos, s32 number);
-void Graphics_DisplayLargeText(s32 xPos, s32 yPos, f32 xScale, f32 yScale, char *text);
-s32 Graphics_GetLargeTextWidth(char *text);
+void Graphics_DisplayLargeText(s32 xPos, s32 yPos, f32 xScale, f32 yScale, const char *text);
+s32 Graphics_GetLargeTextWidth(const char *text);
 void Graphics_DisplayLargeNumber(s32 xPos, s32 yPos, s32 number);
-void Graphics_DisplaySmallText(s32 xPos, s32 yPos, f32 xScale, f32 yScale, char *text);
-s32 Graphics_GetSmallTextWidth(char *text);
+void Graphics_DisplaySmallText(s32 xPos, s32 yPos, f32 xScale, f32 yScale, const char *text);
+s32 Graphics_GetSmallTextWidth(const char *text);
 void Texture_BlendRGBA16(f32 weight, u16 size, u16 *src1, u16 *src2, u16 *dst);
 
+void RCP_AutoSetupDL(s16 i);
 void RCP_SetupDL(Gfx** gfxP, s16 i);
 void RCP_SetFog(Gfx** gfxP, s32 r, s32 g, s32 b, s32 a, s32 near, s32 far);
 void RCP_SetupDL_0(void);

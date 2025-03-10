@@ -1,7 +1,8 @@
 function OnPlayUpdate(ev)
-    print(ev.player.pos.x)
-    print(ev.player.pos.y)
-    print(ev.player.pos.z)
+    print("OnPlayUpdate 1")
+    -- HUD_LivesCount2_Draw(50.0, 50.0, 2);
+    RCP_AutoSetupDL(SetupDL.SETUPDL_76_POINT)
+    Graphics_DisplaySmallText(50, 50, 1.0, 1.0, "RUNNING FROM LUA");
 end
 
-RegisterListener(PlayerPostUpdateEventID, OnPlayUpdate, EventPriority.NORMAL)
+RegisterListener(DrawLivesCounterHUDEventID, OnPlayUpdate, EventPriority.NORMAL)

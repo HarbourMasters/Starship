@@ -4,7 +4,6 @@
 
 #include "fox_co.h"
 #include "hit64.h"
-#include "mods.h"
 #include "hud.h"
 #include "assets.h"
 #include "fox_map.h"
@@ -14,8 +13,6 @@
 
 ScriptingLayer* ScriptingLayer::Instance = new ScriptingLayer();
 sol::state lua;
-
-#define BIND_STRUCT()
 
 void ScriptingLayer::Init() {
     lua.open_libraries(sol::lib::base, sol::lib::io, sol::lib::math, sol::lib::table);

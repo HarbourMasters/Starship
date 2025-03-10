@@ -223,7 +223,7 @@ enum SfxID {
     NA_SE_EN_ANDROSS_ROBOT      = 0x11030073,
     NA_SE_EN_ANDROSS_BRAIN      = 0x11034074,
     NA_SE_EN_ANDROSS_EYE        = 0x11032075,
-    NA_SE_OB_ROUTE_EXPLOSION1   =  0x1140307,6
+    NA_SE_OB_ROUTE_EXPLOSION1   = 0x11403076,
     NA_SE_OB_FISH_AWAY          = 0x19400077,
     NA_SE_OB_AQ_PILLAR_BROKE    = 0x19021078,
     NA_SE_WARP_OUT              = 0x11407079,
@@ -462,4 +462,9 @@ enum SfxID {
     NA_SE_MISSION_COMPLETE      = 0x49008034,
     NA_SE_BANL4_UNK_2           = 0x40000035, // Unreferenced. Hard to make out what it is
     NA_SE_TIME_OVER             = 0x4900D036,
+};
+
+enum ScreenSize {
+    WIDTH = 320,
+    HEIGHT = 240,
 };
