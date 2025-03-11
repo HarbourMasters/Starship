@@ -82,7 +82,7 @@ void AudioThread_CreateNextAudioBuffer(s16* samples, u32 num_samples) {
     AudioSynth_Update(gCurAbiCmdBuffer, &abiCmdCount, samples, num_samples);
 
     // Spectrum Analyzer fix
-    memcpy(gAiBuffers[gCurAiBuffIndex], samples, num_samples * sizeof(s16));
+    memcpy(gAiBuffers[gCurAiBuffIndex], samples, GetNumAudioChannels() * num_samples * sizeof(s16));
 
     gAudioRandom = osGetCount() * (gAudioRandom + gAudioTaskCountQ);
 }
