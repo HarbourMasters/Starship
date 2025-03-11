@@ -1,6 +1,7 @@
 #include "scripting.h"
 #include "port/hooks/Events.h"
 #include "fox_option.h"
+#include <spdlog/spdlog.h>
 
 #include "fox_co.h"
 #include "hit64.h"
@@ -17,11 +18,15 @@ namespace fs = std::filesystem;
 ScriptingLayer* ScriptingLayer::Instance = new ScriptingLayer();
 sol::state lua;
 
+std::vector<std::pair<EventID, ListenerID>> RegisteredListeners;
+
 void ScriptingLayer::Init() {
     lua.open_libraries(sol::lib::base, sol::lib::io, sol::lib::math, sol::lib::table);
 
     lua["RegisterListener"] = [](EventID eventId, const sol::function& callback, uint32_t priority) {
-        return EventSystem::Instance->RegisterListener(eventId, callback, (EventPriority) priority);
+        auto lid = EventSystem::Instance->RegisterListener(eventId, callback, (EventPriority) priority);
+        RegisteredListeners.emplace_back(eventId, lid);
+        return lid;
     };
 
     #include "scripts/autobind.gen"
@@ -34,9 +39,23 @@ void ScriptingLayer::Init() {
             }
         }
     } catch (const sol::error& e) {
-        std::cout << std::string(e.what()) << "\n";
+        SPDLOG_ERROR(std::string(e.what()));
         return 0;
     }
+}
+
+void ScriptingLayer::Clean() {
+    for (const auto& [eventId, listenerId] : RegisteredListeners) {
+        EventSystem::Instance->UnregisterListener(eventId, listenerId);
+    }
+    RegisteredListeners.clear();
+}
+
+void ScriptingLayer::Reload() {
+    this->Clean();
+    lua.collect_garbage();
+    lua = sol::state();
+    this->Init();
 }
 
 extern "C" void BindEvent(const char* name, EventID id) {

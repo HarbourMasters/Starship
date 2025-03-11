@@ -13,6 +13,7 @@
 #include "port/Engine.h"
 #include "port/notification/notification.h"
 #include "utils/StringHelper.h"
+#include "src/port/lua/scripting.h"
 
 #ifdef __SWITCH__
 #include <port/switch/SwitchImpl.h>
@@ -637,6 +638,10 @@ void DrawDebugMenu() {
             Ship::Switch::ApplyOverclock();
         }
 #endif
+
+        if(UIWidgets::Button("Reload Scripts")){
+            ScriptingLayer::Instance->Reload();
+        }
 
         UIWidgets::WindowButton("Gfx Debugger", "gGfxDebuggerEnabled", GameUI::mGfxDebuggerWindow, {
             .tooltip = "Enables the Gfx Debugger window, allowing you to input commands, type help for some examples"
