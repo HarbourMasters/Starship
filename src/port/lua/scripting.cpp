@@ -67,6 +67,7 @@ void ScriptingLayer::Init() {
     };
 
     lua["Game"] = lua.create_table();
+    lua["Assets"] = lua.create_table();
 
     #include "scripts/autobind.gen"
 

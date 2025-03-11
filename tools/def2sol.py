@@ -222,7 +222,7 @@ def parse_externs(header):
             elif '(' in line:
                 if 'ALIGN_ASSET' in line:
                     var_name = line.split('[')[0].split(' ')[-1]
-                    print(f'lua["{var_name}"] = {var_name};')
+                    print(f'lua["Assets"]["{var_name}"] = {var_name};')
                     continue
                 if 'define' in line or '\\' in line or 'typedef' in line or '[' in line or 'OSMesg' in line or 'Framebuffer' in line or 'TimerAction' in line or 'TimerTask' in line:
                     continue
