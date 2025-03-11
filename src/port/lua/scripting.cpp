@@ -8,6 +8,7 @@
 #include "hud.h"
 #include "assets.h"
 #include "fox_map.h"
+#include "global.h"
 #include <filesystem>
 
 #define SOL_ALL_SAFETIES_ON 1
