@@ -18,6 +18,8 @@ blacklist = [
     'mods.h'
 ]
 
+global_vars = []
+
 def parse_enums(header, as_value=False):
     try:
         with open(header, 'r') as file:
@@ -195,16 +197,28 @@ def parse_externs(header):
             lines = file.readlines()
     except IOError:
         raise RuntimeError("Failed to open header files for events node in config")
+    global global_vars
 
     for line in lines:
         line = re.sub(r'\s+', ' ', line.strip())
         if line.startswith('extern') and not '"C"' in line or ('(' in line and ';' in line):
             if not '(' in line and not '[' in line:
+                var_type = line.split(' ')[1]
                 var_name = line.split(' ')[2].split(';')[0]
-                if '*' in line:
-                    print(f'lua["{var_name}"] = {var_name};')
-                else:
-                    print(f'lua["{var_name}"] = &{var_name};')
+                # if '*' in line:
+                #     print(f'lua["Game"]["{var_name}"] = {var_name};')
+                # else:
+                #     print(f'lua["Game"]["{var_name}"] = &{var_name};')
+                print(f'lua["Game"]["{var_name}"] = sol::overload([]() -> {var_type} {{ return {var_name}; }}, []({var_type} value) {{ {var_name} = value; }});')
+
+                # print(f'context["{var_name}"] = sol::property([]() -> {var_type} {{ return {var_name}; }}, []({var_type} value) {{ {var_name} = value; }});')
+                # print(f'lua["{var_name}"] = sol::var(std::ref({var_name}));')
+                # print(f'lua["{var_name}"] = sol::as_pointer({var_name});')
+                # print(f'lua.set("{var_name}", sol::var({var_name}));')
+                # global_vars.append({
+                #     'type': var_type,
+                #     'name': var_name
+                # })
             elif '(' in line:
                 if 'ALIGN_ASSET' in line:
                     var_name = line.split('[')[0].split(' ')[-1]

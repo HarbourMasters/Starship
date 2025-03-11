@@ -20,6 +20,7 @@
 #include "resource/importers/SkeletonFactory.h"
 #include "resource/importers/Vec3fFactory.h"
 #include "resource/importers/Vec3sFactory.h"
+#include "resource/importers/TextFactory.h"
 
 #include "resource/importers/audio/AudioTableFactory.h"
 #include "resource/importers/audio/BookFactory.h"
@@ -259,6 +260,9 @@ GameEngine::GameEngine() {
 
     loader->RegisterResourceFactory(std::make_shared<SF64::ResourceFactoryXMLSoundFontV0>(), RESOURCE_FORMAT_XML,
                                     "SoundFont", static_cast<uint32_t>(SF64::ResourceType::SoundFont), 0);
+
+    loader->RegisterResourceFactory(std::make_shared<SF64::ResourceFactoryBinaryTextV0>(), RESOURCE_FORMAT_BINARY,
+                                    "Text", static_cast<uint32_t>(SF64::ResourceType::Text), 0);
 
     prevAltAssets = CVarGetInteger("gEnhancements.Mods.AlternateAssets", 0);
     gEnableGammaBoost = CVarGetInteger("gGraphics.GammaMode", 0) == 0;
