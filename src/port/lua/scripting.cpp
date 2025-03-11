@@ -40,7 +40,7 @@ void ScriptingLayer::Init() {
         }
     } catch (const sol::error& e) {
         SPDLOG_ERROR(std::string(e.what()));
-        return 0;
+        return;
     }
 }
 
