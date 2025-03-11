@@ -236,10 +236,6 @@ void RCP_SetupDL_44(void);
 void RCP_SetupDL_50(void);
 void RCP_SetupDL_61(s32 r, s32 g, s32 b, s32 a, s32 near, s32 far);
 
-#ifdef __cplusplus
-}
-#endif
-
 typedef enum SetupDL {
     /* 0x00 */ SETUPDL_0,
     /* 0x01 */ SETUPDL_1,
@@ -346,5 +342,9 @@ typedef enum SetupDL {
 extern Gfx gRcpSetupDLs[][9]; // 0x800D31B0
 extern u8 D_80178580[];
 extern void* D_80178710;
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

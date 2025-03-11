@@ -6,6 +6,10 @@
 #include "sf64object.h"
 #include "sf64player.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 // fox_360
 extern s32 gAllRangeSpawnEvent;
 
@@ -203,6 +207,10 @@ extern u8 D_Tex_800DB4B8[];
 extern Gfx D_Gfx_800D94D0[];
 
 // extern OSTime osClockRate;
+
+#ifdef __cplusplus
+}
+#endif
 
 #define osViClock 0x02E6D354;
 

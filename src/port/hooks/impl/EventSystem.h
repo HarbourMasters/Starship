@@ -22,8 +22,13 @@ typedef void (*EventCallback)(IEvent*);
 #define DECLARE_EVENT(eventName) \
     EventID eventName##ID = -1;
 #else
+#ifdef __cplusplus
+#define DECLARE_EVENT(eventName) \
+    extern "C" EventID eventName##ID;
+#else
 #define DECLARE_EVENT(eventName) \
     extern EventID eventName##ID;
+#endif
 #endif
 
 #define DEFINE_EVENT(eventName, ...) \

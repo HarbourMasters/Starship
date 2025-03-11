@@ -261,6 +261,10 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(sol2)
 target_link_libraries(${PROJECT_NAME} PRIVATE lua::lua sol2)
 
+if (MSVC AND CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    set_target_properties(liblua PROPERTIES MSVC_RUNTIME_LIBRARY ${MSVC_RUNTIME_LIBRARY_STR})
+endif()
+
 #==============================================================================#
 # Libultraship Integration                                                     #
 #==============================================================================#
