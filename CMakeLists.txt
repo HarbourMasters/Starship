@@ -248,7 +248,7 @@ include(FetchContent)
 FetchContent_Declare(
     lua
     GIT_REPOSITORY https://github.com/Net64DD/lua.git
-    GIT_TAG f04f16c74efff04cc807d04a468e1a7880bbd691
+    GIT_TAG 846ebf927d9d6c404a00c88b28380ef2a47a69ad
 )
 
 FetchContent_MakeAvailable(lua)
