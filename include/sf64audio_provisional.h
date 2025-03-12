@@ -61,7 +61,7 @@ typedef void (*AudioCustomUpdateFunction)(void);
 // 6 channels
 #define DMEM_6CH_SIZE (6 * DMEM_1CH_SIZE)
 
-#define AIBUF_LEN (170 * SAMPLES_PER_FRAME)  // number of samples
+#define AIBUF_LEN (6 * 85 * SAMPLES_PER_FRAME)  // number of samples
 #define AIBUF_SIZE (AIBUF_LEN * SAMPLE_SIZE) // number of bytes
 
 // Filter sizes
