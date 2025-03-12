@@ -166,7 +166,7 @@ GameEngine::GameEngine() {
 
     auto window = std::make_shared<Fast::Fast3dWindow>(std::vector<std::shared_ptr<Ship::GuiWindow>>({}));
 
-    AudioSurroundSetting surroundSetting = Ship::Context::GetInstance()->GetConfig()->GetCurrentAudioSurround();
+    auto surroundSetting = Ship::Context::GetInstance()->GetConfig()->GetCurrentAudioSurround();
     this->context->Init(archiveFiles, {}, 3, { 32000, 1024, 1680, surroundSetting }, window, controlDeck);
 
 #ifndef __SWITCH__
