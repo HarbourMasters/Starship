@@ -149,13 +149,13 @@ typedef struct Object {
     /* 0x04 */ Vec3f pos;
     /* 0x10 */ Vec3f rot;
 #ifdef __cplusplus
-    Actor* asActor() { return (Actor*)this; }
-    Boss* asBoss() { return (Boss*)this; }
-    Scenery* asScenery() { return (Scenery*)this; }
-    Scenery360* asScenery360() { return (Scenery360*)this; }
-    Sprite* asSprite() { return (Sprite*)this; }
-    Item* asItem() { return (Item*)this; }
-    Effect* asEffect() { return (Effect*)this; }
+    Actor* asActor() { return (Actor*)this; } // sol:ignore
+    Boss* asBoss() { return (Boss*)this; } // sol:ignore
+    Scenery* asScenery() { return (Scenery*)this; } // sol:ignore
+    Scenery360* asScenery360() { return (Scenery360*)this; } // sol:ignore
+    Sprite* asSprite() { return (Sprite*)this; } // sol:ignore
+    Item* asItem() { return (Item*)this; } // sol:ignore
+    Effect* asEffect() { return (Effect*)this; } // sol:ignore
 #endif
 } Object; // size = 0x1C
 

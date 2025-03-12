@@ -12,6 +12,7 @@
 #include <filesystem>
 #include "port/resource/type/ResourceType.h"
 #include "port/resource/type/Text.h"
+#include "port/Engine.h"
 
 #define SOL_ALL_SAFETIES_ON 1
 #include <sol/sol.hpp>

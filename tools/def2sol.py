@@ -81,7 +81,10 @@ def parse_enums(header, as_value=False):
             value = entry['value']
             if 'ifdef' in key or 'endif' in entry['name'] or 'else' in key:
                 continue
-            print(f'enum_{enum_name}["{key.replace('EVENT_PRIORITY_', '')}"] = (uint32_t) {value if as_value else key};')
+            key_name = key
+            key_name = key_name.replace('EVENT_PRIORITY_', '')
+            key_name = key_name.replace('SF64_VER_', '')
+            print(f'enum_{enum_name}["{key_name}"] = (uint32_t) {value if as_value else key};')
         print('')
 
 def parse_structs(header):
@@ -240,14 +243,15 @@ def parse_externs(header):
                     continue
                 if 'define' in line or '\\' in line or 'typedef' in line or '[' in line or 'OSMesg' in line or 'Framebuffer' in line or 'TimerAction' in line or 'TimerTask' in line:
                     continue
-                if '_DEG' in line or 'Fault' in line:
+                if '_DEG' in line or 'Fault' in line or 'sol:ignore' in line or '<T>' in line:
                     continue
                 func_name = line.split('(')[0].split(' ')[-1]
                 # print('Function:', func_name)
                 if len(func_name) == 0:
                     continue
-                if 'CVarExists' in func_name: # Report this to LUS
+                if 'CVarExists' in func_name or 'ResourceLoad' in func_name or 'void*' in func_name or 'ResourceClearCache' in func_name: # Report this to LUS
                     continue
+
                 print(f'lua.set_function("{func_name}", {func_name});')
 
 def is_blacklisted(file):
@@ -272,6 +276,10 @@ if __name__ == "__main__":
     parse_enums("src/port/hooks/impl/EventSystem.h")
     parse_structs("src/port/hooks/impl/EventSystem.h")
     parse_externs("libultraship/src/public/bridge/consolevariablebridge.h")
+
+    parse_enums("src/port/Engine.h")
+    parse_externs("src/port/Engine.h")
+    parse_externs("libultraship/src/public/bridge/resourcebridge.h")
 
     for root, dirs, files in os.walk("src/port/hooks/list"):
         for file in files:
