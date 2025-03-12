@@ -21,6 +21,7 @@
 #include "resource/importers/Vec3fFactory.h"
 #include "resource/importers/Vec3sFactory.h"
 #include "resource/importers/TextFactory.h"
+#include "port/notification/notification.h"
 #include "resource/type/Json.h"
 
 #include "resource/importers/audio/AudioTableFactory.h"
@@ -342,6 +343,7 @@ void GameEngine::LoadManifest() {
             SPDLOG_INFO("Author: {}", author);
 
             ScriptingLayer::Instance->Load(main, entry);
+            Notification::Emit({ .message = "Loaded " + name, .remainingTime = 7.0f });
         } catch (nlohmann::json::exception &e) {
             SPDLOG_ERROR("Invalid manifest.json, skipping");
             continue;
