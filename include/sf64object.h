@@ -133,11 +133,30 @@ typedef enum ObjectStatus {
     /* 3 */ OBJ_DYING,
 } ObjectStatus;
 
+#ifdef __cplusplus
+struct Actor;
+struct Boss;
+struct Scenery;
+struct Scenery360;
+struct Sprite;
+struct Item;
+struct Effect;
+#endif
+
 typedef struct Object {
     /* 0x00 */ u8 status;
     /* 0x02 */ u16 id;
     /* 0x04 */ Vec3f pos;
     /* 0x10 */ Vec3f rot;
+#ifdef __cplusplus
+    Actor* asActor() { return (Actor*)this; }
+    Boss* asBoss() { return (Boss*)this; }
+    Scenery* asScenery() { return (Scenery*)this; }
+    Scenery360* asScenery360() { return (Scenery360*)this; }
+    Sprite* asSprite() { return (Sprite*)this; }
+    Item* asItem() { return (Item*)this; }
+    Effect* asEffect() { return (Effect*)this; }
+#endif
 } Object; // size = 0x1C
 
 typedef void (*ObjectFunc)(Object*);

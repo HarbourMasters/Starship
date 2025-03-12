@@ -142,6 +142,14 @@ def parse_structs(header):
         for i, key in enumerate(members):
             key = key.replace('*', '')
             print(f'    "{key}", sol::property(&{struct_name}::{key}, &{struct_name}::{key}){"," if i < len(members) - 1 else ""}')
+        if struct_name == 'Object':
+            print(f'   ,"asActor", &{struct_name}::asActor,')
+            print(f'    "asBoss", &{struct_name}::asBoss,')
+            print(f'    "asScenery", &{struct_name}::asScenery,')
+            print(f'    "asScenery360", &{struct_name}::asScenery360,')
+            print(f'    "asSprite", &{struct_name}::asSprite,')
+            print(f'    "asItem", &{struct_name}::asItem,')
+            print(f'    "asEffect", &{struct_name}::asEffect')
         print(');')
         print('')
 
@@ -227,7 +235,8 @@ def parse_externs(header):
             elif '(' in line:
                 if 'ALIGN_ASSET' in line:
                     var_name = line.split('[')[0].split(' ')[-1]
-                    print(f'lua["Assets"]["{var_name}"] = {var_name};')
+                    # print(f'lua["Assets"]["{var_name}"] = {var_name};')
+                    print(f'lua["Assets"]["{var_name}"] = Asset{{ {var_name} }};')
                     continue
                 if 'define' in line or '\\' in line or 'typedef' in line or '[' in line or 'OSMesg' in line or 'Framebuffer' in line or 'TimerAction' in line or 'TimerTask' in line:
                     continue

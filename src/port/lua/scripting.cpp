@@ -17,6 +17,19 @@
 #include <sol/sol.hpp>
 #include <utility>
 
+struct Asset {
+    const char* path;
+
+    template<typename T>
+    T* Get() {
+        return (T*) path;
+    }
+
+    std::string tostring() const {
+        return path;
+    }
+};
+
 namespace fs = std::filesystem;
 
 ScriptingLayer* ScriptingLayer::Instance = new ScriptingLayer();
@@ -96,6 +109,31 @@ void ScriptingLayer::Init() {
         auto lid = EventSystem::Instance->RegisterListener(eventId, callback, (EventPriority) priority);
         RegisteredListeners.emplace_back(eventId, lid);
         return lid;
+    };
+
+    lua.new_usertype<Asset>("Asset",
+        "Load8",  &Asset::Get<u8>,
+        "Load16", &Asset::Get<u16>,
+        "Load32", &Asset::Get<u32>,
+        "LoadVtx", &Asset::Get<Vtx>,
+        "LoadGfx", &Asset::Get<Gfx>,
+        sol::meta_function::to_string, &Asset::tostring
+    );
+
+    lua["gNextMasterDisp"] = []() -> Gfx* {
+        return gMasterDisp++;
+    };
+
+    lua["gRefMasterDisp"] = []() -> Gfx* {
+        return (Gfx*) &gMasterDisp;
+    };
+
+    lua["gRefGfxMatrix"] = []() -> Matrix* {
+        return (Matrix*) &gGfxMatrix;
+    };
+
+    lua["gDPSetPrimColor"] = [](uint8_t m, uint8_t l, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+        gDPSetPrimColor(gMasterDisp++, m, l, r, g, b, a);
     };
 
     lua["Game"] = lua.create_table();
