@@ -439,6 +439,10 @@ void PortEnhancements_Init() {
 
 void PortEnhancements_Register() {
     // Register engine events
+
+    REGISTER_EVENT(EngineInitEvent);
+    REGISTER_EVENT(EngineExitEvent);
+
     REGISTER_EVENT(DisplayPreUpdateEvent);
     REGISTER_EVENT(DisplayPostUpdateEvent);
 
@@ -491,4 +495,5 @@ void PortEnhancements_Register() {
 
 void PortEnhancements_Exit() {
     // TODO: Unregister event listeners
+    CALL_EVENT(EngineExitEvent);
 }

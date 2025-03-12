@@ -181,7 +181,7 @@ def parse_events(header):
             event[event_name].append(member_name)
     
     for event_name, members in event.items():
-        print(f'lua["{event_name}ID"] = {event_name}ID;')
+        # print(f'lua["{event_name}ID"] = {event_name}ID;')
         print(f'lua.new_usertype<{event_name}>("{event_name}",')
         for i, key in enumerate(members):
             key = key.replace('*', '')
@@ -237,6 +237,8 @@ def parse_externs(header):
                 # print('Function:', func_name)
                 if len(func_name) == 0:
                     continue
+                if 'CVarExists' in func_name: # Report this to LUS
+                    continue
                 print(f'lua.set_function("{func_name}", {func_name});')
 
 def is_blacklisted(file):
@@ -260,6 +262,7 @@ if __name__ == "__main__":
     
     parse_enums("src/port/hooks/impl/EventSystem.h")
     parse_structs("src/port/hooks/impl/EventSystem.h")
+    parse_externs("libultraship/src/public/bridge/consolevariablebridge.h")
 
     for root, dirs, files in os.walk("src/port/hooks/list"):
         for file in files:

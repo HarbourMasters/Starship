@@ -3,6 +3,9 @@
 #include "port/hooks/impl/EventSystem.h"
 #endif
 
+DEFINE_EVENT(EngineInitEvent);
+DEFINE_EVENT(EngineExitEvent);
+
 DEFINE_EVENT(DisplayPreUpdateEvent);
 DEFINE_EVENT(DisplayPostUpdateEvent);
 
