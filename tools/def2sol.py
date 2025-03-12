@@ -216,10 +216,11 @@ def parse_externs(header):
                 dimension_len = len(line.split('[')) - 1
                 var_name = line.split('[')[0].split(' ')[-1]
                 var_type = line.split(' ')[1]
+                is_pointer = '*' in line
                 if dimension_len == 1:
-                    print(f'lua["Game"]["{var_name}"] = sol::overload([](int index) -> {var_type} {{ return {var_name}[index]; }}, [](int index, {var_type} value) {{ {var_name}[index] = value; }});')
+                    print(f'lua["Game"]["{var_name}"] = sol::overload([](int index) -> {var_type}{'' if is_pointer else '*'} {{ return {'' if is_pointer else '&'}{var_name}[index]; }}, [](int index, {var_type} value) {{ {var_name}[index] = value; }});')
                 elif dimension_len == 2:
-                    print(f'lua["Game"]["{var_name}"] = sol::overload([](int index1, int index2) -> {var_type} {{ return {var_name}[index1][index2]; }}, [](int index1, int index2, {var_type} value) {{ {var_name}[index1][index2] = value; }});')
+                    print(f'lua["Game"]["{var_name}"] = sol::overload([](int index1, int index2) -> {var_type}{'' if is_pointer else '*'} {{ return {'' if is_pointer else '&'}{var_name}[index1][index2]; }}, [](int index1, int index2, {var_type} value) {{ {var_name}[index1][index2] = value; }});')
                 elif dimension_len == 3:
                     print('Unsupported 3D array')
                     exit()

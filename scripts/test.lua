@@ -1,5 +1,5 @@
 function OnPlayUpdate(ev)
-    if((Game.gInputHold().button & N64Buttons.BTN_L) != 0) then
+    if((Game.gInputPress().button & N64Buttons.BTN_L) != 0) then
         local reticlePos = Game.D_display_801613E0(0)
         local actorId = math.random(176, 291)
         local actor = Game_SpawnActor(actorId);
