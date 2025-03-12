@@ -83,7 +83,11 @@ void ScriptingLayer::Load(const std::string& path, const std::shared_ptr<Ship::A
 }
 
 void ScriptingLayer::Init() {
-    lua.open_libraries(sol::lib::base, sol::lib::io, sol::lib::math, sol::lib::table, sol::lib::package);
+    lua.open_libraries(sol::lib::base, sol::lib::package, sol::lib::math, sol::lib::table, sol::lib::string);
+
+    lua["os"] = sol::lua_nil;
+    lua["io"] = sol::lua_nil;
+    lua["debug"] = sol::lua_nil;
 
     lua.clear_package_loaders();
     lua.add_package_loader(ScriptingLayer::Require);

@@ -318,8 +318,6 @@ void GameEngine::LoadManifest() {
             continue;
         }
 
-        file->InitData = init;
-
         auto raw = loader->LoadResource(file);
         auto res = static_pointer_cast<Ship::Json>(raw);
         if (res == nullptr) {
