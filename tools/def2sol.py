@@ -141,6 +141,7 @@ def parse_structs(header):
     for struct_name, members in struct.items():
         if len(members) == 0:
             continue
+        # TODO: Add support for functions
         print(f'lua.new_usertype<{struct_name}>("{struct_name}",')
         for i, key in enumerate(members):
             key = key.replace('*', '')
@@ -152,7 +153,16 @@ def parse_structs(header):
             print(f'    "asScenery360", &{struct_name}::asScenery360,')
             print(f'    "asSprite", &{struct_name}::asSprite,')
             print(f'    "asItem", &{struct_name}::asItem,')
-            print(f'    "asEffect", &{struct_name}::asEffect')
+            print(f'    "asEffect", &{struct_name}::asEffect,')
+            print(f'    "asRef", &{struct_name}::asRef')
+        elif struct_name == 'Object' or struct_name == 'ObjectInfo' or struct_name == 'Actor' or struct_name == 'Boss' or struct_name == 'Scenery' or struct_name == 'Scenery360' or struct_name == 'Sprite' or struct_name == 'Item' or struct_name == 'Effect':
+            print(f'    ,"asRef", &{struct_name}::asRef')
+        elif struct_name.startswith('Vec') or struct_name.startswith('Plane') or struct_name == 'PosRot' or struct_name == 'CameraPoint' or struct_name == 'Triangle':
+            print(f'   ,"asRef", &{struct_name}::asRef')
+            if struct_name.startswith('Vec'):
+                print(f'   ,"xRef", &{struct_name}::xRef,')
+                print(f'   "yRef", &{struct_name}::yRef,')
+                print(f'   "zRef", &{struct_name}::zRef')
         print(');')
         print('')
 
@@ -209,7 +219,7 @@ def parse_externs(header):
 
     for line in lines:
         line = re.sub(r'\s+', ' ', line.strip())
-        if line.startswith('extern') and not '"C"' in line or ('(' in line and ';' in line):
+        if line.startswith('extern') and not 'void*' in line and not '"C"' in line or ('(' in line and ';' in line):
             if not '(' in line and not '[' in line:
                 var_type = line.split(' ')[1]
                 var_name = line.split(' ')[2].split(';')[0]
@@ -220,14 +230,14 @@ def parse_externs(header):
                 print(f'lua["Game"]["{var_name}"] = sol::overload([]() -> {var_type} {{ return {var_name}; }}, []({var_type} value) {{ {var_name} = value; }});')
 
                 # print(f'context["{var_name}"] = sol::property([]() -> {var_type} {{ return {var_name}; }}, []({var_type} value) {{ {var_name} = value; }});')
-                # print(f'lua["{var_name}"] = sol::var(std::ref({var_name}));')
+                # print(f'lua["{var_name}"] = std::ref({var_name});')
                 # print(f'lua["{var_name}"] = sol::as_pointer({var_name});')
                 # print(f'lua.set("{var_name}", sol::var({var_name}));')
             elif '[' in line and not '(' in line:
                 dimension_len = len(line.split('[')) - 1
                 var_name = line.split('[')[0].split(' ')[-1]
                 var_type = line.split(' ')[1]
-                is_pointer = '*' in line
+                is_pointer = True #'*' in line
                 if dimension_len == 1:
                     print(f'lua["Game"]["{var_name}"] = sol::overload([](int index) -> {var_type}{'' if is_pointer else '*'} {{ return {'' if is_pointer else '&'}{var_name}[index]; }}, [](int index, {var_type} value) {{ {var_name}[index] = value; }});')
                 elif dimension_len == 2:

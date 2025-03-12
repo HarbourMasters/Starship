@@ -156,6 +156,7 @@ typedef struct Object {
     Sprite* asSprite() { return (Sprite*)this; } // sol:ignore
     Item* asItem() { return (Item*)this; } // sol:ignore
     Effect* asEffect() { return (Effect*)this; } // sol:ignore
+    Object* asRef() { return this; } // sol:ignore
 #endif
 } Object; // size = 0x1C
 
@@ -176,6 +177,9 @@ typedef struct ObjectInfo {
     /* 0x19 */ u8 unk_19;         // can be 0, 1, 2. Also camera-related?
     /* 0x1C */ f32 targetOffset;  // target lock y offset. 0.0f can't be targeted
     /* 0x20 */ u8 bonus;          // hits when killed. numbers above 1 indicate the hit+ bonus
+#ifdef __cplusplus
+    ObjectInfo* asRef() { return this; } // sol:ignore
+#endif
 } ObjectInfo;                     // size = 0x24
 
 typedef struct Scenery360 {
@@ -185,6 +189,9 @@ typedef struct Scenery360 {
     /* 0x41 */ char unk_41[7];
     /* 0x48 */ f32 sfxSource[3];
     /* 0x54 */ f32 unk_54;
+#ifdef __cplusplus
+    Scenery360* asRef() { return this; } // sol:ignore
+#endif
 } Scenery360; // size = 0x58
 
 typedef struct Scenery {
@@ -200,6 +207,9 @@ typedef struct Scenery {
     /* 0x64 */ Vec3f vel;
     /* 0x70 */ f32 sfxSource[3];
     /* 0x7C */ char pad7C[4];
+#ifdef __cplusplus
+    Scenery* asRef() { return this; } // sol:ignore
+#endif
 } Scenery; // size = 0x80
 
 typedef struct Sprite {
@@ -210,6 +220,9 @@ typedef struct Sprite {
     /* 0x45 */ u8 sceneryId;
     /* 0x46 */ s8 destroy;
     /* 0x48 */ s32 toLeft;
+#ifdef __cplusplus
+    Sprite* asRef() { return this; } // sol:ignore
+#endif
 } Sprite; // size = 0x4C
 
 typedef struct Item {
@@ -227,6 +240,9 @@ typedef struct Item {
     /* 0x58 */ f32 unk_58;
     /* 0x5C */ f32 sfxSource[3];
     /* 0x68 */ f32 width;
+#ifdef __cplusplus
+    Item* asRef() { return this; } // sol:ignore
+#endif
 } Item; // size 0x6C
 
 typedef struct Effect {
@@ -250,6 +266,9 @@ typedef struct Effect {
     /* 0x7A */ s16 unk_7A;
     /* 0x7C */ char pad7C[4];
     /* 0x80 */ f32 sfxSource[3];
+#ifdef __cplusplus
+    Effect* asRef() { return this; } // sol:ignore
+#endif
 } Effect; // size 0x8C
 
 typedef struct Boss {
@@ -283,6 +302,9 @@ typedef struct Boss {
     /* 0x1A0 */ Vec3f vwork[50];
     /* 0x3F8 */ f32 scale;
     /* 0x3FC */ f32 sfxSource[3];
+#ifdef __cplusplus
+    Boss* asRef() { return this; } // sol:ignore
+#endif
 } Boss; // size = 0x408
 
 #define DMG_COLLISION 3
@@ -331,6 +353,9 @@ typedef struct Actor {
     /* 0x110 */ f32 scale;
     /* 0x114 */ f32 fwork[30];
     /* 0x18C */ Vec3f vwork[30];
+#ifdef __cplusplus
+    Actor* asRef() { return this; } // sol:ignore
+#endif
 } Actor; // size = 0x2F4
 
 typedef enum ObjectId {
