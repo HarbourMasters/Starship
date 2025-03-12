@@ -345,7 +345,8 @@ void GameEngine::LoadManifest() {
             ScriptingLayer::Instance->Load(main, entry);
             Notification::Emit({ .message = "Loaded " + name, .remainingTime = 7.0f });
         } catch (nlohmann::json::exception &e) {
-            SPDLOG_ERROR("Invalid manifest.json, skipping");
+            SPDLOG_ERROR("Invalid manifest.json, skipping {}", entry->GetPath());
+            Notification::Emit({ .message = "Failed to load mod, check log for details", .messageColor = ImVec4(1.0f, 0.5f, 0.5f, 1.0f), .remainingTime = 7.0f });
             continue;
         }
     }
