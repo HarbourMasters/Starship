@@ -103,8 +103,8 @@ namespace UIWidgets {
     };
 
     namespace Sizes {
-        const ImVec2 Inline = ImVec2(0.0f, 0.0f);
-        const ImVec2 Fill = ImVec2(-1.0f, 0.0f);
+        const ImVec2 Inline = ImVec2(0.0f, 0.0f); // sol:ignore
+        const ImVec2 Fill = ImVec2(-1.0f, 0.0f); // sol:ignore
     }
 
     enum LabelPosition {
