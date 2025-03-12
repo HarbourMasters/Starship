@@ -403,9 +403,9 @@ typedef struct {
 typedef struct {
     /* 0x00 */ u8 strongLeft : 1;
     /* 0x00 */ u8 strongRight : 1;
+    /* 0x00 */ u8 bit2 : 2;
     /* 0x00 */ u8 is_voice : 1;
     /* 0x00 */ u8 is_sfx : 1;
-    /* 0x00 */ u8 unused : 2;
     /* 0x00 */ u8 usesHeadsetPanEffects : 1;
     /* 0x00 */ u8 stereoHeadsetEffects : 1;
 } StereoData; // size = 0x1
