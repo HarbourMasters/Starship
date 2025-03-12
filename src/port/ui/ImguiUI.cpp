@@ -754,17 +754,6 @@ void DrawDebugMenu() {
 
         ImGui::EndMenu();
     }
-
-    if (UIWidgets::BeginMenu("Developer")) {
-        if (UIWidgets::CVarCombobox("Log Level aaaAAAAAaaaAaaAA", "gDeveloperTools.LogLevel", logLevels, {
-            .tooltip = "The log level determines which messages are printed to the "
-                        "console. This does not affect the log file output",
-            .defaultIndex = 1,
-        })) {
-            Ship::Context::GetInstance()->GetLogger()->set_level((spdlog::level::level_enum)CVarGetInteger("gDeveloperTools.LogLevel", 1));
-        }
-        ImGui::EndMenu();
-    }
 }
 
 void GameMenuBar::DrawElement() {
