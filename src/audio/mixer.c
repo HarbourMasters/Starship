@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <stdio.h>
+#include <math.h>
 
 #include <macros.h>
 
@@ -71,18 +72,20 @@ static __m128i m256i_clamp_to_m128i(m256i a) {
 #define ROUND_UP_8(v) (((v) + 7) & ~7)
 #define ROUND_DOWN_16(v) ((v) & ~0xf)
 
-#define DMEM_BUF_SIZE (0x1000)
-// #define DMEM_BUF_SIZE 0xC90
-#define BUF_U8(a) (rspa.buf.as_u8 + ((a)-0x450))
-#define BUF_S16(a) (rspa.buf.as_s16 + ((a)-0x450) / sizeof(int16_t))
+#define DMEM_BUF_SIZE (0x1B90) // 7056 B
+#define BUF_U8(a) (rspa.buf + ((a)-0x450))
+#define BUF_S16(a) (int16_t*) BUF_U8(a)
+
+#define SAMPLE_RATE 32000  // Adjusted to match the actual sample rate of 32 kHz
+#define CUTOFF_FREQ_LFE 80     // Cutoff frequency of 80 Hz
 
 static struct {
     uint16_t in;
     uint16_t out;
     uint16_t nbytes;
 
-    uint16_t vol[2];
-    uint16_t rate[2];
+    uint16_t vol[6];
+    uint16_t rate[6];
     uint16_t vol_wet;
     uint16_t rate_wet;
 
@@ -93,10 +96,7 @@ static struct {
     uint16_t filter_count;
     int16_t filter[8];
 
-    union {
-        int16_t as_s16[DMEM_BUF_SIZE / sizeof(int16_t)];
-        uint8_t as_u8[DMEM_BUF_SIZE];
-    } buf;
+    uint8_t buf[DMEM_BUF_SIZE];
 } rspa;
 
 static int16_t resample_table[64][4] = {
@@ -183,87 +183,38 @@ void aSetBufferImpl(uint8_t flags, uint16_t in, uint16_t out, uint16_t nbytes) {
     rspa.nbytes = nbytes;
 }
 
-#if 1
-// old abi impl
-void aInterleaveImpl(uint16_t left, uint16_t right) {
-    if(rspa.nbytes == 0) { // Added
+void aInterleaveImpl(uint16_t left, uint16_t right, uint16_t center, uint16_t lfe, uint16_t surround_left, uint16_t surround_right, uint16_t num_channels) {
+    if (rspa.nbytes == 0) {
         return;
     }
 
-    int count = ROUND_UP_16(rspa.nbytes) >> 3;
-    int16_t *l = BUF_S16(left);
-    int16_t *r = BUF_S16(right);
-    int16_t *d = BUF_S16(rspa.out);
-    while (count > 0) {
-        int16_t l0 = *l++;
-        int16_t l1 = *l++;
-        int16_t l2 = *l++;
-        int16_t l3 = *l++;
-        int16_t l4 = *l++;
-        int16_t l5 = *l++;
-        int16_t l6 = *l++;
-        int16_t l7 = *l++;
-        int16_t r0 = *r++;
-        int16_t r1 = *r++;
-        int16_t r2 = *r++;
-        int16_t r3 = *r++;
-        int16_t r4 = *r++;
-        int16_t r5 = *r++;
-        int16_t r6 = *r++;
-        int16_t r7 = *r++;
-        *d++ = l0;
-        *d++ = r0;
-        *d++ = l1;
-        *d++ = r1;
-        *d++ = l2;
-        *d++ = r2;
-        *d++ = l3;
-        *d++ = r3;
-        *d++ = l4;
-        *d++ = r4;
-        *d++ = l5;
-        *d++ = r5;
-        *d++ = l6;
-        *d++ = r6;
-        *d++ = l7;
-        *d++ = r7;
-        --count;
-    }
-}
-#else
-// new abi
-void aInterleaveImpl(uint16_t dest, uint16_t left, uint16_t right, uint16_t c) {
-    if(rspa.nbytes == 0){
-        return;
-    }
-
-    int count = ROUND_UP_16(rspa.nbytes) >> 3;
+    int count = rspa.nbytes / (num_channels * sizeof(int16_t));
 
     int16_t *l = BUF_S16(left);
     int16_t *r = BUF_S16(right);
     int16_t *d = BUF_S16(rspa.out);
 
-    while (count > 0) {
-        int16_t l0 = *l++;
-        int16_t l1 = *l++;
-        int16_t l2 = *l++;
-        int16_t l3 = *l++;
-        int16_t r0 = *r++;
-        int16_t r1 = *r++;
-        int16_t r2 = *r++;
-        int16_t r3 = *r++;
-        *d++ = l0;
-        *d++ = r0;
-        *d++ = l1;
-        *d++ = r1;
-        *d++ = l2;
-        *d++ = r2;
-        *d++ = l3;
-        *d++ = r3;
-        --count;
+    if (num_channels == 2) {
+        for (int i = 0; i < count; i++) {
+            *d++ = *l++;
+            *d++ = *r++;
+        }
+    } else {
+        int16_t *c = BUF_S16(center);
+        int16_t *lf = BUF_S16(lfe);
+        int16_t *sl = BUF_S16(surround_left);
+        int16_t *sr = BUF_S16(surround_right);
+
+        for (int i = 0; i < count; i++) {
+            *d++ = *l++;
+            *d++ = *r++;
+            *d++ = *c++;
+            *d++ = *lf++;
+            *d++ = *sl++;
+            *d++ = *sr++;
+        }
     }
 }
-#endif
 
 void aDMEMMoveImpl(uint16_t in_addr, uint16_t out_addr, int nbytes) {
     nbytes = ROUND_UP_16(nbytes);
@@ -300,19 +251,19 @@ void aADPCMdecImpl(uint8_t flags, ADPCM_STATE state) {
             int16_t prev1 = out[-1];
             int16_t prev2 = out[-2];
             int j, k;
-			if (flags & 4) {
-				for (j = 0; j < 2; j++) {
-					ins[j * 4] = (((*in >> 6) << 30) >> 30) << shift;
-					ins[j * 4 + 1] = ((((*in >> 4) & 0x3) << 30) >> 30) << shift;
-					ins[j * 4 + 2] = ((((*in >> 2) & 0x3) << 30) >> 30) << shift;
-					ins[j * 4 + 3] = (((*in++ & 0x3) << 30) >> 30) << shift;
-				}
-			} else {
-				for (j = 0; j < 4; j++) {
-					ins[j * 2] = (((*in >> 4) << 28) >> 28) << shift;
-					ins[j * 2 + 1] = (((*in++ & 0xf) << 28) >> 28) << shift;
-				}
-			}
+            if (flags & 4) {
+                for (j = 0; j < 2; j++) {
+                    ins[j * 4] = (((*in >> 6) << 30) >> 30) << shift;
+                    ins[j * 4 + 1] = ((((*in >> 4) & 0x3) << 30) >> 30) << shift;
+                    ins[j * 4 + 2] = ((((*in >> 2) & 0x3) << 30) >> 30) << shift;
+                    ins[j * 4 + 3] = (((*in++ & 0x3) << 30) >> 30) << shift;
+                }
+            } else {
+                for (j = 0; j < 4; j++) {
+                    ins[j * 2] = (((*in >> 4) << 28) >> 28) << shift;
+                    ins[j * 2 + 1] = (((*in++ & 0xf) << 28) >> 28) << shift;
+                }
+            }
             for (j = 0; j < 8; j++) {
                 int32_t acc = tbl[0][j] * prev2 + tbl[1][j] * prev1 + (ins[j] << 11);
                 for (k = 0; k < j; k++) {
@@ -670,111 +621,152 @@ void aResampleImpl(uint8_t flags, uint16_t pitch, RESAMPLE_STATE state) {
 
 #endif
 
-void aEnvSetup1Impl(uint8_t initial_vol_wet, uint16_t rate_wet, uint16_t rate_left, uint16_t rate_right) {
+void aEnvSetup1Impl(uint8_t initial_vol_wet, uint16_t rate_wet, uint16_t rate_left, uint16_t rate_right,
+    uint16_t rate_center, uint16_t rate_lfe, uint16_t rate_rear_left, uint16_t rate_rear_right) {
     rspa.vol_wet = (uint16_t)(initial_vol_wet << 8);
     rspa.rate_wet = rate_wet;
     rspa.rate[0] = rate_left;
     rspa.rate[1] = rate_right;
+    rspa.rate[2] = rate_center;
+    rspa.rate[3] = rate_lfe;
+    rspa.rate[4] = rate_rear_left;
+    rspa.rate[5] = rate_rear_right;
 }
 
-void aEnvSetup2Impl(uint16_t initial_vol_left, uint16_t initial_vol_right) {
+void aEnvSetup2Impl(uint16_t initial_vol_left, uint16_t initial_vol_right, int16_t initial_vol_center,
+    int16_t initial_vol_lfe, int16_t initial_vol_rear_left, int16_t initial_vol_rear_right) {
     rspa.vol[0] = initial_vol_left;
     rspa.vol[1] = initial_vol_right;
+    rspa.vol[2] = initial_vol_center;
+    rspa.vol[3] = initial_vol_lfe;
+    rspa.vol[4] = initial_vol_rear_left;
+    rspa.vol[5] = initial_vol_rear_right;
 }
 
-#ifndef SSE2_AVAILABLE
-
 void aEnvMixerImpl(uint16_t in_addr, uint16_t n_samples, bool swap_reverb,
-				   bool neg_3, bool neg_2,
                    bool neg_left, bool neg_right,
-                   int32_t wet_dry_addr, uint32_t unk)
+                   uint32_t wet_dry_addr, uint32_t haas_temp_addr, uint32_t num_channels)
 {
+    // Note: max number of samples is 192 (192 * 2 = 384 bytes = 0x180)
+    int max_num_samples = 192;
+    
     int16_t *in = BUF_S16(in_addr);
-    int16_t *dry[2] = {BUF_S16(((wet_dry_addr >> 24) & 0xFF) << 4), BUF_S16(((wet_dry_addr >> 16) & 0xFF) << 4)};
-    int16_t *wet[2] = {BUF_S16(((wet_dry_addr >> 8) & 0xFF) << 4), BUF_S16(((wet_dry_addr) & 0xFF) << 4)};
-    int16_t negs[4] = {neg_left ? -1 : 0, neg_right ? -1 : 0, neg_3 ? -4 : 0, neg_2 ? -2 : 0};
+    int n = ROUND_UP_16(n_samples);
+    if (n > max_num_samples) {
+        printf("Warning: n_samples is too large: %d\n", n_samples);
+    }
+
+    uint16_t rate_wet = rspa.rate_wet;
+    uint16_t vol_wet = rspa.vol_wet;
+
+    // All speakers
+    int dry_addr_start = wet_dry_addr & 0xFFFF;
+    int wet_addr_start = wet_dry_addr >> 16;
+    
+    int16_t *dry[6];
+    int16_t *wet[6];
+    for (int i = 0; i < 6; i++) {
+        dry[i] = BUF_S16(dry_addr_start + max_num_samples * i * sizeof(int16_t));
+        wet[i] = BUF_S16(wet_addr_start + max_num_samples * i * sizeof(int16_t));
+    }
+    
+    uint16_t vols[6] = {rspa.vol[0], rspa.vol[1], rspa.vol[2], rspa.vol[3], rspa.vol[4], rspa.vol[5]};
     int swapped[2] = {swap_reverb ? 1 : 0, swap_reverb ? 0 : 1};
-    int n = ROUND_UP_16(n_samples);
 
-    uint16_t vols[2] = {rspa.vol[0], rspa.vol[1]};
-    uint16_t rates[2] = {rspa.rate[0], rspa.rate[1]};
-    uint16_t vol_wet = rspa.vol_wet;
-    uint16_t rate_wet = rspa.rate_wet;
+    if (num_channels == 6) {
+        // Calculate the filter coefficient
+        float RC = 1.f / (2 * M_PI * CUTOFF_FREQ_LFE);
+        float dt = 1.f / SAMPLE_RATE;
+        float alpha = dt / (RC + dt);
 
-    do {
-        for (int i = 0; i < 8; i++) {
-            int16_t samples[2] = {*in, *in}; in++;
+        // Low-pass filter state for the subwoofer channel
+        static float prev_lfe_sample = 0.0f;
+
+        for (int i = 0; i < n / 8; i++) {
+            for (int k = 0; k < 8; k++) {
+                int16_t samples[6] = {0};
+
+                samples[0] = *in;
+                samples[1] = *in;
+                samples[2] = *in;
+                samples[3] = *in;  // LFE channel
+                samples[4] = *in;
+                samples[5] = *in;
+                in++;
+
+                // Apply volume
+                for (int j = 0; j < 6; j++) {
+                    samples[j] = samples[j] * vols[j] >> 16;
+                }
+
+                // Apply low-pass filter to the LFE channel (index 3)
+                float lfe_sample = samples[3];
+                lfe_sample = alpha * lfe_sample + (1.0f - alpha) * prev_lfe_sample;
+                prev_lfe_sample = lfe_sample;
+                samples[3] = (int16_t)lfe_sample;
+
+                // Mix dry and wet signals
+                for (int j = 0; j < 6; j++) {
+                    *dry[j] = clamp16(*dry[j] + samples[j]);
+                    dry[j]++;
+
+                    if (j >= 4) {
+                        // Apply reverb only to the rear channels (4 and 5)
+                        *wet[j] = clamp16(*wet[j] + (samples[swapped[j % 2]] * vol_wet >> 16));
+                        wet[j]++;
+                    }
+                }
+            }
+
+            for (int j = 0; j < 6; j++) {
+                vols[j] += rspa.rate[j];
+            }
+            vol_wet += rate_wet;
+        }
+    } else {
+        // Account for haas effect
+        int haas_addr_left = haas_temp_addr >> 16;
+        int haas_addr_right = haas_temp_addr & 0xFFFF;
+
+        if (haas_addr_left) {
+            dry[0] = BUF_S16(haas_addr_left);
+        } else if (haas_addr_right) {
+            dry[1] = BUF_S16(haas_addr_right);
+        }
+
+        int16_t negs[2] = {neg_left ? 0 : 0xFFFF, neg_right ? 0 : 0xFFFF};
+
+        for (int i = 0; i < n / 8; i++) {
+            for (int k = 0; k < 8; k++) {
+                int16_t samples[2] = {0};
+
+                samples[0] = *in;
+                samples[1] = *in;
+                in++;
+
+                // Apply volume
+                for (int j = 0; j < 2; j++) {
+                    samples[j] = (samples[j] * vols[j] >> 16) & negs[j];
+                }
+
+                // Mix dry and wet signals
+                for (int j = 0; j < 2; j++) {
+                    *dry[j] = clamp16(*dry[j] + samples[j]);
+                    dry[j]++;
+
+                    // Apply reverb
+                    *wet[j] = clamp16(*wet[j] + (samples[swapped[j]] * vol_wet >> 16));
+                    wet[j]++;
+                }
+            }
+
             for (int j = 0; j < 2; j++) {
-                samples[j] = (samples[j] * vols[j] >> 16) ^ negs[j];
+                vols[j] += rspa.rate[j];
             }
-        	for (int j = 0; j < 2; j++) {
-                *dry[j] = clamp16(*dry[j] + samples[j]); dry[j]++;
-                *wet[j] = clamp16(*wet[j] + ((samples[swapped[j]] * vol_wet >> 16) ^ negs[2 + j])); wet[j]++;
-            }
+            vol_wet += rate_wet;
         }
-        vols[0] += rates[0];
-        vols[1] += rates[1];
-        vol_wet += rate_wet;
-
-        n -= 8;
-    } while (n > 0);
-}
-
-#else
-// SSE2 optimized version of algorithm
-void aEnvMixerImpl(uint16_t in_addr, uint16_t n_samples, bool swap_reverb,
-				   bool neg_3, bool neg_2,
-                   bool neg_left, bool neg_right,
-                   int32_t wet_dry_addr, u32 unk)
-{
-    int16_t *in = BUF_S16(in_addr);
-    int16_t *dry[2] = {BUF_S16(((wet_dry_addr >> 24) & 0xFF) << 4), BUF_S16(((wet_dry_addr >> 16) & 0xFF) << 4)};
-    int16_t *wet[2] = {BUF_S16(((wet_dry_addr >> 8) & 0xFF) << 4), BUF_S16(((wet_dry_addr) & 0xFF) << 4)};
-    int16_t negs[4] = {neg_left ? -1 : 0, neg_right ? -1 : 0, neg_3 ? -4 : 0, neg_2 ? -2 : 0};
-    int n = ROUND_UP_16(n_samples);
-    const int n_aligned = n - (n % 8);
-
-    uint16_t vols[2] = {rspa.vol[0], rspa.vol[1]};
-    uint16_t rates[2] = {rspa.rate[0], rspa.rate[1]};
-    uint16_t vol_wet = rspa.vol_wet;
-    uint16_t rate_wet = rspa.rate_wet;
-
-    const __m128i* in_ptr = (__m128i*)in;
-    const __m128i* d_ptr[2] = { (__m128i*) dry[0], (__m128i*) dry[1] };
-    const __m128i* w_ptr[2] = { (__m128i*) wet[0], (__m128i*) wet[1] };
-
-    // Aligned loop
-    for (int N = 0; N < n_aligned; N+=8) {
-
-        // Init vectors
-        const __m128i in_channels = _mm_loadu_si128(in_ptr++);
-        __m128i d[2] = { _mm_loadu_si128(d_ptr[0]), _mm_loadu_si128(d_ptr[1]) };
-        __m128i w[2] = { _mm_loadu_si128(w_ptr[0]), _mm_loadu_si128(w_ptr[1]) };
-
-        // Compute base samples
-        // sample = ((in * vols) >> 16) ^ negs
-        __m128i s[2] = {
-            _mm_xor_si128(_mm_mulhi_epi16(in_channels, _mm_set1_epi16(vols[0])), _mm_set1_epi16(negs[0])),
-            _mm_xor_si128(_mm_mulhi_epi16(in_channels, _mm_set1_epi16(vols[1])), _mm_set1_epi16(negs[1]))
-        };
-
-        // Compute left swapped samples
-        // (sample * vol_wet) >> 16) ^ negs
-        __m128i ss[2] = {
-            _mm_xor_si128(_mm_mulhi_epi16(s[swap_reverb], _mm_set1_epi16(vol_wet)), _mm_set1_epi16(negs[2])),
-            _mm_xor_si128(_mm_mulhi_epi16(s[!swap_reverb], _mm_set1_epi16(vol_wet)), _mm_set1_epi16(negs[3]))
-        };
-
-        // Store values to buffers
-        for (int j = 0; j < 2; j++) {
-            _mm_storeu_si128((__m128i*) d_ptr[j]++, _mm_adds_epi16(s[j], d[j]));
-            _mm_storeu_si128((__m128i*) w_ptr[j]++, _mm_adds_epi16(ss[j], w[j]));
-            vols[j] += rates[j];
-        }
-        vol_wet += rate_wet;
     }
 }
-#endif
 
 #ifndef SSE2_AVAILABLE
 

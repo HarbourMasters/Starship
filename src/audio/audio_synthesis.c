@@ -5,14 +5,23 @@
 #include "port/Engine.h"
 
 #define DMEM_WET_SCRATCH 0x470
-#define DMEM_COMPRESSED_ADPCM_DATA 0x990
-#define DMEM_LEFT_CH 0x990
-#define DMEM_RIGHT_CH 0xB10
+#define DMEM_COMPRESSED_ADPCM_DATA 0xD50
+#define DMEM_LEFT_CH 0xD50
+#define DMEM_RIGHT_CH (DMEM_LEFT_CH + DMEM_1CH_SIZE)
+#define DMEM_CENTER_CH (DMEM_LEFT_CH + 2 * DMEM_1CH_SIZE)
+#define DMEM_SUBWOOFER_CH (DMEM_LEFT_CH + 3 * DMEM_1CH_SIZE)
+#define DMEM_REAR_LEFT_CH (DMEM_LEFT_CH + 4 * DMEM_1CH_SIZE)
+#define DMEM_REAR_RIGHT_CH (DMEM_LEFT_CH + 5 * DMEM_1CH_SIZE)
 #define DMEM_HAAS_TEMP 0x650
 #define DMEM_TEMP 0x450
 #define DMEM_UNCOMPRESSED_NOTE 0x5F0
-#define DMEM_WET_LEFT_CH 0xC90
-#define DMEM_WET_RIGHT_CH 0xE10 // = DMEM_WET_LEFT_CH + DMEM_1CH_SIZE
+#define DMEM_WET_LEFT_CH (DMEM_LEFT_CH + 6 * DMEM_1CH_SIZE)
+#define DMEM_WET_RIGHT_CH (DMEM_WET_LEFT_CH + DMEM_1CH_SIZE)
+#define DMEM_WET_CENTER_CH (DMEM_WET_LEFT_CH + 2 * DMEM_1CH_SIZE)
+#define DMEM_WET_SUBWOOFER_CH (DMEM_WET_LEFT_CH + 3 * DMEM_1CH_SIZE)
+#define DMEM_WET_REAR_LEFT_CH (DMEM_WET_LEFT_CH + 4 * DMEM_1CH_SIZE)
+#define DMEM_WET_REAR_RIGHT_CH (DMEM_WET_LEFT_CH + 5 * DMEM_1CH_SIZE)
+
 #define SAMPLE_SIZE sizeof(s16)
 
 typedef enum {
@@ -77,7 +86,7 @@ void AudioSynth_InitNextRingBuf(s32 sampleCount, s32 itemIndex, s32 reverbIndex)
 
     if ((reverb->downsampleRate != 1) && (reverb->framesToIgnore == 0)) {
         ringItem = &reverb->items[reverb->curFrame][itemIndex];
-        osInvalDCache(ringItem->toDownsampleLeft, 0x300);
+        osInvalDCache(ringItem->toDownsampleLeft, DMEM_1CH_SIZE * MAX_NUM_AUDIO_CHANNELS);
         j = 0;
         for (i = 0; i < ringItem->lengthA / 2; i++, j += reverb->downsampleRate) {
             reverb->leftRingBuf[ringItem->startPos + i] = ringItem->toDownsampleLeft[j];
@@ -675,6 +684,7 @@ Acmd* AudioSynth_Update(Acmd* aList, s32* cmdCount, s16* aiBufStart, s32 aiBufLe
     }
 
     aiBufPtr = aiBufStart;
+
     for (i = gAudioBufferParams.ticksPerUpdate; i > 0; i--) {
         if (i == 1) {
             chunkLen = aiBufLen;
@@ -693,9 +703,11 @@ Acmd* AudioSynth_Update(Acmd* aList, s32* cmdCount, s16* aiBufStart, s32 aiBufLe
         }
 
         aCmdPtr =
-            AudioSynth_DoOneAudioUpdate((s16*) aiBufPtr, chunkLen, aCmdPtr, gAudioBufferParams.ticksPerUpdate - i);
+            AudioSynth_DoOneAudioUpdate(aiBufPtr, chunkLen, aCmdPtr, gAudioBufferParams.ticksPerUpdate - i);
         aiBufLen -= chunkLen;
-        aiBufPtr += chunkLen * 2;
+
+        int num_audio_channels = GetNumAudioChannels();
+        aiBufPtr += chunkLen * num_audio_channels;
     }
 
     for (j = 0; j < gNumSynthReverbs; j++) {
@@ -723,7 +735,7 @@ Acmd* AudioSynth_LoadReverbSamples(Acmd* aList, s32 aiBufLen, s16 reverbIndex, s
             aList =
                 AudioSynth_LoadRingBufferPart(aList, sp64->lengthA + DMEM_WET_LEFT_CH, 0, sp64->lengthB, reverbIndex);
         }
-        aAddMixer(aList++, 0x300, DMEM_WET_LEFT_CH, DMEM_LEFT_CH);
+        aAddMixer(aList++, DMEM_2CH_SIZE, DMEM_WET_LEFT_CH, DMEM_LEFT_CH);
         aMix(aList++, 0x30, gSynthReverbs[reverbIndex].decayRatio + 0x8000, DMEM_WET_LEFT_CH, DMEM_WET_LEFT_CH);
     } else {
         sp62 = (sp64->startPos & 7) * 2;
@@ -739,7 +751,7 @@ Acmd* AudioSynth_LoadReverbSamples(Acmd* aList, s32 aiBufLen, s16 reverbIndex, s
         aSetBuffer(aList++, 0, sp62 + DMEM_UNCOMPRESSED_NOTE, DMEM_WET_RIGHT_CH, aiBufLen * 2);
         aResample(aList++, gSynthReverbs[reverbIndex].resampleFlags, gSynthReverbs[reverbIndex].unk_0A,
                   OS_K0_TO_PHYSICAL(gSynthReverbs[reverbIndex].unk_34));
-        aAddMixer(aList++, 0x300, DMEM_WET_LEFT_CH, DMEM_LEFT_CH);
+        aAddMixer(aList++, DMEM_2CH_SIZE, DMEM_WET_LEFT_CH, DMEM_LEFT_CH);
         aMix(aList++, 0x30, gSynthReverbs[reverbIndex].decayRatio + 0x8000, DMEM_WET_LEFT_CH, DMEM_WET_LEFT_CH);
     }
 
@@ -768,7 +780,7 @@ Acmd* AudioSynth_SaveReverbSamples(Acmd* aList, s16 reverbIndex, s16 updateIndex
                         OS_K0_TO_PHYSICAL(gSynthReverbs[reverbIndex]
                                               .items[gSynthReverbs[reverbIndex].curFrame][updateIndex]
                                               .toDownsampleLeft),
-                        0x300);
+                        DMEM_2CH_SIZE);
             gSynthReverbs[reverbIndex].resampleFlags = 0;
             break;
     }
@@ -807,7 +819,7 @@ Acmd* AudioSynth_DoOneAudioUpdate(s16* aiBuf, s32 aiBufLen, Acmd* aList, s32 upd
         }
     }
 
-    aClearBuffer(aList++, DMEM_LEFT_CH, DMEM_2CH_SIZE);
+    aClearBuffer(aList++, DMEM_LEFT_CH, DMEM_6CH_SIZE);
 
     j = 0;
     for (i = 0; i < gNumSynthReverbs; i++) {
@@ -834,10 +846,13 @@ Acmd* AudioSynth_DoOneAudioUpdate(s16* aiBuf, s32 aiBufLen, Acmd* aList, s32 upd
         j++;
     }
 
-    j = aiBufLen * 2;
+    int num_audio_channels = GetNumAudioChannels();
+    j = aiBufLen * num_audio_channels * sizeof(s16);
+    // Set rsp output buffer to DMEM_TEMP with size j
     aSetBuffer(aList++, 0, 0, DMEM_TEMP, j);
-    aInterleave(aList++, DMEM_LEFT_CH, DMEM_RIGHT_CH);
-    aSaveBuffer(aList++, DMEM_TEMP, OS_K0_TO_PHYSICAL(aiBuf), j * 2);
+    aInterleave(aList++, DMEM_LEFT_CH, DMEM_RIGHT_CH, DMEM_CENTER_CH, DMEM_SUBWOOFER_CH, DMEM_REAR_LEFT_CH, DMEM_REAR_RIGHT_CH, num_audio_channels);
+    // Copy j bytes from DMEM_TEMP to aiBuf
+    aSaveBuffer(aList++, DMEM_TEMP, OS_K0_TO_PHYSICAL(aiBuf), j);
 
     return aList;
 }
@@ -908,6 +923,10 @@ Acmd* AudioSynth_ProcessNote(s32 noteIndex, NoteSubEu* noteSub, NoteSynthesisSta
         synthState->samplePosFrac = 0;
         synthState->curVolLeft = 0;
         synthState->curVolRight = 0;
+        synthState->curVolCenter = 0;
+        synthState->curVolLfe = 0;
+        synthState->curVolRLeft = 0;
+        synthState->curVolRRight = 0;
         synthState->numParts = synthState->prevHaasEffectRightDelaySize = synthState->prevHaasEffectLeftDelaySize = 0;
         note->noteSubEu.bitField0.finished = 0;
     }
@@ -1288,74 +1307,90 @@ Acmd* AudioSynth_FinalResample(Acmd* aList, NoteSynthesisState* synthState, s32 
 Acmd* AudioSynth_ProcessEnvelope(Acmd* aList, NoteSubEu* noteSub, NoteSynthesisState* synthState, s32 aiBufLen,
                                  u16 dmemSrc, s32 delaySide, s32 flags) {
     s16 rampReverb;
-    s16 rampRight;
-    s16 rampLeft;
-    u16 panVolLeft;
-    u16 panVolRight;
-    u16 curVolLeft;
-    u16 curVolRight;
+    s16 rampRight = 0, rampLeft = 0, rampCenter = 0, rampLfe = 0, rampRLeft = 0, rampRRight = 0;
+    u16 panVolLeft, panVolRight, panVolCenter, panVolLfe, panVolRLeft, panVolRRight;
+    u16 curVolLeft, curVolRight, curVolCenter, curVolLfe, curVolRLeft, curVolRRight;
     s32 sourceReverbVol;
     s32 temp = 0;
 
     curVolLeft = synthState->curVolLeft;
     curVolRight = synthState->curVolRight;
+    curVolCenter = synthState->curVolCenter;
+    curVolLfe = synthState->curVolLfe;
+    curVolRLeft = synthState->curVolRLeft;
+    curVolRRight = synthState->curVolRRight;
 
-    panVolLeft = noteSub->panVolLeft;
-    panVolRight = noteSub->panVolRight;
+    panVolLeft = 16 * noteSub->panVolLeft;
+    panVolRight = 16 * noteSub->panVolRight;
+    panVolCenter = 16 * noteSub->panVolCenter;
+    panVolLfe = 16 * noteSub->panVolLfe;
+    panVolRLeft = 16 * noteSub->panVolRLeft;
+    panVolRRight = 16 * noteSub->panVolRRight;
 
-    panVolLeft <<= 4;
-    panVolRight <<= 4;
-
+    s32 aiBufLenSmall = aiBufLen >> 3;
     if (panVolLeft != curVolLeft) {
-        rampLeft = (panVolLeft - curVolLeft) / (aiBufLen >> 3);
-    } else {
-        rampLeft = 0;
+        rampLeft = (panVolLeft - curVolLeft) / aiBufLenSmall;
     }
     if (panVolRight != curVolRight) {
-        rampRight = (panVolRight - curVolRight) / (aiBufLen >> 3);
-    } else {
-        rampRight = 0;
+        rampRight = (panVolRight - curVolRight) / aiBufLenSmall;
+    }
+    if (panVolRLeft != curVolRLeft) {
+        rampRLeft = (panVolRLeft - curVolRLeft) / aiBufLenSmall;
+    }
+    if (panVolRRight != curVolRRight) {
+        rampRRight = (panVolRRight - curVolRRight) / aiBufLenSmall;
+    }
+    if (panVolCenter != curVolCenter) {
+        rampCenter = (panVolCenter - curVolCenter) / aiBufLenSmall;
+    }
+    if (panVolLfe != curVolLfe) {
+        rampLfe = (panVolLfe - curVolLfe) / aiBufLenSmall;
     }
 
     sourceReverbVol = synthState->reverbVol;
 
     if (noteSub->reverb != sourceReverbVol) {
         temp = (((noteSub->reverb & 0x7F) - (sourceReverbVol & 0x7F)) << 8);
-        rampReverb = temp / (aiBufLen >> 3);
+        rampReverb = temp / aiBufLenSmall;
         synthState->reverbVol = noteSub->reverb;
     } else {
         rampReverb = 0;
     }
 
-    synthState->curVolLeft = curVolLeft + (rampLeft * (aiBufLen >> 3));
-    synthState->curVolRight = curVolRight + (rampRight * (aiBufLen >> 3));
+    synthState->curVolLeft = curVolLeft + (rampLeft * aiBufLenSmall);
+    synthState->curVolRight = curVolRight + (rampRight * aiBufLenSmall);
+    synthState->curVolCenter = curVolCenter + (rampCenter * aiBufLenSmall);
+    synthState->curVolLfe = curVolLfe + (rampLfe * aiBufLenSmall);
+    synthState->curVolRLeft = curVolRLeft + (rampRLeft * aiBufLenSmall);
+    synthState->curVolRRight = curVolRRight + (rampRRight * aiBufLenSmall);
 
     if (noteSub->bitField0.usesHeadsetPanEffects) {
+        int32_t num_audio_channels = 2;
         aClearBuffer(aList++, DMEM_HAAS_TEMP, DMEM_1CH_SIZE);
-        aEnvSetup1(aList++, (sourceReverbVol & 0x7F), rampReverb, rampLeft, rampRight);
-        aEnvSetup2(aList++, curVolLeft, curVolRight);
+        aEnvSetup1(aList++, (sourceReverbVol & 0x7F), rampReverb, rampLeft, rampRight, rampCenter, rampLfe, rampRLeft, rampRRight);
+        aEnvSetup2(aList++, curVolLeft, curVolRight, curVolCenter, curVolLfe, curVolRLeft, curVolRRight);
 
         switch (delaySide) {
             case HAAS_EFFECT_DELAY_LEFT:
-                aEnvMixer(aList++, dmemSrc, aiBufLen, 0, 0, ((sourceReverbVol & 0x80) >> 7),
-                          noteSub->bitField0.stereoStrongRight, noteSub->bitField0.stereoStrongLeft, 0x65B1C9E1, 0);
+                aEnvMixer(aList++, dmemSrc, aiBufLen, ((sourceReverbVol & 0x80) >> 7),
+                          noteSub->bitField0.stereoStrongRight, noteSub->bitField0.stereoStrongLeft, (DMEM_WET_LEFT_CH << 16) | DMEM_LEFT_CH, DMEM_HAAS_TEMP << 16, num_audio_channels);
                 break;
 
             case HAAS_EFFECT_DELAY_RIGHT:
-                aEnvMixer(aList++, dmemSrc, aiBufLen, 0, 0, ((sourceReverbVol & 0x80) >> 7),
-                          noteSub->bitField0.stereoStrongRight, noteSub->bitField0.stereoStrongLeft, 0x9965C9E1, 0);
+                aEnvMixer(aList++, dmemSrc, aiBufLen, ((sourceReverbVol & 0x80) >> 7),
+                          noteSub->bitField0.stereoStrongRight, noteSub->bitField0.stereoStrongLeft, (DMEM_WET_LEFT_CH << 16) | DMEM_LEFT_CH, DMEM_HAAS_TEMP, num_audio_channels);
                 break;
 
             default: // HAAS_EFFECT_DELAY_NONE
-                aEnvMixer(aList++, dmemSrc, aiBufLen, 0, 0, ((sourceReverbVol & 0x80) >> 7),
-                          noteSub->bitField0.stereoStrongRight, noteSub->bitField0.stereoStrongLeft, 0x99B1C9E1, 0);
+                aEnvMixer(aList++, dmemSrc, aiBufLen, ((sourceReverbVol & 0x80) >> 7),
+                          noteSub->bitField0.stereoStrongRight, noteSub->bitField0.stereoStrongLeft, (DMEM_WET_LEFT_CH << 16) | DMEM_LEFT_CH, 0, num_audio_channels);
                 break;
         }
     } else {
-        aEnvSetup1(aList++, (sourceReverbVol & 0x7F), rampReverb, rampLeft, rampRight);
-        aEnvSetup2(aList++, curVolLeft, curVolRight);
-        aEnvMixer(aList++, dmemSrc, aiBufLen, 0, 0, ((sourceReverbVol & 0x80) >> 7),
-                  noteSub->bitField0.stereoStrongRight, noteSub->bitField0.stereoStrongLeft, 0x99B1C9E1, 0);
+        aEnvSetup1(aList++, (sourceReverbVol & 0x7F), rampReverb, rampLeft, rampRight, rampCenter, rampLfe, rampRLeft, rampRRight);
+        aEnvSetup2(aList++, curVolLeft, curVolRight, curVolCenter, curVolLfe, curVolRLeft, curVolRRight);
+        aEnvMixer(aList++, dmemSrc, aiBufLen, ((sourceReverbVol & 0x80) >> 7),
+                  noteSub->bitField0.stereoStrongRight, noteSub->bitField0.stereoStrongLeft, (DMEM_WET_LEFT_CH << 16) | DMEM_LEFT_CH, 0, GetNumAudioChannels());
     }
 
     return aList;
