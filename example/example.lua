@@ -6,7 +6,6 @@ function OnPlayUpdate(ev)
         local reticlePos = Game.D_display_801613E0(0)
         local actorId = math.random(176, 291)
         local actor = Game_SpawnActor(actorId);
-
         if (actor ~= nil) then
             actor.obj.pos.x = reticlePos.x * 1.7
             actor.obj.pos.y = 200.0

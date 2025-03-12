@@ -286,12 +286,18 @@ def parse_externs(header, namespace=None):
                 var_name = line.split(' ')[2].split(';')[0]
                 print(f'---@return {sanitize_type(var_type)}')
                 print(f'function Game.{var_name}() end')
+                print(f'---@param value {sanitize_type(var_type)}')
+                print(f'function Game.{var_name}(value) end')
             elif '[' in line and not '(' in line:
                 dimension_len = len(line.split('[')) - 1
                 var_name = line.split('[')[0].split(' ')[-1]
                 var_type = line.split(' ')[1]
+                print(f'---@param index number')
                 print(f'---@return {sanitize_type(var_type)}[{dimension_len}]')
-                print(f'function Game.{var_name}() end')
+                print(f'function Game.{var_name}(index) end')
+                print(f'---@param index number')
+                print(f'---@param value {sanitize_type(var_type)}')
+                print(f'function Game.{var_name}(index, value) end')
             elif '(' in line:
                 if 'ALIGN_ASSET' in line:
                     var_name = line.split('[')[0].split(' ')[-1]
@@ -352,6 +358,7 @@ if __name__ == "__main__":
     print("Game = {}")
     print("Assets = {}")
     print("UIWidgets = {}")
+    print("Events = {}")
     header = """
 ---@alias ListenerID number
 ---@class Asset

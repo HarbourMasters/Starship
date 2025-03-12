@@ -1,9 +1,9 @@
 Game = {}
 Assets = {}
 UIWidgets = {}
+Events = {}
 
 ---@alias ListenerID number
-
 ---@class Asset
 local Asset = {}
 
@@ -35,8 +35,8 @@ function Asset:LoadGfx() end
 function Asset:__tostring() end
 
 --- Registers an event listener.
----@param eventId Events
----@param callback fun(event: IEvent)
+---@param eventId EventID
+---@param callback fun(event: EventID)
 ---@param priority EventPriority
 ---@return ListenerID
 function RegisterListener(eventId, callback, priority) end
@@ -92,38 +92,94 @@ OptionId = {
     OPTION_LANGUAGE = 500
 }
 
+---@param index number
 ---@return number[1]
-function Game.gBSSMapPlanetTextures() end
+function Game.gBSSMapPlanetTextures(index) end
+---@param index number
+---@param value number
+function Game.gBSSMapPlanetTextures(index, value) end
+---@param index number
 ---@return number[1]
-function Game.gAssetMapPlanetTextures() end
+function Game.gAssetMapPlanetTextures(index) end
+---@param index number
+---@param value number
+function Game.gAssetMapPlanetTextures(index, value) end
+---@param index number
 ---@return number[1]
-function Game.gTotalHitsRanking() end
+function Game.gTotalHitsRanking(index) end
+---@param index number
+---@param value number
+function Game.gTotalHitsRanking(index, value) end
 ---@return boolean
 function Game.gGoToTitle() end
+---@param value boolean
+function Game.gGoToTitle(value) end
 ---@return number
 function Game.sLevelStartState() end
+---@param value number
+function Game.sLevelStartState(value) end
 ---@return number
 function Game.sWipeHeight() end
+---@param value number
+function Game.sWipeHeight(value) end
 ---@return number
 function Game.sTitleRankMaxRecords() end
+---@param value number
+function Game.sTitleRankMaxRecords(value) end
+---@param index number
 ---@return number[1]
-function Game.gMapVenomCloudTex() end
+function Game.gMapVenomCloudTex(index) end
+---@param index number
+---@param value number
+function Game.gMapVenomCloudTex(index, value) end
+---@param index number
 ---@return number[1]
-function Game.gMapCorneriaTex() end
+function Game.gMapCorneriaTex(index) end
+---@param index number
+---@param value number
+function Game.gMapCorneriaTex(index, value) end
+---@param index number
 ---@return number[1]
-function Game.gMapFortunaTex() end
+function Game.gMapFortunaTex(index) end
+---@param index number
+---@param value number
+function Game.gMapFortunaTex(index, value) end
+---@param index number
 ---@return number[1]
-function Game.gMapAquasTex() end
+function Game.gMapAquasTex(index) end
+---@param index number
+---@param value number
+function Game.gMapAquasTex(index, value) end
+---@param index number
 ---@return number[1]
-function Game.gMapVenomTex() end
+function Game.gMapVenomTex(index) end
+---@param index number
+---@param value number
+function Game.gMapVenomTex(index, value) end
+---@param index number
 ---@return number[1]
-function Game.gMapTitaniaTex() end
+function Game.gMapTitaniaTex(index) end
+---@param index number
+---@param value number
+function Game.gMapTitaniaTex(index, value) end
+---@param index number
 ---@return number[1]
-function Game.gMapKatinaTex() end
+function Game.gMapKatinaTex(index) end
+---@param index number
+---@param value number
+function Game.gMapKatinaTex(index, value) end
+---@param index number
 ---@return number[1]
-function Game.gMapMacbethTex() end
+function Game.gMapMacbethTex(index) end
+---@param index number
+---@param value number
+function Game.gMapMacbethTex(index, value) end
+---@param index number
 ---@return number[1]
-function Game.gMapZonessTex() end
+function Game.gMapZonessTex(index) end
+---@param index number
+---@param value number
+function Game.gMapZonessTex(index, value) end
 ---@param _void nil
 ---@return nil
 function Title_UpdateEntry(_void) end
@@ -873,6 +929,8 @@ Player = {}
 
 ---@return number
 function Game.D_AQ_801C4188() end
+---@param value number
+function Game.D_AQ_801C4188(value) end
 ---@param _Actor Actor
 ---@return nil
 function Aquas_CsAqFishGroup_Update(_Actor) end
@@ -1709,20 +1767,42 @@ function PlaneI:asRef() end
 
 ---@return Mtx
 function Game.gIdentityMtx() end
+---@param value Mtx
+function Game.gIdentityMtx(value) end
 ---@return Matrix
 function Game.gIdentityMatrix() end
+---@param value Matrix
+function Game.gIdentityMatrix(value) end
 ---@return Matrix
 function Game.gGfxMatrix() end
+---@param value Matrix
+function Game.gGfxMatrix(value) end
+---@param index number
 ---@return Matrix[1]
-function Game.sGfxMatrixStack() end
+function Game.sGfxMatrixStack(index) end
+---@param index number
+---@param value Matrix
+function Game.sGfxMatrixStack(index, value) end
 ---@return Matrix
 function Game.gCalcMatrix() end
+---@param value Matrix
+function Game.gCalcMatrix(value) end
+---@param index number
 ---@return Matrix[1]
-function Game.sCalcMatrixStack() end
+function Game.sCalcMatrixStack(index) end
+---@param index number
+---@param value Matrix
+function Game.sCalcMatrixStack(index, value) end
 ---@return Matrix
 function Game.gInterpolationMatrix() end
+---@param value Matrix
+function Game.gInterpolationMatrix(value) end
+---@param index number
 ---@return Matrix[1]
-function Game.sInterpolationMatrixStack() end
+function Game.sInterpolationMatrixStack(index) end
+---@param index number
+---@param value Matrix
+function Game.sInterpolationMatrixStack(index, value) end
 ---@param _value number
 ---@param mod number
 ---@return number
@@ -3566,8 +3646,12 @@ function func_radio_800BB388(_void) end
 function Radio_Draw(_void) end
 ---@return number
 function Game.D_BO_801A03DC() end
+---@param value number
+function Game.D_BO_801A03DC(value) end
 ---@return Matrix
 function Game.D_BO_8019EE80() end
+---@param value Matrix
+function Game.D_BO_8019EE80(value) end
 ---@param _Player Player
 ---@return nil
 function Bolse_LevelStart(_Player) end
@@ -3773,10 +3857,18 @@ PlanetSaveSlotTypes = {
     SAVETYPE_CLEAR = 2
 }
 
+---@param index number
 ---@return Gfx[1]
-function Game.D_VE1_8019A008() end
+function Game.D_VE1_8019A008(index) end
+---@param index number
+---@param value Gfx
+function Game.D_VE1_8019A008(index, value) end
+---@param index number
 ---@return number[1]
-function Game.aVe1GolemechHitbox() end
+function Game.aVe1GolemechHitbox(index) end
+---@param index number
+---@param value number
+function Game.aVe1GolemechHitbox(index, value) end
 ---@param _Player Player
 ---@return extern
 function Corneria_LevelStart(_Player) end
@@ -4127,12 +4219,20 @@ SfxBankId = {
     SFX_BANK_SYSTEM = 4
 }
 
+---@param index number
 ---@return number[1]
-function Game.gDefaultSfxSource() end
+function Game.gDefaultSfxSource(index) end
+---@param index number
+---@param value number
+function Game.gDefaultSfxSource(index, value) end
 ---@return number
 function Game.gDefaultMod() end
+---@param value number
+function Game.gDefaultMod(value) end
 ---@return number
 function Game.gDefaultReverb() end
+---@param value number
+function Game.gDefaultReverb(value) end
 ---@param _sfxId number
 ---@param sfxSource number
 ---@param token number
@@ -4237,20 +4337,46 @@ function Audio_SetVoiceLanguage(_language) end
 ---@param _f number
 ---@return number
 function fabsf(_f) end
+---@param index number
 ---@return Gfx[1]
-function Game.D_TI_801B7584() end
+function Game.D_TI_801B7584(index) end
+---@param index number
+---@param value Gfx
+function Game.D_TI_801B7584(index, value) end
+---@param index number
 ---@return Gfx[1]
-function Game.D_TI_801B7608() end
+function Game.D_TI_801B7608(index) end
+---@param index number
+---@param value Gfx
+function Game.D_TI_801B7608(index, value) end
+---@param index number
 ---@return Gfx[1]
-function Game.D_TI_801B769C() end
+function Game.D_TI_801B769C(index) end
+---@param index number
+---@param value Gfx
+function Game.D_TI_801B769C(index, value) end
+---@param index number
 ---@return number[1]
-function Game.aTiGorasHitbox() end
+function Game.aTiGorasHitbox(index) end
+---@param index number
+---@param value number
+function Game.aTiGorasHitbox(index, value) end
 ---@return number
 function Game.D_MA_801BA1E8() end
+---@param value number
+function Game.D_MA_801BA1E8(value) end
+---@param index number
 ---@return number[1]
-function Game.D_MA_801BE250() end
+function Game.D_MA_801BE250(index) end
+---@param index number
+---@param value number
+function Game.D_MA_801BE250(index, value) end
+---@param index number
 ---@return number[1]
-function Game.D_MA_801BE2F0() end
+function Game.D_MA_801BE2F0(index) end
+---@param index number
+---@param value number
+function Game.D_MA_801BE2F0(index, value) end
 ---@param _Player Player
 ---@return nil
 function Titania_LevelStart(_Player) end
@@ -5303,10 +5429,18 @@ function RCP_SetupDL_50(_void) end
 ---@param far number
 ---@return nil
 function RCP_SetupDL_61(_r, g, b, a, near, far) end
+---@param index number
 ---@return Gfx[2]
-function Game.gRcpSetupDLs() end
+function Game.gRcpSetupDLs(index) end
+---@param index number
+---@param value Gfx
+function Game.gRcpSetupDLs(index, value) end
+---@param index number
 ---@return number[1]
-function Game.D_80178580() end
+function Game.D_80178580(index) end
+---@param index number
+---@param value number
+function Game.D_80178580(index, value) end
 ---@class SaveData
 ---@field planet PlanetData
 ---@field pad10 string
@@ -5343,12 +5477,20 @@ function Save_WriteEeprom(_SaveFile) end
 function Save_ReadEeprom(_SaveFile) end
 ---@return SaveFile
 function Game.gSaveIOBuffer() end
+---@param value SaveFile
+function Game.gSaveIOBuffer(value) end
 ---@return SaveFile
 function Game.sPrevSaveData() end
+---@param value SaveFile
+function Game.sPrevSaveData(value) end
 ---@return Save
 function Game.gDefaultSave() end
+---@param value Save
+function Game.gDefaultSave(value) end
 ---@return SaveFile
 function Game.gSaveFile() end
+---@param value SaveFile
+function Game.gSaveFile(value) end
 ---@enum OptionState
 OptionState = {
     OPTION_WAIT = 0,
@@ -5397,40 +5539,78 @@ function Game_Initialize(_void) end
 ---@param _void nil
 ---@return nil
 function Game_Update(_void) end
+---@param index number
 ---@return boolean[1]
-function Game.gShowReticles() end
+function Game.gShowReticles(index) end
+---@param index number
+---@param value boolean
+function Game.gShowReticles(index, value) end
 ---@return boolean
 function Game.D_game_800D2870() end
+---@param value boolean
+function Game.D_game_800D2870(value) end
 ---@return number
 function Game.gNextVsViewScale() end
+---@param value number
+function Game.gNextVsViewScale(value) end
 ---@return number
 function Game.gVsViewScale() end
+---@param value number
+function Game.gVsViewScale(value) end
+---@param index number
 ---@return number[1]
-function Game.gPlayerInactive() end
+function Game.gPlayerInactive(index) end
+---@param index number
+---@param value number
+function Game.gPlayerInactive(index, value) end
 ---@return number
 function Game.gVsMenuSelection() end
+---@param value number
+function Game.gVsMenuSelection(value) end
 ---@return number
 function Game.gShowHud() end
+---@param value number
+function Game.gShowHud(value) end
 ---@return number
 function Game.gNextLevelPhase() end
+---@param value number
+function Game.gNextLevelPhase(value) end
 ---@return number
 function Game.gNextLevel() end
+---@param value number
+function Game.gNextLevel(value) end
 ---@return number
 function Game.gNextGameState() end
+---@param value number
+function Game.gNextGameState(value) end
 ---@return number
 function Game.gLastGameState() end
+---@param value number
+function Game.gLastGameState(value) end
 ---@return number
 function Game.gBgColor() end
+---@param value number
+function Game.gBgColor(value) end
 ---@return number
 function Game.gBlurAlpha() end
+---@param value number
+function Game.gBlurAlpha(value) end
 ---@return number
 function Game.gGameStandby() end
+---@param value number
+function Game.gGameStandby(value) end
 ---@return number
 function Game.gFovY() end
+---@param value number
+function Game.gFovY(value) end
 ---@return number
 function Game.gProjectNear() end
+---@param value number
+function Game.gProjectNear(value) end
 ---@return number
 function Game.gProjectFar() end
+---@param value number
+function Game.gProjectFar(value) end
 ---@param _Player Player
 ---@return nil
 function AllRange_FortunaIntro(_Player) end
@@ -7262,302 +7442,746 @@ function SectorX_SxSpyborg_Update(_Boss) end
 function SectorX_SxSpyborg_Draw(_Boss) end
 ---@return number
 function Game.gAllRangeSpawnEvent() end
+---@param value number
+function Game.gAllRangeSpawnEvent(value) end
+---@param index number
 ---@return number[1]
-function Game.gStarColors() end
+function Game.gStarColors(index) end
+---@param index number
+---@param value number
+function Game.gStarColors(index, value) end
+---@param index number
 ---@return number[1]
-function Game.gBossBgms() end
+function Game.gBossBgms(index) end
+---@param index number
+---@param value number
+function Game.gBossBgms(index, value) end
 ---@return Vec3f
 function Game.D_tank_800C9F2C() end
+---@param value Vec3f
+function Game.D_tank_800C9F2C(value) end
 ---@return number
 function Game.D_display_800CA220() end
+---@param value number
+function Game.D_display_800CA220(value) end
 ---@return number
 function Game.gCamDistortion() end
+---@param value number
+function Game.gCamDistortion(value) end
 ---@return Actor
 function Game.gTeamHelpActor() end
+---@param value Actor
+function Game.gTeamHelpActor(value) end
 ---@return number
 function Game.gTeamHelpTimer() end
+---@param value number
+function Game.gTeamHelpTimer(value) end
+---@param index number
 ---@return number[1]
-function Game.gZoEnergyBallHitbox() end
+function Game.gZoEnergyBallHitbox(index) end
+---@param index number
+---@param value number
+function Game.gZoEnergyBallHitbox(index, value) end
+---@param index number
 ---@return number[1]
-function Game.gCubeHitbox100() end
+function Game.gCubeHitbox100(index) end
+---@param index number
+---@param value number
+function Game.gCubeHitbox100(index, value) end
+---@param index number
 ---@return number[1]
-function Game.gCubeHitbox150() end
+function Game.gCubeHitbox150(index) end
+---@param index number
+---@param value number
+function Game.gCubeHitbox150(index, value) end
+---@param index number
 ---@return number[1]
-function Game.gCubeHitbox200() end
+function Game.gCubeHitbox200(index) end
+---@param index number
+---@param value number
+function Game.gCubeHitbox200(index, value) end
+---@param index number
 ---@return number[1]
-function Game.gCubeHitbox300() end
+function Game.gCubeHitbox300(index) end
+---@param index number
+---@param value number
+function Game.gCubeHitbox300(index, value) end
+---@param index number
 ---@return number[1]
-function Game.gCubeHitbox400() end
+function Game.gCubeHitbox400(index) end
+---@param index number
+---@param value number
+function Game.gCubeHitbox400(index, value) end
+---@param index number
 ---@return number[1]
-function Game.gItemRingCheckHitbox() end
+function Game.gItemRingCheckHitbox(index) end
+---@param index number
+---@param value number
+function Game.gItemRingCheckHitbox(index, value) end
+---@param index number
 ---@return number[1]
-function Game.gNoHitbox() end
+function Game.gNoHitbox(index) end
+---@param index number
+---@param value number
+function Game.gNoHitbox(index, value) end
+---@param index number
 ---@return number[1]
-function Game.gItemCheckpointHitbox() end
+function Game.gItemCheckpointHitbox(index) end
+---@param index number
+---@param value number
+function Game.gItemCheckpointHitbox(index, value) end
+---@param index number
 ---@return number[1]
-function Game.gItemSupplyRingHitbox() end
+function Game.gItemSupplyRingHitbox(index) end
+---@param index number
+---@param value number
+function Game.gItemSupplyRingHitbox(index, value) end
+---@param index number
 ---@return number[1]
-function Game.gMeteoWarpHitbox() end
+function Game.gMeteoWarpHitbox(index) end
+---@param index number
+---@param value number
+function Game.gMeteoWarpHitbox(index, value) end
+---@param index number
 ---@return number[1]
-function Game.gItemPathChangeHitbox() end
+function Game.gItemPathChangeHitbox(index) end
+---@param index number
+---@param value number
+function Game.gItemPathChangeHitbox(index, value) end
+---@param index number
 ---@return number[1]
-function Game.gItemLasersHitbox() end
+function Game.gItemLasersHitbox(index) end
+---@param index number
+---@param value number
+function Game.gItemLasersHitbox(index, value) end
+---@param index number
 ---@return number[1]
-function Game.gItemBombHitbox() end
+function Game.gItemBombHitbox(index) end
+---@param index number
+---@param value number
+function Game.gItemBombHitbox(index, value) end
+---@param index number
 ---@return number[1]
-function Game.gActorMissileSeekHitbox() end
+function Game.gActorMissileSeekHitbox(index) end
+---@param index number
+---@param value number
+function Game.gActorMissileSeekHitbox(index, value) end
+---@param index number
 ---@return number[1]
-function Game.gMeMoraHitbox() end
+function Game.gMeMoraHitbox(index) end
+---@param index number
+---@param value number
+function Game.gMeMoraHitbox(index, value) end
+---@param index number
 ---@return number[1]
-function Game.gTeamHitbox() end
+function Game.gTeamHitbox(index) end
+---@param index number
+---@param value number
+function Game.gTeamHitbox(index, value) end
+---@param index number
 ---@return number[1]
-function Game.gActorAllRangeHItbox() end
+function Game.gActorAllRangeHItbox(index) end
+---@param index number
+---@param value number
+function Game.gActorAllRangeHItbox(index, value) end
+---@param index number
 ---@return number[1]
-function Game.aWzMeteor1Hitbox() end
+function Game.aWzMeteor1Hitbox(index) end
+---@param index number
+---@param value number
+function Game.aWzMeteor1Hitbox(index, value) end
+---@param index number
 ---@return number[1]
-function Game.aWzGateHitbox() end
+function Game.aWzGateHitbox(index) end
+---@param index number
+---@param value number
+function Game.aWzGateHitbox(index, value) end
+---@param index number
 ---@return number[1]
-function Game.aWzPillar1Hitbox() end
+function Game.aWzPillar1Hitbox(index) end
+---@param index number
+---@param value number
+function Game.aWzPillar1Hitbox(index, value) end
+---@param index number
 ---@return number[1]
-function Game.aWzPillar2Hitbox() end
+function Game.aWzPillar2Hitbox(index) end
+---@param index number
+---@param value number
+function Game.aWzPillar2Hitbox(index, value) end
+---@param index number
 ---@return ObjectInfo[1]
-function Game.gObjectInfo() end
+function Game.gObjectInfo(index) end
+---@param index number
+---@param value ObjectInfo
+function Game.gObjectInfo(index, value) end
+---@param index number
 ---@return number[1]
-function Game.D_edata_800CF964() end
+function Game.D_edata_800CF964(index) end
+---@param index number
+---@param value number
+function Game.D_edata_800CF964(index, value) end
+---@param index number
 ---@return number[1]
-function Game.D_edisplay_800CF9B0() end
+function Game.D_edisplay_800CF9B0(index) end
+---@param index number
+---@param value number
+function Game.D_edisplay_800CF9B0(index, value) end
+---@param index number
 ---@return Gfx[1]
-function Game.D_edisplay_800CFA54() end
+function Game.D_edisplay_800CFA54(index) end
+---@param index number
+---@param value Gfx
+function Game.D_edisplay_800CFA54(index, value) end
+---@param index number
 ---@return Gfx[1]
-function Game.D_edisplay_800CFAC4() end
+function Game.D_edisplay_800CFAC4(index) end
+---@param index number
+---@param value Gfx
+function Game.D_edisplay_800CFAC4(index, value) end
+---@param index number
 ---@return Gfx[1]
-function Game.D_edisplay_800CFADC() end
+function Game.D_edisplay_800CFADC(index) end
+---@param index number
+---@param value Gfx
+function Game.D_edisplay_800CFADC(index, value) end
+---@param index number
 ---@return Gfx[1]
-function Game.D_edisplay_800CFB08() end
+function Game.D_edisplay_800CFB08(index) end
+---@param index number
+---@param value Gfx
+function Game.D_edisplay_800CFB08(index, value) end
+---@param index number
 ---@return Gfx[1]
-function Game.D_edisplay_800CFB14() end
+function Game.D_edisplay_800CFB14(index) end
+---@param index number
+---@param value Gfx
+function Game.D_edisplay_800CFB14(index, value) end
+---@param index number
 ---@return Gfx[1]
-function Game.D_edisplay_800CFB28() end
+function Game.D_edisplay_800CFB28(index) end
+---@param index number
+---@param value Gfx
+function Game.D_edisplay_800CFB28(index, value) end
+---@param index number
 ---@return Gfx[1]
-function Game.D_edisplay_800CFB40() end
+function Game.D_edisplay_800CFB40(index) end
+---@param index number
+---@param value Gfx
+function Game.D_edisplay_800CFB40(index, value) end
+---@param index number
 ---@return Gfx[1]
-function Game.D_edisplay_800CFB64() end
+function Game.D_edisplay_800CFB64(index) end
+---@param index number
+---@param value Gfx
+function Game.D_edisplay_800CFB64(index, value) end
+---@param index number
 ---@return Gfx[1]
-function Game.D_edisplay_800CFB88() end
+function Game.D_edisplay_800CFB88(index) end
+---@param index number
+---@param value Gfx
+function Game.D_edisplay_800CFB88(index, value) end
+---@param index number
 ---@return Gfx[1]
-function Game.D_edisplay_800CFBA8() end
+function Game.D_edisplay_800CFBA8(index) end
+---@param index number
+---@param value Gfx
+function Game.D_edisplay_800CFBA8(index, value) end
+---@param index number
 ---@return Gfx[1]
-function Game.D_edisplay_800CFBE4() end
+function Game.D_edisplay_800CFBE4(index) end
+---@param index number
+---@param value Gfx
+function Game.D_edisplay_800CFBE4(index, value) end
+---@param index number
 ---@return Gfx[1]
-function Game.D_edisplay_800CFC0C() end
+function Game.D_edisplay_800CFC0C(index) end
+---@param index number
+---@param value Gfx
+function Game.D_edisplay_800CFC0C(index, value) end
+---@param index number
 ---@return Gfx[1]
-function Game.D_edisplay_800CFC40() end
+function Game.D_edisplay_800CFC40(index) end
+---@param index number
+---@param value Gfx
+function Game.D_edisplay_800CFC40(index, value) end
+---@param index number
 ---@return Gfx[1]
-function Game.D_edisplay_800CFC50() end
+function Game.D_edisplay_800CFC50(index) end
+---@param index number
+---@param value Gfx
+function Game.D_edisplay_800CFC50(index, value) end
+---@param index number
 ---@return Gfx[1]
-function Game.D_edisplay_800CFC64() end
+function Game.D_edisplay_800CFC64(index) end
+---@param index number
+---@param value Gfx
+function Game.D_edisplay_800CFC64(index, value) end
+---@param index number
 ---@return Gfx[1]
-function Game.D_edisplay_800CFC7C() end
+function Game.D_edisplay_800CFC7C(index) end
+---@param index number
+---@param value Gfx
+function Game.D_edisplay_800CFC7C(index, value) end
+---@param index number
 ---@return number[1]
-function Game.D_edisplay_800CFCA0() end
+function Game.D_edisplay_800CFCA0(index) end
+---@param index number
+---@param value number
+function Game.D_edisplay_800CFCA0(index, value) end
+---@param index number
 ---@return number[1]
-function Game.D_edisplay_800CFCCC() end
+function Game.D_edisplay_800CFCCC(index) end
+---@param index number
+---@param value number
+function Game.D_edisplay_800CFCCC(index, value) end
+---@param index number
 ---@return Gfx[1]
-function Game.D_edisplay_800CFD80() end
+function Game.D_edisplay_800CFD80(index) end
+---@param index number
+---@param value Gfx
+function Game.D_edisplay_800CFD80(index, value) end
+---@param index number
 ---@return ObjectInit[1]
-function Game.gLevelObjectInits() end
+function Game.gLevelObjectInits(index) end
+---@param index number
+---@param value ObjectInit
+function Game.gLevelObjectInits(index, value) end
+---@param index number
 ---@return number[1]
-function Game.gWarpRingSfx() end
+function Game.gWarpRingSfx(index) end
+---@param index number
+---@param value number
+function Game.gWarpRingSfx(index, value) end
+---@param index number
 ---@return number[1]
-function Game.gTeamEventActorIndex() end
+function Game.gTeamEventActorIndex(index) end
+---@param index number
+---@param value number
+function Game.gTeamEventActorIndex(index, value) end
 ---@return number
 function Game.gCallVoiceParam() end
+---@param value number
+function Game.gCallVoiceParam(value) end
 ---@return number
 function Game.D_hud_800D1970() end
+---@param value number
+function Game.D_hud_800D1970(value) end
+---@param index number
 ---@return CollisionHeader[1]
-function Game.D_800D2B38() end
+function Game.D_800D2B38(index) end
+---@param index number
+---@param value CollisionHeader
+function Game.D_800D2B38(index, value) end
+---@param index number
 ---@return CollisionHeader2[1]
-function Game.D_800D2CA0() end
+function Game.D_800D2CA0(index) end
+---@param index number
+---@param value CollisionHeader2
+function Game.D_800D2CA0(index, value) end
 ---@return number
 function Game.gVenomHardClear() end
+---@param value number
+function Game.gVenomHardClear(value) end
+---@param index number
 ---@return number[1]
-function Game.gLeveLClearStatus() end
+function Game.gLeveLClearStatus(index) end
+---@param index number
+---@param value number
+function Game.gLeveLClearStatus(index, value) end
 ---@return number
 function Game.gRadioMsgPri() end
+---@param value number
+function Game.gRadioMsgPri(value) end
 ---@return number
 function Game.gAllRangeSupplyTimer() end
+---@param value number
+function Game.gAllRangeSupplyTimer(value) end
 ---@return number
 function Game.sStarWolfKillTimer() end
+---@param value number
+function Game.sStarWolfKillTimer(value) end
 ---@return number
 function Game.gStarWolfMsgTimer() end
+---@param value number
+function Game.gStarWolfMsgTimer(value) end
 ---@return number
 function Game.gAllRangeWingRepairTimer() end
+---@param value number
+function Game.gAllRangeWingRepairTimer(value) end
 ---@return number
 function Game.gAllRangeSuppliesSent() end
+---@param value number
+function Game.gAllRangeSuppliesSent(value) end
 ---@return number
 function Game.gSzMissileR() end
+---@param value number
+function Game.gSzMissileR(value) end
 ---@return number
 function Game.gSzMissileG() end
+---@param value number
+function Game.gSzMissileG(value) end
 ---@return number
 function Game.gSzMissileB() end
+---@param value number
+function Game.gSzMissileB(value) end
 ---@return number
 function Game.gKaKilledAlly() end
+---@param value number
+function Game.gKaKilledAlly(value) end
 ---@return number
 function Game.gKaAllyKillCount() end
+---@param value number
+function Game.gKaAllyKillCount(value) end
 ---@return number
 function Game.gAllRangeCheckpoint() end
+---@param value number
+function Game.gAllRangeCheckpoint(value) end
 ---@return number
 function Game.gAllRangeEventTimer() end
+---@param value number
+function Game.gAllRangeEventTimer(value) end
+---@param index number
 ---@return number[1]
-function Game.gAllRangeCountdown() end
+function Game.gAllRangeCountdown(index) end
+---@param index number
+---@param value number
+function Game.gAllRangeCountdown(index, value) end
 ---@return boolean
 function Game.gShowAllRangeCountdown() end
+---@param value boolean
+function Game.gShowAllRangeCountdown(value) end
 ---@return number
 function Game.gAllRangeFrameCount() end
+---@param value number
+function Game.gAllRangeFrameCount(value) end
 ---@return number
 function Game.gAllRangeCountdownScale() end
+---@param value number
+function Game.gAllRangeCountdownScale(value) end
 ---@return number
 function Game.gAndrossUnkAlpha() end
+---@param value number
+function Game.gAndrossUnkAlpha(value) end
 ---@return number
 function Game.gBolseDynamicGround() end
+---@param value number
+function Game.gBolseDynamicGround(value) end
 ---@return number
 function Game.gWarpZoneBgAlpha() end
+---@param value number
+function Game.gWarpZoneBgAlpha(value) end
 ---@return number
 function Game.D_bg_8015F964() end
+---@param value number
+function Game.D_bg_8015F964(value) end
 ---@return number
 function Game.D_bg_8015F968() end
+---@param value number
+function Game.D_bg_8015F968(value) end
 ---@return number
 function Game.D_bg_8015F96C() end
+---@param value number
+function Game.D_bg_8015F96C(value) end
 ---@return number
 function Game.D_bg_8015F970() end
+---@param value number
+function Game.D_bg_8015F970(value) end
 ---@return number
 function Game.D_bg_8015F974() end
+---@param value number
+function Game.D_bg_8015F974(value) end
 ---@return number
 function Game.D_bg_8015F978() end
+---@param value number
+function Game.D_bg_8015F978(value) end
 ---@return number
 function Game.D_bg_8015F97C() end
+---@param value number
+function Game.D_bg_8015F97C(value) end
 ---@return number
 function Game.D_bg_8015F980() end
+---@param value number
+function Game.D_bg_8015F980(value) end
 ---@return number
 function Game.D_bg_8015F984() end
+---@param value number
+function Game.D_bg_8015F984(value) end
 ---@return number
 function Game.gBossFrameCount() end
+---@param value number
+function Game.gBossFrameCount(value) end
+---@param index number
 ---@return Vec3f[1]
-function Game.D_display_801613B0() end
+function Game.D_display_801613B0(index) end
+---@param index number
+---@param value Vec3f
+function Game.D_display_801613B0(index, value) end
+---@param index number
 ---@return Vec3f[1]
-function Game.D_display_801613E0() end
+function Game.D_display_801613E0(index) end
+---@param index number
+---@param value Vec3f
+function Game.D_display_801613E0(index, value) end
 ---@return number
 function Game.gReflectY() end
+---@param value number
+function Game.gReflectY(value) end
+---@param index number
 ---@return Matrix[1]
-function Game.D_display_80161418() end
+function Game.D_display_80161418(index) end
+---@param index number
+---@param value Matrix
+function Game.D_display_80161418(index, value) end
+---@param index number
 ---@return Vec3f[1]
-function Game.D_display_80161518() end
+function Game.D_display_80161518(index) end
+---@param index number
+---@param value Vec3f
+function Game.D_display_80161518(index, value) end
+---@param index number
 ---@return Vec3f[1]
-function Game.D_display_80161548() end
+function Game.D_display_80161548(index) end
+---@param index number
+---@param value Vec3f
+function Game.D_display_80161548(index, value) end
+---@param index number
 ---@return Vec3f[1]
-function Game.gLockOnTargetViewPos() end
+function Game.gLockOnTargetViewPos(index) end
+---@param index number
+---@param value Vec3f
+function Game.gLockOnTargetViewPos(index, value) end
+---@param index number
 ---@return number[1]
-function Game.D_display_801615A8() end
+function Game.D_display_801615A8(index) end
+---@param index number
+---@param value number
+function Game.D_display_801615A8(index, value) end
+---@param index number
 ---@return number[1]
-function Game.D_display_801615B8() end
+function Game.D_display_801615B8(index) end
+---@param index number
+---@param value number
+function Game.D_display_801615B8(index, value) end
 ---@return Vec3f
 function Game.D_edisplay_801615D0() end
+---@param value Vec3f
+function Game.D_edisplay_801615D0(value) end
+---@param index number
 ---@return number[1]
-function Game.D_enmy_Timer_80161670() end
+function Game.D_enmy_Timer_80161670(index) end
+---@param index number
+---@param value number
+function Game.D_enmy_Timer_80161670(index, value) end
 ---@return number
 function Game.gLastPathChange() end
+---@param value number
+function Game.gLastPathChange(value) end
 ---@return number
 function Game.gMissedZoSearchlight() end
+---@param value number
+function Game.gMissedZoSearchlight(value) end
 ---@return number
 function Game.gCallTimer() end
+---@param value number
+function Game.gCallTimer(value) end
 ---@return number
 function Game.D_hud_80161704() end
+---@param value number
+function Game.D_hud_80161704(value) end
 ---@return number
 function Game.D_hud_80161708() end
+---@param value number
+function Game.D_hud_80161708(value) end
 ---@return number
 function Game.D_hud_8016170C() end
+---@param value number
+function Game.D_hud_8016170C(value) end
 ---@return number
 function Game.gRadarMissileAlarmTimer() end
+---@param value number
+function Game.gRadarMissileAlarmTimer(value) end
 ---@return number
 function Game.gTotalHits() end
+---@param value number
+function Game.gTotalHits(value) end
+---@param index number
 ---@return number[1]
-function Game.D_hud_80161720() end
+function Game.D_hud_80161720(index) end
+---@param index number
+---@param value number
+function Game.D_hud_80161720(index, value) end
 ---@return number
 function Game.gDisplayedHitCount() end
+---@param value number
+function Game.gDisplayedHitCount(value) end
 ---@return number
 function Game.D_hud_80161730() end
+---@param value number
+function Game.D_hud_80161730(value) end
 ---@return number
 function Game.gShowBossHealth() end
+---@param value number
+function Game.gShowBossHealth(value) end
+---@param index number
 ---@return string[1]
-function Game.D_801619A0() end
+function Game.D_801619A0(index) end
+---@param index number
+---@param value string
+function Game.D_801619A0(index, value) end
 ---@return number
 function Game.gSavedZoSearchlightStatus() end
+---@param value number
+function Game.gSavedZoSearchlightStatus(value) end
 ---@return number
 function Game.gArwingSpeed() end
+---@param value number
+function Game.gArwingSpeed(value) end
 ---@return number
 function Game.D_play_80161A58() end
+---@param value number
+function Game.D_play_80161A58(value) end
 ---@return number
 function Game.D_play_80161A5C() end
+---@param value number
+function Game.D_play_80161A5C(value) end
 ---@return number
 function Game.gScreenFlashTimer() end
+---@param value number
+function Game.gScreenFlashTimer(value) end
 ---@return number
 function Game.gDropHitCountItem() end
+---@param value number
+function Game.gDropHitCountItem(value) end
 ---@return number
 function Game.gRadioMsgList() end
+---@param value number
+function Game.gRadioMsgList(value) end
 ---@return number
 function Game.gRadioMsgListIndex() end
+---@param value number
+function Game.gRadioMsgListIndex(value) end
 ---@return number
 function Game.gRadioPrintPosX() end
+---@param value number
+function Game.gRadioPrintPosX(value) end
 ---@return number
 function Game.gRadioPrintPosY() end
+---@param value number
+function Game.gRadioPrintPosY(value) end
 ---@return number
 function Game.gRadioTextBoxPosX() end
+---@param value number
+function Game.gRadioTextBoxPosX(value) end
 ---@return number
 function Game.gRadioTextBoxPosY() end
+---@param value number
+function Game.gRadioTextBoxPosY(value) end
 ---@return number
 function Game.gRadioTextBoxScaleX() end
+---@param value number
+function Game.gRadioTextBoxScaleX(value) end
 ---@return number
 function Game.gRadioPortraitPosX() end
+---@param value number
+function Game.gRadioPortraitPosX(value) end
 ---@return number
 function Game.gRadioPortraitPosY() end
+---@param value number
+function Game.gRadioPortraitPosY(value) end
 ---@return boolean
 function Game.gVsMatchOver() end
+---@param value boolean
+function Game.gVsMatchOver(value) end
 ---@return number
 function Game.gVsMatchState() end
+---@param value number
+function Game.gVsMatchState(value) end
 ---@return number
 function Game.D_versus_80178758() end
+---@param value number
+function Game.D_versus_80178758(value) end
 ---@return number
 function Game.sUnlockLandmaster() end
+---@param value number
+function Game.sUnlockLandmaster(value) end
 ---@return number
 function Game.sUnlockOnFoot() end
+---@param value number
+function Game.sUnlockOnFoot(value) end
+---@param index number
 ---@return number[1]
-function Game.gVsCountdown() end
+function Game.gVsCountdown(index) end
+---@param index number
+---@param value number
+function Game.gVsCountdown(index, value) end
+---@param index number
 ---@return number[1]
-function Game.D_Tex_800DACB8() end
+function Game.D_Tex_800DACB8(index) end
+---@param index number
+---@param value number
+function Game.D_Tex_800DACB8(index, value) end
+---@param index number
 ---@return number[1]
-function Game.D_Tex_800D99F8() end
+function Game.D_Tex_800D99F8(index) end
+---@param index number
+---@param value number
+function Game.D_Tex_800D99F8(index, value) end
+---@param index number
 ---@return number[1]
-function Game.gTextCharPalettes() end
+function Game.gTextCharPalettes(index) end
+---@param index number
+---@param value number
+function Game.gTextCharPalettes(index, value) end
+---@param index number
 ---@return Gfx[1]
-function Game.gRcpInitDL() end
+function Game.gRcpInitDL(index) end
+---@param index number
+---@param value Gfx
+function Game.gRcpInitDL(index, value) end
+---@param index number
 ---@return Gfx[1]
-function Game.aCoHighwayShadowDL() end
+function Game.aCoHighwayShadowDL(index) end
+---@param index number
+---@param value Gfx
+function Game.aCoHighwayShadowDL(index, value) end
+---@param index number
 ---@return Gfx[1]
-function Game.D_Gfx_800D9688() end
+function Game.D_Gfx_800D9688(index) end
+---@param index number
+---@param value Gfx
+function Game.D_Gfx_800D9688(index, value) end
+---@param index number
 ---@return number[1]
-function Game.D_Tex_800DB4B8() end
+function Game.D_Tex_800DB4B8(index) end
+---@param index number
+---@param value number
+function Game.D_Tex_800DB4B8(index, value) end
+---@param index number
 ---@return Gfx[1]
-function Game.D_Gfx_800D94D0() end
+function Game.D_Gfx_800D94D0(index) end
+---@param index number
+---@param value Gfx
+function Game.D_Gfx_800D94D0(index, value) end
 ---@return number
 function Game.D_Andross_801A7F58() end
+---@param value number
+function Game.D_Andross_801A7F58(value) end
 ---@return number
 function Game.D_Andross_801A7F60() end
+---@param value number
+function Game.D_Andross_801A7F60(value) end
 ---@return number
 function Game.D_Andross_801A7F68() end
+---@param value number
+function Game.D_Andross_801A7F68(value) end
 ---@return number
 function Game.D_Andross_801A7F70() end
+---@param value number
+function Game.D_Andross_801A7F70(value) end
 ---@return number
 function Game.D_Andross_801A7F78() end
+---@param value number
+function Game.D_Andross_801A7F78(value) end
 ---@param _Actor Actor
 ---@return nil
 function Andross_80187530(_Actor) end
@@ -7720,678 +8344,1510 @@ function SectorY_SyShip3Destroyed_Update(_Scenery) end
 function SectorY_SyShip4Destroyed_Update(_Scenery) end
 ---@return number
 function Game.gSceneId() end
+---@param value number
+function Game.gSceneId(value) end
 ---@return number
 function Game.gSceneSetup() end
+---@param value number
+function Game.gSceneSetup(value) end
 ---@return number
 function Game.gClearPlayerInfo() end
+---@param value number
+function Game.gClearPlayerInfo(value) end
 ---@return number
 function Game.D_ctx_8017782C() end
+---@param value number
+function Game.D_ctx_8017782C(value) end
 ---@return GameState
 function Game.gGameState() end
+---@param value GameState
+function Game.gGameState(value) end
 ---@return number
 function Game.gNextGameStateTimer() end
+---@param value number
+function Game.gNextGameStateTimer(value) end
 ---@return number
 function Game.gVsItemSpawnTimer() end
+---@param value number
+function Game.gVsItemSpawnTimer(value) end
 ---@return OptionState
 function Game.gOptionMenuStatus() end
+---@param value OptionState
+function Game.gOptionMenuStatus(value) end
 ---@return number
 function Game.gPlayState() end
+---@param value number
+function Game.gPlayState(value) end
 ---@return number
 function Game.D_ctx_80177868() end
+---@param value number
+function Game.D_ctx_80177868(value) end
 ---@return LevelMode
 function Game.gLevelMode() end
+---@param value LevelMode
+function Game.gLevelMode(value) end
 ---@return DrawMode
 function Game.gDrawMode() end
+---@param value DrawMode
+function Game.gDrawMode(value) end
 ---@return number
 function Game.gPlayerNum() end
+---@param value number
+function Game.gPlayerNum(value) end
 ---@return number
 function Game.gCamCount() end
+---@param value number
+function Game.gCamCount(value) end
+---@param index number
 ---@return number[1]
-function Game.gTeamShields() end
+function Game.gTeamShields(index) end
+---@param index number
+---@param value number
+function Game.gTeamShields(index, value) end
+---@param index number
 ---@return number[1]
-function Game.gSavedTeamShields() end
+function Game.gSavedTeamShields(index) end
+---@param index number
+---@param value number
+function Game.gSavedTeamShields(index, value) end
+---@param index number
 ---@return number[1]
-function Game.gPrevPlanetSavedTeamShields() end
+function Game.gPrevPlanetSavedTeamShields(index) end
+---@param index number
+---@param value number
+function Game.gPrevPlanetSavedTeamShields(index, value) end
+---@param index number
 ---@return number[1]
-function Game.gTeamDamage() end
+function Game.gTeamDamage(index) end
+---@param index number
+---@param value number
+function Game.gTeamDamage(index, value) end
 ---@return number
 function Game.gMissionStatus() end
+---@param value number
+function Game.gMissionStatus(value) end
 ---@return number
 function Game.gGroundHeight() end
+---@param value number
+function Game.gGroundHeight(value) end
 ---@return number
 function Game.D_ctx_80177950() end
+---@param value number
+function Game.D_ctx_80177950(value) end
 ---@return number
 function Game.gPlayerTurnRate() end
+---@param value number
+function Game.gPlayerTurnRate(value) end
 ---@return number
 function Game.gPlayerTurnStickMod() end
+---@param value number
+function Game.gPlayerTurnStickMod(value) end
 ---@return number
 function Game.gCsCamEyeX() end
+---@param value number
+function Game.gCsCamEyeX(value) end
 ---@return number
 function Game.gCsCamEyeY() end
+---@param value number
+function Game.gCsCamEyeY(value) end
 ---@return number
 function Game.gCsCamEyeZ() end
+---@param value number
+function Game.gCsCamEyeZ(value) end
 ---@return number
 function Game.gCsCamAtX() end
+---@param value number
+function Game.gCsCamAtX(value) end
 ---@return number
 function Game.gCsCamAtY() end
+---@param value number
+function Game.gCsCamAtY(value) end
 ---@return number
 function Game.gCsCamAtZ() end
+---@param value number
+function Game.gCsCamAtZ(value) end
 ---@return Vec3f
 function Game.gPlayCamEye() end
+---@param value Vec3f
+function Game.gPlayCamEye(value) end
 ---@return Vec3f
 function Game.gPlayCamAt() end
+---@param value Vec3f
+function Game.gPlayCamAt(value) end
 ---@return boolean
 function Game.gExpertMode() end
+---@param value boolean
+function Game.gExpertMode(value) end
+---@param index number
 ---@return number[1]
-function Game.D_ctx_80177A10() end
+function Game.D_ctx_80177A10(index) end
+---@param index number
+---@param value number
+function Game.D_ctx_80177A10(index, value) end
+---@param index number
 ---@return number[1]
-function Game.D_ctx_80177A48() end
+function Game.D_ctx_80177A48(index) end
+---@param index number
+---@param value number
+function Game.D_ctx_80177A48(index, value) end
 ---@return number
 function Game.gCsFrameCount() end
+---@param value number
+function Game.gCsFrameCount(value) end
 ---@return number
 function Game.gDrawGround() end
+---@param value number
+function Game.gDrawGround(value) end
 ---@return number
 function Game.gDrawBackdrop() end
+---@param value number
+function Game.gDrawBackdrop(value) end
 ---@return number
 function Game.gAqDrawMode() end
+---@param value number
+function Game.gAqDrawMode(value) end
 ---@return number
 function Game.gTitleState() end
+---@param value number
+function Game.gTitleState(value) end
 ---@return number
 function Game.gMainController() end
+---@param value number
+function Game.gMainController(value) end
 ---@return number
 function Game.gMapState() end
+---@param value number
+function Game.gMapState(value) end
 ---@return number
 function Game.gMissionNumber() end
+---@param value number
+function Game.gMissionNumber(value) end
+---@param index number
 ---@return number[1]
-function Game.gMissionTeamStatus() end
+function Game.gMissionTeamStatus(index) end
+---@param index number
+---@param value number
+function Game.gMissionTeamStatus(index, value) end
+---@param index number
 ---@return number[1]
-function Game.gMissionHitCount() end
+function Game.gMissionHitCount(index) end
+---@param index number
+---@param value number
+function Game.gMissionHitCount(index, value) end
+---@param index number
 ---@return PlanetId[1]
-function Game.gMissionPlanet() end
+function Game.gMissionPlanet(index) end
+---@param index number
+---@param value PlanetId
+function Game.gMissionPlanet(index, value) end
+---@param index number
 ---@return number[1]
-function Game.gMissionMedal() end
+function Game.gMissionMedal(index) end
+---@param index number
+---@param value number
+function Game.gMissionMedal(index, value) end
+---@param index number
 ---@return number[1]
-function Game.gPlanetPathStatus() end
+function Game.gPlanetPathStatus(index) end
+---@param index number
+---@param value number
+function Game.gPlanetPathStatus(index, value) end
+---@param index number
 ---@return number[1]
-function Game.gPrevPlanetTeamShields() end
+function Game.gPrevPlanetTeamShields(index) end
+---@param index number
+---@param value number
+function Game.gPrevPlanetTeamShields(index, value) end
+---@param index number
 ---@return number[1]
-function Game.D_ctx_80177C58() end
+function Game.D_ctx_80177C58(index) end
+---@param index number
+---@param value number
+function Game.D_ctx_80177C58(index, value) end
 ---@return number
 function Game.gOptionSoundMode() end
+---@param value number
+function Game.gOptionSoundMode(value) end
+---@param index number
 ---@return number[1]
-function Game.gVolumeSettings() end
+function Game.gVolumeSettings(index) end
+---@param index number
+---@param value number
+function Game.gVolumeSettings(index, value) end
 ---@return number
 function Game.gBgmSeqId() end
+---@param value number
+function Game.gBgmSeqId(value) end
 ---@return number
 function Game.gLevelType() end
+---@param value number
+function Game.gLevelType(value) end
 ---@return number
 function Game.gSavedObjectLoadIndex() end
+---@param value number
+function Game.gSavedObjectLoadIndex(value) end
 ---@return UNK_TYPE
 function Game.F_80177CA8() end
+---@param value UNK_TYPE
+function Game.F_80177CA8(value) end
 ---@return number
 function Game.gSavedPathProgress() end
+---@param value number
+function Game.gSavedPathProgress(value) end
 ---@return UNK_TYPE
 function Game.F_80177CB8() end
+---@param value UNK_TYPE
+function Game.F_80177CB8(value) end
 ---@return number
 function Game.gWaterLevel() end
+---@param value number
+function Game.gWaterLevel(value) end
 ---@return number
 function Game.gPathGroundScroll() end
+---@param value number
+function Game.gPathGroundScroll(value) end
 ---@return number
 function Game.gPathTexScroll() end
+---@param value number
+function Game.gPathTexScroll(value) end
 ---@return number
 function Game.gPathVelZ() end
+---@param value number
+function Game.gPathVelZ(value) end
 ---@return number
 function Game.gPathProgress() end
+---@param value number
+function Game.gPathProgress(value) end
 ---@return number
 function Game.gRadioPortraitScaleY() end
+---@param value number
+function Game.gRadioPortraitScaleY(value) end
 ---@return number
 function Game.gRadioTextBoxScaleY() end
+---@param value number
+function Game.gRadioTextBoxScaleY(value) end
 ---@return number
 function Game.gRadioMsgRadioId() end
+---@param value number
+function Game.gRadioMsgRadioId(value) end
 ---@return UNK_TYPE
 function Game.F_80177D80() end
+---@param value UNK_TYPE
+function Game.F_80177D80(value) end
 ---@return UNK_TYPE
 function Game.F_80177DE8() end
+---@param value UNK_TYPE
+function Game.F_80177DE8(value) end
 ---@return number
 function Game.gGameFrameCount() end
+---@param value number
+function Game.gGameFrameCount(value) end
 ---@return number
 function Game.gObjectLoadIndex() end
+---@param value number
+function Game.gObjectLoadIndex(value) end
 ---@return number
 function Game.gPrevEventActorIndex() end
+---@param value number
+function Game.gPrevEventActorIndex(value) end
 ---@return number
 function Game.gFormationLeaderIndex() end
+---@param value number
+function Game.gFormationLeaderIndex(value) end
 ---@return number
 function Game.gRingPassCount() end
+---@param value number
+function Game.gRingPassCount(value) end
 ---@return Vec3f
 function Game.gFormationInitRot() end
+---@param value Vec3f
+function Game.gFormationInitRot(value) end
 ---@return Vec3f
 function Game.gFormationInitPos() end
+---@param value Vec3f
+function Game.gFormationInitPos(value) end
 ---@return UNK_TYPE
 function Game.F_80178020() end
+---@param value UNK_TYPE
+function Game.F_80178020(value) end
 ---@return number
 function Game.gGroundClipMode() end
+---@param value number
+function Game.gGroundClipMode(value) end
 ---@return LevelId
 function Game.gCurrentLevel() end
+---@param value LevelId
+function Game.gCurrentLevel(value) end
 ---@return number
 function Game.gLevelPhase() end
+---@param value number
+function Game.gLevelPhase(value) end
 ---@return number
 function Game.gBossActive() end
+---@param value number
+function Game.gBossActive(value) end
 ---@return boolean
 function Game.gKillEventActors() end
+---@param value boolean
+function Game.gKillEventActors(value) end
 ---@return number
 function Game.gUseDynaFloor() end
+---@param value number
+function Game.gUseDynaFloor(value) end
 ---@return number
 function Game.gRadioState() end
+---@param value number
+function Game.gRadioState(value) end
 ---@return number
 function Game.gCurrentRadioPortrait() end
+---@param value number
+function Game.gCurrentRadioPortrait(value) end
 ---@return number
 function Game.gRadioStateTimer() end
+---@param value number
+function Game.gRadioStateTimer(value) end
 ---@return number
 function Game.gRadioMouthTimer() end
+---@param value number
+function Game.gRadioMouthTimer(value) end
 ---@return number
 function Game.D_ctx_801782C0() end
+---@param value number
+function Game.D_ctx_801782C0(value) end
 ---@return number
 function Game.D_ctx_801782C8() end
+---@param value number
+function Game.D_ctx_801782C8(value) end
 ---@return number
 function Game.D_ctx_801782D0() end
+---@param value number
+function Game.D_ctx_801782D0(value) end
 ---@return number
 function Game.gRadioMsgCharIndex() end
+---@param value number
+function Game.gRadioMsgCharIndex(value) end
 ---@return UNK_TYPE
 function Game.F_801782E0() end
+---@param value UNK_TYPE
+function Game.F_801782E0(value) end
 ---@return number
 function Game.gRadioMsgId() end
+---@param value number
+function Game.gRadioMsgId(value) end
 ---@return UNK_TYPE
 function Game.F_801782F0() end
+---@param value UNK_TYPE
+function Game.F_801782F0(value) end
 ---@return boolean
 function Game.gMsgCharIsPrinting() end
+---@param value boolean
+function Game.gMsgCharIsPrinting(value) end
 ---@return boolean
 function Game.gHideRadio() end
+---@param value boolean
+function Game.gHideRadio(value) end
 ---@return number
 function Game.gRadioMsg() end
+---@param value number
+function Game.gRadioMsg(value) end
 ---@return ObjectInit
 function Game.gLevelObjects() end
+---@param value ObjectInit
+function Game.gLevelObjects(value) end
 ---@return number
 function Game.gFogRed() end
+---@param value number
+function Game.gFogRed(value) end
 ---@return number
 function Game.gFogGreen() end
+---@param value number
+function Game.gFogGreen(value) end
 ---@return number
 function Game.gFogBlue() end
+---@param value number
+function Game.gFogBlue(value) end
 ---@return number
 function Game.gFogAlpha() end
+---@param value number
+function Game.gFogAlpha(value) end
 ---@return number
 function Game.gFillScreenAlpha() end
+---@param value number
+function Game.gFillScreenAlpha(value) end
 ---@return number
 function Game.gFillScreenRed() end
+---@param value number
+function Game.gFillScreenRed(value) end
 ---@return number
 function Game.gFillScreenGreen() end
+---@param value number
+function Game.gFillScreenGreen(value) end
 ---@return number
 function Game.gFillScreenBlue() end
+---@param value number
+function Game.gFillScreenBlue(value) end
 ---@return number
 function Game.gFillScreenAlphaTarget() end
+---@param value number
+function Game.gFillScreenAlphaTarget(value) end
 ---@return number
 function Game.gFillScreenAlphaStep() end
+---@param value number
+function Game.gFillScreenAlphaStep(value) end
 ---@return number
 function Game.gLight3R() end
+---@param value number
+function Game.gLight3R(value) end
 ---@return number
 function Game.gLight3G() end
+---@param value number
+function Game.gLight3G(value) end
 ---@return number
 function Game.gLight3B() end
+---@param value number
+function Game.gLight3B(value) end
 ---@return number
 function Game.gLight3Brightness() end
+---@param value number
+function Game.gLight3Brightness(value) end
 ---@return number
 function Game.gLight3x() end
+---@param value number
+function Game.gLight3x(value) end
 ---@return number
 function Game.gLight3y() end
+---@param value number
+function Game.gLight3y(value) end
 ---@return number
 function Game.gLight3z() end
+---@param value number
+function Game.gLight3z(value) end
 ---@return number
 function Game.gFadeoutType() end
+---@param value number
+function Game.gFadeoutType(value) end
+---@param index number
 ---@return number[1]
-function Game.gPlayerGlareAlphas() end
+function Game.gPlayerGlareAlphas(index) end
+---@param index number
+---@param value number
+function Game.gPlayerGlareAlphas(index, value) end
+---@param index number
 ---@return number[1]
-function Game.gPlayerGlareReds() end
+function Game.gPlayerGlareReds(index) end
+---@param index number
+---@param value number
+function Game.gPlayerGlareReds(index, value) end
+---@param index number
 ---@return number[1]
-function Game.gPlayerGlareGreens() end
+function Game.gPlayerGlareGreens(index) end
+---@param index number
+---@param value number
+function Game.gPlayerGlareGreens(index, value) end
+---@param index number
 ---@return number[1]
-function Game.gPlayerGlareBlues() end
+function Game.gPlayerGlareBlues(index) end
+---@param index number
+---@param value number
+function Game.gPlayerGlareBlues(index, value) end
+---@param index number
 ---@return number[1]
-function Game.D_ctx_801783C0() end
+function Game.D_ctx_801783C0(index) end
+---@param index number
+---@param value number
+function Game.D_ctx_801783C0(index, value) end
 ---@return number
 function Game.gSunViewX() end
+---@param value number
+function Game.gSunViewX(value) end
 ---@return number
 function Game.gSunViewY() end
+---@param value number
+function Game.gSunViewY(value) end
 ---@return number
 function Game.gFogNear() end
+---@param value number
+function Game.gFogNear(value) end
 ---@return number
 function Game.gFogFar() end
+---@param value number
+function Game.gFogFar(value) end
+---@param index number
 ---@return UNK_TYPE[1]
-function Game.F_801783E0() end
+function Game.F_801783E0(index) end
+---@param index number
+---@param value UNK_TYPE
+function Game.F_801783E0(index, value) end
 ---@return number
 function Game.gStarCount() end
+---@param value number
+function Game.gStarCount(value) end
 ---@return number
 function Game.gStarWarpDistortion() end
+---@param value number
+function Game.gStarWarpDistortion(value) end
 ---@return number
 function Game.gCOComplete2CamRotY() end
+---@param value number
+function Game.gCOComplete2CamRotY(value) end
 ---@return UNK_TYPE
 function Game.F_8017841C() end
+---@param value UNK_TYPE
+function Game.F_8017841C(value) end
 ---@return number
 function Game.gStarfieldX() end
+---@param value number
+function Game.gStarfieldX(value) end
 ---@return number
 function Game.gStarfieldY() end
+---@param value number
+function Game.gStarfieldY(value) end
 ---@return number
 function Game.gStarfieldRoll() end
+---@param value number
+function Game.gStarfieldRoll(value) end
 ---@return number
 function Game.gStarfieldScrollX() end
+---@param value number
+function Game.gStarfieldScrollX(value) end
 ---@return number
 function Game.gStarfieldScrollY() end
+---@param value number
+function Game.gStarfieldScrollY(value) end
 ---@return UNK_TYPE
 function Game.F_80178434() end
+---@param value UNK_TYPE
+function Game.F_80178434(value) end
 ---@return UNK_TYPE
 function Game.F_80178438() end
+---@param value UNK_TYPE
+function Game.F_80178438(value) end
 ---@return UNK_TYPE
 function Game.F_8017843C() end
+---@param value UNK_TYPE
+function Game.F_8017843C(value) end
 ---@return number
 function Game.gBossDeathCamAtX() end
+---@param value number
+function Game.gBossDeathCamAtX(value) end
 ---@return number
 function Game.gBossDeathCamAtY() end
+---@param value number
+function Game.gBossDeathCamAtY(value) end
 ---@return number
 function Game.gBossDeathCamAtZ() end
+---@param value number
+function Game.gBossDeathCamAtZ(value) end
+---@param index number
 ---@return number[1]
-function Game.gCsTeamTargetsX() end
+function Game.gCsTeamTargetsX(index) end
+---@param index number
+---@param value number
+function Game.gCsTeamTargetsX(index, value) end
+---@param index number
 ---@return number[1]
-function Game.gCsTeamTargetsY() end
+function Game.gCsTeamTargetsY(index) end
+---@param index number
+---@param value number
+function Game.gCsTeamTargetsY(index, value) end
+---@param index number
 ---@return number[1]
-function Game.gCsTeamTargetsZ() end
+function Game.gCsTeamTargetsZ(index) end
+---@param index number
+---@param value number
+function Game.gCsTeamTargetsZ(index, value) end
 ---@return number
 function Game.gCameraShakeY() end
+---@param value number
+function Game.gCameraShakeY(value) end
 ---@return number
 function Game.gCameraShake() end
+---@param value number
+function Game.gCameraShake(value) end
 ---@return number
 function Game.D_ctx_80178484() end
+---@param value number
+function Game.D_ctx_80178484(value) end
 ---@return boolean
 function Game.gLoadLevelObjects() end
+---@param value boolean
+function Game.gLoadLevelObjects(value) end
 ---@return UNK_TYPE
 function Game.F_8017848C() end
+---@param value UNK_TYPE
+function Game.F_8017848C(value) end
 ---@return UNK_TYPE
 function Game.F_80178490() end
+---@param value UNK_TYPE
+function Game.F_80178490(value) end
 ---@return number
 function Game.D_ctx_80178494() end
+---@param value number
+function Game.D_ctx_80178494(value) end
 ---@return number
 function Game.gShotHitPosZ() end
+---@param value number
+function Game.gShotHitPosZ(value) end
 ---@return number
 function Game.gShotHitPosX() end
+---@param value number
+function Game.gShotHitPosX(value) end
 ---@return number
 function Game.gShotHitPosY() end
+---@param value number
+function Game.gShotHitPosY(value) end
 ---@return number
 function Game.gZoDodoraWaypointCount() end
+---@param value number
+function Game.gZoDodoraWaypointCount(value) end
 ---@return UNK_TYPE
 function Game.F_801784A8() end
+---@param value UNK_TYPE
+function Game.F_801784A8(value) end
 ---@return GroundType
 function Game.gGroundType() end
+---@param value GroundType
+function Game.gGroundType(value) end
 ---@return UNK_TYPE
 function Game.F_801784B0() end
+---@param value UNK_TYPE
+function Game.F_801784B0(value) end
 ---@return UNK_TYPE
 function Game.F_801784B4() end
+---@param value UNK_TYPE
+function Game.F_801784B4(value) end
 ---@return number
 function Game.gLight1xRot() end
+---@param value number
+function Game.gLight1xRot(value) end
 ---@return number
 function Game.gLight1yRot() end
+---@param value number
+function Game.gLight1yRot(value) end
 ---@return number
 function Game.gLight1zRot() end
+---@param value number
+function Game.gLight1zRot(value) end
 ---@return number
 function Game.gLight1xRotTarget() end
+---@param value number
+function Game.gLight1xRotTarget(value) end
 ---@return number
 function Game.gLight1yRotTarget() end
+---@param value number
+function Game.gLight1yRotTarget(value) end
 ---@return number
 function Game.gLight1zRotTarget() end
+---@param value number
+function Game.gLight1zRotTarget(value) end
 ---@return number
 function Game.gEnvLightxRot() end
+---@param value number
+function Game.gEnvLightxRot(value) end
 ---@return number
 function Game.gEnvLightyRot() end
+---@param value number
+function Game.gEnvLightyRot(value) end
 ---@return number
 function Game.gEnvLightzRot() end
+---@param value number
+function Game.gEnvLightzRot(value) end
 ---@return number
 function Game.gLight1x() end
+---@param value number
+function Game.gLight1x(value) end
 ---@return number
 function Game.gLight1y() end
+---@param value number
+function Game.gLight1y(value) end
 ---@return number
 function Game.gLight1z() end
+---@param value number
+function Game.gLight1z(value) end
 ---@return number
 function Game.gLight1rotStep() end
+---@param value number
+function Game.gLight1rotStep(value) end
 ---@return number
 function Game.gLight2xRot() end
+---@param value number
+function Game.gLight2xRot(value) end
 ---@return number
 function Game.gLight2yRot() end
+---@param value number
+function Game.gLight2yRot(value) end
 ---@return number
 function Game.gLight2zRot() end
+---@param value number
+function Game.gLight2zRot(value) end
 ---@return number
 function Game.gLight2xRotTarget() end
+---@param value number
+function Game.gLight2xRotTarget(value) end
 ---@return number
 function Game.gLight2yRotTarget() end
+---@param value number
+function Game.gLight2yRotTarget(value) end
 ---@return number
 function Game.gLight2zRotTarget() end
+---@param value number
+function Game.gLight2zRotTarget(value) end
 ---@return number
 function Game.gLight2x() end
+---@param value number
+function Game.gLight2x(value) end
 ---@return number
 function Game.gLight2y() end
+---@param value number
+function Game.gLight2y(value) end
 ---@return number
 function Game.gLight2z() end
+---@param value number
+function Game.gLight2z(value) end
 ---@return number
 function Game.gLight2rotStep() end
+---@param value number
+function Game.gLight2rotStep(value) end
 ---@return UNK_TYPE
 function Game.F_801784514() end
+---@param value UNK_TYPE
+function Game.F_801784514(value) end
 ---@return UNK_TYPE
 function Game.F_801784518() end
+---@param value UNK_TYPE
+function Game.F_801784518(value) end
 ---@return UNK_TYPE
 function Game.F_80178451C() end
+---@param value UNK_TYPE
+function Game.F_80178451C(value) end
 ---@return number
 function Game.D_ctx_80178520() end
+---@param value number
+function Game.D_ctx_80178520(value) end
 ---@return number
 function Game.D_ctx_80178524() end
+---@param value number
+function Game.D_ctx_80178524(value) end
 ---@return number
 function Game.D_ctx_80178528() end
+---@param value number
+function Game.D_ctx_80178528(value) end
 ---@return UNK_TYPE
 function Game.F_80178452C() end
+---@param value UNK_TYPE
+function Game.F_80178452C(value) end
 ---@return UNK_TYPE
 function Game.F_801784530() end
+---@param value UNK_TYPE
+function Game.F_801784530(value) end
 ---@return UNK_TYPE
 function Game.F_801784534() end
+---@param value UNK_TYPE
+function Game.F_801784534(value) end
 ---@return number
 function Game.D_ctx_80178538() end
+---@param value number
+function Game.D_ctx_80178538(value) end
 ---@return number
 function Game.D_ctx_8017853C() end
+---@param value number
+function Game.D_ctx_8017853C(value) end
 ---@return number
 function Game.gLight2colorStep() end
+---@param value number
+function Game.gLight2colorStep(value) end
 ---@return number
 function Game.D_ctx_80178544() end
+---@param value number
+function Game.D_ctx_80178544(value) end
 ---@return number
 function Game.gLight1R() end
+---@param value number
+function Game.gLight1R(value) end
 ---@return number
 function Game.gLight1G() end
+---@param value number
+function Game.gLight1G(value) end
 ---@return number
 function Game.gLight1B() end
+---@param value number
+function Game.gLight1B(value) end
 ---@return number
 function Game.gAmbientR() end
+---@param value number
+function Game.gAmbientR(value) end
 ---@return number
 function Game.gAmbientG() end
+---@param value number
+function Game.gAmbientG(value) end
 ---@return number
 function Game.gAmbientB() end
+---@param value number
+function Game.gAmbientB(value) end
 ---@return number
 function Game.gLight2R() end
+---@param value number
+function Game.gLight2R(value) end
 ---@return number
 function Game.gLight2G() end
+---@param value number
+function Game.gLight2G(value) end
 ---@return number
 function Game.gLight2B() end
+---@param value number
+function Game.gLight2B(value) end
 ---@return number
 function Game.gLight2RTarget() end
+---@param value number
+function Game.gLight2RTarget(value) end
 ---@return number
 function Game.gLight2GTarget() end
+---@param value number
+function Game.gLight2GTarget(value) end
 ---@return number
 function Game.gLight2BTarget() end
+---@param value number
+function Game.gLight2BTarget(value) end
 ---@return number
 function Game.D_ctx_80161A70() end
+---@param value number
+function Game.D_ctx_80161A70(value) end
 ---@return number
 function Game.D_ctx_80161A74() end
+---@param value number
+function Game.D_ctx_80161A74(value) end
 ---@return number
 function Game.D_ctx_80161A78() end
+---@param value number
+function Game.D_ctx_80161A78(value) end
 ---@return number
 function Game.D_ctx_80161A7C() end
+---@param value number
+function Game.D_ctx_80161A7C(value) end
 ---@return number
 function Game.D_ctx_80161A80() end
+---@param value number
+function Game.D_ctx_80161A80(value) end
 ---@return number
 function Game.D_ctx_80161A84() end
+---@param value number
+function Game.D_ctx_80161A84(value) end
 ---@return number
 function Game.gGroundSurface() end
+---@param value number
+function Game.gGroundSurface(value) end
 ---@return number
 function Game.gSavedGroundSurface() end
+---@param value number
+function Game.gSavedGroundSurface(value) end
+---@param index number
 ---@return number[1]
-function Game.gGoldRingCount() end
+function Game.gGoldRingCount(index) end
+---@param index number
+---@param value number
+function Game.gGoldRingCount(index, value) end
+---@param index number
 ---@return number[1]
-function Game.gSavedGoldRingCount() end
+function Game.gSavedGoldRingCount(index) end
+---@param index number
+---@param value number
+function Game.gSavedGoldRingCount(index, value) end
 ---@return number
 function Game.gHitCount() end
+---@param value number
+function Game.gHitCount(value) end
 ---@return number
 function Game.gSavedHitCount() end
+---@param value number
+function Game.gSavedHitCount(value) end
+---@param index number
 ---@return number[1]
-function Game.gLifeCount() end
+function Game.gLifeCount(index) end
+---@param index number
+---@param value number
+function Game.gLifeCount(index, value) end
+---@param index number
 ---@return LaserStrength[1]
-function Game.gLaserStrength() end
+function Game.gLaserStrength(index) end
+---@param index number
+---@param value LaserStrength
+function Game.gLaserStrength(index, value) end
 ---@return number
 function Game.gCullObjects() end
+---@param value number
+function Game.gCullObjects(value) end
+---@param index number
 ---@return UNK_TYPE[1]
-function Game.F_80161AC0() end
+function Game.F_80161AC0(index) end
+---@param index number
+---@param value UNK_TYPE
+function Game.F_80161AC0(index, value) end
+---@param index number
 ---@return Scenery[1]
-function Game.gScenery() end
+function Game.gScenery(index) end
+---@param index number
+---@param value Scenery
+function Game.gScenery(index, value) end
+---@param index number
 ---@return Sprite[1]
-function Game.gSprites() end
+function Game.gSprites(index) end
+---@param index number
+---@param value Sprite
+function Game.gSprites(index, value) end
+---@param index number
 ---@return Actor[1]
-function Game.gActors() end
+function Game.gActors(index) end
+---@param index number
+---@param value Actor
+function Game.gActors(index, value) end
+---@param index number
 ---@return Boss[1]
-function Game.gBosses() end
+function Game.gBosses(index) end
+---@param index number
+---@param value Boss
+function Game.gBosses(index, value) end
+---@param index number
 ---@return Effect[1]
-function Game.gEffects() end
+function Game.gEffects(index) end
+---@param index number
+---@param value Effect
+function Game.gEffects(index, value) end
+---@param index number
 ---@return Item[1]
-function Game.gItems() end
+function Game.gItems(index) end
+---@param index number
+---@param value Item
+function Game.gItems(index, value) end
+---@param index number
 ---@return PlayerShot[1]
-function Game.gPlayerShots() end
+function Game.gPlayerShots(index) end
+---@param index number
+---@param value PlayerShot
+function Game.gPlayerShots(index, value) end
+---@param index number
 ---@return TexturedLine[1]
-function Game.gTexturedLines() end
+function Game.gTexturedLines(index) end
+---@param index number
+---@param value TexturedLine
+function Game.gTexturedLines(index, value) end
+---@param index number
 ---@return RadarMark[1]
-function Game.gRadarMarks() end
+function Game.gRadarMarks(index) end
+---@param index number
+---@param value RadarMark
+function Game.gRadarMarks(index, value) end
+---@param index number
 ---@return BonusText[1]
-function Game.gBonusText() end
+function Game.gBonusText(index) end
+---@param index number
+---@param value BonusText
+function Game.gBonusText(index, value) end
+---@param index number
 ---@return number[1]
-function Game.gMeMoraStatus() end
+function Game.gMeMoraStatus(index) end
+---@param index number
+---@param value number
+function Game.gMeMoraStatus(index, value) end
+---@param index number
 ---@return number[2]
-function Game.gMeMoraXpos() end
+function Game.gMeMoraXpos(index) end
+---@param index number
+---@param value number
+function Game.gMeMoraXpos(index, value) end
+---@param index number
 ---@return number[2]
-function Game.gMeMoraYpos() end
+function Game.gMeMoraYpos(index) end
+---@param index number
+---@param value number
+function Game.gMeMoraYpos(index, value) end
+---@param index number
 ---@return number[2]
-function Game.gMeMoraZpos() end
+function Game.gMeMoraZpos(index) end
+---@param index number
+---@param value number
+function Game.gMeMoraZpos(index, value) end
+---@param index number
 ---@return number[2]
-function Game.gMeMoraXrot() end
+function Game.gMeMoraXrot(index) end
+---@param index number
+---@param value number
+function Game.gMeMoraXrot(index, value) end
+---@param index number
 ---@return number[2]
-function Game.gMeMoraYrot() end
+function Game.gMeMoraYrot(index) end
+---@param index number
+---@param value number
+function Game.gMeMoraYrot(index, value) end
+---@param index number
 ---@return number[2]
-function Game.gMeMoraZrot() end
+function Game.gMeMoraZrot(index) end
+---@param index number
+---@param value number
+function Game.gMeMoraZrot(index, value) end
 ---@return number
 function Game.gEnemyShotSpeed() end
+---@param value number
+function Game.gEnemyShotSpeed(value) end
 ---@return number
 function Game.gShowLevelClearStatusScreen() end
+---@param value number
+function Game.gShowLevelClearStatusScreen(value) end
 ---@return number
 function Game.gLevelStartStatusScreenTimer() end
+---@param value number
+function Game.gLevelStartStatusScreenTimer(value) end
 ---@return number
 function Game.gLevelClearScreenTimer() end
+---@param value number
+function Game.gLevelClearScreenTimer(value) end
 ---@return number
 function Game.gBossHealthBar() end
+---@param value number
+function Game.gBossHealthBar(value) end
 ---@return number
 function Game.D_ctx_80177850() end
+---@param value number
+function Game.D_ctx_80177850(value) end
+---@param index number
 ---@return number[1]
-function Game.D_ctx_80177858() end
+function Game.D_ctx_80177858(index) end
+---@param index number
+---@param value number
+function Game.D_ctx_80177858(index, value) end
+---@param index number
 ---@return number[1]
-function Game.gPlayerForms() end
+function Game.gPlayerForms(index) end
+---@param index number
+---@param value number
+function Game.gPlayerForms(index, value) end
+---@param index number
 ---@return number[1]
-function Game.gHandicap() end
+function Game.gHandicap(index) end
+---@param index number
+---@param value number
+function Game.gHandicap(index, value) end
 ---@return VsStage
 function Game.gVersusStage() end
+---@param value VsStage
+function Game.gVersusStage(value) end
 ---@return number
 function Game.gVsPointsToWin() end
+---@param value number
+function Game.gVsPointsToWin(value) end
 ---@return number
 function Game.gVsMatchType() end
+---@param value number
+function Game.gVsMatchType(value) end
 ---@return number
 function Game.gVsTimeTrialLimit() end
+---@param value number
+function Game.gVsTimeTrialLimit(value) end
 ---@return boolean
 function Game.gVersusMode() end
+---@param value boolean
+function Game.gVersusMode(value) end
+---@param index number
 ---@return number[1]
-function Game.gBoostButton() end
+function Game.gBoostButton(index) end
+---@param index number
+---@param value number
+function Game.gBoostButton(index, value) end
+---@param index number
 ---@return number[1]
-function Game.gBrakeButton() end
+function Game.gBrakeButton(index) end
+---@param index number
+---@param value number
+function Game.gBrakeButton(index, value) end
+---@param index number
 ---@return number[1]
-function Game.gShootButton() end
+function Game.gShootButton(index) end
+---@param index number
+---@param value number
+function Game.gShootButton(index, value) end
+---@param index number
 ---@return number[1]
-function Game.gBombButton() end
+function Game.gBombButton(index) end
+---@param index number
+---@param value number
+function Game.gBombButton(index, value) end
+---@param index number
 ---@return number[1]
-function Game.D_ctx_80177958() end
+function Game.D_ctx_80177958(index) end
+---@param index number
+---@param value number
+function Game.D_ctx_80177958(index, value) end
 ---@return number
 function Game.gTeamLowHealthMsgTimer() end
+---@param value number
+function Game.gTeamLowHealthMsgTimer(value) end
 ---@return OSContPad
 function Game.gInputHold() end
+---@param value OSContPad
+function Game.gInputHold(value) end
 ---@return OSContPad
 function Game.gInputPress() end
+---@param value OSContPad
+function Game.gInputPress(value) end
 ---@return number
 function Game.gControllerRumble() end
+---@param value number
+function Game.gControllerRumble(value) end
+---@param index number
 ---@return number[1]
-function Game.D_ctx_80177990() end
+function Game.D_ctx_80177990(index) end
+---@param index number
+---@param value number
+function Game.D_ctx_80177990(index, value) end
+---@param index number
 ---@return number[1]
-function Game.D_ctx_801779A8() end
+function Game.D_ctx_801779A8(index) end
+---@param index number
+---@param value number
+function Game.D_ctx_801779A8(index, value) end
 ---@return number
 function Game.gPauseEnabled() end
+---@param value number
+function Game.gPauseEnabled(value) end
+---@param index number
 ---@return number[1]
-function Game.gChargeTimers() end
+function Game.gChargeTimers(index) end
+---@param index number
+---@param value number
+function Game.gChargeTimers(index, value) end
 ---@return number
 function Game.gPathVelX() end
+---@param value number
+function Game.gPathVelX(value) end
 ---@return number
 function Game.gPathVelY() end
+---@param value number
+function Game.gPathVelY(value) end
+---@param index number
 ---@return number[1]
-function Game.gUturnDownTimers() end
+function Game.gUturnDownTimers(index) end
+---@param index number
+---@param value number
+function Game.gUturnDownTimers(index, value) end
+---@param index number
 ---@return number[1]
-function Game.gUturnBrakeTimers() end
+function Game.gUturnBrakeTimers(index) end
+---@param index number
+---@param value number
+function Game.gUturnBrakeTimers(index, value) end
+---@param index number
 ---@return number[1]
-function Game.gLoopDownTimers() end
+function Game.gLoopDownTimers(index) end
+---@param index number
+---@param value number
+function Game.gLoopDownTimers(index, value) end
+---@param index number
 ---@return number[1]
-function Game.gLoopBoostTimers() end
+function Game.gLoopBoostTimers(index) end
+---@param index number
+---@param value number
+function Game.gLoopBoostTimers(index, value) end
+---@param index number
 ---@return number[1]
-function Game.gMuzzleFlashScale() end
+function Game.gMuzzleFlashScale(index) end
+---@param index number
+---@param value number
+function Game.gMuzzleFlashScale(index, value) end
+---@param index number
 ---@return number[1]
-function Game.gShieldAlpha() end
+function Game.gShieldAlpha(index) end
+---@param index number
+---@param value number
+function Game.gShieldAlpha(index, value) end
+---@param index number
 ---@return number[1]
-function Game.gHasShield() end
+function Game.gHasShield(index) end
+---@param index number
+---@param value number
+function Game.gHasShield(index, value) end
+---@param index number
 ---@return number[1]
-function Game.gShieldTimer() end
+function Game.gShieldTimer(index) end
+---@param index number
+---@param value number
+function Game.gShieldTimer(index, value) end
+---@param index number
 ---@return number[2]
-function Game.gVsLockOnTimers() end
+function Game.gVsLockOnTimers(index) end
+---@param index number
+---@param value number
+function Game.gVsLockOnTimers(index, value) end
 ---@return number
 function Game.gStartAndrossFightTimer() end
+---@param value number
+function Game.gStartAndrossFightTimer(value) end
 ---@return number
 function Game.gSoShieldsEmpty() end
+---@param value number
+function Game.gSoShieldsEmpty(value) end
 ---@return number
 function Game.gCoUturnCount() end
+---@param value number
+function Game.gCoUturnCount(value) end
 ---@return number
 function Game.gGreatFoxIntact() end
+---@param value number
+function Game.gGreatFoxIntact(value) end
 ---@return number
 function Game.gTiStartLandmaster() end
+---@param value number
+function Game.gTiStartLandmaster(value) end
+---@param index number
 ---@return number[1]
-function Game.gControllerRumbleTimers() end
+function Game.gControllerRumbleTimers(index) end
+---@param index number
+---@param value number
+function Game.gControllerRumbleTimers(index, value) end
+---@param index number
 ---@return number[1]
-function Game.gPlayerScores() end
+function Game.gPlayerScores(index) end
+---@param index number
+---@param value number
+function Game.gPlayerScores(index, value) end
 ---@return number
 function Game.gCircleWipeFrame() end
+---@param value number
+function Game.gCircleWipeFrame(value) end
 ---@return number
 function Game.gFovYMode() end
+---@param value number
+function Game.gFovYMode(value) end
 ---@return number
 function Game.gTraining360MsgTimer() end
+---@param value number
+function Game.gTraining360MsgTimer(value) end
 ---@return number
 function Game.gTraining360MsgIndex() end
+---@param value number
+function Game.gTraining360MsgIndex(value) end
 ---@return number
 function Game.D_ctx_80177C94() end
+---@param value number
+function Game.D_ctx_80177C94(value) end
 ---@return number
 function Game.D_ctx_80177C9C() end
+---@param value number
+function Game.D_ctx_80177C9C(value) end
 ---@return number
 function Game.D_ctx_80177CA4() end
+---@param value number
+function Game.D_ctx_80177CA4(value) end
 ---@return number
 function Game.D_ctx_80177CAC() end
+---@param value number
+function Game.D_ctx_80177CAC(value) end
 ---@return number
 function Game.D_ctx_80177CB4() end
+---@param value number
+function Game.D_ctx_80177CB4(value) end
 ---@return number
 function Game.D_ctx_80177CBC() end
+---@param value number
+function Game.D_ctx_80177CBC(value) end
 ---@return number
 function Game.D_ctx_80177CC4() end
+---@param value number
+function Game.D_ctx_80177CC4(value) end
+---@param index number
 ---@return number[1]
-function Game.gStarWolfTeamAlive() end
+function Game.gStarWolfTeamAlive(index) end
+---@param index number
+---@param value number
+function Game.gStarWolfTeamAlive(index, value) end
+---@param index number
 ---@return number[1]
-function Game.gSavedStarWolfTeamAlive() end
+function Game.gSavedStarWolfTeamAlive(index) end
+---@param index number
+---@param value number
+function Game.gSavedStarWolfTeamAlive(index, value) end
+---@param index number
 ---@return number[1]
-function Game.gRightWingHealth() end
+function Game.gRightWingHealth(index) end
+---@param index number
+---@param value number
+function Game.gRightWingHealth(index, value) end
+---@param index number
 ---@return number[1]
-function Game.gLeftWingHealth() end
+function Game.gLeftWingHealth(index) end
+---@param index number
+---@param value number
+function Game.gLeftWingHealth(index, value) end
+---@param index number
 ---@return number[1]
-function Game.gRightWingFlashTimer() end
+function Game.gRightWingFlashTimer(index) end
+---@param index number
+---@param value number
+function Game.gRightWingFlashTimer(index, value) end
+---@param index number
 ---@return number[1]
-function Game.gLeftWingFlashTimer() end
+function Game.gLeftWingFlashTimer(index) end
+---@param index number
+---@param value number
+function Game.gLeftWingFlashTimer(index, value) end
+---@param index number
 ---@return number[1]
-function Game.gRightWingDebrisTimer() end
+function Game.gRightWingDebrisTimer(index) end
+---@param index number
+---@param value number
+function Game.gRightWingDebrisTimer(index, value) end
+---@param index number
 ---@return number[1]
-function Game.gLeftWingDebrisTimer() end
+function Game.gLeftWingDebrisTimer(index) end
+---@param index number
+---@param value number
+function Game.gLeftWingDebrisTimer(index, value) end
+---@param index number
 ---@return number[1]
-function Game.gBombCount() end
+function Game.gBombCount(index) end
+---@param index number
+---@param value number
+function Game.gBombCount(index, value) end
+---@param index number
 ---@return number[1]
-function Game.gVsPoints() end
+function Game.gVsPoints(index) end
+---@param index number
+---@param value number
+function Game.gVsPoints(index, value) end
+---@param index number
 ---@return number[2]
-function Game.gVsKills() end
+function Game.gVsKills(index) end
+---@param index number
+---@param value number
+function Game.gVsKills(index, value) end
 ---@return number
 function Game.gVsMatchWon() end
+---@param value number
+function Game.gVsMatchWon(value) end
 ---@return boolean
 function Game.gVsMatchStart() end
+---@param value boolean
+function Game.gVsMatchStart(value) end
 ---@return boolean
 function Game.gChangeTo360() end
+---@param value boolean
+function Game.gChangeTo360(value) end
+---@param index number
 ---@return Vec3f[1]
-function Game.gTeamArrowsViewPos() end
+function Game.gTeamArrowsViewPos(index) end
+---@param index number
+---@param value Vec3f
+function Game.gTeamArrowsViewPos(index, value) end
 ---@return Player
 function Game.gPlayer() end
+---@param value Player
+function Game.gPlayer(value) end
 ---@return number
 function Game.gStarOffsetsX() end
+---@param value number
+function Game.gStarOffsetsX(value) end
 ---@return number
 function Game.gStarOffsetsY() end
+---@param value number
+function Game.gStarOffsetsY(value) end
 ---@return number
 function Game.gStarFillColors() end
+---@param value number
+function Game.gStarFillColors(value) end
 ---@return UNK_TYPE
 function Game.F_801782A0() end
+---@param value UNK_TYPE
+function Game.F_801782A0(value) end
 ---@return Scenery360
 function Game.gScenery360() end
+---@param value Scenery360
+function Game.gScenery360(value) end
 ---@return UNK_TYPE
 function Game.F_801782B0() end
+---@param value UNK_TYPE
+function Game.F_801782B0(value) end
 ---@return number
 function Game.gDrawSmallRocks() end
+---@param value number
+function Game.gDrawSmallRocks(value) end
 ---@return number
 function Game.D_ctx_801782BC() end
+---@param value number
+function Game.D_ctx_801782BC(value) end
 ---@return PosRot
 function Game.gZoDodoraPosRots() end
+---@param value PosRot
+function Game.gZoDodoraPosRots(value) end
 ---@return number
 function Game.D_ctx_801782CC() end
+---@param value number
+function Game.D_ctx_801782CC(value) end
 ---@return number
 function Game.D_ctx_801782D4() end
+---@param value number
+function Game.D_ctx_801782D4(value) end
 ---@return number
 function Game.D_ctx_801782DC() end
+---@param value number
+function Game.D_ctx_801782DC(value) end
 ---@return number
 function Game.D_ctx_801782E4() end
+---@param value number
+function Game.D_ctx_801782E4(value) end
 ---@return number
 function Game.D_ctx_801782EC() end
+---@param value number
+function Game.D_ctx_801782EC(value) end
 ---@return UNK_TYPE
 function Game.F_801782F4() end
+---@param value UNK_TYPE
+function Game.F_801782F4(value) end
 ---@return number
 function Game.gDynaFloorTimer() end
+---@param value number
+function Game.gDynaFloorTimer(value) end
 ---@return UNK_TYPE
 function Game.F_80178304() end
+---@param value UNK_TYPE
+function Game.F_80178304(value) end
 ---@return UNK_TYPE
 function Game.F_8017830C() end
+---@param value UNK_TYPE
+function Game.F_8017830C(value) end
 ---@return UNK_TYPE
 function Game.F_80178314() end
+---@param value UNK_TYPE
+function Game.F_80178314(value) end
 ---@return UNK_TYPE
 function Game.F_80178318() end
+---@param value UNK_TYPE
+function Game.F_80178318(value) end
 ---@return UNK_TYPE
 function Game.F_8017831C() end
+---@param value UNK_TYPE
+function Game.F_8017831C(value) end
 ---@return UNK_TYPE
 function Game.F_80178324() end
+---@param value UNK_TYPE
+function Game.F_80178324(value) end
 ---@return UNK_TYPE
 function Game.F_8017832C() end
+---@param value UNK_TYPE
+function Game.F_8017832C(value) end
 ---@return UNK_TYPE
 function Game.F_80178334() end
+---@param value UNK_TYPE
+function Game.F_80178334(value) end
 ---@return UNK_TYPE
 function Game.F_8017833C() end
+---@param value UNK_TYPE
+function Game.F_8017833C(value) end
 ---@return UNK_TYPE
 function Game.F_80178344() end
+---@param value UNK_TYPE
+function Game.F_80178344(value) end
 ---@return UNK_TYPE
 function Game.F_8017834C() end
+---@param value UNK_TYPE
+function Game.F_8017834C(value) end
 ---@enum ActorCSTeamFace
 ActorCSTeamFace = {
     FACE_NONE = 0,
@@ -9107,20 +10563,46 @@ function Actor:asRef() end
 ---@param _ObjectId ObjectId
 ---@return Actor
 function Game_SpawnActor(_ObjectId) end
+---@param index number
 ---@return number[1]
-function Game.gOSYieldData() end
+function Game.gOSYieldData(index) end
+---@param index number
+---@param value number
+function Game.gOSYieldData(index, value) end
 ---@return FrameBuffer
 function Game.gZBuffer() end
+---@param value FrameBuffer
+function Game.gZBuffer(value) end
+---@param index number
 ---@return number[1]
-function Game.gTaskOutputBuffer() end
+function Game.gTaskOutputBuffer(index) end
+---@param index number
+---@param value number
+function Game.gTaskOutputBuffer(index, value) end
+---@param index number
 ---@return number[1]
-function Game.gAudioHeap() end
+function Game.gAudioHeap(index) end
+---@param index number
+---@param value number
+function Game.gAudioHeap(index, value) end
+---@param index number
 ---@return number[1]
-function Game.gTextureRenderBuffer() end
+function Game.gTextureRenderBuffer(index) end
+---@param index number
+---@param value number
+function Game.gTextureRenderBuffer(index, value) end
+---@param index number
 ---@return number[1]
-function Game.gFillBuffer() end
+function Game.gFillBuffer(index) end
+---@param index number
+---@param value number
+function Game.gFillBuffer(index, value) end
+---@param index number
 ---@return FrameBuffer[1]
-function Game.gFrameBuffers() end
+function Game.gFrameBuffers(index) end
+---@param index number
+---@param value FrameBuffer
+function Game.gFrameBuffers(index, value) end
 ---@enum BgmSeqIds
 BgmSeqIds = {
     SEQ_ID_SFX = 0,
@@ -9256,158 +10738,384 @@ function Timer_Increment(_address, value) end
 ---@param value number
 ---@return nil
 function Timer_SetValue(_address, value) end
+---@param index number
 ---@return OSContPad[1]
-function Game.gControllerHold() end
+function Game.gControllerHold(index) end
+---@param index number
+---@param value OSContPad
+function Game.gControllerHold(index, value) end
+---@param index number
 ---@return OSContPad[1]
-function Game.gControllerPress() end
+function Game.gControllerPress(index) end
+---@param index number
+---@param value OSContPad
+function Game.gControllerPress(index, value) end
+---@param index number
 ---@return number[1]
-function Game.gControllerPlugged() end
+function Game.gControllerPlugged(index) end
+---@param index number
+---@param value number
+function Game.gControllerPlugged(index, value) end
 ---@return number
 function Game.gControllerLock() end
+---@param value number
+function Game.gControllerLock(value) end
+---@param index number
 ---@return number[1]
-function Game.gControllerRumbleEnabled() end
+function Game.gControllerRumbleEnabled(index) end
+---@param index number
+---@param value number
+function Game.gControllerRumbleEnabled(index, value) end
+---@param index number
 ---@return OSContPad[1]
-function Game.sNextController() end
+function Game.sNextController(index) end
+---@param index number
+---@param value OSContPad
+function Game.sNextController(index, value) end
+---@param index number
 ---@return OSContPad[1]
-function Game.sPrevController() end
+function Game.sPrevController(index) end
+---@param index number
+---@param value OSContPad
+function Game.sPrevController(index, value) end
+---@param index number
 ---@return OSContStatus[1]
-function Game.sControllerStatus() end
+function Game.sControllerStatus(index) end
+---@param index number
+---@param value OSContStatus
+function Game.sControllerStatus(index, value) end
+---@param index number
 ---@return OSPfs[1]
-function Game.sControllerMotor() end
+function Game.sControllerMotor(index) end
+---@param index number
+---@param value OSPfs
+function Game.sControllerMotor(index, value) end
+---@param index number
 ---@return number[1]
-function Game.gAudioThreadStack() end
+function Game.gAudioThreadStack(index) end
+---@param index number
+---@param value number
+function Game.gAudioThreadStack(index, value) end
 ---@return OSThread
 function Game.gGraphicsThread() end
+---@param value OSThread
+function Game.gGraphicsThread(value) end
+---@param index number
 ---@return number[1]
-function Game.gGraphicsThreadStack() end
+function Game.gGraphicsThreadStack(index) end
+---@param index number
+---@param value number
+function Game.gGraphicsThreadStack(index, value) end
 ---@return OSThread
 function Game.gTimerThread() end
+---@param value OSThread
+function Game.gTimerThread(value) end
+---@param index number
 ---@return number[1]
-function Game.gTimerThreadStack() end
+function Game.gTimerThreadStack(index) end
+---@param index number
+---@param value number
+function Game.gTimerThreadStack(index, value) end
 ---@return OSThread
 function Game.gSerialThread() end
+---@param value OSThread
+function Game.gSerialThread(value) end
+---@param index number
 ---@return number[1]
-function Game.gSerialThreadStack() end
+function Game.gSerialThreadStack(index) end
+---@param index number
+---@param value number
+function Game.gSerialThreadStack(index, value) end
 ---@return SPTask
 function Game.gCurrentTask() end
+---@param value SPTask
+function Game.gCurrentTask(value) end
+---@param index number
 ---@return SPTask[1]
-function Game.sAudioTasks() end
+function Game.sAudioTasks(index) end
+---@param index number
+---@param value SPTask
+function Game.sAudioTasks(index, value) end
+---@param index number
 ---@return SPTask[1]
-function Game.sGfxTasks() end
+function Game.sGfxTasks(index) end
+---@param index number
+---@param value SPTask
+function Game.sGfxTasks(index, value) end
+---@param index number
 ---@return SPTask[1]
-function Game.sNewAudioTasks() end
+function Game.sNewAudioTasks(index) end
+---@param index number
+---@param value SPTask
+function Game.sNewAudioTasks(index, value) end
+---@param index number
 ---@return SPTask[1]
-function Game.sNewAudioTasks() end
+function Game.sNewAudioTasks(index) end
+---@param index number
+---@param value SPTask
+function Game.sNewAudioTasks(index, value) end
+---@param index number
 ---@return SPTask[1]
-function Game.sNewGfxTasks() end
+function Game.sNewGfxTasks(index) end
+---@param index number
+---@param value SPTask
+function Game.sNewGfxTasks(index, value) end
+---@param index number
 ---@return number[1]
-function Game.gSegments() end
+function Game.gSegments(index) end
+---@param index number
+---@param value number
+function Game.gSegments(index, value) end
 ---@return OSMesgQueue
 function Game.gPiMgrCmdQueue() end
+---@param value OSMesgQueue
+function Game.gPiMgrCmdQueue(value) end
+---@param index number
 ---@return OSMesg[1]
-function Game.sPiMgrCmdBuff() end
+function Game.sPiMgrCmdBuff(index) end
+---@param index number
+---@param value OSMesg
+function Game.sPiMgrCmdBuff(index, value) end
 ---@return OSMesgQueue
 function Game.gDmaMesgQueue() end
+---@param value OSMesgQueue
+function Game.gDmaMesgQueue(value) end
+---@param index number
 ---@return OSMesg[1]
-function Game.sDmaMsgBuff() end
+function Game.sDmaMsgBuff(index) end
+---@param index number
+---@param value OSMesg
+function Game.sDmaMsgBuff(index, value) end
 ---@return OSIoMesg
 function Game.gDmaIOMsg() end
+---@param value OSIoMesg
+function Game.gDmaIOMsg(value) end
 ---@return OSMesgQueue
 function Game.gSerialEventQueue() end
+---@param value OSMesgQueue
+function Game.gSerialEventQueue(value) end
+---@param index number
 ---@return OSMesg[1]
-function Game.sSerialEventBuff() end
+function Game.sSerialEventBuff(index) end
+---@param index number
+---@param value OSMesg
+function Game.sSerialEventBuff(index, value) end
 ---@return OSMesgQueue
 function Game.gMainThreadMesgQueue() end
+---@param value OSMesgQueue
+function Game.gMainThreadMesgQueue(value) end
+---@param index number
 ---@return OSMesg[1]
-function Game.sMainThreadMsgBuff() end
+function Game.sMainThreadMsgBuff(index) end
+---@param index number
+---@param value OSMesg
+function Game.sMainThreadMsgBuff(index, value) end
 ---@return OSMesgQueue
 function Game.gTaskMesgQueue() end
+---@param value OSMesgQueue
+function Game.gTaskMesgQueue(value) end
+---@param index number
 ---@return OSMesg[1]
-function Game.sTaskMsgBuff() end
+function Game.sTaskMsgBuff(index) end
+---@param index number
+---@param value OSMesg
+function Game.sTaskMsgBuff(index, value) end
 ---@return OSMesgQueue
 function Game.gAudioVImesgQueue() end
+---@param value OSMesgQueue
+function Game.gAudioVImesgQueue(value) end
+---@param index number
 ---@return OSMesg[1]
-function Game.sAudioVImsgBuff() end
+function Game.sAudioVImsgBuff(index) end
+---@param index number
+---@param value OSMesg
+function Game.sAudioVImsgBuff(index, value) end
 ---@return OSMesgQueue
 function Game.gAudioTaskMesgQueue() end
+---@param value OSMesgQueue
+function Game.gAudioTaskMesgQueue(value) end
+---@param index number
 ---@return OSMesg[1]
-function Game.sAudioTaskMsgBuff() end
+function Game.sAudioTaskMsgBuff(index) end
+---@param index number
+---@param value OSMesg
+function Game.sAudioTaskMsgBuff(index, value) end
 ---@return OSMesgQueue
 function Game.gGfxVImesgQueue() end
+---@param value OSMesgQueue
+function Game.gGfxVImesgQueue(value) end
+---@param index number
 ---@return OSMesg[1]
-function Game.sGfxVImsgBuff() end
+function Game.sGfxVImsgBuff(index) end
+---@param index number
+---@param value OSMesg
+function Game.sGfxVImsgBuff(index, value) end
 ---@return OSMesgQueue
 function Game.gGfxTaskMesgQueue() end
+---@param value OSMesgQueue
+function Game.gGfxTaskMesgQueue(value) end
+---@param index number
 ---@return OSMesg[1]
-function Game.sGfxTaskMsgBuff() end
+function Game.sGfxTaskMsgBuff(index) end
+---@param index number
+---@param value OSMesg
+function Game.sGfxTaskMsgBuff(index, value) end
 ---@return OSMesgQueue
 function Game.gSerialThreadMesgQueue() end
+---@param value OSMesgQueue
+function Game.gSerialThreadMesgQueue(value) end
+---@param index number
 ---@return OSMesg[1]
-function Game.sSerialThreadMsgBuff() end
+function Game.sSerialThreadMsgBuff(index) end
+---@param index number
+---@param value OSMesg
+function Game.sSerialThreadMsgBuff(index, value) end
 ---@return OSMesgQueue
 function Game.gControllerMesgQueue() end
+---@param value OSMesgQueue
+function Game.gControllerMesgQueue(value) end
+---@param index number
 ---@return OSMesg[1]
-function Game.sControllerMsgBuff() end
+function Game.sControllerMsgBuff(index) end
+---@param index number
+---@param value OSMesg
+function Game.sControllerMsgBuff(index, value) end
 ---@return OSMesgQueue
 function Game.gSaveMesgQueue() end
+---@param value OSMesgQueue
+function Game.gSaveMesgQueue(value) end
+---@param index number
 ---@return OSMesg[1]
-function Game.sSaveMsgBuff() end
+function Game.sSaveMsgBuff(index) end
+---@param index number
+---@param value OSMesg
+function Game.sSaveMsgBuff(index, value) end
 ---@return OSMesgQueue
 function Game.gTimerTaskMesgQueue() end
+---@param value OSMesgQueue
+function Game.gTimerTaskMesgQueue(value) end
+---@param index number
 ---@return OSMesg[1]
-function Game.sTimerTaskMsgBuff() end
+function Game.sTimerTaskMsgBuff(index) end
+---@param index number
+---@param value OSMesg
+function Game.sTimerTaskMsgBuff(index, value) end
 ---@return OSMesgQueue
 function Game.gTimerWaitMesgQueue() end
+---@param value OSMesgQueue
+function Game.gTimerWaitMesgQueue(value) end
+---@param index number
 ---@return OSMesg[1]
-function Game.sTimerWaitMsgBuff() end
+function Game.sTimerWaitMsgBuff(index) end
+---@param index number
+---@param value OSMesg
+function Game.sTimerWaitMsgBuff(index, value) end
+---@param index number
 ---@return GfxPool[1]
-function Game.gGfxPools() end
+function Game.gGfxPools(index) end
+---@param index number
+---@param value GfxPool
+function Game.gGfxPools(index, value) end
 ---@return GfxPool
 function Game.gGfxPool() end
+---@param value GfxPool
+function Game.gGfxPool(value) end
 ---@return SPTask
 function Game.gGfxTask() end
+---@param value SPTask
+function Game.gGfxTask(value) end
 ---@return Vp
 function Game.gViewport() end
+---@param value Vp
+function Game.gViewport(value) end
 ---@return Mtx
 function Game.gGfxMtx() end
+---@param value Mtx
+function Game.gGfxMtx(value) end
 ---@return Gfx
 function Game.gUnkDisp1() end
+---@param value Gfx
+function Game.gUnkDisp1(value) end
 ---@return Gfx
 function Game.gMasterDisp() end
+---@param value Gfx
+function Game.gMasterDisp(value) end
 ---@return Gfx
 function Game.gUnkDisp2() end
+---@param value Gfx
+function Game.gUnkDisp2(value) end
 ---@return Lightsn
 function Game.gLight() end
+---@param value Lightsn
+function Game.gLight(value) end
 ---@return FrameBuffer
 function Game.gFrameBuffer() end
+---@param value FrameBuffer
+function Game.gFrameBuffer(value) end
 ---@return number
 function Game.gTextureRender() end
+---@param value number
+function Game.gTextureRender(value) end
 ---@return number
 function Game.gVIsPerFrame() end
+---@param value number
+function Game.gVIsPerFrame(value) end
 ---@return number
 function Game.gSysFrameCount() end
+---@param value number
+function Game.gSysFrameCount(value) end
 ---@return number
 function Game.gStartNMI() end
+---@param value number
+function Game.gStartNMI(value) end
 ---@return number
 function Game.gStopTasks() end
+---@param value number
+function Game.gStopTasks(value) end
+---@param index number
 ---@return number[1]
-function Game.gControllerRumbleFlags() end
+function Game.gControllerRumbleFlags(index) end
+---@param index number
+---@param value number
+function Game.gControllerRumbleFlags(index, value) end
 ---@return number
 function Game.gFillScreenColor() end
+---@param value number
+function Game.gFillScreenColor(value) end
 ---@return number
 function Game.gFillScreen() end
+---@param value number
+function Game.gFillScreen(value) end
+---@param index number
 ---@return number[1]
-function Game.gUnusedStack() end
+function Game.gUnusedStack(index) end
+---@param index number
+---@param value number
+function Game.gUnusedStack(index, value) end
 ---@return OSThread
 function Game.sIdleThread() end
+---@param value OSThread
+function Game.sIdleThread(value) end
+---@param index number
 ---@return number[1]
-function Game.sIdleThreadStack() end
+function Game.sIdleThreadStack(index) end
+---@param index number
+---@param value number
+function Game.sIdleThreadStack(index, value) end
 ---@return OSThread
 function Game.gMainThread() end
+---@param value OSThread
+function Game.gMainThread(value) end
+---@param index number
 ---@return number[1]
-function Game.sMainThreadStack() end
+function Game.sMainThreadStack(index) end
+---@param index number
+---@param value number
+function Game.sMainThreadStack(index, value) end
 ---@return OSThread
 function Game.gAudioThread() end
+---@param value OSThread
+function Game.gAudioThread(value) end
 ---@type Asset
 Assets.aTitleStarfoxLogoTex = "__OTR__ast_title/aTitleStarfoxLogoTex"
 ---@type Asset
@@ -27204,8 +28912,8 @@ function IsResourceManagerLoaded(_) end
 ---@field object Object
 
 
----@enum Events
-Events = {
+---@enum EventID
+EventID = {
     ItemDropEvent = -1,
     PlayerActionBoostEvent = -1,
     PlayerActionBrakeEvent = -1,
