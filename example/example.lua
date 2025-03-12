@@ -1,4 +1,7 @@
+require("test.lua")
+
 function OnPlayUpdate(ev)
+    PrintTest()
     if((Game.gInputPress().button & N64Buttons.BTN_L) != 0) then
         local reticlePos = Game.D_display_801613E0(0)
         local actorId = math.random(176, 291)

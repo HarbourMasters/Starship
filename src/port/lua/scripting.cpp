@@ -15,6 +15,7 @@
 
 #define SOL_ALL_SAFETIES_ON 1
 #include <sol/sol.hpp>
+#include <utility>
 
 namespace fs = std::filesystem;
 
@@ -24,13 +25,20 @@ sol::state lua;
 std::vector<std::pair<EventID, ListenerID>> RegisteredListeners;
 std::vector<std::pair<std::string, EventID>> RegisteredEvents;
 
-std::optional<std::string> LoadFromO2R(const std::string& path) {
+std::optional<std::string> LoadFromO2R(const std::string& path, const std::shared_ptr<Ship::Archive>& archive = nullptr) {
+    auto loader = Ship::Context::GetInstance()->GetResourceManager();
     auto init = std::make_shared<Ship::ResourceInitData>();
     init->Type = (uint32_t) SF64::ResourceType::Text;
     init->ByteOrder = Ship::Endianness::Native;
     init->Format = RESOURCE_FORMAT_BINARY;
-    auto res = static_pointer_cast<SF64::Text>(
-        Ship::Context::GetInstance()->GetResourceManager()->LoadResource(path, true, init));
+    std::shared_ptr<SF64::Text> res;
+    
+    if (archive == nullptr) {
+        res = static_pointer_cast<SF64::Text>(Ship::Context::GetInstance()->GetResourceManager()->LoadResource(path, true, init));
+    } else {
+        auto file = archive->LoadFile(path, init);
+        res = static_pointer_cast<SF64::Text>(loader->GetResourceLoader()->LoadResource(file));
+    }
 
     if (res == nullptr) {
         return std::nullopt;
@@ -58,8 +66,27 @@ int ScriptingLayer::Require(lua_State* L) {
     return 1;
 }
 
+void ScriptingLayer::Load(const std::string& path, const std::shared_ptr<Ship::Archive>& archive) {
+    auto result = LoadFromO2R(path, archive);
+
+    if(!result.has_value()){
+        return;
+    }
+
+    try {
+        sol::environment env(lua, sol::create, lua.globals());
+        lua.safe_script(result.value(), env);
+    } catch (const sol::error& e) {
+        SPDLOG_ERROR(std::string(e.what()));
+        return;
+    }
+}
+
 void ScriptingLayer::Init() {
-    lua.open_libraries(sol::lib::base, sol::lib::io, sol::lib::math, sol::lib::table);
+    lua.open_libraries(sol::lib::base, sol::lib::io, sol::lib::math, sol::lib::table, sol::lib::package);
+
+    lua.clear_package_loaders();
+    lua.add_package_loader(ScriptingLayer::Require);
 
     lua["RegisterListener"] = [](EventID eventId, const sol::function& callback, uint32_t priority) {
         auto lid = EventSystem::Instance->RegisterListener(eventId, callback, (EventPriority) priority);
@@ -84,7 +111,8 @@ void ScriptingLayer::Init() {
         }
         for (const auto& entry : fs::directory_iterator("scripts")) {
             if (entry.path().extension() == ".lua") {
-                lua.safe_script_file(entry.path().string());
+                sol::environment env(lua, sol::create, lua.globals());
+                lua.safe_script_file(entry.path().string(), env);
             }
         }
     } catch (const sol::error& e) {

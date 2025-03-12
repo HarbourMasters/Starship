@@ -2,6 +2,8 @@
 
 #ifdef __cplusplus
 #include <string>
+#include "port/resource/type/ResourceType.h"
+#include "port/resource/type/Text.h"
 
 struct lua_State;
 
@@ -11,6 +13,7 @@ class ScriptingLayer {
 
     void Init();
     void Load(std::string file);
+    void Load(const std::string& path, const std::shared_ptr<Ship::Archive>& archive);
     void Clean();
     void Reload();
     static int Require(lua_State* L);

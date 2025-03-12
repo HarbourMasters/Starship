@@ -21,6 +21,7 @@
 #include "resource/importers/Vec3fFactory.h"
 #include "resource/importers/Vec3sFactory.h"
 #include "resource/importers/TextFactory.h"
+#include "resource/type/Json.h"
 
 #include "resource/importers/audio/AudioTableFactory.h"
 #include "resource/importers/audio/BookFactory.h"
@@ -296,6 +297,60 @@ bool GameEngine::GenAssetFile(bool exitOnFail) {
     return extractor->GenerateOTR();
 }
 
+void GameEngine::LoadManifest() {
+    auto archive = Ship::Context::GetInstance()->GetResourceManager()->GetArchiveManager();
+    auto loader = Ship::Context::GetInstance()->GetResourceManager()->GetResourceLoader();
+    auto list = archive->GetArchives();
+    auto init = std::make_shared<Ship::ResourceInitData>();
+    init->Type = (uint32_t) Ship::ResourceType::Json;
+    init->ByteOrder = Ship::Endianness::Native;
+    init->Format = RESOURCE_FORMAT_BINARY;
+
+    for (auto& entry : *list) {
+        const auto path = "manifest.json";
+        if(!entry->HasFile(path)){
+            continue;
+        }
+
+        auto file = entry->LoadFile(path, init);
+
+        if(file == nullptr){
+            continue;
+        }
+
+        file->InitData = init;
+
+        auto raw = loader->LoadResource(file);
+        auto res = static_pointer_cast<Ship::Json>(raw);
+        if (res == nullptr) {
+            continue;
+        }
+
+        auto json = res->Data;
+
+        try {
+            auto name = json["name"].get<std::string>();
+            auto main = json["main"].get<std::string>();
+            auto version = json.value("version", "1.0");
+            auto website = json.value("website", "https://github.com/HarbourMasters/Starship");
+            auto description = json.value("description", "");
+            auto author = json.value("author", "unknown");
+            auto license = json.value("license", "MIT");
+            auto dependencies = json.value("dependencies", std::vector<std::string>());
+
+            SPDLOG_INFO("Name: {}", name);
+            SPDLOG_INFO("Version: {}", version);
+            SPDLOG_INFO("License: {}", license);
+            SPDLOG_INFO("Author: {}", author);
+
+            ScriptingLayer::Instance->Load(main, entry);
+        } catch (nlohmann::json::exception &e) {
+            SPDLOG_ERROR("Invalid manifest.json, skipping");
+            continue;
+        }
+    }
+}
+
 void GameEngine::Create() {
     const auto instance = Instance = new GameEngine();
     instance->AudioInit();
@@ -307,6 +362,7 @@ void GameEngine::Create() {
 #endif
     PortEnhancements_Init();
     ScriptingLayer::Instance->Init();
+    LoadManifest();
 }
 
 void GameEngine::Destroy() {

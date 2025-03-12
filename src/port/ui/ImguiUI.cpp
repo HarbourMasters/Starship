@@ -641,6 +641,7 @@ void DrawDebugMenu() {
 
         if(UIWidgets::Button("Reload Scripts")){
             ScriptingLayer::Instance->Reload();
+            GameEngine::LoadManifest();
         }
 
         UIWidgets::WindowButton("Gfx Debugger", "gGfxDebuggerEnabled", GameUI::mGfxDebuggerWindow, {
@@ -751,6 +752,17 @@ void DrawDebugMenu() {
             .tooltip = "Enables the console window, allowing you to input commands, type help for some examples"
         });
 
+        ImGui::EndMenu();
+    }
+
+    if (UIWidgets::BeginMenu("Developer")) {
+        if (UIWidgets::CVarCombobox("Log Level aaaAAAAAaaaAaaAA", "gDeveloperTools.LogLevel", logLevels, {
+            .tooltip = "The log level determines which messages are printed to the "
+                        "console. This does not affect the log file output",
+            .defaultIndex = 1,
+        })) {
+            Ship::Context::GetInstance()->GetLogger()->set_level((spdlog::level::level_enum)CVarGetInteger("gDeveloperTools.LogLevel", 1));
+        }
         ImGui::EndMenu();
     }
 }
