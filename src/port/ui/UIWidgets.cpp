@@ -617,6 +617,10 @@ namespace UIWidgets {
         return dirty;
     }
 
+    void EndMenu() {
+        ImGui::EndMenu();
+    }
+
     void PushStyleMenuItem(const ImVec4& color) {
         ImGui::PushStyleColor(ImGuiCol_HeaderHovered, ImVec4(color.x, color.y, color.z, 1.0f));
         ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(20.0f, 15.0f));
@@ -681,6 +685,10 @@ namespace UIWidgets {
         }
         ImGui::PopStyleVar();
         return dirty;
+    }
+
+    CheckboxOptions DefaultCheckboxOptions(const char* tooltip) {
+        return CheckboxOptions{ .tooltip = tooltip };
     }
 
     void PushStyleCheckbox(const ImVec4& color) {

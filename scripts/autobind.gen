@@ -1655,6 +1655,20 @@ lua.new_usertype<OSContPad>("OSContPad",
     "right_stick_y", sol::property(&OSContPad::right_stick_y, &OSContPad::right_stick_y)
 );
 
+lua.new_usertype<ImVec2>("ImVec2",
+    sol::constructors<ImVec2(), ImVec2(float, float)>(),
+    "x", sol::property(&ImVec2::x, &ImVec2::x),
+    "y", sol::property(&ImVec2::y, &ImVec2::y)
+);
+
+lua.new_usertype<ImVec4>("ImVec4",
+    sol::constructors<ImVec4(), ImVec4(float, float, float, float)>(),
+    "x", sol::property(&ImVec4::x, &ImVec4::x),
+    "y", sol::property(&ImVec4::y, &ImVec4::y),
+    "z", sol::property(&ImVec4::z, &ImVec4::z),
+    "w", sol::property(&ImVec4::w, &ImVec4::w)
+);
+
 auto enum_RadioCharacterId = lua["RadioCharacterId"].force();
 enum_RadioCharacterId["RCID_FOX"] = (uint32_t) RCID_FOX;
 enum_RadioCharacterId["RCID_STATIC"] = (uint32_t) RCID_STATIC;
@@ -13874,6 +13888,53 @@ lua.set_function("OTRGetRectDimensionFromLeftEdgeOverride", OTRGetRectDimensionF
 lua.set_function("OTRGetRectDimensionFromRightEdgeOverride", OTRGetRectDimensionFromRightEdgeOverride);
 lua.set_function("OTRGetGameRenderWidth", OTRGetGameRenderWidth);
 lua.set_function("OTRGetGameRenderHeight", OTRGetGameRenderHeight);
+lua["UIWidgets"]["Tooltip"] = UIWidgets::Tooltip;
+lua["UIWidgets"]["Spacer"] = UIWidgets::Spacer;
+lua["UIWidgets"]["PaddedSeparator"] = UIWidgets::PaddedSeparator;
+lua["UIWidgets"]["RenderCross"] = UIWidgets::RenderCross;
+lua["UIWidgets"]["CustomCheckbox"] = UIWidgets::CustomCheckbox;
+lua["UIWidgets"]["ReEnableComponent"] = UIWidgets::ReEnableComponent;
+lua["UIWidgets"]["DisableComponent"] = UIWidgets::DisableComponent;
+lua["UIWidgets"]["EnhancementCheckbox"] = UIWidgets::EnhancementCheckbox;
+lua["UIWidgets"]["PaddedEnhancementCheckbox"] = UIWidgets::PaddedEnhancementCheckbox;
+lua["UIWidgets"]["EnhancementCombobox"] = UIWidgets::EnhancementCombobox;
+lua["UIWidgets"]["LabeledRightAlignedEnhancementCombobox"] = UIWidgets::LabeledRightAlignedEnhancementCombobox;
+lua["UIWidgets"]["PaddedText"] = UIWidgets::PaddedText;
+lua["UIWidgets"]["EnhancementSliderInt"] = UIWidgets::EnhancementSliderInt;
+lua["UIWidgets"]["PaddedEnhancementSliderInt"] = UIWidgets::PaddedEnhancementSliderInt;
+lua["UIWidgets"]["EnhancementSliderFloat"] = UIWidgets::EnhancementSliderFloat;
+lua["UIWidgets"]["PaddedEnhancementSliderFloat"] = UIWidgets::PaddedEnhancementSliderFloat;
+lua["UIWidgets"]["EnhancementRadioButton"] = UIWidgets::EnhancementRadioButton;
+lua["UIWidgets"]["DrawResetColorButton"] = UIWidgets::DrawResetColorButton;
+lua["UIWidgets"]["DrawLockColorCheckbox"] = UIWidgets::DrawLockColorCheckbox;
+lua["UIWidgets"]["RainbowColor"] = UIWidgets::RainbowColor;
+lua["UIWidgets"]["LoadPickersColors"] = UIWidgets::LoadPickersColors;
+lua["UIWidgets"]["PushStyleMenu"] = UIWidgets::PushStyleMenu;
+lua["UIWidgets"]["PopStyleMenu"] = UIWidgets::PopStyleMenu;
+lua["UIWidgets"]["BeginMenu"] = UIWidgets::BeginMenu;
+lua["UIWidgets"]["EndMenu"] = UIWidgets::EndMenu;
+lua["UIWidgets"]["PushStyleMenuItem"] = UIWidgets::PushStyleMenuItem;
+lua["UIWidgets"]["PopStyleMenuItem"] = UIWidgets::PopStyleMenuItem;
+lua["UIWidgets"]["MenuItem"] = UIWidgets::MenuItem;
+lua["UIWidgets"]["PushStyleButton"] = UIWidgets::PushStyleButton;
+lua["UIWidgets"]["PopStyleButton"] = UIWidgets::PopStyleButton;
+lua["UIWidgets"]["Button"] = UIWidgets::Button;
+lua["UIWidgets"]["WindowButton"] = UIWidgets::WindowButton;
+lua["UIWidgets"]["DefaultCheckboxOptions"] = UIWidgets::DefaultCheckboxOptions;
+lua["UIWidgets"]["PushStyleCheckbox"] = UIWidgets::PushStyleCheckbox;
+lua["UIWidgets"]["PopStyleCheckbox"] = UIWidgets::PopStyleCheckbox;
+lua["UIWidgets"]["Checkbox"] = UIWidgets::Checkbox;
+lua["UIWidgets"]["CVarCheckbox"] = UIWidgets::CVarCheckbox;
+lua["UIWidgets"]["PushStyleCombobox"] = UIWidgets::PushStyleCombobox;
+lua["UIWidgets"]["PopStyleCombobox"] = UIWidgets::PopStyleCombobox;
+lua["UIWidgets"]["Combobox"] = UIWidgets::Combobox;
+lua["UIWidgets"]["CVarCombobox"] = UIWidgets::CVarCombobox;
+lua["UIWidgets"]["PushStyleSlider"] = UIWidgets::PushStyleSlider;
+lua["UIWidgets"]["PopStyleSlider"] = UIWidgets::PopStyleSlider;
+lua["UIWidgets"]["SliderInt"] = UIWidgets::SliderInt;
+lua["UIWidgets"]["CVarSliderInt"] = UIWidgets::CVarSliderInt;
+lua["UIWidgets"]["SliderFloat"] = UIWidgets::SliderFloat;
+lua["UIWidgets"]["CVarSliderFloat"] = UIWidgets::CVarSliderFloat;
 lua.set_function("ResourceGetCrcByName", ResourceGetCrcByName);
 lua.set_function("ResourceGetNameByCrc", ResourceGetNameByCrc);
 lua.set_function("ResourceGetSizeByName", ResourceGetSizeByName);
@@ -13950,6 +14011,10 @@ lua.new_usertype<EngineInitEvent>("EngineInitEvent",
 
 lua.new_usertype<EngineExitEvent>("EngineExitEvent",
     "event", sol::property(&EngineExitEvent::event, &EngineExitEvent::event)
+);
+
+lua.new_usertype<EngineRenderMenubarEvent>("EngineRenderMenubarEvent",
+    "event", sol::property(&EngineRenderMenubarEvent::event, &EngineRenderMenubarEvent::event)
 );
 
 lua.new_usertype<DisplayPreUpdateEvent>("DisplayPreUpdateEvent",

@@ -10,6 +10,7 @@
 #include "fox_map.h"
 #include "global.h"
 #include <filesystem>
+#include "port/ui/UIWidgets.h"
 #include "port/resource/type/ResourceType.h"
 #include "port/resource/type/Text.h"
 #include "port/Engine.h"
@@ -18,16 +19,26 @@
 #include <sol/sol.hpp>
 #include <utility>
 
+using namespace UIWidgets;
+
 struct Asset {
-    const char* path;
+    std::string path;
+
+    explicit Asset(const char* path) : path(path) {}
+    explicit Asset(std::string path) : path(std::move(path)) {}
 
     template<typename T>
     T* Get() {
-        return (T*) path;
+        return (T*) path.data();
     }
 
     std::string tostring() const {
         return path;
+    }
+
+    static Asset Register(const std::string path) {
+        std::string full = "__OTR__" + path;
+        return Asset{full};
     }
 };
 
@@ -113,6 +124,7 @@ void ScriptingLayer::Init() {
     };
 
     lua.new_usertype<Asset>("Asset",
+        "Register", &Asset::Register,
         "Load8",  &Asset::Get<u8>,
         "Load16", &Asset::Get<u16>,
         "Load32", &Asset::Get<u32>,
@@ -140,6 +152,7 @@ void ScriptingLayer::Init() {
     lua["Game"] = lua.create_table();
     lua["Assets"] = lua.create_table();
     lua["Events"] = lua.create_table();
+    lua["UIWidgets"] = lua.create_table();
 
     for (const auto& [name, id] : RegisteredEvents) {
         lua["Events"][name] = id;

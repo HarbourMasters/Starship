@@ -11,14 +11,14 @@
 namespace UIWidgets {
 
     struct TextFilters {
-        static int FilterNumbers(ImGuiInputTextCallbackData* data) {
+        static int FilterNumbers(ImGuiInputTextCallbackData* data) { // sol:ignore
             if (data->EventChar < 256 && strchr("1234567890", (char)data->EventChar)) {
                 return 0;
             }
             return 1;
         }
 
-        static int FilterAlphaNum(ImGuiInputTextCallbackData* data) {
+        static int FilterAlphaNum(ImGuiInputTextCallbackData* data) { // sol:ignore
             const char* alphanum = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWYZ0123456789";
             if (data->EventChar < 256 && strchr(alphanum, (char)data->EventChar)) {
                 return 0;
@@ -35,23 +35,23 @@ namespace UIWidgets {
         Checkmark,
         None
     };
-    constexpr float maxSliderWidth = 260.0f;
+    constexpr float maxSliderWidth = 260.0f; // sol:ignore
 #ifdef __SWITCH__
-    constexpr float sliderButtonWidth = 42.0f;
+    constexpr float sliderButtonWidth = 42.0f; // sol:ignore
 #elif defined(__WIIU__)
-    constexpr float sliderButtonWidth = 60.0f;
+    constexpr float sliderButtonWidth = 60.0f; // sol:ignore
 #else
-    constexpr float sliderButtonWidth = 30.0f;
+    constexpr float sliderButtonWidth = 30.0f; // sol:ignore
 #endif
 
-    char* WrappedText(const char* text, unsigned int charactersPerLine = 60);
-    char* WrappedText(const std::string& text, unsigned int charactersPerLine);
+    char* WrappedText(const char* text, unsigned int charactersPerLine = 60); // sol:ignore
+    char* WrappedText(const std::string& text, unsigned int charactersPerLine); // sol:ignore
 
-    void SetLastItemHoverText(const std::string& text);
-    void SetLastItemHoverText(const char* text);
+    void SetLastItemHoverText(const std::string& text); // sol:ignore
+    void SetLastItemHoverText(const char* text); // sol:ignore
 
-    void InsertHelpHoverText(const std::string& text);
-    void InsertHelpHoverText(const char* text);
+    void InsertHelpHoverText(const std::string& text); // sol:ignore
+    void InsertHelpHoverText(const char* text); // sol:ignore
 
     void Tooltip(const char* text);
     void Spacer(float height);
@@ -79,29 +79,27 @@ namespace UIWidgets {
     bool EnhancementRadioButton(const char* text, const char* cvarName, int id);
 
     bool DrawResetColorButton(const char* cvarName, ImVec4* colors, ImVec4 defaultcolors, bool has_alpha);
-    bool DrawRandomizeColorButton(const char* cvarName, ImVec4* colors);
     void DrawLockColorCheckbox(const char* cvarName);
     void RainbowColor(const char* cvarName, ImVec4* colors);
 
     void LoadPickersColors(ImVec4& ColorArray, const char* cvarname, const ImVec4& default_colors, bool has_alpha);
-    bool EnhancementColor(const char* text, const char* cvarName, ImVec4 ColorRGBA, ImVec4 default_colors, bool allow_rainbow = true, bool has_alpha = false, bool TitleSameLine = false);
 
-    void DrawFlagArray32(const std::string& name, uint32_t& flags);
-    void DrawFlagArray16(const std::string& name, uint16_t& flags);
-    void DrawFlagArray8(const std::string& name, uint8_t& flags);
+    void DrawFlagArray32(const std::string& name, uint32_t& flags); // sol:ignore
+    void DrawFlagArray16(const std::string& name, uint16_t& flags); // sol:ignore
+    void DrawFlagArray8(const std::string& name, uint8_t& flags); // sol:ignore
 
     // V2
     namespace Colors {
-        const ImVec4 White = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
-        const ImVec4 Gray = ImVec4(0.4f, 0.4f, 0.4f, 1.0f);
-        const ImVec4 DarkGray = ImVec4(0.1f, 0.1f, 0.1f, 1.0f);
-        const ImVec4 Indigo = ImVec4(0.24f, 0.31f, 0.71f, 1.0f);
-        const ImVec4 Red = ImVec4(0.5f, 0.0f, 0.0f, 1.0f);
-        const ImVec4 DarkRed = ImVec4(0.3f, 0.0f, 0.0f, 1.0f);
-        const ImVec4 LightGreen = ImVec4(0.0f, 0.7f, 0.0f, 1.0f);
-        const ImVec4 Green = ImVec4(0.0f, 0.5f, 0.0f, 1.0f);
-        const ImVec4 DarkGreen = ImVec4(0.0f, 0.3f, 0.0f, 1.0f);
-        const ImVec4 Yellow = ImVec4(1.0f, 0.627f, 0.0f, 1.0f);
+        const ImVec4 White = ImVec4(1.0f, 1.0f, 1.0f, 1.0f); // sol:ignore
+        const ImVec4 Gray = ImVec4(0.4f, 0.4f, 0.4f, 1.0f); // sol:ignore
+        const ImVec4 DarkGray = ImVec4(0.1f, 0.1f, 0.1f, 1.0f); // sol:ignore
+        const ImVec4 Indigo = ImVec4(0.24f, 0.31f, 0.71f, 1.0f); // sol:ignore
+        const ImVec4 Red = ImVec4(0.5f, 0.0f, 0.0f, 1.0f); // sol:ignore
+        const ImVec4 DarkRed = ImVec4(0.3f, 0.0f, 0.0f, 1.0f); // sol:ignore
+        const ImVec4 LightGreen = ImVec4(0.0f, 0.7f, 0.0f, 1.0f); // sol:ignore
+        const ImVec4 Green = ImVec4(0.0f, 0.5f, 0.0f, 1.0f); // sol:ignore
+        const ImVec4 DarkGreen = ImVec4(0.0f, 0.3f, 0.0f, 1.0f); // sol:ignore
+        const ImVec4 Yellow = ImVec4(1.0f, 0.627f, 0.0f, 1.0f); // sol:ignore
     };
 
     namespace Sizes {
@@ -125,6 +123,7 @@ namespace UIWidgets {
     void PushStyleMenu(const ImVec4& color = Colors::Indigo);
     void PopStyleMenu();
     bool BeginMenu(const char* label, const ImVec4& color = Colors::Indigo);
+    void EndMenu();
 
     void PushStyleMenuItem(const ImVec4& color = Colors::Indigo);
     void PopStyleMenuItem();
@@ -152,6 +151,8 @@ namespace UIWidgets {
         ComponentAlignment alignment = ComponentAlignment::Left;
         LabelPosition labelPosition = LabelPosition::Near;
     };
+
+    CheckboxOptions DefaultCheckboxOptions(const char* tooltip);
 
     void PushStyleCheckbox(const ImVec4& color = Colors::Indigo);
     void PopStyleCheckbox();

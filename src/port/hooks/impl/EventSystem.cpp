@@ -66,11 +66,11 @@ extern "C" EventID EventSystem_RegisterEvent() {
     return EventSystem::Instance->RegisterEvent();
 }
 
-extern "C" size_t EventSystem_RegisterListener(EventID id, EventCallback callback, EventPriority priority) {
+extern "C" ListenerID EventSystem_RegisterListener(EventID id, EventCallback callback, EventPriority priority) {
     return EventSystem::Instance->RegisterListener(id, callback, priority);
 }
 
-extern "C" void EventSystem_UnregisterListener(EventID ev, size_t id) {
+extern "C" void EventSystem_UnregisterListener(EventID ev, ListenerID id) {
     EventSystem::Instance->UnregisterListener(ev, id);
 }
 

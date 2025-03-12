@@ -210,7 +210,7 @@ def parse_events(header):
         print(');')
         print('')
 
-def parse_externs(header):
+def parse_externs(header, namespace=None):
     try:
         with open(header, 'r') as file:
             lines = file.readlines()
@@ -262,7 +262,10 @@ def parse_externs(header):
                 if 'CVarExists' in func_name or 'ResourceLoad' in func_name or 'void*' in func_name or 'ResourceClearCache' in func_name: # Report this to LUS
                     continue
 
-                print(f'lua.set_function("{func_name}", {func_name});')
+                if namespace:
+                    print(f'lua["{namespace}"]["{func_name}"] = {namespace}::{func_name};')
+                else:
+                    print(f'lua.set_function("{func_name}", {func_name});')
 
 def is_blacklisted(file):
     for item in blacklist:
@@ -289,6 +292,7 @@ if __name__ == "__main__":
 
     parse_enums("src/port/Engine.h")
     parse_externs("src/port/Engine.h")
+    parse_externs("src/port/ui/UIWidgets.h", 'UIWidgets')
     parse_externs("libultraship/src/public/bridge/resourcebridge.h")
 
     for root, dirs, files in os.walk("src/port/hooks/list"):

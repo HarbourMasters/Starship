@@ -6,6 +6,8 @@
 DEFINE_EVENT(EngineInitEvent);
 DEFINE_EVENT(EngineExitEvent);
 
+DEFINE_EVENT(EngineRenderMenubarEvent);
+
 DEFINE_EVENT(DisplayPreUpdateEvent);
 DEFINE_EVENT(DisplayPostUpdateEvent);
 

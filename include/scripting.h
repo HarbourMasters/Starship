@@ -468,3 +468,15 @@ enum ScreenSize {
     WIDTH = 320,
     HEIGHT = 240,
 };
+
+struct ImVec2 {
+    float x;
+    float y;
+};
+
+struct ImVec4 {
+    float x;
+    float y;
+    float z;
+    float w;
+};

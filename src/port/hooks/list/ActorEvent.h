@@ -3,7 +3,7 @@
 #include "sf64object.h"
 #include "port/hooks/impl/EventSystem.h"
 
-typedef enum {
+typedef enum ObjectEventType {
     OBJECT_TYPE_ACTOR,
     OBJECT_TYPE_ACTOR_EVENT,
     OBJECT_TYPE_BOSS,

@@ -1,7 +1,7 @@
 {
     "name": "Example",
     "version": "1.0",
-    "website_url": "https://example.com",
+    "website": "https://example.com",
     "description": "This is an example package",
     "author": "Lywx",
     "license": "MIT",
