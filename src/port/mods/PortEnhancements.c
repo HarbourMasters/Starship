@@ -413,25 +413,25 @@ void PortEnhancements_Init() {
     PortEnhancements_Register();
 
     // Register event listeners
-    REGISTER_LISTENER(DisplayPostUpdateEvent, OnDisplayUpdatePost, EVENT_PRIORITY_NORMAL);
-    REGISTER_LISTENER(GamePostUpdateEvent, OnGameUpdatePost, EVENT_PRIORITY_NORMAL);
-    REGISTER_LISTENER(PlayUpdateEvent, OnPlayUpdateEvent, EVENT_PRIORITY_NORMAL);
-    REGISTER_LISTENER(PlayerPostUpdateEvent, OnPlayerUpdatePost, EVENT_PRIORITY_NORMAL);
-    REGISTER_LISTENER(DrawBoostGaugeHUDEvent, OnBoostGaugeDraw, EVENT_PRIORITY_NORMAL);
-    REGISTER_LISTENER(DrawLivesCounterHUDEvent, OnLivesCounterDraw, EVENT_PRIORITY_NORMAL);
-    REGISTER_LISTENER(DrawBombCounterHUDEvent, OnBombCounterDraw, EVENT_PRIORITY_NORMAL);
-    REGISTER_LISTENER(PreSetupRadioMsgEvent, OnPreSetupRadioMsgEvent, EVENT_PRIORITY_NORMAL);
-    REGISTER_LISTENER(DrawRadarMarkArwingEvent, OnRadarMarkArwingDraw, EVENT_PRIORITY_NORMAL);
-    REGISTER_LISTENER(DrawRadarMarkWolfenEvent, OnRadarMarkWolfenDraw, EVENT_PRIORITY_NORMAL);
+    REGISTER_LISTENER(DisplayPostUpdateEvent, OnDisplayUpdatePost, EVENT_PRIORITY_LOW);
+    REGISTER_LISTENER(GamePostUpdateEvent, OnGameUpdatePost, EVENT_PRIORITY_LOW);
+    REGISTER_LISTENER(PlayUpdateEvent, OnPlayUpdateEvent, EVENT_PRIORITY_LOW);
+    REGISTER_LISTENER(PlayerPostUpdateEvent, OnPlayerUpdatePost, EVENT_PRIORITY_LOW);
+    REGISTER_LISTENER(DrawBoostGaugeHUDEvent, OnBoostGaugeDraw, EVENT_PRIORITY_LOW);
+    REGISTER_LISTENER(DrawLivesCounterHUDEvent, OnLivesCounterDraw, EVENT_PRIORITY_LOW);
+    REGISTER_LISTENER(DrawBombCounterHUDEvent, OnBombCounterDraw, EVENT_PRIORITY_LOW);
+    REGISTER_LISTENER(PreSetupRadioMsgEvent, OnPreSetupRadioMsgEvent, EVENT_PRIORITY_LOW);
+    REGISTER_LISTENER(DrawRadarMarkArwingEvent, OnRadarMarkArwingDraw, EVENT_PRIORITY_LOW);
+    REGISTER_LISTENER(DrawRadarMarkWolfenEvent, OnRadarMarkWolfenDraw, EVENT_PRIORITY_LOW);
 
-    REGISTER_LISTENER(ObjectUpdateEvent, OnItemGoldRingUpdate, EVENT_PRIORITY_NORMAL);
-    REGISTER_LISTENER(ObjectDrawPostSetupEvent, OnItemGoldRingDraw, EVENT_PRIORITY_NORMAL);
+    REGISTER_LISTENER(ObjectUpdateEvent, OnItemGoldRingUpdate, EVENT_PRIORITY_LOW);
+    REGISTER_LISTENER(ObjectDrawPostSetupEvent, OnItemGoldRingDraw, EVENT_PRIORITY_LOW);
 
     // Register Action listeners
-    REGISTER_LISTENER(PlayerActionBoostEvent, OnPlayerBoost, EVENT_PRIORITY_NORMAL);
-    REGISTER_LISTENER(PlayerActionBrakeEvent, OnPlayerBrake, EVENT_PRIORITY_NORMAL);
-    REGISTER_LISTENER(PlayerActionPostShootEvent, OnPlayerShootPost, EVENT_PRIORITY_NORMAL);
-    REGISTER_LISTENER(PlayerActionPreShootChargedEvent, OnPlayerShootChargedPre, EVENT_PRIORITY_NORMAL);
+    REGISTER_LISTENER(PlayerActionBoostEvent, OnPlayerBoost, EVENT_PRIORITY_LOW);
+    REGISTER_LISTENER(PlayerActionBrakeEvent, OnPlayerBrake, EVENT_PRIORITY_LOW);
+    REGISTER_LISTENER(PlayerActionPostShootEvent, OnPlayerShootPost, EVENT_PRIORITY_LOW);
+    REGISTER_LISTENER(PlayerActionPreShootChargedEvent, OnPlayerShootChargedPre, EVENT_PRIORITY_LOW);
 
     //If we close the game while debug pause is active, we want it to be deactivated when we run again.
     CVarSetInteger("gDebugPause", 0);
