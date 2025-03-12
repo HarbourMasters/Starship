@@ -727,6 +727,11 @@ Acmd* AudioSynth_LoadReverbSamples(Acmd* aList, s32 aiBufLen, s16 reverbIndex, s
     s16 sp62;
     s16 sp60;
 
+    u16 left_channel = DMEM_LEFT_CH;
+    if (GetNumAudioChannels() == 6) {
+        left_channel = DMEM_REAR_LEFT_CH;
+    }
+
     aClearBuffer(aList++, DMEM_WET_LEFT_CH, DMEM_2CH_SIZE);
 
     if (gSynthReverbs[reverbIndex].downsampleRate == 1) {
@@ -735,7 +740,7 @@ Acmd* AudioSynth_LoadReverbSamples(Acmd* aList, s32 aiBufLen, s16 reverbIndex, s
             aList =
                 AudioSynth_LoadRingBufferPart(aList, sp64->lengthA + DMEM_WET_LEFT_CH, 0, sp64->lengthB, reverbIndex);
         }
-        aAddMixer(aList++, DMEM_2CH_SIZE, DMEM_WET_LEFT_CH, DMEM_LEFT_CH);
+        aAddMixer(aList++, DMEM_2CH_SIZE, DMEM_WET_LEFT_CH, left_channel);
         aMix(aList++, 0x30, gSynthReverbs[reverbIndex].decayRatio + 0x8000, DMEM_WET_LEFT_CH, DMEM_WET_LEFT_CH);
     } else {
         sp62 = (sp64->startPos & 7) * 2;
@@ -751,7 +756,7 @@ Acmd* AudioSynth_LoadReverbSamples(Acmd* aList, s32 aiBufLen, s16 reverbIndex, s
         aSetBuffer(aList++, 0, sp62 + DMEM_UNCOMPRESSED_NOTE, DMEM_WET_RIGHT_CH, aiBufLen * 2);
         aResample(aList++, gSynthReverbs[reverbIndex].resampleFlags, gSynthReverbs[reverbIndex].unk_0A,
                   OS_K0_TO_PHYSICAL(gSynthReverbs[reverbIndex].unk_34));
-        aAddMixer(aList++, DMEM_2CH_SIZE, DMEM_WET_LEFT_CH, DMEM_LEFT_CH);
+        aAddMixer(aList++, DMEM_2CH_SIZE, DMEM_WET_LEFT_CH, left_channel);
         aMix(aList++, 0x30, gSynthReverbs[reverbIndex].decayRatio + 0x8000, DMEM_WET_LEFT_CH, DMEM_WET_LEFT_CH);
     }
 

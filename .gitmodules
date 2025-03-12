@@ -6,4 +6,4 @@
 	url = https://github.com/HarbourMasters/Torch
 [submodule "libultraship"]
 	path = libultraship
-	url = https://github.com/dcampora/libultraship.git
+	url = https://github.com/Kenix3/libultraship.git

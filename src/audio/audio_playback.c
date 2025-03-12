@@ -140,11 +140,8 @@ void Audio_InitNoteSub(Note* note, NoteAttributes* noteAttr) {
         }
     } else {
         // Surround 5.1
-        const float vol_voice = 0.8f;
-        const float vol_music = 0.707f;
-        
         if (stereo.s.is_voice) { // VOICE
-            panVolumeCenter = vol_voice;
+            panVolumeCenter = 1.0f;
         }
         else if (stereo.s.is_sfx) { // SFX
             float pan_angle = (float)(pan + 64) / 128 * 2 * M_PI;
@@ -164,13 +161,11 @@ void Audio_InitNoteSub(Note* note, NoteAttributes* noteAttr) {
             panVolumeRight = fmaxf(0, cosf(pan_angle - front_right)); // Front Right
             panVolumeRearLeft = fmaxf(0, cosf(pan_angle - rear_left));   // Rear Left
             panVolumeRearRight = fmaxf(0, cosf(pan_angle - rear_right));  // Rear Right
-
-            // printf("pan: %d, pan_angle: %f, left: %f, right: %f, rleft: %f, rright: %f\n", pan, pan_angle, panVolumeLeft, panVolumeRight, panVolumeRearLeft, panVolumeRearRight);
         } else { // MUSIC
-            panVolumeLeft = vol_music;
-            panVolumeRight = vol_music;
-            panVolumeRearLeft = vol_music;
-            panVolumeRearRight = vol_music;
+            panVolumeLeft = gStereoPanVolume[pan];
+            panVolumeRight = gStereoPanVolume[ARRAY_COUNT(gStereoPanVolume) - 1 - pan];
+            panVolumeRearLeft = gStereoPanVolume[pan];
+            panVolumeRearRight = gStereoPanVolume[ARRAY_COUNT(gStereoPanVolume) - 1 - pan];
         }
     }
 

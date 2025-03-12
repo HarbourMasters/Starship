@@ -710,9 +710,10 @@ void aEnvMixerImpl(uint16_t in_addr, uint16_t n_samples, bool swap_reverb,
                     *dry[j] = clamp16(*dry[j] + samples[j]);
                     dry[j]++;
 
-                    if (j >= 4) {
-                        // Apply reverb only to the rear channels (4 and 5)
-                        *wet[j] = clamp16(*wet[j] + (samples[swapped[j % 2]] * vol_wet >> 16));
+                    if (j < 2) {
+                        // Apply reverb only to the front stereo channels wet
+                        // They will be mixed with the rear channels later
+                        *wet[j] = clamp16(*wet[j] + (samples[swapped[j]] * vol_wet >> 16));
                         wet[j]++;
                     }
                 }
