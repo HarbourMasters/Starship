@@ -7,7 +7,7 @@
 extern "C" {
 #endif
 
-extern u64 gDramStack[];
+// extern u64 gDramStack[];
 extern u8 gOSYieldData[];
 extern FrameBuffer gZBuffer; // z buffer
 extern u8 gTaskOutputBuffer[];

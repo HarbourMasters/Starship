@@ -22,6 +22,7 @@ ScriptingLayer* ScriptingLayer::Instance = new ScriptingLayer();
 sol::state lua;
 
 std::vector<std::pair<EventID, ListenerID>> RegisteredListeners;
+std::vector<std::pair<std::string, EventID>> RegisteredEvents;
 
 std::optional<std::string> LoadFromO2R(const std::string& path) {
     auto init = std::make_shared<Ship::ResourceInitData>();
@@ -68,6 +69,11 @@ void ScriptingLayer::Init() {
 
     lua["Game"] = lua.create_table();
     lua["Assets"] = lua.create_table();
+    lua["Events"] = lua.create_table();
+
+    for (const auto& [name, id] : RegisteredEvents) {
+        lua["Events"][name] = id;
+    }
 
     #include "scripts/autobind.gen"
 
@@ -102,6 +108,5 @@ void ScriptingLayer::Reload() {
 }
 
 extern "C" void BindEvent(const char* name, EventID id) {
-    sol::table events = lua["Events"].get_or_create<sol::table>();
-    events[name] = id;
+    RegisteredEvents.emplace_back(name, id);
 }

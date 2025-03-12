@@ -18,8 +18,6 @@ blacklist = [
     'mods.h'
 ]
 
-global_vars = []
-
 def parse_enums(header, as_value=False):
     try:
         with open(header, 'r') as file:
@@ -83,7 +81,7 @@ def parse_enums(header, as_value=False):
             value = entry['value']
             if 'ifdef' in key or 'endif' in entry['name'] or 'else' in key:
                 continue
-            print(f'enum_{enum_name}["{key.replace('EVENT_PRIORITY_', '')}"] = {value if as_value else key};')
+            print(f'enum_{enum_name}["{key.replace('EVENT_PRIORITY_', '')}"] = (uint32_t) {value if as_value else key};')
         print('')
 
 def parse_structs(header):
@@ -197,7 +195,6 @@ def parse_externs(header):
             lines = file.readlines()
     except IOError:
         raise RuntimeError("Failed to open header files for events node in config")
-    global global_vars
 
     for line in lines:
         line = re.sub(r'\s+', ' ', line.strip())
@@ -215,10 +212,17 @@ def parse_externs(header):
                 # print(f'lua["{var_name}"] = sol::var(std::ref({var_name}));')
                 # print(f'lua["{var_name}"] = sol::as_pointer({var_name});')
                 # print(f'lua.set("{var_name}", sol::var({var_name}));')
-                # global_vars.append({
-                #     'type': var_type,
-                #     'name': var_name
-                # })
+            elif '[' in line and not '(' in line:
+                dimension_len = len(line.split('[')) - 1
+                var_name = line.split('[')[0].split(' ')[-1]
+                var_type = line.split(' ')[1]
+                if dimension_len == 1:
+                    print(f'lua["Game"]["{var_name}"] = sol::overload([](int index) -> {var_type} {{ return {var_name}[index]; }}, [](int index, {var_type} value) {{ {var_name}[index] = value; }});')
+                elif dimension_len == 2:
+                    print(f'lua["Game"]["{var_name}"] = sol::overload([](int index1, int index2) -> {var_type} {{ return {var_name}[index1][index2]; }}, [](int index1, int index2, {var_type} value) {{ {var_name}[index1][index2] = value; }});')
+                elif dimension_len == 3:
+                    print('Unsupported 3D array')
+                    exit()
             elif '(' in line:
                 if 'ALIGN_ASSET' in line:
                     var_name = line.split('[')[0].split(' ')[-1]
