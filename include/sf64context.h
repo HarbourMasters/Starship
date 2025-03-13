@@ -88,6 +88,7 @@ extern Vec3f gFormationInitPos;
 extern UNK_TYPE F_80178020;
 extern s32 gGroundClipMode;
 extern LevelId gCurrentLevel;
+extern PlanetId sCurrentPlanetId;
 extern s32 gLevelPhase;
 extern s32 gBossActive;
 extern bool gKillEventActors;

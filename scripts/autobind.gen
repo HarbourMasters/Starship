@@ -4113,6 +4113,7 @@ lua["Game"]["gFormationInitPos"] = sol::overload([]() -> Vec3f { return gFormati
 lua["Game"]["F_80178020"] = sol::overload([]() -> UNK_TYPE { return F_80178020; }, [](UNK_TYPE value) { F_80178020 = value; });
 lua["Game"]["gGroundClipMode"] = sol::overload([]() -> s32 { return gGroundClipMode; }, [](s32 value) { gGroundClipMode = value; });
 lua["Game"]["gCurrentLevel"] = sol::overload([]() -> LevelId { return gCurrentLevel; }, [](LevelId value) { gCurrentLevel = value; });
+lua["Game"]["sCurrentPlanetId"] = sol::overload([]() -> PlanetId { return sCurrentPlanetId; }, [](PlanetId value) { sCurrentPlanetId = value; });
 lua["Game"]["gLevelPhase"] = sol::overload([]() -> s32 { return gLevelPhase; }, [](s32 value) { gLevelPhase = value; });
 lua["Game"]["gBossActive"] = sol::overload([]() -> s32 { return gBossActive; }, [](s32 value) { gBossActive = value; });
 lua["Game"]["gKillEventActors"] = sol::overload([]() -> bool { return gKillEventActors; }, [](bool value) { gKillEventActors = value; });

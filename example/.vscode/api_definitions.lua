@@ -8678,6 +8678,10 @@ function Game.gGroundClipMode(value) end
 function Game.gCurrentLevel() end
 ---@param value LevelId
 function Game.gCurrentLevel(value) end
+---@return PlanetId
+function Game.sCurrentPlanetId() end
+---@param value PlanetId
+function Game.sCurrentPlanetId(value) end
 ---@return number
 function Game.gLevelPhase() end
 ---@param value number
