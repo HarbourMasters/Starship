@@ -1,5 +1,4 @@
 :config:
-  force: true
   header:
     code:
       - '#include "sys.h"'
