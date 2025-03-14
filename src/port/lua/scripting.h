@@ -13,7 +13,7 @@ class ScriptingLayer {
 
     void Init();
     void Load(std::string file);
-    void Load(const std::string& path, const std::shared_ptr<Ship::Archive>& archive);
+    void Load(const std::string& path, uint32_t bindings, const std::shared_ptr<Ship::Archive>& archive);
     void Clean();
     void Reload();
     static int Require(lua_State* L);

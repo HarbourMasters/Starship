@@ -91,7 +91,7 @@ int ScriptingLayer::Require(lua_State* L) {
     return 1;
 }
 
-void ScriptingLayer::Load(const std::string& path, const std::shared_ptr<Ship::Archive>& archive) {
+void ScriptingLayer::Load(const std::string& path, uint32_t bindings, const std::shared_ptr<Ship::Archive>& archive) {
     auto result = LoadFromO2R(path, archive);
 
     if(!result.has_value()){
@@ -158,7 +158,7 @@ void ScriptingLayer::Init() {
         lua["Events"][name] = id;
     }
 
-    #include "scripts/autobind.gen"
+    #include "scripts/autobind.v1.gen"
 
     try {
         // TODO: Decide if we want to load scripts from the game's directory for debugging

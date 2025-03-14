@@ -330,6 +330,7 @@ void GameEngine::LoadManifest() {
         try {
             auto name = json["name"].get<std::string>();
             auto main = json["main"].get<std::string>();
+            auto bindings = json.value("bindings", 1);
             auto version = json.value("version", "1.0");
             auto website = json.value("website", "https://github.com/HarbourMasters/Starship");
             auto description = json.value("description", "");
@@ -342,7 +343,7 @@ void GameEngine::LoadManifest() {
             SPDLOG_INFO("License: {}", license);
             SPDLOG_INFO("Author: {}", author);
 
-            ScriptingLayer::Instance->Load(main, entry);
+            ScriptingLayer::Instance->Load(main, bindings, entry);
             Notification::Emit({ .message = "Loaded " + name, .remainingTime = 7.0f });
         } catch (nlohmann::json::exception &e) {
             SPDLOG_ERROR("Invalid manifest.json, skipping {}", entry->GetPath());

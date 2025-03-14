@@ -1,6 +1,6 @@
 {
     "Lua.workspace.library": [
-        ".vscode/api_definitions.lua"
+        ".vscode/api_definitions.v1.lua"
     ],
     "Lua.diagnostics.disable": ["undefined-global", "undefined-symbol"]
 }
