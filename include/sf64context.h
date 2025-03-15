@@ -65,6 +65,7 @@ extern f32 gSavedPathProgress;
 extern UNK_TYPE F_80177CB8;
 extern f32 gWaterLevel;
 extern f32 gPathGroundScroll;
+extern f32 gLastPathTexScroll;
 extern f32 gPathTexScroll;
 extern f32 gPathVelZ;
 extern f32 gPathProgress;

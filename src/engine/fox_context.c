@@ -77,6 +77,7 @@ f32 gSavedPathProgress;
 UNK_TYPE F_80177CB8;
 f32 gWaterLevel;
 f32 gPathGroundScroll;
+f32 gLastPathTexScroll;
 f32 gPathTexScroll;
 f32 gPathVelZ;
 f32 gPathProgress;
