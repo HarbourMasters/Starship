@@ -61,7 +61,7 @@ typedef struct SaveData {
 #endif
 } SaveData; // size = 0xFE
 
-typedef struct {
+typedef struct Save {
     /* 0x00 */ union {
         u8 raw[sizeof(SaveData)];
         SaveData data;
@@ -69,7 +69,7 @@ typedef struct {
     /* 0xFE */ u16 checksum;
 } Save; // size = 0x100
 
-typedef struct {
+typedef struct SaveFile {
     /* 0x000 */ Save save;
     /* 0x100 */ Save backup;
 } SaveFile; // size = 0x200

@@ -5497,6 +5497,16 @@ SaveData = {}
 ---@param route number
 function SaveData:GetPlanetStats(route) end
 
+---@class Save
+Save = {}
+---@field data SaveData
+---@field checksum number
+
+---@class SaveFile
+SaveFile = {}
+---@field save Save
+---@field backup Save
+
 ---@param _void nil
 ---@return number
 function Save_Write(_void) end

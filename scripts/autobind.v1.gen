@@ -3316,6 +3316,16 @@ lua.new_usertype<SaveData>("SaveData",
     "GetPlanetStats", &SaveData::GetPlanetStats
 );
 
+lua.new_usertype<Save>("Save",
+    "data", sol::property(&Save::data, &Save::data),
+    "checksum", sol::property(&Save::checksum, &Save::checksum)
+);
+
+lua.new_usertype<SaveFile>("SaveFile",
+    "save", sol::property(&SaveFile::save, &SaveFile::save),
+    "backup", sol::property(&SaveFile::backup, &SaveFile::backup)
+);
+
 lua.set_function("Save_Write", Save_Write);
 lua.set_function("Save_Read", Save_Read);
 lua.set_function("Save_ReadData", Save_ReadData);
