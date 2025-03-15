@@ -96,6 +96,9 @@ typedef struct Color_RGBA32 {
     u8 g;
     u8 b;
     u8 a;
+#ifdef __cplusplus
+    Color_RGBA32(u8 r, u8 g, u8 b, u8 a) : r(r), g(g), b(b), a(a) {} // sol:not_global
+#endif
 } Color_RGBA32; // size = 0x4
 
 typedef union {
