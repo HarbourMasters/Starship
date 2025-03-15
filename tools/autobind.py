@@ -319,15 +319,13 @@ def parse_structs(header):
                 export = member['export']
                 type = member['type']
                 if export == 'bitfield':
-                    print(f'    "{key}", sol::property([] ({struct_name}& self) -> {type} {{ return self.{key}; }}, [] ({struct_name}& self, {type} value) {{ self.{key} = value; }}){"," if i < len(members) - 1 else ""}')
+                    print(f'    "{key}", sol::overload([] ({struct_name}& self) -> {type} {{ return self.{key}; }}, [] ({struct_name}& self, {type} value) {{ self.{key} = value; }}){"," if i < len(members) - 1 else ""}')
                 elif export == 'function':
                     print(f'    "{key}", &{struct_name}::{key}{"," if i < len(members) - 1 else ""}')
                 elif export == 'table':
                     if type == 'char' or type == 'u8' or type == 'uint8_t':
-                        type = 'int32_t'
                         print(f'    "{key}", sol::overload([] ({struct_name}& self, int index) -> {type} {{ return self.{key}[index]; }}, [] ({struct_name}& self, int index, {type} value) {{ self.{key}[index] = value; }}){"," if i < len(members) - 1 else ""}')
                     else:
-                        type = sanitize_type(type)
                         print(f'    "{key}", sol::property(&{struct_name}::{key}, &{struct_name}::{key}){"," if i < len(members) - 1 else ""}')
                 else:
                     print(f'    "{key}", sol::property(&{struct_name}::{key}, &{struct_name}::{key}){"," if i < len(members) - 1 else ""}')
