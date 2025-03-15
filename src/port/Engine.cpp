@@ -447,8 +447,11 @@ void GameEngine::RunCommands(Gfx* Commands, const std::vector<std::unordered_map
     // Process window events for resize, mouse, keyboard events
     wnd->HandleEvents();
 
+	gInterpolationIndex = 0;
+
     for (const auto& m : mtx_replacements) {
         wnd->DrawAndRunGraphicsCommands(Commands, m);
+		gInterpolationIndex++;
     }
 
     bool curAltAssets = CVarGetInteger("gEnhancements.Mods.AlternateAssets", 0);
@@ -531,6 +534,15 @@ uint32_t GameEngine::GetInterpolationFPS() {
 
     return std::min<uint32_t>(Ship::Context::GetInstance()->GetWindow()->GetCurrentRefreshRate(),
                               CVarGetInteger("gInterpolationFPS", 60));
+}
+
+uint32_t GameEngine::GetInterpolationFrameCount()
+{
+	return ceil((float)GetInterpolationFPS() / 30.0f);
+}
+
+extern "C" uint32_t GameEngine_GetInterpolationFrameCount() {
+	return GameEngine::GetInterpolationFrameCount();
 }
 
 void GameEngine::ShowMessage(const char* title, const char* message, SDL_MessageBoxFlags type) {

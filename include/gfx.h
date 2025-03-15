@@ -26,6 +26,14 @@
                        ((height)-1) << G_TEXTURE_IMAGE_FRAC);                                                          \
     } while (0)
 
+#define gDPSetupTile2(pkt, fmt, siz, width, height, dw, dh,           \
+                     cms, cmt, masks, maskt, shifts, shiftt)         \
+{                                                                    \
+    gDPTileSync(pkt);                                                \
+    gDPSetTile(pkt, fmt, siz, (((width) * siz##_LINE_BYTES)+7)>>3, 0,\
+        G_TX_RENDERTILE, 0, cmt, maskt, shiftt, cms, masks, shifts); \
+}
+
 #define gDPSetupTile(pkt, fmt, siz, width, height, dw, dh,           \
                      cms, cmt, masks, maskt, shifts, shiftt)         \
 {                                                                    \

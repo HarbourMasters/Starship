@@ -39,7 +39,8 @@ class GameEngine {
     static void AudioExit();
     static void RunCommands(Gfx* Commands, const std::vector<std::unordered_map<Mtx*, MtxF>>& mtx_replacements);
     static void Destroy();
-    static uint32_t GetInterpolationFPS();
+	static uint32_t GetInterpolationFPS();
+	static uint32_t GetInterpolationFrameCount();
     static void ProcessGfxCommands(Gfx* commands);
 
     static int ShowYesNoBox(const char* title, const char* box);
@@ -80,5 +81,6 @@ uint32_t OTRGetGameRenderWidth();
 uint32_t OTRGetGameRenderHeight();
 void* GameEngine_Malloc(size_t size);
 void GameEngine_GetTextureInfo(const char* path, int32_t* width, int32_t* height, float* scale, bool* custom);
+void gDPSetTileSizeInterp(Gfx* pkt, int t, float uls, float ult, float lrs, float lrt);
 #define memalloc(size) GameEngine_Malloc(size)
 #endif
