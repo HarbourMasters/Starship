@@ -12,7 +12,7 @@
 #define TEAMSTATUS_FALCO (0x000000FF)
 #define TEAMSTATUS_ALIVE (0x00FFFFFF)
 
-typedef struct {
+typedef struct PlanetData {
     /* bit 0 */ u8 unk_0 : 3; // unused
     /* bit 3 */ u8 expertMedal : 1;
     /* bit 4 */ u8 expertClear : 1;
@@ -34,6 +34,10 @@ typedef struct PlanetStats {
     (hitCount > 255 ? hitCount - 256 : hitCount),                             \
         ((planetId) | ((hitCount > 255 ? 1 : 0) << 4) | (peppyAlive << 5) | (falcoAlive << 6) | (slippyAlive << 7))
 
+#ifdef __cplusplus
+#include <vector>
+#endif
+
 typedef struct SaveData {
     /* 0x00 */ PlanetData planet[16];
     /* 0x10 */ char pad10[0x4];
@@ -50,9 +54,14 @@ typedef struct SaveData {
     /* 0xEB */ u8 textLanguage;  // EU Only text language selection
     /* 0xEC */ u8 voiceLanguage; // EU Only voice language selection
     /* 0xED */ char padEE[0x11];
+#ifdef __cplusplus
+    std::vector<PlanetStats> GetPlanetStats(uint32_t route) { // sol:not_global
+        std::vector<PlanetStats> result; for (auto & stat : stats) result.push_back(stat[route]); return result;  // sol:ignore
+    } // sol:ignore
+#endif
 } SaveData; // size = 0xFE
 
-typedef struct {
+typedef struct Save {
     /* 0x00 */ union {
         u8 raw[sizeof(SaveData)];
         SaveData data;
@@ -60,10 +69,14 @@ typedef struct {
     /* 0xFE */ u16 checksum;
 } Save; // size = 0x100
 
-typedef struct {
+typedef struct SaveFile {
     /* 0x000 */ Save save;
     /* 0x100 */ Save backup;
 } SaveFile; // size = 0x200
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 s32 Save_Write(void);
 s32 Save_Read(void);
@@ -78,5 +91,9 @@ extern SaveFile gSaveIOBuffer;
 extern SaveFile sPrevSaveData;
 extern Save gDefaultSave;
 extern SaveFile gSaveFile;
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

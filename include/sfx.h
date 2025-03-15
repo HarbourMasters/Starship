@@ -3,6 +3,10 @@
 
 #include "sys.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 extern f32 gDefaultSfxSource[];
 extern f32 gDefaultMod;
 extern s8 gDefaultReverb;
@@ -34,6 +38,10 @@ void Audio_PlayPauseSfx(u8 active);
 void Audio_PlayMapMenuSfx(u8 active);
 void Audio_KillAllSfx(void);
 void Audio_SetVoiceLanguage(u8 language);
+
+#ifdef __cplusplus
+}
+#endif
 
 #define AUDIO_PLAY_SFX(sfxId, srcPos, token) (Audio_PlaySfx((sfxId),(srcPos),(token),&gDefaultMod,&gDefaultMod,&gDefaultReverb))
 

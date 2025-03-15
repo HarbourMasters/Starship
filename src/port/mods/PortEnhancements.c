@@ -273,47 +273,6 @@ void OnItemGoldRingUpdate(ObjectUpdateEvent* event){
     }
 }
 
-static const char* sBoostGaugeArrow[] = {
-    sBoostGaugeArrow0,
-    sBoostGaugeArrow1,
-    sBoostGaugeArrow2,
-    sBoostGaugeArrow3,
-    sBoostGaugeArrow4,
-    sBoostGaugeArrow5,
-    sBoostGaugeArrow6,
-    sBoostGaugeArrow7,
-    sBoostGaugeArrow8,
-};
-
-void OnBoostGaugeDraw(IEvent* event){
-    bool restore = CVarGetInteger("gRestoreBetaBoostGauge", 0) == 1;
-
-    if(!restore){
-        return;
-    }
-
-    event->cancelled = true;
-    u8 step = MIN(8, (u8) ((gPlayer[0].boostMeter / 90.0f) * ARRAY_COUNT(sBoostGaugeArrow)));
-    f32 x = 70;
-    f32 y = 30;
-
-    RCP_SetupDL(&gMasterDisp, SETUPDL_76_OPTIONAL);
-    gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, 255);
-    Lib_TextureRect_CI8(&gMasterDisp, D_1012290, D_10126B0, 48, 22, OTRGetRectDimensionFromRightEdgeOverride(SCREEN_WIDTH - x), y, 1.0f, 1.0f);
-    Lib_TextureRect_CI8(&gMasterDisp, D_10126F0, D_1012750, 24, 4, OTRGetRectDimensionFromRightEdgeOverride(SCREEN_WIDTH - (x - 9)), y + 3, 1.0f, 1.0f);
-    Lib_TextureRect_RGBA16(&gMasterDisp, sBoostGaugeArrow[step], 32, 32, OTRGetRectDimensionFromRightEdgeOverride(SCREEN_WIDTH - (x - 6)), y - 1, 0.9f, 0.9f);
-}
-
-void OnBombCounterDraw(IEvent* ev){
-    bool restore = CVarGetInteger("gRestoreBetaBoostGauge", 0) == 1;
-    if(!restore){
-        return;
-    }
-
-    ev->cancelled = true;
-    HUD_BombCounter_Draw(253.0f, 18.0f);
-}
-
 void OnPreSetupRadioMsgEvent(PreSetupRadioMsgEvent* ev){
     bool enemyRedRadio = CVarGetInteger("gEnemyRedRadio", 0);
     if (!enemyRedRadio)
@@ -392,16 +351,6 @@ void OnRadarMarkWolfenDraw(IEvent* ev) {
     gSPDisplayList(gMasterDisp++, aStarWolfRadarMarkDL);
 }
 
-void OnLivesCounterDraw(IEvent* ev){
-    bool restore = CVarGetInteger("gRestoreBetaBoostGauge", 0) == 1;
-    if(!restore){
-        return;
-    }
-    ev->cancelled = true;
-
-    HUD_LivesCount2_Draw(258.0f, SCREEN_HEIGHT - 20, gLifeCount[gPlayerNum]);
-}
-
 void OnPlayerShootChargedPre(PlayerActionPreShootChargedEvent* ev){
     if (CVarGetInteger("gRapidFire", 0) == 1) {
         ev->player->shotTimer = 4;
@@ -413,25 +362,22 @@ void PortEnhancements_Init() {
     PortEnhancements_Register();
 
     // Register event listeners
-    REGISTER_LISTENER(DisplayPostUpdateEvent, OnDisplayUpdatePost, EVENT_PRIORITY_NORMAL);
-    REGISTER_LISTENER(GamePostUpdateEvent, OnGameUpdatePost, EVENT_PRIORITY_NORMAL);
-    REGISTER_LISTENER(PlayUpdateEvent, OnPlayUpdateEvent, EVENT_PRIORITY_NORMAL);
-    REGISTER_LISTENER(PlayerPostUpdateEvent, OnPlayerUpdatePost, EVENT_PRIORITY_NORMAL);
-    REGISTER_LISTENER(DrawBoostGaugeHUDEvent, OnBoostGaugeDraw, EVENT_PRIORITY_NORMAL);
-    REGISTER_LISTENER(DrawLivesCounterHUDEvent, OnLivesCounterDraw, EVENT_PRIORITY_NORMAL);
-    REGISTER_LISTENER(DrawBombCounterHUDEvent, OnBombCounterDraw, EVENT_PRIORITY_NORMAL);
-    REGISTER_LISTENER(PreSetupRadioMsgEvent, OnPreSetupRadioMsgEvent, EVENT_PRIORITY_NORMAL);
-    REGISTER_LISTENER(DrawRadarMarkArwingEvent, OnRadarMarkArwingDraw, EVENT_PRIORITY_NORMAL);
-    REGISTER_LISTENER(DrawRadarMarkWolfenEvent, OnRadarMarkWolfenDraw, EVENT_PRIORITY_NORMAL);
+    REGISTER_LISTENER(DisplayPostUpdateEvent, OnDisplayUpdatePost, EVENT_PRIORITY_LOW);
+    REGISTER_LISTENER(GamePostUpdateEvent, OnGameUpdatePost, EVENT_PRIORITY_LOW);
+    REGISTER_LISTENER(PlayUpdateEvent, OnPlayUpdateEvent, EVENT_PRIORITY_LOW);
+    REGISTER_LISTENER(PlayerPostUpdateEvent, OnPlayerUpdatePost, EVENT_PRIORITY_LOW);
+    REGISTER_LISTENER(PreSetupRadioMsgEvent, OnPreSetupRadioMsgEvent, EVENT_PRIORITY_LOW);
+    REGISTER_LISTENER(DrawRadarMarkArwingEvent, OnRadarMarkArwingDraw, EVENT_PRIORITY_LOW);
+    REGISTER_LISTENER(DrawRadarMarkWolfenEvent, OnRadarMarkWolfenDraw, EVENT_PRIORITY_LOW);
 
-    REGISTER_LISTENER(ObjectUpdateEvent, OnItemGoldRingUpdate, EVENT_PRIORITY_NORMAL);
-    REGISTER_LISTENER(ObjectDrawPostSetupEvent, OnItemGoldRingDraw, EVENT_PRIORITY_NORMAL);
+    REGISTER_LISTENER(ObjectUpdateEvent, OnItemGoldRingUpdate, EVENT_PRIORITY_LOW);
+    REGISTER_LISTENER(ObjectDrawPostSetupEvent, OnItemGoldRingDraw, EVENT_PRIORITY_LOW);
 
     // Register Action listeners
-    REGISTER_LISTENER(PlayerActionBoostEvent, OnPlayerBoost, EVENT_PRIORITY_NORMAL);
-    REGISTER_LISTENER(PlayerActionBrakeEvent, OnPlayerBrake, EVENT_PRIORITY_NORMAL);
-    REGISTER_LISTENER(PlayerActionPostShootEvent, OnPlayerShootPost, EVENT_PRIORITY_NORMAL);
-    REGISTER_LISTENER(PlayerActionPreShootChargedEvent, OnPlayerShootChargedPre, EVENT_PRIORITY_NORMAL);
+    REGISTER_LISTENER(PlayerActionBoostEvent, OnPlayerBoost, EVENT_PRIORITY_LOW);
+    REGISTER_LISTENER(PlayerActionBrakeEvent, OnPlayerBrake, EVENT_PRIORITY_LOW);
+    REGISTER_LISTENER(PlayerActionPostShootEvent, OnPlayerShootPost, EVENT_PRIORITY_LOW);
+    REGISTER_LISTENER(PlayerActionPreShootChargedEvent, OnPlayerShootChargedPre, EVENT_PRIORITY_LOW);
 
     //If we close the game while debug pause is active, we want it to be deactivated when we run again.
     CVarSetInteger("gDebugPause", 0);
@@ -439,6 +385,11 @@ void PortEnhancements_Init() {
 
 void PortEnhancements_Register() {
     // Register engine events
+
+    REGISTER_EVENT(EngineInitEvent);
+    REGISTER_EVENT(EngineExitEvent);
+    REGISTER_EVENT(EngineRenderMenubarEvent);
+
     REGISTER_EVENT(DisplayPreUpdateEvent);
     REGISTER_EVENT(DisplayPostUpdateEvent);
 
@@ -491,4 +442,5 @@ void PortEnhancements_Register() {
 
 void PortEnhancements_Exit() {
     // TODO: Unregister event listeners
+    CALL_EVENT(EngineExitEvent);
 }

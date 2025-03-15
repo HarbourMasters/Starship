@@ -7,6 +7,10 @@
 #include "sf64player.h"
 #include "sf64mesg.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 void Meteo_LevelStart(Player*);
 void Meteo_LevelComplete(Player*);
 void Meteo_8018ED9C(Actor*);
@@ -44,5 +48,9 @@ void SectorX_SxSpyborgLeftArm_Draw(Boss*);
 void SectorX_SxSpyborgRightArm_Draw(Boss*);
 void SectorX_SxSpyborg_Update(Boss*);
 void SectorX_SxSpyborg_Draw(Boss*);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

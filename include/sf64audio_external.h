@@ -6,6 +6,9 @@
 #include "sfx.h"
 #include "bgm.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 void Audio_PlayVoice(s32 msgId);
 void Audio_PlayVoiceWithoutBGM(u32 msgId);
 void Audio_ClearVoice(void);
@@ -28,6 +31,10 @@ void Audio_InitSounds(void);
 void Audio_Update(void);
 SPTask* AudioThread_CreateTask(void);
 void AudioThread_PreNMIReset(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 typedef enum AudioType {
     /* 0 */ AUDIO_TYPE_MUSIC,

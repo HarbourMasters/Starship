@@ -1,5 +1,6 @@
 #include "global.h"
 #include "mods.h"
+#include "port/resource/importers/MessageFactory.h"
 
 u16* Message_PtrFromId(u16 msgId) {
     s32 i;
@@ -14,9 +15,14 @@ u16* Message_PtrFromId(u16 msgId) {
     return NULL;
 }
 
-u16 Message_IdFromPtr(u16* msgPtr) {
+s16 Message_IdFromPtr(u16* msgPtr) {
     s32 i;
     MsgLookup* lookup = (MsgLookup*) LOAD_ASSET(gMsgLookup);
+
+    s16 msgId = Message_SearchCustomID(msgPtr);
+    if (msgId != -1) {
+        return msgId;
+    }
 
     while (lookup->msgPtr != NULL) {
         if (GameEngine_OTRSigCheck(msgPtr)) {
@@ -30,6 +36,7 @@ u16 Message_IdFromPtr(u16* msgPtr) {
         }
         lookup++;
     }
+
     return -1;
 }
 

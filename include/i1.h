@@ -7,6 +7,10 @@
 #include "sf64player.h"
 #include "sf64mesg.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 extern Gfx* D_VE1_8019A008[];
 extern f32 aVe1GolemechHitbox[];
 
@@ -69,5 +73,9 @@ void Training_RingPassCount_Draw(void);
 void Training_Setup360(void);
 void Training_SpawnEnemies(void);
 void Venom1_8019864C(PlayerShot*);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
