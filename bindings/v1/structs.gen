@@ -212,6 +212,7 @@ lua.new_usertype<Player>("Player",
 );
 
 lua.new_usertype<Vec3f>("Vec3f",
+    sol::constructors<Vec3f(), Vec3f(float, float, float)>(),
     "x", sol::property(&Vec3f::x, &Vec3f::x),
     "y", sol::property(&Vec3f::y, &Vec3f::y),
     "z", sol::property(&Vec3f::z, &Vec3f::z),
@@ -223,6 +224,7 @@ lua.new_usertype<Vec3f>("Vec3f",
 );
 
 lua.new_usertype<Vec3s>("Vec3s",
+    sol::constructors<Vec3s(), Vec3s(s16, s16, s16)>(),
     "x", sol::property(&Vec3s::x, &Vec3s::x),
     "y", sol::property(&Vec3s::y, &Vec3s::y),
     "z", sol::property(&Vec3s::z, &Vec3s::z),
@@ -274,11 +276,13 @@ lua.new_usertype<OSContPad>("OSContPad",
 );
 
 lua.new_usertype<ImVec2>("ImVec2",
+    sol::constructors<ImVec2(), ImVec2(float, float)>(),
     "x", sol::property(&ImVec2::x, &ImVec2::x),
     "y", sol::property(&ImVec2::y, &ImVec2::y)
 );
 
 lua.new_usertype<ImVec4>("ImVec4",
+    sol::constructors<ImVec4(), ImVec4(float, float, float, float)>(),
     "x", sol::property(&ImVec4::x, &ImVec4::x),
     "y", sol::property(&ImVec4::y, &ImVec4::y),
     "z", sol::property(&ImVec4::z, &ImVec4::z),
@@ -305,6 +309,7 @@ lua.new_usertype<Environment>("Environment",
 );
 
 lua.new_usertype<Color_RGBA32>("Color_RGBA32",
+    sol::constructors<Color_RGBA32(), Color_RGBA32(u8, u8, u8, u8)>(),
     "r", sol::property(&Color_RGBA32::r, &Color_RGBA32::r),
     "g", sol::property(&Color_RGBA32::g, &Color_RGBA32::g),
     "b", sol::property(&Color_RGBA32::b, &Color_RGBA32::b),

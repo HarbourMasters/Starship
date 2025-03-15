@@ -440,85 +440,49 @@ endif()
 # Compile and link options
 ################################################################################
 if(MSVC)
-  if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
-      target_compile_options(${PROJECT_NAME} PRIVATE
-          $<$<CONFIG:Debug>:
-              /w;
-              /Od;
-              /MTd
-          >
-          $<$<CONFIG:Release>:
-              /Oi;
-              /Gy;
-              /W3;
-              /MT
-          >
-          /bigobj;
-          /permissive-;
-          /MP;
-          ${DEFAULT_CXX_DEBUG_INFORMATION_FORMAT};
-          ${DEFAULT_CXX_EXCEPTION_HANDLING}
-      )
-      target_compile_options(${PROJECT_NAME} PRIVATE  $<$<CONFIG:Debug>:/ZI;>)
-      target_compile_options(${PROJECT_NAME} PRIVATE  $<$<CONFIG:Release>:/Zi;>)
-  elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
-      target_compile_options(${PROJECT_NAME} PRIVATE
-          $<$<CONFIG:Debug>:
-              /MTd
-          >
-          $<$<CONFIG:Release>:
-              /O2;
-              /Oi;
-              /Gy;
-              /MT
-          >
-          /bigobj;
-          /permissive-;
-          /MP;
-          /w;
-          ${DEFAULT_CXX_DEBUG_INFORMATION_FORMAT};
-          ${DEFAULT_CXX_EXCEPTION_HANDLING}
-      )
-  endif()
-  if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
-      target_link_options(${PROJECT_NAME} PRIVATE
-          $<$<CONFIG:Debug>:
-              /INCREMENTAL
-          >
-          $<$<CONFIG:Release>:
-              /OPT:REF;
-              /OPT:ICF;
-              /INCREMENTAL:NO;
-              /FORCE:MULTIPLE
-          >
-          /MANIFEST:NO;
-          /DEBUG;
-          /SUBSYSTEM:WINDOWS
-      )
-  elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
-      target_link_options(${PROJECT_NAME} PRIVATE
-          $<$<CONFIG:Debug>:
-              /STACK:8777216
-          >
-          $<$<CONFIG:Release>:
-              /OPT:REF;
-              /OPT:ICF;
-              /INCREMENTAL:NO;
-              /FORCE:MULTIPLE
-          >
-          /MANIFEST:NO;
-          /DEBUG;
-          /SUBSYSTEM:WINDOWS
-      )
-  endif()
+    target_compile_options(${PROJECT_NAME} PRIVATE
+        $<$<CONFIG:Debug>:
+            /w;
+            /Od;
+            /MTd;
+            /ZI;
+        >
+        $<$<CONFIG:Release>:
+            /O3;
+            /Gy;
+            /W3;
+            /MT;
+            /Zi;
+        >
+        /bigobj;
+        /permissive-;
+        /MP;
+        ${DEFAULT_CXX_DEBUG_INFORMATION_FORMAT};
+        ${DEFAULT_CXX_EXCEPTION_HANDLING}
+    )
+    target_link_options(${PROJECT_NAME} PRIVATE
+        $<$<CONFIG:Debug>:
+            /INCREMENTAL
+        >
+        $<$<CONFIG:Release>:
+            /OPT:REF;
+            /OPT:ICF;
+            /INCREMENTAL:NO;
+            /FORCE:MULTIPLE
+        >
+        /MANIFEST:NO;
+        /DEBUG;
+        /SUBSYSTEM:WINDOWS;
+        /STACK:4194304
+    )
 
-  # Remove /RTC from msvc flags
-  foreach (fentry
-    CMAKE_C_FLAGS
-    CMAKE_CXX_FLAGS
-  )
-    string (REGEX REPLACE "/RTC(su|[1su])" "" ${fentry} "${${fentry}}")
-  endforeach(fentry)
+    # Remove /RTC from msvc flags
+    foreach (fentry
+        CMAKE_C_FLAGS
+        CMAKE_CXX_FLAGS
+    )
+        string (REGEX REPLACE "/RTC(su|[1su])" "" ${fentry} "${${fentry}}")
+    endforeach(fentry)
 endif()
 
 if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang|AppleClang")
