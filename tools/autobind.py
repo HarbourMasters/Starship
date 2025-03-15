@@ -9,7 +9,7 @@ class OutputType(Enum):
     CPP = 2
 
 def write_lua_header():
-    print("""
+    bprint("""
 Game = {}
 Assets = {}
 UIWidgets = {}
@@ -150,7 +150,7 @@ blacklist = [
     'mods.h'
 ]
 
-def parse_enums(header, as_value=False):
+def parse_enums(header, as_value=False, bprint=print):
     try:
         with open(header, 'r') as file:
             lines = file.readlines()
@@ -210,7 +210,7 @@ def parse_enums(header, as_value=False):
 
     for enum_name, values in enum.items():
         if export_type == OutputType.CPP:
-            print(f'auto enum_{enum_name} = lua["{enum_name}"].force();')
+            bprint(f'auto enum_{enum_name} = lua["{enum_name}"].force();')
             for i, entry in enumerate(values):
                 key = entry['name']
                 value = entry['value']
@@ -219,11 +219,11 @@ def parse_enums(header, as_value=False):
                 key_name = key
                 key_name = key_name.replace('EVENT_PRIORITY_', '')
                 key_name = key_name.replace('SF64_VER_', '')
-                print(f'enum_{enum_name}["{key_name}"] = (uint32_t) {value if as_value else key};')
-            print('')
+                bprint(f'enum_{enum_name}["{key_name}"] = (uint32_t) {value if as_value else key};')
+            bprint('')
         elif export_type == OutputType.LUA:
-            print(f'---@enum {enum_name}')
-            print(f'{enum_name} = {{')
+            bprint(f'---@enum {enum_name}')
+            bprint(f'{enum_name} = {{')
             for i, entry in enumerate(values):
                 key = entry['name']
                 value = entry['value']
@@ -232,11 +232,11 @@ def parse_enums(header, as_value=False):
                 key_name = key
                 key_name = key_name.replace('EVENT_PRIORITY_', '')
                 key_name = key_name.replace('SF64_VER_', '')
-                print(f'    {key_name} = {value}{"," if i < len(values) - 1 else ""}')
-            print('}')
-            print('')
+                bprint(f'    {key_name} = {value}{"," if i < len(values) - 1 else ""}')
+            bprint('}')
+            bprint('')
 
-def parse_structs(header):
+def parse_structs(header, bprint=print):
     try:
         with open(header, 'r') as file:
             lines = file.readlines()
@@ -313,26 +313,26 @@ def parse_structs(header):
             continue
         
         if export_type == OutputType.CPP:
-            print(f'lua.new_usertype<{struct_name}>("{struct_name}",')
+            bprint(f'lua.new_usertype<{struct_name}>("{struct_name}",')
             for i, member in enumerate(members):
                 key = member['name'].replace('*', '')
                 export = member['export']
                 type = member['type']
                 if export == 'bitfield':
-                    print(f'    "{key}", sol::overload([] ({struct_name}& self) -> {type} {{ return self.{key}; }}, [] ({struct_name}& self, {type} value) {{ self.{key} = value; }}){"," if i < len(members) - 1 else ""}')
+                    bprint(f'    "{key}", sol::overload([] ({struct_name}& self) -> {type} {{ return self.{key}; }}, [] ({struct_name}& self, {type} value) {{ self.{key} = value; }}){"," if i < len(members) - 1 else ""}')
                 elif export == 'function':
-                    print(f'    "{key}", &{struct_name}::{key}{"," if i < len(members) - 1 else ""}')
+                    bprint(f'    "{key}", &{struct_name}::{key}{"," if i < len(members) - 1 else ""}')
                 elif export == 'table':
                     if type == 'char' or type == 'u8' or type == 'uint8_t':
-                        print(f'    "{key}", sol::overload([] ({struct_name}& self, int index) -> {type} {{ return self.{key}[index]; }}, [] ({struct_name}& self, int index, {type} value) {{ self.{key}[index] = value; }}){"," if i < len(members) - 1 else ""}')
+                        bprint(f'    "{key}", sol::overload([] ({struct_name}& self, int index) -> {type} {{ return self.{key}[index]; }}, [] ({struct_name}& self, int index, {type} value) {{ self.{key}[index] = value; }}){"," if i < len(members) - 1 else ""}')
                     else:
-                        print(f'    "{key}", sol::property(&{struct_name}::{key}, &{struct_name}::{key}){"," if i < len(members) - 1 else ""}')
+                        bprint(f'    "{key}", sol::property(&{struct_name}::{key}, &{struct_name}::{key}){"," if i < len(members) - 1 else ""}')
                 else:
-                    print(f'    "{key}", sol::property(&{struct_name}::{key}, &{struct_name}::{key}){"," if i < len(members) - 1 else ""}')
-            print(');')
-            print('')
+                    bprint(f'    "{key}", sol::property(&{struct_name}::{key}, &{struct_name}::{key}){"," if i < len(members) - 1 else ""}')
+            bprint(');')
+            bprint('')
         elif export_type == OutputType.LUA:
-            print(f'---@class {struct_name}')
+            bprint(f'---@class {struct_name}')
             # Sort tables to the end
             members.sort(key=lambda x: x['export'])
             # Reverse the list to get tables at the end
@@ -343,30 +343,30 @@ def parse_structs(header):
                 original_type = member['type']
                 type = sanitize_type(original_type)
                 if export == 'bitfield':
-                    print(f'---@return {type}')
-                    print(f'function {struct_name}:{key}() end')
-                    print(f'---@param value {type}')
-                    print(f'---@return {type}')
-                    print(f'function {struct_name}:{key}(value) end')
+                    bprint(f'---@return {type}')
+                    bprint(f'function {struct_name}:{key}() end')
+                    bprint(f'---@param value {type}')
+                    bprint(f'---@return {type}')
+                    bprint(f'function {struct_name}:{key}(value) end')
                 elif export == 'function':
-                    print(f'---@return {type}')
-                    print(f'function {struct_name}:{key}() end')
+                    bprint(f'---@return {type}')
+                    bprint(f'function {struct_name}:{key}() end')
                 elif export == 'table':
                     if original_type == 'char' or original_type == 'u8' or original_type == 'uint8_t':
-                        print(f'---@param index number')
-                        print(f'---@return number')
-                        print(f'function {struct_name}:{key}(index) end')
-                        print(f'---@param index number')
-                        print(f'---@param value number')
-                        print(f'function {struct_name}:{key}(index, value) end')
+                        bprint(f'---@param index number')
+                        bprint(f'---@return number')
+                        bprint(f'function {struct_name}:{key}(index) end')
+                        bprint(f'---@param index number')
+                        bprint(f'---@param value number')
+                        bprint(f'function {struct_name}:{key}(index, value) end')
                     else:
-                        print(f'---@field {key} {type}')
+                        bprint(f'---@field {key} {type}')
                 else:
-                    print(f'---@field {key} {type}')
-            print(f'{struct_name} = {{}}')
-            print('')
+                    bprint(f'---@field {key} {type}')
+            bprint(f'{struct_name} = {{}}')
+            bprint('')
 
-def parse_events(header):
+def parse_events(header, bprint=print):
     try:
         with open(header, 'r') as file:
             lines = file.readlines()
@@ -405,22 +405,22 @@ def parse_events(header):
     
     for event_name, members in event.items():
         if export_type == OutputType.CPP:
-            print(f'lua.new_usertype<{event_name}>("{event_name}",')
+            bprint(f'lua.new_usertype<{event_name}>("{event_name}",')
             for i, key in enumerate(members):
                 key = key.replace('*', '')
-                print(f'    "{key}", sol::property(&{event_name}::{key}, &{event_name}::{key}){"," if i < len(members) - 1 else ""}')
-            print(');')
-            print('')
+                bprint(f'    "{key}", sol::property(&{event_name}::{key}, &{event_name}::{key}){"," if i < len(members) - 1 else ""}')
+            bprint(');')
+            bprint('')
         elif export_type == OutputType.LUA:
-            print(f'---@class {event_name}')
+            bprint(f'---@class {event_name}')
             event_list.append(event_name)
             for i, key in enumerate(members):
                 key = key.replace('*', '')
-                print(f'---@field {key}')
-            print(f'{event_name} = {{}}')
-            print('')
+                bprint(f'---@field {key}')
+            bprint(f'{event_name} = {{}}')
+            bprint('')
 
-def parse_externs(header, namespace=None):
+def parse_externs(header, namespace=None, bprint=print):
     try:
         with open(header, 'r') as file:
             lines = file.readlines()
@@ -436,12 +436,12 @@ def parse_externs(header, namespace=None):
                 var_type = line.split(' ')[1]
                 var_name = line.split(' ')[2].split(';')[0]
                 if export_type == OutputType.CPP:
-                    print(f'lua["Game"]["{var_name}"] = sol::overload([]() -> {var_type} {{ return {var_name}; }}, []({var_type} value) {{ {var_name} = value; }});')
+                    bprint(f'lua["Game"]["{var_name}"] = sol::overload([]() -> {var_type} {{ return {var_name}; }}, []({var_type} value) {{ {var_name} = value; }});')
                 elif export_type == OutputType.LUA:
-                    print(f'---@return {sanitize_type(var_type)}')
-                    print(f'function Game.{var_name}() end')
-                    print(f'---@param value {sanitize_type(var_type)}')
-                    print(f'function Game.{var_name}(value) end')
+                    bprint(f'---@return {sanitize_type(var_type)}')
+                    bprint(f'function Game.{var_name}() end')
+                    bprint(f'---@param value {sanitize_type(var_type)}')
+                    bprint(f'function Game.{var_name}(value) end')
             elif '[' in line and not '(' in line:
                 dimension_len = len(line.split('[')) - 1
                 var_name = line.split('[')[0].split(' ')[-1]
@@ -449,28 +449,28 @@ def parse_externs(header, namespace=None):
                 is_pointer = True #'*' in line
                 if export_type == OutputType.CPP:
                     if dimension_len == 1:
-                        print(f'lua["Game"]["{var_name}"] = sol::overload([](int index) -> {var_type}{'' if is_pointer else '*'} {{ return {'' if is_pointer else '&'}{var_name}[index]; }}, [](int index, {var_type} value) {{ {var_name}[index] = value; }});')
+                        bprint(f'lua["Game"]["{var_name}"] = sol::overload([](int index) -> {var_type}{'' if is_pointer else '*'} {{ return {'' if is_pointer else '&'}{var_name}[index]; }}, [](int index, {var_type} value) {{ {var_name}[index] = value; }});')
                     elif dimension_len == 2:
-                        print(f'lua["Game"]["{var_name}"] = sol::overload([](int index1, int index2) -> {var_type}{'' if is_pointer else '*'} {{ return {'' if is_pointer else '&'}{var_name}[index1][index2]; }}, [](int index1, int index2, {var_type} value) {{ {var_name}[index1][index2] = value; }});')
+                        bprint(f'lua["Game"]["{var_name}"] = sol::overload([](int index1, int index2) -> {var_type}{'' if is_pointer else '*'} {{ return {'' if is_pointer else '&'}{var_name}[index1][index2]; }}, [](int index1, int index2, {var_type} value) {{ {var_name}[index1][index2] = value; }});')
                     elif dimension_len == 3:
-                        print('Unsupported 3D array')
+                        bprint('Unsupported 3D array')
                         exit()
                 elif export_type == OutputType.LUA:
-                    print(f'---@param index number')
-                    print(f'---@return {sanitize_type(var_type)}[{dimension_len}]')
-                    print(f'function Game.{var_name}(index) end')
-                    print(f'---@param index number')
-                    print(f'---@param value {sanitize_type(var_type)}')
-                    print(f'function Game.{var_name}(index, value) end')
+                    bprint(f'---@param index number')
+                    bprint(f'---@return {sanitize_type(var_type)}[{dimension_len}]')
+                    bprint(f'function Game.{var_name}(index) end')
+                    bprint(f'---@param index number')
+                    bprint(f'---@param value {sanitize_type(var_type)}')
+                    bprint(f'function Game.{var_name}(index, value) end')
             elif '(' in line:
                 if 'ALIGN_ASSET' in line:
                     var_name = line.split('[')[0].split(' ')[-1]
                     value = line.split('=')[-1].split(';')[0]
                     if export_type == OutputType.CPP:
-                        print(f'lua["Assets"]["{var_name}"] = Asset{{ {var_name} }};')
+                        bprint(f'lua["Assets"]["{var_name}"] = Asset{{ {var_name} }};')
                     elif export_type == OutputType.LUA:
-                        print('---@type Asset')
-                        print(f'Assets.{var_name} = {value.strip()}')
+                        bprint('---@type Asset')
+                        bprint(f'Assets.{var_name} = {value.strip()}')
                     continue
                 if 'define' in line or '\\' in line or 'typedef' in line or '[' in line or 'OSMesg' in line or 'Framebuffer' in line or 'TimerAction' in line or 'TimerTask' in line:
                     continue
@@ -485,9 +485,9 @@ def parse_externs(header, namespace=None):
 
                 if export_type == OutputType.CPP:
                     if namespace:
-                        print(f'lua["{namespace}"]["{func_name}"] = {namespace}::{func_name};')
+                        bprint(f'lua["{namespace}"]["{func_name}"] = {namespace}::{func_name};')
                     else:
-                        print(f'lua.set_function("{func_name}", {func_name});')
+                        bprint(f'lua.set_function("{func_name}", {func_name});')
                 elif export_type == OutputType.LUA:
                     return_type = line.split(' ')[0]
                     args = line.split('(')[1].split(')')[0].strip().split(',')
@@ -514,13 +514,13 @@ def parse_externs(header, namespace=None):
                         args[i] = { 'name': name, 'type': type }
 
                     for i, arg in enumerate(args):
-                        print(f'---@param {arg["name"]} {sanitize_type(arg["type"])}')
+                        bprint(f'---@param {arg["name"]} {sanitize_type(arg["type"])}')
 
-                    print(f'---@return {sanitize_type(return_type)}')
+                    bprint(f'---@return {sanitize_type(return_type)}')
                     if namespace:
-                        print(f'function {namespace}.{func_name}({', '.join([f'{arg["name"]}' for arg in args])}) end')
+                        bprint(f'function {namespace}.{func_name}({', '.join([f'{arg["name"]}' for arg in args])}) end')
                     else:
-                        print(f'function {func_name}({', '.join([f'{arg["name"]}' for arg in args])}) end')
+                        bprint(f'function {func_name}({', '.join([f'{arg["name"]}' for arg in args])}) end')
 
 def is_blacklisted(file):
     for item in blacklist:
@@ -538,6 +538,17 @@ if __name__ == "__main__":
     if export_type == OutputType.LUA:
         write_lua_header()
 
+    structs = []
+    externs = []
+    enums = []
+    events = []
+
+    def bprint(out):
+        if export_type == OutputType.LUA:
+            return print
+        else:
+            return lambda x: out.append(str(x))
+
     for root, dirs, files in os.walk("include"):
         for file in files:
             # Join root and file to get full path
@@ -546,26 +557,39 @@ if __name__ == "__main__":
             if(is_blacklisted(file_path)):
                 continue
 
-            parse_enums(file_path, True if 'scripting.h' in file_path else False)
-            parse_structs(file_path)
-            parse_externs(file_path)
+            parse_enums(file_path, True if 'scripting.h' in file_path else False, bprint=bprint(enums))
+            parse_structs(file_path, bprint=bprint(structs))
+            parse_externs(file_path, bprint=bprint(externs))
     
-    parse_enums("src/port/hooks/impl/EventSystem.h")
-    parse_structs("src/port/hooks/impl/EventSystem.h")
-    parse_externs("libultraship/src/public/bridge/consolevariablebridge.h")
+    parse_enums("src/port/hooks/impl/EventSystem.h", bprint=bprint(enums))
+    parse_structs("src/port/hooks/impl/EventSystem.h", bprint=bprint(structs))
+    parse_externs("libultraship/src/public/bridge/consolevariablebridge.h", bprint=bprint(externs))
 
-    parse_enums("src/port/Engine.h")
-    parse_externs("src/port/Engine.h")
-    parse_externs("src/port/ui/UIWidgets.h", 'UIWidgets')
-    parse_externs("libultraship/src/public/bridge/resourcebridge.h")
+    parse_enums("src/port/Engine.h", bprint=bprint(enums))
+    parse_externs("src/port/Engine.h", bprint=bprint(externs))
+    parse_externs("src/port/ui/UIWidgets.h", 'UIWidgets', bprint=bprint(externs))
+    parse_externs("libultraship/src/public/bridge/resourcebridge.h", bprint=bprint(externs))
 
     for root, dirs, files in os.walk("src/port/hooks/list"):
         for file in files:
-            parse_events(os.path.join(root, file))
+            parse_events(os.path.join(root, file), bprint=bprint(events))
 
     if export_type == OutputType.LUA:
-        print('---@enum EventID')
-        print('EventID = {')
+        bprint('---@enum EventID')
+        bprint('EventID = {')
         for event_name in event_list:
-            print(f'    {event_name} = -1' + (',' if event_name != event_list[-1] else ''))
-        print('}')
+            bprint(f'    {event_name} = -1' + (',' if event_name != event_list[-1] else ''))
+        bprint('}')
+    else:
+        with open('bindings/v1/structs.gen', 'w') as file:
+            for line in structs:
+                file.write(line + '\n')
+        with open('bindings/v1/externs.gen', 'w') as file:
+            for line in externs:
+                file.write(line + '\n')
+        with open('bindings/v1/enums.gen', 'w') as file:
+            for line in enums:
+                file.write(line + '\n')
+        with open('bindings/v1/events.gen', 'w') as file:
+            for line in events:
+                file.write(line + '\n')

@@ -1,0 +1,177 @@
+lua.new_usertype<ItemDropEvent>("ItemDropEvent",
+    "event", sol::property(&ItemDropEvent::event, &ItemDropEvent::event),
+    "item", sol::property(&ItemDropEvent::item, &ItemDropEvent::item)
+);
+
+lua.new_usertype<PlayerActionBoostEvent>("PlayerActionBoostEvent",
+    "event", sol::property(&PlayerActionBoostEvent::event, &PlayerActionBoostEvent::event),
+    "player", sol::property(&PlayerActionBoostEvent::player, &PlayerActionBoostEvent::player)
+);
+
+lua.new_usertype<PlayerActionBrakeEvent>("PlayerActionBrakeEvent",
+    "event", sol::property(&PlayerActionBrakeEvent::event, &PlayerActionBrakeEvent::event),
+    "player", sol::property(&PlayerActionBrakeEvent::player, &PlayerActionBrakeEvent::player)
+);
+
+lua.new_usertype<PlayerActionPreShootEvent>("PlayerActionPreShootEvent",
+    "event", sol::property(&PlayerActionPreShootEvent::event, &PlayerActionPreShootEvent::event),
+    "player", sol::property(&PlayerActionPreShootEvent::player, &PlayerActionPreShootEvent::player),
+    "laser", sol::property(&PlayerActionPreShootEvent::laser, &PlayerActionPreShootEvent::laser)
+);
+
+lua.new_usertype<PlayerActionPostShootEvent>("PlayerActionPostShootEvent",
+    "event", sol::property(&PlayerActionPostShootEvent::event, &PlayerActionPostShootEvent::event),
+    "player", sol::property(&PlayerActionPostShootEvent::player, &PlayerActionPostShootEvent::player),
+    "shot", sol::property(&PlayerActionPostShootEvent::shot, &PlayerActionPostShootEvent::shot)
+);
+
+lua.new_usertype<PlayerActionPreShootChargedEvent>("PlayerActionPreShootChargedEvent",
+    "event", sol::property(&PlayerActionPreShootChargedEvent::event, &PlayerActionPreShootChargedEvent::event),
+    "player", sol::property(&PlayerActionPreShootChargedEvent::player, &PlayerActionPreShootChargedEvent::player)
+);
+
+lua.new_usertype<PlayerActionPostShootChargedEvent>("PlayerActionPostShootChargedEvent",
+    "event", sol::property(&PlayerActionPostShootChargedEvent::event, &PlayerActionPostShootChargedEvent::event),
+    "player", sol::property(&PlayerActionPostShootChargedEvent::player, &PlayerActionPostShootChargedEvent::player)
+);
+
+lua.new_usertype<PlayerActionPreBombEvent>("PlayerActionPreBombEvent",
+    "event", sol::property(&PlayerActionPreBombEvent::event, &PlayerActionPreBombEvent::event),
+    "player", sol::property(&PlayerActionPreBombEvent::player, &PlayerActionPreBombEvent::player)
+);
+
+lua.new_usertype<PlayerActionPostBombEvent>("PlayerActionPostBombEvent",
+    "event", sol::property(&PlayerActionPostBombEvent::event, &PlayerActionPostBombEvent::event),
+    "player", sol::property(&PlayerActionPostBombEvent::player, &PlayerActionPostBombEvent::player)
+);
+
+lua.new_usertype<EngineInitEvent>("EngineInitEvent",
+    "event", sol::property(&EngineInitEvent::event, &EngineInitEvent::event)
+);
+
+lua.new_usertype<EngineExitEvent>("EngineExitEvent",
+    "event", sol::property(&EngineExitEvent::event, &EngineExitEvent::event)
+);
+
+lua.new_usertype<EngineRenderMenubarEvent>("EngineRenderMenubarEvent",
+    "event", sol::property(&EngineRenderMenubarEvent::event, &EngineRenderMenubarEvent::event)
+);
+
+lua.new_usertype<DisplayPreUpdateEvent>("DisplayPreUpdateEvent",
+    "event", sol::property(&DisplayPreUpdateEvent::event, &DisplayPreUpdateEvent::event)
+);
+
+lua.new_usertype<DisplayPostUpdateEvent>("DisplayPostUpdateEvent",
+    "event", sol::property(&DisplayPostUpdateEvent::event, &DisplayPostUpdateEvent::event)
+);
+
+lua.new_usertype<GamePreUpdateEvent>("GamePreUpdateEvent",
+    "event", sol::property(&GamePreUpdateEvent::event, &GamePreUpdateEvent::event)
+);
+
+lua.new_usertype<GamePostUpdateEvent>("GamePostUpdateEvent",
+    "event", sol::property(&GamePostUpdateEvent::event, &GamePostUpdateEvent::event)
+);
+
+lua.new_usertype<PlayUpdateEvent>("PlayUpdateEvent",
+    "event", sol::property(&PlayUpdateEvent::event, &PlayUpdateEvent::event)
+);
+
+lua.new_usertype<PlayerPreUpdateEvent>("PlayerPreUpdateEvent",
+    "event", sol::property(&PlayerPreUpdateEvent::event, &PlayerPreUpdateEvent::event),
+    "player", sol::property(&PlayerPreUpdateEvent::player, &PlayerPreUpdateEvent::player)
+);
+
+lua.new_usertype<PlayerPostUpdateEvent>("PlayerPostUpdateEvent",
+    "event", sol::property(&PlayerPostUpdateEvent::event, &PlayerPostUpdateEvent::event),
+    "player", sol::property(&PlayerPostUpdateEvent::player, &PlayerPostUpdateEvent::player)
+);
+
+lua.new_usertype<DrawRadarHUDEvent>("DrawRadarHUDEvent",
+    "event", sol::property(&DrawRadarHUDEvent::event, &DrawRadarHUDEvent::event)
+);
+
+lua.new_usertype<DrawRadarMarkArwingEvent>("DrawRadarMarkArwingEvent",
+    "event", sol::property(&DrawRadarMarkArwingEvent::event, &DrawRadarMarkArwingEvent::event),
+    "colorIdx", sol::property(&DrawRadarMarkArwingEvent::colorIdx, &DrawRadarMarkArwingEvent::colorIdx)
+);
+
+lua.new_usertype<DrawRadarMarkWolfenEvent>("DrawRadarMarkWolfenEvent",
+    "event", sol::property(&DrawRadarMarkWolfenEvent::event, &DrawRadarMarkWolfenEvent::event)
+);
+
+lua.new_usertype<DrawBoostGaugeHUDEvent>("DrawBoostGaugeHUDEvent",
+    "event", sol::property(&DrawBoostGaugeHUDEvent::event, &DrawBoostGaugeHUDEvent::event)
+);
+
+lua.new_usertype<DrawBombCounterHUDEvent>("DrawBombCounterHUDEvent",
+    "event", sol::property(&DrawBombCounterHUDEvent::event, &DrawBombCounterHUDEvent::event)
+);
+
+lua.new_usertype<DrawIncomingMsgHUDEvent>("DrawIncomingMsgHUDEvent",
+    "event", sol::property(&DrawIncomingMsgHUDEvent::event, &DrawIncomingMsgHUDEvent::event)
+);
+
+lua.new_usertype<PreSetupRadioMsgEvent>("PreSetupRadioMsgEvent",
+    "event", sol::property(&PreSetupRadioMsgEvent::event, &PreSetupRadioMsgEvent::event),
+    "radioRedBox", sol::property(&PreSetupRadioMsgEvent::radioRedBox, &PreSetupRadioMsgEvent::radioRedBox)
+);
+
+lua.new_usertype<DrawGoldRingsHUDEvent>("DrawGoldRingsHUDEvent",
+    "event", sol::property(&DrawGoldRingsHUDEvent::event, &DrawGoldRingsHUDEvent::event)
+);
+
+lua.new_usertype<DrawLivesCounterHUDEvent>("DrawLivesCounterHUDEvent",
+    "event", sol::property(&DrawLivesCounterHUDEvent::event, &DrawLivesCounterHUDEvent::event)
+);
+
+lua.new_usertype<DrawTrainingRingPassCountHUDEvent>("DrawTrainingRingPassCountHUDEvent",
+    "event", sol::property(&DrawTrainingRingPassCountHUDEvent::event, &DrawTrainingRingPassCountHUDEvent::event)
+);
+
+lua.new_usertype<DrawEdgeArrowsHUDEvent>("DrawEdgeArrowsHUDEvent",
+    "event", sol::property(&DrawEdgeArrowsHUDEvent::event, &DrawEdgeArrowsHUDEvent::event)
+);
+
+lua.new_usertype<DrawBossHealthHUDEvent>("DrawBossHealthHUDEvent",
+    "event", sol::property(&DrawBossHealthHUDEvent::event, &DrawBossHealthHUDEvent::event)
+);
+
+lua.new_usertype<DrawGlobalHUDPreEvent>("DrawGlobalHUDPreEvent",
+    "event", sol::property(&DrawGlobalHUDPreEvent::event, &DrawGlobalHUDPreEvent::event)
+);
+
+lua.new_usertype<DrawGlobalHUDPostEvent>("DrawGlobalHUDPostEvent",
+    "event", sol::property(&DrawGlobalHUDPostEvent::event, &DrawGlobalHUDPostEvent::event)
+);
+
+lua.new_usertype<ObjectInitEvent>("ObjectInitEvent",
+    "event", sol::property(&ObjectInitEvent::event, &ObjectInitEvent::event),
+    "type", sol::property(&ObjectInitEvent::type, &ObjectInitEvent::type),
+    "object", sol::property(&ObjectInitEvent::object, &ObjectInitEvent::object)
+);
+
+lua.new_usertype<ObjectUpdateEvent>("ObjectUpdateEvent",
+    "event", sol::property(&ObjectUpdateEvent::event, &ObjectUpdateEvent::event),
+    "type", sol::property(&ObjectUpdateEvent::type, &ObjectUpdateEvent::type),
+    "object", sol::property(&ObjectUpdateEvent::object, &ObjectUpdateEvent::object)
+);
+
+lua.new_usertype<ObjectDrawPreSetupEvent>("ObjectDrawPreSetupEvent",
+    "event", sol::property(&ObjectDrawPreSetupEvent::event, &ObjectDrawPreSetupEvent::event),
+    "type", sol::property(&ObjectDrawPreSetupEvent::type, &ObjectDrawPreSetupEvent::type),
+    "object", sol::property(&ObjectDrawPreSetupEvent::object, &ObjectDrawPreSetupEvent::object)
+);
+
+lua.new_usertype<ObjectDrawPostSetupEvent>("ObjectDrawPostSetupEvent",
+    "event", sol::property(&ObjectDrawPostSetupEvent::event, &ObjectDrawPostSetupEvent::event),
+    "type", sol::property(&ObjectDrawPostSetupEvent::type, &ObjectDrawPostSetupEvent::type),
+    "object", sol::property(&ObjectDrawPostSetupEvent::object, &ObjectDrawPostSetupEvent::object)
+);
+
+lua.new_usertype<ObjectDestroyEvent>("ObjectDestroyEvent",
+    "event", sol::property(&ObjectDestroyEvent::event, &ObjectDestroyEvent::event),
+    "type", sol::property(&ObjectDestroyEvent::type, &ObjectDestroyEvent::type),
+    "object", sol::property(&ObjectDestroyEvent::object, &ObjectDestroyEvent::object)
+);
+

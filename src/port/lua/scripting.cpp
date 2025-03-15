@@ -111,6 +111,22 @@ void ScriptingLayer::Load(const std::string& path, uint32_t bindings, const std:
     }
 }
 
+void BindStructs() {
+    #include "bindings/v1/structs.gen"
+}
+
+void BindEnums() {
+    #include "bindings/v1/enums.gen"
+}
+
+void BindExterns() {
+    #include "bindings/v1/externs.gen"
+}
+
+void BindEvents() {
+    #include "bindings/v1/events.gen"
+}
+
 void ScriptingLayer::Init() {
     lua.open_libraries(sol::lib::base, sol::lib::package, sol::lib::math, sol::lib::table, sol::lib::string);
 
@@ -162,7 +178,10 @@ void ScriptingLayer::Init() {
         lua["Events"][name] = id;
     }
 
-    #include "scripts/autobind.v1.gen"
+    BindStructs();
+    BindEnums();
+    BindExterns();
+    BindEvents();
 
     try {
         // TODO: Decide if we want to load scripts from the game's directory for debugging
