@@ -12,7 +12,7 @@
 #define TEAMSTATUS_FALCO (0x000000FF)
 #define TEAMSTATUS_ALIVE (0x00FFFFFF)
 
-typedef struct {
+typedef struct PlanetData {
     /* bit 0 */ u8 unk_0 : 3; // unused
     /* bit 3 */ u8 expertMedal : 1;
     /* bit 4 */ u8 expertClear : 1;

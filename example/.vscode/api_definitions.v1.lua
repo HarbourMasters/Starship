@@ -715,217 +715,272 @@ LaserStrength = {
 }
 
 ---@class PlayerShot
-PlayerShot = {}
----@field obj Object
----@field index number
----@field vel Vec3f
----@field vec_2C Vec3f
----@field sfxSource number
----@field scale number
----@field unk_48 number
----@field unk_4C number
----@field unk_50 number
----@field unk_54 number
----@field unk_58 number
----@field unk_5C number
----@field unk_60 number
----@field timer number
----@field sourceId number
 ---@field bonus number
+---@field sourceId number
+---@field timer number
+---@field unk_60 number
+---@field unk_5C number
+---@field unk_58 number
+---@field unk_54 number
+---@field unk_50 number
+---@field unk_4C number
+---@field unk_48 number
+---@field scale number
+---@field vec_2C Vec3f
+---@field vel Vec3f
+---@field index number
+---@field obj Object
+---@field sfxSource number
+PlayerShot = {}
 
 ---@class ArwingInfo
-ArwingInfo = {}
----@field rightWingState number
----@field leftWingState number
----@field upperRightFlapYrot number
----@field bottomRightFlapYrot number
----@field upperLeftFlapYrot number
----@field bottomLeftFlapYrot number
----@field laserGunsYpos number
----@field laserGunsXpos number
----@field wingsXrot number
----@field wingsYrot number
----@field wingsZrot number
----@field unk_28 number
----@field drawFace number
----@field teamFaceXrot number
----@field teamFaceYrot number
 ---@field cockpitGlassXrot number
+---@field teamFaceYrot number
+---@field teamFaceXrot number
+---@field drawFace number
+---@field unk_28 number
+---@field wingsZrot number
+---@field wingsYrot number
+---@field wingsXrot number
+---@field laserGunsXpos number
+---@field laserGunsYpos number
+---@field bottomLeftFlapYrot number
+---@field upperLeftFlapYrot number
+---@field bottomRightFlapYrot number
+---@field upperRightFlapYrot number
+---@field leftWingState number
+---@field rightWingState number
+ArwingInfo = {}
 
 ---@class PlayerSfx
-PlayerSfx = {}
----@field levelType number
----@field form number
----@field srcPos number
----@field srcVel number
----@field boost number
----@field brake number
----@field yVel number
----@field bank number
----@field zRot number
 ---@field roll number
+---@field zRot number
+---@field bank number
+---@field yVel number
+---@field brake number
+---@field boost number
+---@field srcVel number
+---@field srcPos number
+---@field form number
+---@field levelType number
+PlayerSfx = {}
 
 ---@class Player
-Player = {}
----@field unk_000 number
----@field unk_004 number
----@field unk_008 number
----@field unk_00C number
----@field unk_010 number
----@field unk_014 number
----@field unk_018 number
----@field unk_01C number
----@field pad20 string
----@field unk_028 number
----@field unk_02C number
----@field unk_030 number
----@field camRoll number
----@field pad38 string
----@field cam CameraPonumber
----@field camYaw number
----@field camPitch number
----@field xRock number
----@field groundPos Vec3f
----@field groundRotY number
----@field pos Vec3f
----@field yBob number
----@field xShake number
----@field bobPhase number
----@field camDist number
----@field basePos Vec3f
----@field pathWidth number
----@field pathHeight number
----@field pathFloor number
----@field unk_0A8 number
----@field xPath number
----@field yPath number
----@field pathStep number
----@field xPathTarget number
----@field yPathTarget number
----@field vel Vec3f
----@field warpCamSpeed number
----@field baseSpeed number
----@field gravity number
----@field knockback Vec3f
----@field rot Vec3f
----@field rockAngle number
----@field rockPhase number
----@field bankAngle number
----@field xRot_0FC number
----@field zRot_0FC number
----@field rot_104 Vec3f
----@field boostSpeed number
----@field yRot_114 number
----@field pathChangeYaw number
----@field yRotVel_11C number
----@field xRot_120 number
----@field pathChangePitch number
----@field pad128 string
----@field zRotBank number
----@field zRotBarrelRoll number
----@field damageShake number
----@field trueZpos number
----@field pad13C string
----@field zPathVel number
----@field zPath number
----@field unk_148 number
----@field unk_14C number
----@field unk_150 number
----@field unk_154 number
----@field unk_158 number
----@field unk_15C number
----@field pad160 string
----@field unk_164 number
----@field unk_168 number
----@field unk_16C number
----@field unk_170 number
----@field unk_174 number
----@field unk_178 number
----@field unk_17C number
----@field unk_180 number
----@field unk_184 number
----@field unk_188 number
----@field unk_18C number
----@field unk_190 number
----@field unk_194 number
----@field savedAlternateView number
----@field unk_19C number
----@field unk_1A0 number
----@field dmgType number
----@field pad1A8 string
----@field turretState number
----@field turretActor number
----@field pad1B8 string
----@field turretRecoil number
----@field turretLockOnCount number
----@field num number
----@field state PlayerState
----@field form PlayerForm
----@field csState number
----@field grounded boolean
----@field meTargetIndex number
----@field rollState number
----@field rollInputTimerL number
----@field rollInputTimerR number
----@field rollTimer number
----@field rollRate number
----@field baseRollRate number
----@field hitTimer number
----@field csTimer number
----@field csEventTimer number
----@field dmgEffect number
----@field wingPosition number
----@field unk_208 number
----@field unk_20C number
----@field pathChangeTimer number
----@field timer_214 number
----@field timer_218 number
----@field hitDirection number
----@field radioDamageTimer number
----@field dmgEffectTimer number
----@field flags_228 number
----@field whooshTimer number
----@field unk_230 number
----@field draw number
----@field alternateView number
----@field shadowing number
----@field hideShadow number
----@field shotTimer number
----@field shadowRotX number
----@field shadowRotZ number
----@field unk_250 number
----@field pad254 string
----@field meteoWarpSpinSpeed number
----@field contrailScale number
----@field pad260 string
----@field shields number
----@field damage number
----@field heal number
----@field unk_270 number
----@field pad274 string
----@field timer_278 number
----@field meteoWarpTimer number
----@field barrelRollAlpha number
----@field unk_284 number
----@field attacker number
----@field pad28C string
----@field boostCooldown boolean
----@field boostActive boolean
----@field boostMeter number
----@field unk_2C0 number
----@field deflectCount number
----@field hit2 Vec3f
----@field hit1 Vec3f
----@field hit3 Vec3f
----@field hit4 Vec3f
----@field jointTable Vec3f
----@field sfxSource number
----@field sfxVel number
----@field sfx PlayerSfx
----@field mercyTimer number
----@field arwing ArwingInfo
----@field aerobaticPitch number
 ---@field somersault boolean
+---@field aerobaticPitch number
+---@field arwing ArwingInfo
+---@field mercyTimer number
+---@field sfx PlayerSfx
+---@field hit4 Vec3f
+---@field hit3 Vec3f
+---@field hit1 Vec3f
+---@field hit2 Vec3f
+---@field deflectCount number
+---@field unk_2C0 number
+---@field boostMeter number
+---@field boostActive boolean
+---@field boostCooldown boolean
+---@field attacker number
+---@field unk_284 number
+---@field barrelRollAlpha number
+---@field meteoWarpTimer number
+---@field timer_278 number
+---@field unk_270 number
+---@field heal number
+---@field damage number
+---@field shields number
+---@field contrailScale number
+---@field meteoWarpSpinSpeed number
+---@field unk_250 number
+---@field shadowRotZ number
+---@field shadowRotX number
+---@field shotTimer number
+---@field hideShadow number
+---@field shadowing number
+---@field alternateView number
+---@field draw number
+---@field unk_230 number
+---@field whooshTimer number
+---@field flags_228 number
+---@field dmgEffectTimer number
+---@field radioDamageTimer number
+---@field hitDirection number
+---@field timer_218 number
+---@field timer_214 number
+---@field pathChangeTimer number
+---@field unk_20C number
+---@field unk_208 number
+---@field wingPosition number
+---@field dmgEffect number
+---@field csEventTimer number
+---@field csTimer number
+---@field hitTimer number
+---@field baseRollRate number
+---@field rollRate number
+---@field rollTimer number
+---@field rollInputTimerR number
+---@field rollInputTimerL number
+---@field rollState number
+---@field meTargetIndex number
+---@field grounded boolean
+---@field csState number
+---@field form PlayerForm
+---@field state PlayerState
+---@field num number
+---@field turretLockOnCount number
+---@field turretRecoil number
+---@field turretActor number
+---@field turretState number
+---@field dmgType number
+---@field unk_1A0 number
+---@field unk_19C number
+---@field savedAlternateView number
+---@field unk_194 number
+---@field unk_190 number
+---@field unk_18C number
+---@field unk_188 number
+---@field unk_184 number
+---@field unk_180 number
+---@field unk_17C number
+---@field unk_178 number
+---@field unk_174 number
+---@field unk_170 number
+---@field unk_16C number
+---@field unk_168 number
+---@field unk_164 number
+---@field unk_15C number
+---@field unk_158 number
+---@field unk_154 number
+---@field unk_150 number
+---@field unk_14C number
+---@field unk_148 number
+---@field zPath number
+---@field zPathVel number
+---@field trueZpos number
+---@field damageShake number
+---@field zRotBarrelRoll number
+---@field zRotBank number
+---@field pathChangePitch number
+---@field xRot_120 number
+---@field yRotVel_11C number
+---@field pathChangeYaw number
+---@field yRot_114 number
+---@field boostSpeed number
+---@field rot_104 Vec3f
+---@field zRot_0FC number
+---@field xRot_0FC number
+---@field bankAngle number
+---@field rockPhase number
+---@field rockAngle number
+---@field rot Vec3f
+---@field knockback Vec3f
+---@field gravity number
+---@field baseSpeed number
+---@field warpCamSpeed number
+---@field vel Vec3f
+---@field yPathTarget number
+---@field xPathTarget number
+---@field pathStep number
+---@field yPath number
+---@field xPath number
+---@field unk_0A8 number
+---@field pathFloor number
+---@field pathHeight number
+---@field pathWidth number
+---@field basePos Vec3f
+---@field camDist number
+---@field bobPhase number
+---@field xShake number
+---@field yBob number
+---@field pos Vec3f
+---@field groundRotY number
+---@field groundPos Vec3f
+---@field xRock number
+---@field camPitch number
+---@field camYaw number
+---@field cam CameraPonumber
+---@field camRoll number
+---@field unk_030 number
+---@field unk_02C number
+---@field unk_028 number
+---@field unk_01C number
+---@field unk_018 number
+---@field unk_014 number
+---@field unk_010 number
+---@field unk_00C number
+---@field unk_008 number
+---@field unk_004 number
+---@field unk_000 number
+---@field sfxVel number
+---@field sfxSource number
+---@field jointTable Vec3f
+---@param index number
+---@return number
+function Player:pad28C(index) end
+---@param index number
+---@param value number
+function Player:pad28C(index, value) end
+---@param index number
+---@return number
+function Player:pad274(index) end
+---@param index number
+---@param value number
+function Player:pad274(index, value) end
+---@param index number
+---@return number
+function Player:pad260(index) end
+---@param index number
+---@param value number
+function Player:pad260(index, value) end
+---@param index number
+---@return number
+function Player:pad254(index) end
+---@param index number
+---@param value number
+function Player:pad254(index, value) end
+---@param index number
+---@return number
+function Player:pad1B8(index) end
+---@param index number
+---@param value number
+function Player:pad1B8(index, value) end
+---@param index number
+---@return number
+function Player:pad1A8(index) end
+---@param index number
+---@param value number
+function Player:pad1A8(index, value) end
+---@param index number
+---@return number
+function Player:pad160(index) end
+---@param index number
+---@param value number
+function Player:pad160(index, value) end
+---@param index number
+---@return number
+function Player:pad13C(index) end
+---@param index number
+---@param value number
+function Player:pad13C(index, value) end
+---@param index number
+---@return number
+function Player:pad128(index) end
+---@param index number
+---@param value number
+function Player:pad128(index, value) end
+---@param index number
+---@return number
+function Player:pad38(index) end
+---@param index number
+---@param value number
+function Player:pad38(index, value) end
+---@param index number
+---@return number
+function Player:pad20(index) end
+---@param index number
+---@param value number
+function Player:pad20(index, value) end
+Player = {}
 
 ---@return number
 function Game.D_AQ_801C4188() end
@@ -1704,70 +1759,70 @@ Assets.sBoostGaugeArrow7 = "__OTR__assets/textures/hud/sBoostGaugeArrow7"
 ---@type Asset
 Assets.sBoostGaugeArrow8 = "__OTR__assets/textures/hud/sBoostGaugeArrow8"
 ---@class Vec3f
-Vec3f = {}
----@field x number
----@field y number
 ---@field z number
----@return Vec3f
-function Vec3f:asRef() end
+---@field y number
+---@field x number
 ---@return number
-function Vec3f:xRef() end
----@return number
-function Vec3f:yRef() end
+function Vec3f:asArray() end
 ---@return number
 function Vec3f:zRef() end
 ---@return number
-function Vec3f:asArray() end
+function Vec3f:yRef() end
+---@return number
+function Vec3f:xRef() end
+---@return Vec3f
+function Vec3f:asRef() end
+Vec3f = {}
 
 ---@class Vec3s
-Vec3s = {}
----@field x number
----@field y number
 ---@field z number
----@return Vec3s
-function Vec3s:asRef() end
+---@field y number
+---@field x number
 ---@return number
-function Vec3s:xRef() end
----@return number
-function Vec3s:yRef() end
+function Vec3s:asArray() end
 ---@return number
 function Vec3s:zRef() end
 ---@return number
-function Vec3s:asArray() end
+function Vec3s:yRef() end
+---@return number
+function Vec3s:xRef() end
+---@return Vec3s
+function Vec3s:asRef() end
+Vec3s = {}
 
 ---@class PosRot
-PosRot = {}
----@field pos Vec3f
 ---@field rot Vec3f
+---@field pos Vec3f
 ---@return PosRot
 function PosRot:asRef() end
+PosRot = {}
 
 ---@class CameraPoint
-CameraPoint = {}
----@field eye Vec3f
 ---@field at Vec3f
+---@field eye Vec3f
 ---@return CameraPonumber
 function CameraPoint:asRef() end
+CameraPoint = {}
 
 ---@class Triangle
-Triangle = {}
 ---@field vtx number
 ---@return Triangle
 function Triangle:asRef() end
+Triangle = {}
 
 ---@class PlaneF
-PlaneF = {}
----@field normal Vec3f
 ---@field dist number
+---@field normal Vec3f
 ---@return PlaneF
 function PlaneF:asRef() end
+PlaneF = {}
 
 ---@class PlaneI
-PlaneI = {}
----@field normal Vec3s
 ---@field dist number
+---@field normal Vec3s
 ---@return PlaneI
 function PlaneI:asRef() end
+PlaneI = {}
 
 ---@return Mtx
 function Game.gIdentityMtx() end
@@ -2659,27 +2714,27 @@ ScreenSize = {
 }
 
 ---@class OSContPad
-OSContPad = {}
----@field button number
----@field stick_x number
----@field stick_y number
----@field err_no number
----@field gyro_x number
----@field gyro_y number
----@field right_stick_x number
 ---@field right_stick_y number
+---@field right_stick_x number
+---@field gyro_y number
+---@field gyro_x number
+---@field err_no number
+---@field stick_y number
+---@field stick_x number
+---@field button number
+OSContPad = {}
 
 ---@class ImVec2
-ImVec2 = {}
----@field x number
 ---@field y number
+---@field x number
+ImVec2 = {}
 
 ---@class ImVec4
-ImVec4 = {}
----@field x number
----@field y number
----@field z number
 ---@field w number
+---@field z number
+---@field y number
+---@field x number
+ImVec4 = {}
 
 ---@enum RadioCharacterId
 RadioCharacterId = {
@@ -4196,23 +4251,23 @@ GroundSurface = {
 }
 
 ---@class Environment
-Environment = {}
----@field type number
----@field unk04 number
----@field bgColor number
----@field seqId number
----@field fogR number
----@field fogG number
----@field fogB number
----@field fogN number
----@field fogF number
----@field lightDir Vec3f
----@field lightR number
----@field lightG number
----@field lightB number
----@field ambR number
----@field ambG number
 ---@field ambB number
+---@field ambG number
+---@field ambR number
+---@field lightB number
+---@field lightG number
+---@field lightR number
+---@field lightDir Vec3f
+---@field fogF number
+---@field fogN number
+---@field fogB number
+---@field fogG number
+---@field fogR number
+---@field seqId number
+---@field bgColor number
+---@field unk04 number
+---@field type number
+Environment = {}
 
 ---@enum SfxBankId
 SfxBankId = {
@@ -4847,19 +4902,19 @@ SetupDL = {
 }
 
 ---@class Color_RGBA32
-Color_RGBA32 = {}
----@field r number
----@field g number
----@field b number
 ---@field a number
+---@field b number
+---@field g number
+---@field r number
+Color_RGBA32 = {}
 
 ---@class Limb
-Limb = {}
----@field dList Gfx
----@field trans Vec3f
----@field rot Vec3s
----@field sibling Limb
 ---@field child Limb
+---@field sibling Limb
+---@field rot Vec3s
+---@field trans Vec3f
+---@field dList Gfx
+Limb = {}
 
 ---@param _void nil
 ---@return nil
@@ -5445,67 +5500,118 @@ function Game.D_80178580(index) end
 ---@param index number
 ---@param value number
 function Game.D_80178580(index, value) end
+---@class PlanetData
+---@return number
+function PlanetData:normalClear() end
+---@param value number
+---@return number
+function PlanetData:normalClear(value) end
+---@return number
+function PlanetData:normalMedal() end
+---@param value number
+---@return number
+function PlanetData:normalMedal(value) end
+---@return number
+function PlanetData:played() end
+---@param value number
+---@return number
+function PlanetData:played(value) end
+---@return number
+function PlanetData:expertClear() end
+---@param value number
+---@return number
+function PlanetData:expertClear(value) end
+---@return number
+function PlanetData:expertMedal() end
+---@param value number
+---@return number
+function PlanetData:expertMedal(value) end
+---@return number
+function PlanetData:unk_0() end
+---@param value number
+---@return number
+function PlanetData:unk_0(value) end
+PlanetData = {}
+
 ---@class PlanetStats
-PlanetStats = {}
 ---@return number
-function PlanetStats:hitCount() end
+function PlanetStats:slippyAlive() end
 ---@param value number
 ---@return number
-function PlanetStats:hitCount(value) end
----@return number
-function PlanetStats:planetId() end
----@param value number
----@return number
-function PlanetStats:planetId(value) end
----@return number
-function PlanetStats:hitCountOver256() end
----@param value number
----@return number
-function PlanetStats:hitCountOver256(value) end
----@return number
-function PlanetStats:peppyAlive() end
----@param value number
----@return number
-function PlanetStats:peppyAlive(value) end
+function PlanetStats:slippyAlive(value) end
 ---@return number
 function PlanetStats:falcoAlive() end
 ---@param value number
 ---@return number
 function PlanetStats:falcoAlive(value) end
 ---@return number
-function PlanetStats:slippyAlive() end
+function PlanetStats:peppyAlive() end
 ---@param value number
 ---@return number
-function PlanetStats:slippyAlive(value) end
+function PlanetStats:peppyAlive(value) end
+---@return number
+function PlanetStats:hitCountOver256() end
+---@param value number
+---@return number
+function PlanetStats:hitCountOver256(value) end
+---@return number
+function PlanetStats:planetId() end
+---@param value number
+---@return number
+function PlanetStats:planetId(value) end
+---@return number
+function PlanetStats:hitCount() end
+---@param value number
+---@return number
+function PlanetStats:hitCount(value) end
+PlanetStats = {}
 
 ---@class SaveData
-SaveData = {}
----@field planet PlanetData
----@field pad10 string
----@field soundMode number
----@field musicVolume number
----@field voiceVolume number
----@field sfxVolume number
----@field rankingRoute number
----@field rankingLives number
----@field rankingMedal number
----@field unk_EA number
----@field textLanguage number
 ---@field voiceLanguage number
----@field padEE string
+---@field textLanguage number
+---@field unk_EA number
+---@field sfxVolume number
+---@field voiceVolume number
+---@field musicVolume number
+---@field soundMode number
+---@param index number
+---@return number
+function SaveData:padEE(index) end
+---@param index number
+---@param value number
+function SaveData:padEE(index, value) end
+---@field rankingMedal number
+---@param index number
+---@return number
+function SaveData:rankingLives(index) end
+---@param index number
+---@param value number
+function SaveData:rankingLives(index, value) end
+---@param index number
+---@return number
+function SaveData:rankingRoute(index) end
+---@param index number
+---@param value number
+function SaveData:rankingRoute(index, value) end
+---@param index number
+---@return number
+function SaveData:pad10(index) end
+---@param index number
+---@param value number
+function SaveData:pad10(index, value) end
 ---@return PlanetStats[]
 ---@param route number
 function SaveData:GetPlanetStats(route) end
+SaveData = {}
 
 ---@class Save
-Save = {}
----@field data SaveData
 ---@field checksum number
+Save = {}
 
 ---@class SaveFile
-SaveFile = {}
----@field save Save
 ---@field backup Save
+---@field save Save
+SaveFile = {}
 
 ---@param _void nil
 ---@return number
@@ -10413,206 +10519,240 @@ ActorCutsceneModels = {
 }
 
 ---@class Object
-Object = {}
----@field status number
----@field id number
----@field pos Vec3f
 ---@field rot Vec3f
----@return Actor
-function Object:asActor() end
----@return Boss
-function Object:asBoss() end
----@return Scenery
-function Object:asScenery() end
----@return Scenery360
-function Object:asScenery360() end
----@return Sprite
-function Object:asSprite() end
----@return Item
-function Object:asItem() end
----@return Effect
-function Object:asEffect() end
+---@field pos Vec3f
+---@field id number
+---@field status number
 ---@return Object
 function Object:asRef() end
+---@return Effect
+function Object:asEffect() end
+---@return Item
+function Object:asItem() end
+---@return Sprite
+function Object:asSprite() end
+---@return Scenery360
+function Object:asScenery360() end
+---@return Scenery
+function Object:asScenery() end
+---@return Boss
+function Object:asBoss() end
+---@return Actor
+function Object:asActor() end
+Object = {}
 
 ---@class ObjectInfo
-ObjectInfo = {}
----@field draw ObjectFunc
----@field dList Gfx
----@field drawType number
----@field action ObjectFunc
----@field hitbox number
----@field cullDistance number
----@field unk_14 number
----@field unk_16 number
----@field damage number
----@field unk_19 number
----@field targetOffset number
 ---@field bonus number
+---@field targetOffset number
+---@field unk_19 number
+---@field damage number
+---@field unk_16 number
+---@field unk_14 number
+---@field cullDistance number
+---@field hitbox number
+---@field action ObjectFunc
+---@field drawType number
+---@field dList Gfx
+---@field draw ObjectFunc
 ---@return ObjectInfo
 function ObjectInfo:asRef() end
+ObjectInfo = {}
 
 ---@class Scenery360
-Scenery360 = {}
----@field obj Object
----@field info ObjectInfo
----@field pathIndex number
----@field unk_41 string
----@field sfxSource number
 ---@field unk_54 number
+---@field pathIndex number
+---@field info ObjectInfo
+---@field obj Object
+---@field sfxSource number
+---@param index number
+---@return number
+function Scenery360:unk_41(index) end
+---@param index number
+---@param value number
+function Scenery360:unk_41(index, value) end
 ---@return Scenery360
 function Scenery360:asRef() end
+Scenery360 = {}
 
 ---@class Scenery
-Scenery = {}
----@field obj Object
----@field info ObjectInfo
----@field index number
----@field unk_44 number
----@field state number
----@field timer_4C number
----@field dmgType number
----@field dmgPart number
----@field effectVel Vec3f
 ---@field vel Vec3f
----@field sfxSource number
----@field pad7C string
+---@field effectVel Vec3f
+---@field dmgPart number
+---@field dmgType number
+---@field timer_4C number
+---@field state number
+---@field unk_44 number
+---@field index number
+---@field info ObjectInfo
+---@field obj Object
+---@param index number
+---@return number
+function Scenery:pad7C(index) end
+---@param index number
+---@param value number
+function Scenery:pad7C(index, value) end
 ---@return Scenery
 function Scenery:asRef() end
+Scenery = {}
 
 ---@class Sprite
-Sprite = {}
----@field obj Object
----@field info ObjectInfo
----@field index number
----@field pad44 string
----@field sceneryId number
----@field destroy number
 ---@field toLeft number
+---@field destroy number
+---@field sceneryId number
+---@field index number
+---@field info ObjectInfo
+---@field obj Object
+---@param index number
+---@return number
+function Sprite:pad44(index) end
+---@param index number
+---@param value number
+function Sprite:pad44(index, value) end
 ---@return Sprite
 function Sprite:asRef() end
+Sprite = {}
 
 ---@class Item
-Item = {}
----@field obj Object
----@field info ObjectInfo
----@field index number
----@field unk_44 number
----@field state number
----@field timer_48 number
----@field timer_4A number
----@field collected number
----@field playerNum number
----@field unk_50 number
----@field unk_54 number
----@field unk_58 number
----@field sfxSource number
 ---@field width number
+---@field unk_58 number
+---@field unk_54 number
+---@field unk_50 number
+---@field playerNum number
+---@field collected number
+---@field timer_4A number
+---@field timer_48 number
+---@field state number
+---@field unk_44 number
+---@field index number
+---@field info ObjectInfo
+---@field obj Object
+---@field sfxSource number
 ---@return Item
 function Item:asRef() end
+Item = {}
 
 ---@class Effect
-Effect = {}
----@field obj Object
----@field info ObjectInfo
----@field index number
----@field unk_44 number
----@field unk_46 number
----@field unk_48 number
----@field unk_4A number
----@field unk_4C number
----@field state number
----@field timer_50 number
----@field pad52 string
----@field vel Vec3f
----@field unk_60 Vec3f
----@field scale1 number
----@field scale2 number
----@field unk_74 Gfx
----@field unk_78 number
 ---@field unk_7A number
----@field pad7C string
+---@field unk_78 number
+---@field unk_74 Gfx
+---@field scale2 number
+---@field scale1 number
+---@field unk_60 Vec3f
+---@field vel Vec3f
+---@field timer_50 number
+---@field state number
+---@field unk_4C number
+---@field unk_4A number
+---@field unk_48 number
+---@field unk_46 number
+---@field unk_44 number
+---@field index number
+---@field info ObjectInfo
+---@field obj Object
 ---@field sfxSource number
+---@param index number
+---@return number
+function Effect:pad7C(index) end
+---@param index number
+---@param value number
+function Effect:pad7C(index, value) end
+---@param index number
+---@return number
+function Effect:pad52(index) end
+---@param index number
+---@param value number
+function Effect:pad52(index, value) end
 ---@return Effect
 function Effect:asRef() end
+Effect = {}
 
 ---@class Boss
-Boss = {}
----@field obj Object
----@field info ObjectInfo
----@field index number
----@field work_044 number
----@field work_046 number
----@field work_048 number
----@field work_04A number
----@field animFrame number
----@field state number
----@field timer_050 number
----@field timer_052 number
----@field timer_054 number
----@field timer_056 number
----@field timer_058 number
----@field timer_05A number
----@field timer_05C number
----@field drawShadow number
----@field health number
----@field dmgType number
----@field damage number
----@field dmgPart number
----@field yOffset number
----@field vel Vec3f
----@field rot_078 Vec3f
----@field gravity number
----@field swork number
----@field fwork number
----@field vwork Vec3f
 ---@field scale number
+---@field gravity number
+---@field rot_078 Vec3f
+---@field vel Vec3f
+---@field yOffset number
+---@field dmgPart number
+---@field damage number
+---@field dmgType number
+---@field health number
+---@field drawShadow number
+---@field timer_05C number
+---@field timer_05A number
+---@field timer_058 number
+---@field timer_056 number
+---@field timer_054 number
+---@field timer_052 number
+---@field timer_050 number
+---@field state number
+---@field animFrame number
+---@field work_04A number
+---@field work_048 number
+---@field work_046 number
+---@field work_044 number
+---@field index number
+---@field info ObjectInfo
+---@field obj Object
 ---@field sfxSource number
+---@field vwork Vec3f
+---@field fwork number
+---@field swork number
 ---@return Boss
 function Boss:asRef() end
+Boss = {}
 
 ---@class Actor
-Actor = {}
----@field obj Object
----@field info ObjectInfo
----@field index number
----@field itemDrop number
----@field work_046 number
----@field work_048 number
----@field work_04A number
----@field work_04C number
----@field counter_04E number
----@field iwork number
----@field eventType number
----@field animFrame number
----@field state number
----@field pad0BA string
----@field timer_0BC number
----@field timer_0BE number
----@field timer_0C0 number
----@field timer_0C2 number
----@field timer_0C4 number
----@field timer_0C6 number
----@field unk_0C8 number
----@field drawShadow number
----@field lockOnTimers number
----@field health number
----@field dmgType number
----@field dmgPart number
----@field dmgSource number
----@field damage number
----@field hitPos Vec3f
----@field aiType number
----@field aiIndex number
----@field vel Vec3f
----@field rot_0F4 Vec3f
----@field sfxSource number
----@field gravity number
 ---@field scale number
----@field fwork number
+---@field gravity number
+---@field rot_0F4 Vec3f
+---@field vel Vec3f
+---@field aiIndex number
+---@field aiType number
+---@field hitPos Vec3f
+---@field damage number
+---@field dmgSource number
+---@field dmgPart number
+---@field dmgType number
+---@field health number
+---@field drawShadow number
+---@field unk_0C8 number
+---@field timer_0C6 number
+---@field timer_0C4 number
+---@field timer_0C2 number
+---@field timer_0C0 number
+---@field timer_0BE number
+---@field timer_0BC number
+---@field state number
+---@field animFrame number
+---@field eventType number
+---@field counter_04E number
+---@field work_04C number
+---@field work_04A number
+---@field work_048 number
+---@field work_046 number
+---@field itemDrop number
+---@field index number
+---@field info ObjectInfo
+---@field obj Object
 ---@field vwork Vec3f
+---@field fwork number
+---@field sfxSource number
+---@param index number
+---@return number
+function Actor:lockOnTimers(index) end
+---@param index number
+---@param value number
+function Actor:lockOnTimers(index, value) end
+---@param index number
+---@return number
+function Actor:pad0BA(index) end
+---@param index number
+---@param value number
+function Actor:pad0BA(index, value) end
+---@field iwork number
 ---@return Actor
 function Actor:asRef() end
+Actor = {}
 
 ---@param _ObjectId ObjectId
 ---@return Actor
@@ -28434,13 +28574,13 @@ EventPriority = {
 }
 
 ---@class IEvent
-IEvent = {}
 ---@field cancelled boolean
+IEvent = {}
 
 ---@class EventListener
-EventListener = {}
 ---@field priority EventPriority
 ---@field function SmartFunctionCallback
+EventListener = {}
 
 ---@param _name string
 ---@return std::shared_ptr<Ship::CVar>
@@ -28634,35 +28774,6 @@ function UIWidgets.DisableComponent(_alpha) end
 ---@return boolean
 function UIWidgets.EnhancementCheckbox(_text, cvarName, disabled, disabledTooltipText, disabledGraphic, defaultValue) end
 ---@param _text string
----@param cvarName string
----@param padTop boolean
----@param padBottom boolean
----@param disabled boolean
----@param disabledTooltipText string
----@param disabledGraphic CheckboxGraphics
----@param defaultValue boolean
----@return boolean
-function UIWidgets.PaddedEnhancementCheckbox(_text, cvarName, padTop, padBottom, disabled, disabledTooltipText, disabledGraphic, defaultValue) end
----@param _cvarName string
----@param _std::span<char any
----@param comboArray std::dynamic_extent>
----@param defaultIndex number
----@param disabled boolean
----@param disabledTooltipText string
----@param disabledValue number
----@return boolean
-function UIWidgets.EnhancementCombobox(_cvarName, _std::span<char, comboArray, defaultIndex, disabled, disabledTooltipText, disabledValue) end
----@param _label string
----@param cvarName string
----@param _std::span<char any
----@param comboArray std::dynamic_extent>
----@param defaultIndex number
----@param disabled boolean
----@param disabledTooltipText string
----@param disabledValue number
----@return boolean
-function UIWidgets.LabeledRightAlignedEnhancementCombobox(_label, cvarName, _std::span<char, comboArray, defaultIndex, disabled, disabledTooltipText, disabledValue) end
----@param _text string
 ---@param padTop boolean
 ---@param padBottom boolean
 ---@return nil
@@ -28810,20 +28921,6 @@ function UIWidgets.PushStyleCombobox(arg0) end
 ---@param _ any
 ---@return nil
 function UIWidgets.PopStyleCombobox(_) end
----@param _label string
----@param value number
----@param _std::span<char any
----@param comboArray std::dynamic_extent>
----@param options ComboboxOptions
----@return boolean
-function UIWidgets.Combobox(_label, value, _std::span<char, comboArray, options) end
----@param _label string
----@param cvarName string
----@param _std::span<char any
----@param comboArray std::dynamic_extent>
----@param options ComboboxOptions
----@return boolean
-function UIWidgets.CVarCombobox(_label, cvarName, _std::span<char, comboArray, options) end
 ---@param arg0 color
 ---@return nil
 function UIWidgets.PushStyleSlider(arg0) end
@@ -28931,183 +29028,221 @@ function ResourceHasGameVersion(_hash) end
 ---@param _ any
 ---@return number
 function IsResourceManagerLoaded(_) end
-lua.new_usertype<ItemDropEvent>("ItemDropEvent",
-    "event", sol::property(&ItemDropEvent::event, &ItemDropEvent::event),
-    "item", sol::property(&ItemDropEvent::item, &ItemDropEvent::item)
-);
+---@class ItemDropEvent
+---@field event
+---@field item
+ItemDropEvent = {}
 
-lua.new_usertype<PlayerActionBoostEvent>("PlayerActionBoostEvent",
-    "event", sol::property(&PlayerActionBoostEvent::event, &PlayerActionBoostEvent::event),
-    "player", sol::property(&PlayerActionBoostEvent::player, &PlayerActionBoostEvent::player)
-);
+---@class PlayerActionBoostEvent
+---@field event
+---@field player
+PlayerActionBoostEvent = {}
 
-lua.new_usertype<PlayerActionBrakeEvent>("PlayerActionBrakeEvent",
-    "event", sol::property(&PlayerActionBrakeEvent::event, &PlayerActionBrakeEvent::event),
-    "player", sol::property(&PlayerActionBrakeEvent::player, &PlayerActionBrakeEvent::player)
-);
+---@class PlayerActionBrakeEvent
+---@field event
+---@field player
+PlayerActionBrakeEvent = {}
 
-lua.new_usertype<PlayerActionPreShootEvent>("PlayerActionPreShootEvent",
-    "event", sol::property(&PlayerActionPreShootEvent::event, &PlayerActionPreShootEvent::event),
-    "player", sol::property(&PlayerActionPreShootEvent::player, &PlayerActionPreShootEvent::player),
-    "laser", sol::property(&PlayerActionPreShootEvent::laser, &PlayerActionPreShootEvent::laser)
-);
+---@class PlayerActionPreShootEvent
+---@field event
+---@field player
+---@field laser
+PlayerActionPreShootEvent = {}
 
-lua.new_usertype<PlayerActionPostShootEvent>("PlayerActionPostShootEvent",
-    "event", sol::property(&PlayerActionPostShootEvent::event, &PlayerActionPostShootEvent::event),
-    "player", sol::property(&PlayerActionPostShootEvent::player, &PlayerActionPostShootEvent::player),
-    "shot", sol::property(&PlayerActionPostShootEvent::shot, &PlayerActionPostShootEvent::shot)
-);
+---@class PlayerActionPostShootEvent
+---@field event
+---@field player
+---@field shot
+PlayerActionPostShootEvent = {}
 
-lua.new_usertype<PlayerActionPreShootChargedEvent>("PlayerActionPreShootChargedEvent",
-    "event", sol::property(&PlayerActionPreShootChargedEvent::event, &PlayerActionPreShootChargedEvent::event),
-    "player", sol::property(&PlayerActionPreShootChargedEvent::player, &PlayerActionPreShootChargedEvent::player)
-);
+---@class PlayerActionPreShootChargedEvent
+---@field event
+---@field player
+PlayerActionPreShootChargedEvent = {}
 
-lua.new_usertype<PlayerActionPostShootChargedEvent>("PlayerActionPostShootChargedEvent",
-    "event", sol::property(&PlayerActionPostShootChargedEvent::event, &PlayerActionPostShootChargedEvent::event),
-    "player", sol::property(&PlayerActionPostShootChargedEvent::player, &PlayerActionPostShootChargedEvent::player)
-);
+---@class PlayerActionPostShootChargedEvent
+---@field event
+---@field player
+PlayerActionPostShootChargedEvent = {}
 
-lua.new_usertype<PlayerActionPreBombEvent>("PlayerActionPreBombEvent",
-    "event", sol::property(&PlayerActionPreBombEvent::event, &PlayerActionPreBombEvent::event),
-    "player", sol::property(&PlayerActionPreBombEvent::player, &PlayerActionPreBombEvent::player)
-);
+---@class PlayerActionPreBombEvent
+---@field event
+---@field player
+PlayerActionPreBombEvent = {}
 
-lua.new_usertype<PlayerActionPostBombEvent>("PlayerActionPostBombEvent",
-    "event", sol::property(&PlayerActionPostBombEvent::event, &PlayerActionPostBombEvent::event),
-    "player", sol::property(&PlayerActionPostBombEvent::player, &PlayerActionPostBombEvent::player)
-);
+---@class PlayerActionPostBombEvent
+---@field event
+---@field player
+PlayerActionPostBombEvent = {}
 
-lua.new_usertype<EngineInitEvent>("EngineInitEvent",
-    "event", sol::property(&EngineInitEvent::event, &EngineInitEvent::event)
-);
+---@class EngineInitEvent
+---@field event
+EngineInitEvent = {}
 
-lua.new_usertype<EngineExitEvent>("EngineExitEvent",
-    "event", sol::property(&EngineExitEvent::event, &EngineExitEvent::event)
-);
+---@class EngineExitEvent
+---@field event
+EngineExitEvent = {}
 
-lua.new_usertype<EngineRenderMenubarEvent>("EngineRenderMenubarEvent",
-    "event", sol::property(&EngineRenderMenubarEvent::event, &EngineRenderMenubarEvent::event)
-);
+---@class EngineRenderMenubarEvent
+---@field event
+EngineRenderMenubarEvent = {}
 
-lua.new_usertype<DisplayPreUpdateEvent>("DisplayPreUpdateEvent",
-    "event", sol::property(&DisplayPreUpdateEvent::event, &DisplayPreUpdateEvent::event)
-);
+---@class DisplayPreUpdateEvent
+---@field event
+DisplayPreUpdateEvent = {}
 
-lua.new_usertype<DisplayPostUpdateEvent>("DisplayPostUpdateEvent",
-    "event", sol::property(&DisplayPostUpdateEvent::event, &DisplayPostUpdateEvent::event)
-);
+---@class DisplayPostUpdateEvent
+---@field event
+DisplayPostUpdateEvent = {}
 
-lua.new_usertype<GamePreUpdateEvent>("GamePreUpdateEvent",
-    "event", sol::property(&GamePreUpdateEvent::event, &GamePreUpdateEvent::event)
-);
+---@class GamePreUpdateEvent
+---@field event
+GamePreUpdateEvent = {}
 
-lua.new_usertype<GamePostUpdateEvent>("GamePostUpdateEvent",
-    "event", sol::property(&GamePostUpdateEvent::event, &GamePostUpdateEvent::event)
-);
+---@class GamePostUpdateEvent
+---@field event
+GamePostUpdateEvent = {}
 
-lua.new_usertype<PlayUpdateEvent>("PlayUpdateEvent",
-    "event", sol::property(&PlayUpdateEvent::event, &PlayUpdateEvent::event)
-);
+---@class PlayUpdateEvent
+---@field event
+PlayUpdateEvent = {}
 
-lua.new_usertype<PlayerPreUpdateEvent>("PlayerPreUpdateEvent",
-    "event", sol::property(&PlayerPreUpdateEvent::event, &PlayerPreUpdateEvent::event),
-    "player", sol::property(&PlayerPreUpdateEvent::player, &PlayerPreUpdateEvent::player)
-);
+---@class PlayerPreUpdateEvent
+---@field event
+---@field player
+PlayerPreUpdateEvent = {}
 
-lua.new_usertype<PlayerPostUpdateEvent>("PlayerPostUpdateEvent",
-    "event", sol::property(&PlayerPostUpdateEvent::event, &PlayerPostUpdateEvent::event),
-    "player", sol::property(&PlayerPostUpdateEvent::player, &PlayerPostUpdateEvent::player)
-);
+---@class PlayerPostUpdateEvent
+---@field event
+---@field player
+PlayerPostUpdateEvent = {}
 
-lua.new_usertype<DrawRadarHUDEvent>("DrawRadarHUDEvent",
-    "event", sol::property(&DrawRadarHUDEvent::event, &DrawRadarHUDEvent::event)
-);
+---@class DrawRadarHUDEvent
+---@field event
+DrawRadarHUDEvent = {}
 
-lua.new_usertype<DrawRadarMarkArwingEvent>("DrawRadarMarkArwingEvent",
-    "event", sol::property(&DrawRadarMarkArwingEvent::event, &DrawRadarMarkArwingEvent::event),
-    "colorIdx", sol::property(&DrawRadarMarkArwingEvent::colorIdx, &DrawRadarMarkArwingEvent::colorIdx)
-);
+---@class DrawRadarMarkArwingEvent
+---@field event
+---@field colorIdx
+DrawRadarMarkArwingEvent = {}
 
-lua.new_usertype<DrawRadarMarkWolfenEvent>("DrawRadarMarkWolfenEvent",
-    "event", sol::property(&DrawRadarMarkWolfenEvent::event, &DrawRadarMarkWolfenEvent::event)
-);
+---@class DrawRadarMarkWolfenEvent
+---@field event
+DrawRadarMarkWolfenEvent = {}
 
-lua.new_usertype<DrawBoostGaugeHUDEvent>("DrawBoostGaugeHUDEvent",
-    "event", sol::property(&DrawBoostGaugeHUDEvent::event, &DrawBoostGaugeHUDEvent::event)
-);
+---@class DrawBoostGaugeHUDEvent
+---@field event
+DrawBoostGaugeHUDEvent = {}
 
-lua.new_usertype<DrawBombCounterHUDEvent>("DrawBombCounterHUDEvent",
-    "event", sol::property(&DrawBombCounterHUDEvent::event, &DrawBombCounterHUDEvent::event)
-);
+---@class DrawBombCounterHUDEvent
+---@field event
+DrawBombCounterHUDEvent = {}
 
-lua.new_usertype<DrawIncomingMsgHUDEvent>("DrawIncomingMsgHUDEvent",
-    "event", sol::property(&DrawIncomingMsgHUDEvent::event, &DrawIncomingMsgHUDEvent::event)
-);
+---@class DrawIncomingMsgHUDEvent
+---@field event
+DrawIncomingMsgHUDEvent = {}
 
-lua.new_usertype<PreSetupRadioMsgEvent>("PreSetupRadioMsgEvent",
-    "event", sol::property(&PreSetupRadioMsgEvent::event, &PreSetupRadioMsgEvent::event),
-    "radioRedBox", sol::property(&PreSetupRadioMsgEvent::radioRedBox, &PreSetupRadioMsgEvent::radioRedBox)
-);
+---@class PreSetupRadioMsgEvent
+---@field event
+---@field radioRedBox
+PreSetupRadioMsgEvent = {}
 
-lua.new_usertype<DrawGoldRingsHUDEvent>("DrawGoldRingsHUDEvent",
-    "event", sol::property(&DrawGoldRingsHUDEvent::event, &DrawGoldRingsHUDEvent::event)
-);
+---@class DrawGoldRingsHUDEvent
+---@field event
+DrawGoldRingsHUDEvent = {}
 
-lua.new_usertype<DrawLivesCounterHUDEvent>("DrawLivesCounterHUDEvent",
-    "event", sol::property(&DrawLivesCounterHUDEvent::event, &DrawLivesCounterHUDEvent::event)
-);
+---@class DrawLivesCounterHUDEvent
+---@field event
+DrawLivesCounterHUDEvent = {}
 
-lua.new_usertype<DrawTrainingRingPassCountHUDEvent>("DrawTrainingRingPassCountHUDEvent",
-    "event", sol::property(&DrawTrainingRingPassCountHUDEvent::event, &DrawTrainingRingPassCountHUDEvent::event)
-);
+---@class DrawTrainingRingPassCountHUDEvent
+---@field event
+DrawTrainingRingPassCountHUDEvent = {}
 
-lua.new_usertype<DrawEdgeArrowsHUDEvent>("DrawEdgeArrowsHUDEvent",
-    "event", sol::property(&DrawEdgeArrowsHUDEvent::event, &DrawEdgeArrowsHUDEvent::event)
-);
+---@class DrawEdgeArrowsHUDEvent
+---@field event
+DrawEdgeArrowsHUDEvent = {}
 
-lua.new_usertype<DrawBossHealthHUDEvent>("DrawBossHealthHUDEvent",
-    "event", sol::property(&DrawBossHealthHUDEvent::event, &DrawBossHealthHUDEvent::event)
-);
+---@class DrawBossHealthHUDEvent
+---@field event
+DrawBossHealthHUDEvent = {}
 
-lua.new_usertype<DrawGlobalHUDPreEvent>("DrawGlobalHUDPreEvent",
-    "event", sol::property(&DrawGlobalHUDPreEvent::event, &DrawGlobalHUDPreEvent::event)
-);
+---@class DrawGlobalHUDPreEvent
+---@field event
+DrawGlobalHUDPreEvent = {}
 
-lua.new_usertype<DrawGlobalHUDPostEvent>("DrawGlobalHUDPostEvent",
-    "event", sol::property(&DrawGlobalHUDPostEvent::event, &DrawGlobalHUDPostEvent::event)
-);
+---@class DrawGlobalHUDPostEvent
+---@field event
+DrawGlobalHUDPostEvent = {}
 
-lua.new_usertype<ObjectInitEvent>("ObjectInitEvent",
-    "event", sol::property(&ObjectInitEvent::event, &ObjectInitEvent::event),
-    "type", sol::property(&ObjectInitEvent::type, &ObjectInitEvent::type),
-    "object", sol::property(&ObjectInitEvent::object, &ObjectInitEvent::object)
-);
+---@class ObjectInitEvent
+---@field event
+---@field type
+---@field object
+ObjectInitEvent = {}
 
-lua.new_usertype<ObjectUpdateEvent>("ObjectUpdateEvent",
-    "event", sol::property(&ObjectUpdateEvent::event, &ObjectUpdateEvent::event),
-    "type", sol::property(&ObjectUpdateEvent::type, &ObjectUpdateEvent::type),
-    "object", sol::property(&ObjectUpdateEvent::object, &ObjectUpdateEvent::object)
-);
+---@class ObjectUpdateEvent
+---@field event
+---@field type
+---@field object
+ObjectUpdateEvent = {}
 
-lua.new_usertype<ObjectDrawPreSetupEvent>("ObjectDrawPreSetupEvent",
-    "event", sol::property(&ObjectDrawPreSetupEvent::event, &ObjectDrawPreSetupEvent::event),
-    "type", sol::property(&ObjectDrawPreSetupEvent::type, &ObjectDrawPreSetupEvent::type),
-    "object", sol::property(&ObjectDrawPreSetupEvent::object, &ObjectDrawPreSetupEvent::object)
-);
+---@class ObjectDrawPreSetupEvent
+---@field event
+---@field type
+---@field object
+ObjectDrawPreSetupEvent = {}
 
-lua.new_usertype<ObjectDrawPostSetupEvent>("ObjectDrawPostSetupEvent",
-    "event", sol::property(&ObjectDrawPostSetupEvent::event, &ObjectDrawPostSetupEvent::event),
-    "type", sol::property(&ObjectDrawPostSetupEvent::type, &ObjectDrawPostSetupEvent::type),
-    "object", sol::property(&ObjectDrawPostSetupEvent::object, &ObjectDrawPostSetupEvent::object)
-);
+---@class ObjectDrawPostSetupEvent
+---@field event
+---@field type
+---@field object
+ObjectDrawPostSetupEvent = {}
 
-lua.new_usertype<ObjectDestroyEvent>("ObjectDestroyEvent",
-    "event", sol::property(&ObjectDestroyEvent::event, &ObjectDestroyEvent::event),
-    "type", sol::property(&ObjectDestroyEvent::type, &ObjectDestroyEvent::type),
-    "object", sol::property(&ObjectDestroyEvent::object, &ObjectDestroyEvent::object)
-);
+---@class ObjectDestroyEvent
+---@field event
+---@field type
+---@field object
+ObjectDestroyEvent = {}
 
 ---@enum EventID
 EventID = {
+    ItemDropEvent = -1,
+    PlayerActionBoostEvent = -1,
+    PlayerActionBrakeEvent = -1,
+    PlayerActionPreShootEvent = -1,
+    PlayerActionPostShootEvent = -1,
+    PlayerActionPreShootChargedEvent = -1,
+    PlayerActionPostShootChargedEvent = -1,
+    PlayerActionPreBombEvent = -1,
+    PlayerActionPostBombEvent = -1,
+    EngineInitEvent = -1,
+    EngineExitEvent = -1,
+    EngineRenderMenubarEvent = -1,
+    DisplayPreUpdateEvent = -1,
+    DisplayPostUpdateEvent = -1,
+    GamePreUpdateEvent = -1,
+    GamePostUpdateEvent = -1,
+    PlayUpdateEvent = -1,
+    PlayerPreUpdateEvent = -1,
+    PlayerPostUpdateEvent = -1,
+    DrawRadarHUDEvent = -1,
+    DrawRadarMarkArwingEvent = -1,
+    DrawRadarMarkWolfenEvent = -1,
+    DrawBoostGaugeHUDEvent = -1,
+    DrawBombCounterHUDEvent = -1,
+    DrawIncomingMsgHUDEvent = -1,
+    PreSetupRadioMsgEvent = -1,
+    DrawGoldRingsHUDEvent = -1,
+    DrawLivesCounterHUDEvent = -1,
+    DrawTrainingRingPassCountHUDEvent = -1,
+    DrawEdgeArrowsHUDEvent = -1,
+    DrawBossHealthHUDEvent = -1,
+    DrawGlobalHUDPreEvent = -1,
+    DrawGlobalHUDPostEvent = -1,
+    ObjectInitEvent = -1,
+    ObjectUpdateEvent = -1,
+    ObjectDrawPreSetupEvent = -1,
+    ObjectDrawPostSetupEvent = -1,
+    ObjectDestroyEvent = -1
 }

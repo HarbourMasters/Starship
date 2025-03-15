@@ -107,7 +107,8 @@ def sanitize_type(member_type):
     member_type = member_type.replace('*', '')
     member_type = member_type.replace('&', '')
     member_type = member_type.replace('const', '')
-    member_type = member_type.replace('bool', 'boolean')
+    if(member_type == 'bool'):
+        member_type = 'boolean'
     member_type = member_type.replace('int', 'number')
     member_type = member_type.replace('float', 'number')
     member_type = member_type.replace('char', 'string')
@@ -297,8 +298,8 @@ def parse_structs(header):
                     continue
                 struct[struct_name].append({
                     'name': line.split('[')[0].split(' ')[-1],
-                    'export': 'variable',
-                    'type': sanitize_type(line.split('[')[0].split(' ')[-2])
+                    'export': 'table',
+                    'type': line.split('[')[0].split(' ')[-2]
                 })
             else:
                 struct[struct_name].append({
@@ -321,17 +322,28 @@ def parse_structs(header):
                     print(f'    "{key}", sol::property([] ({struct_name}& self) -> {type} {{ return self.{key}; }}, [] ({struct_name}& self, {type} value) {{ self.{key} = value; }}){"," if i < len(members) - 1 else ""}')
                 elif export == 'function':
                     print(f'    "{key}", &{struct_name}::{key}{"," if i < len(members) - 1 else ""}')
+                elif export == 'table':
+                    if type == 'char' or type == 'u8' or type == 'uint8_t':
+                        type = 'int32_t'
+                        print(f'    "{key}", sol::overload([] ({struct_name}& self, int index) -> {type} {{ return self.{key}[index]; }}, [] ({struct_name}& self, int index, {type} value) {{ self.{key}[index] = value; }}){"," if i < len(members) - 1 else ""}')
+                    else:
+                        type = sanitize_type(type)
+                        print(f'    "{key}", sol::property(&{struct_name}::{key}, &{struct_name}::{key}){"," if i < len(members) - 1 else ""}')
                 else:
                     print(f'    "{key}", sol::property(&{struct_name}::{key}, &{struct_name}::{key}){"," if i < len(members) - 1 else ""}')
             print(');')
             print('')
         elif export_type == OutputType.LUA:
             print(f'---@class {struct_name}')
-            print(f'{struct_name} = {{}}')
+            # Sort tables to the end
+            members.sort(key=lambda x: x['export'])
+            # Reverse the list to get tables at the end
+            members = members[::-1]
             for i, member in enumerate(members):
                 key = member['name'].replace('*', '')
                 export = member['export']
-                type = member['type']
+                original_type = member['type']
+                type = sanitize_type(original_type)
                 if export == 'bitfield':
                     print(f'---@return {type}')
                     print(f'function {struct_name}:{key}() end')
@@ -341,8 +353,19 @@ def parse_structs(header):
                 elif export == 'function':
                     print(f'---@return {type}')
                     print(f'function {struct_name}:{key}() end')
+                elif export == 'table':
+                    if original_type == 'char' or original_type == 'u8' or original_type == 'uint8_t':
+                        print(f'---@param index number')
+                        print(f'---@return number')
+                        print(f'function {struct_name}:{key}(index) end')
+                        print(f'---@param index number')
+                        print(f'---@param value number')
+                        print(f'function {struct_name}:{key}(index, value) end')
+                    else:
+                        print(f'---@field {key} {type}')
                 else:
                     print(f'---@field {key} {type}')
+            print(f'{struct_name} = {{}}')
             print('')
 
 def parse_events(header):
@@ -383,12 +406,21 @@ def parse_events(header):
             event[event_name].append(member_name)
     
     for event_name, members in event.items():
-        print(f'lua.new_usertype<{event_name}>("{event_name}",')
-        for i, key in enumerate(members):
-            key = key.replace('*', '')
-            print(f'    "{key}", sol::property(&{event_name}::{key}, &{event_name}::{key}){"," if i < len(members) - 1 else ""}')
-        print(');')
-        print('')
+        if export_type == OutputType.CPP:
+            print(f'lua.new_usertype<{event_name}>("{event_name}",')
+            for i, key in enumerate(members):
+                key = key.replace('*', '')
+                print(f'    "{key}", sol::property(&{event_name}::{key}, &{event_name}::{key}){"," if i < len(members) - 1 else ""}')
+            print(');')
+            print('')
+        elif export_type == OutputType.LUA:
+            print(f'---@class {event_name}')
+            event_list.append(event_name)
+            for i, key in enumerate(members):
+                key = key.replace('*', '')
+                print(f'---@field {key}')
+            print(f'{event_name} = {{}}')
+            print('')
 
 def parse_externs(header, namespace=None):
     try:
