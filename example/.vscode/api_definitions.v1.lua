@@ -10764,6 +10764,72 @@ function Audio_PlaySoundTestTrack(_trackNumber) end
 ---@param _seqId number
 ---@return nil
 function Audio_PlayBgm(_seqId) end
+---@enum AudioType
+AudioType = {
+    AUDIO_TYPE_MUSIC = 0,
+    AUDIO_TYPE_VOICE = 1,
+    AUDIO_TYPE_SFX = 2,
+    AUDIO_TYPE_MAX = 3
+}
+
+---@enum OptionSoundMode
+OptionSoundMode = {
+    OPTIONSOUND_STEREO = 0,
+    OPTIONSOUND_MONO = 1,
+    OPTIONSOUND_HEADSET = 2,
+    OPTIONSOUND_MAX = 3
+}
+
+---@param _msgId number
+---@return nil
+function Audio_PlayVoice(_msgId) end
+---@param _msgId number
+---@return nil
+function Audio_PlayVoiceWithoutBGM(_msgId) end
+---@param _void nil
+---@return nil
+function Audio_ClearVoice(_void) end
+---@param _void nil
+---@return number
+function Audio_GetCurrentVoice(_void) end
+---@param _void nil
+---@return number
+function Audio_GetCurrentVoiceStatus(_void) end
+---@param _unkVoiceParam number
+---@return nil
+function Audio_SetUnkVoiceParam(_unkVoiceParam) end
+---@param _void nil
+---@return number
+function Audio_UpdateFrequencyAnalysis(_void) end
+---@param _audioType number
+---@param volume number
+---@return nil
+function Audio_SetVolume(_audioType, volume) end
+---@param _fadeoutTime number
+---@return nil
+function Audio_FadeOutAll(_fadeoutTime) end
+---@param _unused number
+---@param specParam number
+---@return nil
+function Audio_SetAudioSpec(_unused, specParam) end
+---@param _void nil
+---@return nil
+function AudioLoad_Init(_void) end
+---@param _void nil
+---@return nil
+function Audio_dummy_80016A50(_void) end
+---@param _void nil
+---@return nil
+function Audio_InitSounds(_void) end
+---@param _void nil
+---@return nil
+function Audio_Update(_void) end
+---@param _void nil
+---@return SPTask
+function AudioThread_CreateTask(_void) end
+---@param _void nil
+---@return nil
+function AudioThread_PreNMIReset(_void) end
 ---@enum PlayState
 PlayState = {
     PLAY_STANDBY = 0,

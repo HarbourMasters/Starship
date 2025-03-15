@@ -20,9 +20,10 @@ std::vector<std::string> gASCIIFullTable = {
     "7", "8", "9", "'", "(", ")", ":", "|",
 };
 
-std::shared_ptr<Ship::IResource> ResourceFactoryBinaryMessageV0::ReadResource(std::shared_ptr<Ship::File> file,
-                                                                              std::shared_ptr<Ship::ResourceInitData> initData) {
-    if (!FileHasValidFormatAndReader(file, initData)) {
+std::vector<std::pair<uint16_t*, int32_t>> gCustomMessageTable;
+
+std::shared_ptr<Ship::IResource> ResourceFactoryBinaryMessageV0::ReadResource(std::shared_ptr<Ship::File> file) {
+    if (!FileHasValidFormatAndReader(file)) {
         return nullptr;
     }
 
@@ -44,6 +45,7 @@ std::shared_ptr<Ship::IResource> ResourceFactoryXMLMessageV0::ReadResource(std::
     }
     auto msg = std::make_shared<Message>(file->InitData);
     auto parent = std::get<std::shared_ptr<tinyxml2::XMLDocument>>(file->Reader)->FirstChildElement("Message");
+    auto id = parent->IntAttribute("Id", -1);
 
     tinyxml2::XMLElement* element = parent->FirstChildElement("Line");
 
@@ -81,6 +83,18 @@ std::shared_ptr<Ship::IResource> ResourceFactoryXMLMessageV0::ReadResource(std::
     } // end
 
     msg->mMessage.push_back(0);
+    gCustomMessageTable.emplace_back(msg->mMessage.data(), id);
+
     return msg;
 }
 } // namespace LUS
+
+extern "C" int16_t Message_SearchCustomID(uint16_t* msg) {
+    for (auto& pair : SF64::gCustomMessageTable) {
+        if(pair.first == msg) {
+            return (int16_t) pair.second;
+        }
+    }
+    
+    return -1;
+}

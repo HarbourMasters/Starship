@@ -58,7 +58,7 @@ s32 func_radio_800BA7BC(u16* msg, s32 priority) {
 void Radio_PlayMessage(u16* msg, RadioCharacterId character) {
     TeamId teamId;
     s32 pad;
-    s32 priority;
+    s32 priority = 0;
     msg = SEGMENTED_TO_VIRTUAL(msg);
 
     switch (msg[0]) {
@@ -126,7 +126,9 @@ void Radio_PlayMessage(u16* msg, RadioCharacterId character) {
     gRadioState = 100;
 
     gRadioMsgId = Message_IdFromPtr(msg);
-    Audio_PlayVoice(gRadioMsgId);
+    if(gRadioMsgId != -1){
+        Audio_PlayVoice(gRadioMsgId);
+    }
 }
 
 void Radio_CalculatePositions(){

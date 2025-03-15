@@ -129,8 +129,12 @@ def sanitize_type(member_type):
     return member_type
 
 blacklist = [
-    'audio',
-    'portable-file-dialogs.h',
+    'ast_audio',
+    'sf64audio_provisional',
+    'audioseq_cmd',
+    'audiothread_cmd',
+    'libaudio',
+    'portable-file-dialogs',
     'rmonint.h',
     'PR/',
     'libultra/',
