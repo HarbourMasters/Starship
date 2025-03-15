@@ -13,8 +13,10 @@ typedef struct Vec3f {
     /* 0x4 */ f32 y;
     /* 0x8 */ f32 z;
 #ifdef __cplusplus
+#ifdef __APPLE__ // Fuck you clang
     Vec3f() : x(0), y(0), z(0) {} // sol:not_global
     Vec3f(f32 x, f32 y, f32 z) : x(x), y(y), z(z) {} // sol:not_global
+#endif
     Vec3f* asRef() { return this; } // sol:not_global
     f32* xRef() { return &x; } // sol:not_global
     f32* yRef() { return &y; } // sol:not_global
@@ -28,8 +30,10 @@ typedef struct Vec3s {
     /* 0x2 */ s16 y;
     /* 0x4 */ s16 z;
 #ifdef __cplusplus
+#ifdef __APPLE__ // x2
     Vec3s() : x(0), y(0), z(0) {} // sol:not_global
     Vec3s(s16 x, s16 y, s16 z) : x(x), y(y), z(z) {} // sol:not_global
+#endif
     Vec3s* asRef() { return this; } // sol:not_global
     s16* xRef() { return &x; } // sol:not_global
     s16* yRef() { return &y; } // sol:not_global
