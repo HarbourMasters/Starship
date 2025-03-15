@@ -149,14 +149,14 @@ typedef struct Object {
     /* 0x04 */ Vec3f pos;
     /* 0x10 */ Vec3f rot;
 #ifdef __cplusplus
-    Actor* asActor() { return (Actor*)this; } // sol:ignore
-    Boss* asBoss() { return (Boss*)this; } // sol:ignore
-    Scenery* asScenery() { return (Scenery*)this; } // sol:ignore
-    Scenery360* asScenery360() { return (Scenery360*)this; } // sol:ignore
-    Sprite* asSprite() { return (Sprite*)this; } // sol:ignore
-    Item* asItem() { return (Item*)this; } // sol:ignore
-    Effect* asEffect() { return (Effect*)this; } // sol:ignore
-    Object* asRef() { return this; } // sol:ignore
+    Actor* asActor() { if(this) return nullptr; return (Actor*)this; } // sol:not_global
+    Boss* asBoss() { if(this) return nullptr; return (Boss*)this; } // sol:not_global
+    Scenery* asScenery() { if(this) return nullptr; return (Scenery*)this; } // sol:not_global
+    Scenery360* asScenery360() { if(this) return nullptr; return (Scenery360*)this; } // sol:not_global
+    Sprite* asSprite() { if(this) return nullptr; return (Sprite*)this; } // sol:not_global
+    Item* asItem() { if(this) return nullptr; return (Item*)this; } // sol:not_global
+    Effect* asEffect() { if(this) return nullptr; return (Effect*)this; } // sol:not_global
+    Object* asRef() { if(this) return nullptr; return this; } // sol:not_global
 #endif
 } Object; // size = 0x1C
 
@@ -171,14 +171,14 @@ typedef struct ObjectInfo {
     /* 0x08 */ ObjectFunc action; // argument must have object type.
     /* 0x0C */ f32* hitbox;
     /* 0x10 */ f32 cullDistance;  // z coordinate of something
-    /* 0x14 */ s16 unk_14;        // can be -1, 0, 1. governs camera-related behavior in effects (billboarding?)
+    /* 0x14 */ s16 unk_14;        // can be -1, 0, 1. governs camera-related behavior in effects
     /* 0x16 */ s16 unk_16;        // can be 0, 1, 2. affects death behavior?
     /* 0x18 */ u8 damage;
     /* 0x19 */ u8 unk_19;         // can be 0, 1, 2. Also camera-related?
     /* 0x1C */ f32 targetOffset;  // target lock y offset. 0.0f can't be targeted
     /* 0x20 */ u8 bonus;          // hits when killed. numbers above 1 indicate the hit+ bonus
 #ifdef __cplusplus
-    ObjectInfo* asRef() { return this; } // sol:ignore
+    ObjectInfo* asRef() { if(this) return nullptr; return this; } // sol:not_global
 #endif
 } ObjectInfo;                     // size = 0x24
 
@@ -190,7 +190,7 @@ typedef struct Scenery360 {
     /* 0x48 */ f32 sfxSource[3];
     /* 0x54 */ f32 unk_54;
 #ifdef __cplusplus
-    Scenery360* asRef() { return this; } // sol:ignore
+    Scenery360* asRef() { if(this) return nullptr; return this; } // sol:not_global
 #endif
 } Scenery360; // size = 0x58
 
@@ -208,7 +208,7 @@ typedef struct Scenery {
     /* 0x70 */ f32 sfxSource[3];
     /* 0x7C */ char pad7C[4];
 #ifdef __cplusplus
-    Scenery* asRef() { return this; } // sol:ignore
+    Scenery* asRef() { if(this) return nullptr; return this; } // sol:not_global
 #endif
 } Scenery; // size = 0x80
 
@@ -221,7 +221,7 @@ typedef struct Sprite {
     /* 0x46 */ s8 destroy;
     /* 0x48 */ s32 toLeft;
 #ifdef __cplusplus
-    Sprite* asRef() { return this; } // sol:ignore
+    Sprite* asRef() { if(this) return nullptr; return this; } // sol:not_global
 #endif
 } Sprite; // size = 0x4C
 
@@ -241,7 +241,7 @@ typedef struct Item {
     /* 0x5C */ f32 sfxSource[3];
     /* 0x68 */ f32 width;
 #ifdef __cplusplus
-    Item* asRef() { return this; } // sol:ignore
+    Item* asRef() { if(this) return nullptr; return this; } // sol:not_global
 #endif
 } Item; // size 0x6C
 
@@ -267,7 +267,7 @@ typedef struct Effect {
     /* 0x7C */ char pad7C[4];
     /* 0x80 */ f32 sfxSource[3];
 #ifdef __cplusplus
-    Effect* asRef() { return this; } // sol:ignore
+    Effect* asRef() { if(this) return nullptr; return this; } // sol:not_global
 #endif
 } Effect; // size 0x8C
 
@@ -303,7 +303,7 @@ typedef struct Boss {
     /* 0x3F8 */ f32 scale;
     /* 0x3FC */ f32 sfxSource[3];
 #ifdef __cplusplus
-    Boss* asRef() { return this; } // sol:ignore
+    Boss* asRef() { if(this) return nullptr; return this; } // sol:not_global
 #endif
 } Boss; // size = 0x408
 
@@ -354,7 +354,7 @@ typedef struct Actor {
     /* 0x114 */ f32 fwork[30];
     /* 0x18C */ Vec3f vwork[30];
 #ifdef __cplusplus
-    Actor* asRef() { return this; } // sol:ignore
+    Actor* asRef() { if(this) return nullptr; return this; } // sol:not_global
 #endif
 } Actor; // size = 0x2F4
 

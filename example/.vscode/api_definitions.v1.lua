@@ -1,8 +1,8 @@
+
 Game = {}
 Assets = {}
 UIWidgets = {}
 Events = {}
-
 ---@alias ListenerID number
 ---@class Asset
 local Asset = {}
@@ -715,6 +715,7 @@ LaserStrength = {
 }
 
 ---@class PlayerShot
+PlayerShot = {}
 ---@field obj Object
 ---@field index number
 ---@field vel Vec3f
@@ -731,9 +732,9 @@ LaserStrength = {
 ---@field timer number
 ---@field sourceId number
 ---@field bonus number
-PlayerShot = {}
 
 ---@class ArwingInfo
+ArwingInfo = {}
 ---@field rightWingState number
 ---@field leftWingState number
 ---@field upperRightFlapYrot number
@@ -750,9 +751,9 @@ PlayerShot = {}
 ---@field teamFaceXrot number
 ---@field teamFaceYrot number
 ---@field cockpitGlassXrot number
-ArwingInfo = {}
 
 ---@class PlayerSfx
+PlayerSfx = {}
 ---@field levelType number
 ---@field form number
 ---@field srcPos number
@@ -763,9 +764,9 @@ ArwingInfo = {}
 ---@field bank number
 ---@field zRot number
 ---@field roll number
-PlayerSfx = {}
 
 ---@class Player
+Player = {}
 ---@field unk_000 number
 ---@field unk_004 number
 ---@field unk_008 number
@@ -925,7 +926,6 @@ PlayerSfx = {}
 ---@field arwing ArwingInfo
 ---@field aerobaticPitch number
 ---@field somersault boolean
-Player = {}
 
 ---@return number
 function Game.D_AQ_801C4188() end
@@ -1704,64 +1704,68 @@ Assets.sBoostGaugeArrow7 = "__OTR__assets/textures/hud/sBoostGaugeArrow7"
 ---@type Asset
 Assets.sBoostGaugeArrow8 = "__OTR__assets/textures/hud/sBoostGaugeArrow8"
 ---@class Vec3f
+Vec3f = {}
 ---@field x number
 ---@field y number
 ---@field z number
-Vec3f = {}
 ---@return Vec3f
 function Vec3f:asRef() end
----@return f32
+---@return number
 function Vec3f:xRef() end
----@return f32
+---@return number
 function Vec3f:yRef() end
----@return f32
+---@return number
 function Vec3f:zRef() end
+---@return number
+function Vec3f:asArray() end
 
 ---@class Vec3s
+Vec3s = {}
 ---@field x number
 ---@field y number
 ---@field z number
-Vec3s = {}
 ---@return Vec3s
 function Vec3s:asRef() end
----@return f32
+---@return number
 function Vec3s:xRef() end
----@return f32
+---@return number
 function Vec3s:yRef() end
----@return f32
+---@return number
 function Vec3s:zRef() end
+---@return number
+function Vec3s:asArray() end
 
 ---@class PosRot
+PosRot = {}
 ---@field pos Vec3f
 ---@field rot Vec3f
-PosRot = {}
 ---@return PosRot
 function PosRot:asRef() end
 
 ---@class CameraPoint
+CameraPoint = {}
 ---@field eye Vec3f
 ---@field at Vec3f
-CameraPoint = {}
----@return CameraPoint
+---@return CameraPonumber
 function CameraPoint:asRef() end
 
 ---@class Triangle
----@field vtx number
 Triangle = {}
+---@field vtx number
 ---@return Triangle
 function Triangle:asRef() end
 
 ---@class PlaneF
+PlaneF = {}
 ---@field normal Vec3f
 ---@field dist number
-PlaneF = {}
 ---@return PlaneF
 function PlaneF:asRef() end
 
 ---@class PlaneI
+PlaneI = {}
 ---@field normal Vec3s
 ---@field dist number
-PlaneI = {}
 ---@return PlaneI
 function PlaneI:asRef() end
 
@@ -2655,6 +2659,7 @@ ScreenSize = {
 }
 
 ---@class OSContPad
+OSContPad = {}
 ---@field button number
 ---@field stick_x number
 ---@field stick_y number
@@ -2663,19 +2668,18 @@ ScreenSize = {
 ---@field gyro_y number
 ---@field right_stick_x number
 ---@field right_stick_y number
-OSContPad = {}
 
 ---@class ImVec2
+ImVec2 = {}
 ---@field x number
 ---@field y number
-ImVec2 = {}
 
 ---@class ImVec4
+ImVec4 = {}
 ---@field x number
 ---@field y number
 ---@field z number
 ---@field w number
-ImVec4 = {}
 
 ---@enum RadioCharacterId
 RadioCharacterId = {
@@ -4192,6 +4196,7 @@ GroundSurface = {
 }
 
 ---@class Environment
+Environment = {}
 ---@field type number
 ---@field unk04 number
 ---@field bgColor number
@@ -4208,7 +4213,6 @@ GroundSurface = {
 ---@field ambR number
 ---@field ambG number
 ---@field ambB number
-Environment = {}
 
 ---@enum SfxBankId
 SfxBankId = {
@@ -4843,19 +4847,19 @@ SetupDL = {
 }
 
 ---@class Color_RGBA32
+Color_RGBA32 = {}
 ---@field r number
 ---@field g number
 ---@field b number
 ---@field a number
-Color_RGBA32 = {}
 
 ---@class Limb
+Limb = {}
 ---@field dList Gfx
 ---@field trans Vec3f
 ---@field rot Vec3s
 ---@field sibling Limb
 ---@field child Limb
-Limb = {}
 
 ---@param _void nil
 ---@return nil
@@ -5441,21 +5445,57 @@ function Game.D_80178580(index) end
 ---@param index number
 ---@param value number
 function Game.D_80178580(index, value) end
+---@class PlanetStats
+PlanetStats = {}
+---@return number
+function PlanetStats:hitCount() end
+---@param value number
+---@return number
+function PlanetStats:hitCount(value) end
+---@return number
+function PlanetStats:planetId() end
+---@param value number
+---@return number
+function PlanetStats:planetId(value) end
+---@return number
+function PlanetStats:hitCountOver256() end
+---@param value number
+---@return number
+function PlanetStats:hitCountOver256(value) end
+---@return number
+function PlanetStats:peppyAlive() end
+---@param value number
+---@return number
+function PlanetStats:peppyAlive(value) end
+---@return number
+function PlanetStats:falcoAlive() end
+---@param value number
+---@return number
+function PlanetStats:falcoAlive(value) end
+---@return number
+function PlanetStats:slippyAlive() end
+---@param value number
+---@return number
+function PlanetStats:slippyAlive(value) end
+
 ---@class SaveData
+SaveData = {}
 ---@field planet PlanetData
 ---@field pad10 string
 ---@field soundMode number
 ---@field musicVolume number
 ---@field voiceVolume number
 ---@field sfxVolume number
----@field rankingRoute current
----@field rankingLives current
----@field rankingMedal current
+---@field rankingRoute number
+---@field rankingLives number
+---@field rankingMedal number
 ---@field unk_EA number
 ---@field textLanguage number
 ---@field voiceLanguage number
 ---@field padEE string
-SaveData = {}
+---@return PlanetStats[]
+---@param route number
+function SaveData:GetPlanetStats(route) end
 
 ---@param _void nil
 ---@return number
@@ -10363,11 +10403,11 @@ ActorCutsceneModels = {
 }
 
 ---@class Object
+Object = {}
 ---@field status number
 ---@field id number
 ---@field pos Vec3f
 ---@field rot Vec3f
-Object = {}
 ---@return Actor
 function Object:asActor() end
 ---@return Boss
@@ -10386,6 +10426,7 @@ function Object:asEffect() end
 function Object:asRef() end
 
 ---@class ObjectInfo
+ObjectInfo = {}
 ---@field draw ObjectFunc
 ---@field dList Gfx
 ---@field drawType number
@@ -10398,22 +10439,22 @@ function Object:asRef() end
 ---@field unk_19 number
 ---@field targetOffset number
 ---@field bonus number
-ObjectInfo = {}
 ---@return ObjectInfo
 function ObjectInfo:asRef() end
 
 ---@class Scenery360
+Scenery360 = {}
 ---@field obj Object
 ---@field info ObjectInfo
 ---@field pathIndex number
 ---@field unk_41 string
 ---@field sfxSource number
 ---@field unk_54 number
-Scenery360 = {}
 ---@return Scenery360
 function Scenery360:asRef() end
 
 ---@class Scenery
+Scenery = {}
 ---@field obj Object
 ---@field info ObjectInfo
 ---@field index number
@@ -10426,11 +10467,11 @@ function Scenery360:asRef() end
 ---@field vel Vec3f
 ---@field sfxSource number
 ---@field pad7C string
-Scenery = {}
 ---@return Scenery
 function Scenery:asRef() end
 
 ---@class Sprite
+Sprite = {}
 ---@field obj Object
 ---@field info ObjectInfo
 ---@field index number
@@ -10438,11 +10479,11 @@ function Scenery:asRef() end
 ---@field sceneryId number
 ---@field destroy number
 ---@field toLeft number
-Sprite = {}
 ---@return Sprite
 function Sprite:asRef() end
 
 ---@class Item
+Item = {}
 ---@field obj Object
 ---@field info ObjectInfo
 ---@field index number
@@ -10457,11 +10498,11 @@ function Sprite:asRef() end
 ---@field unk_58 number
 ---@field sfxSource number
 ---@field width number
-Item = {}
 ---@return Item
 function Item:asRef() end
 
 ---@class Effect
+Effect = {}
 ---@field obj Object
 ---@field info ObjectInfo
 ---@field index number
@@ -10482,11 +10523,11 @@ function Item:asRef() end
 ---@field unk_7A number
 ---@field pad7C string
 ---@field sfxSource number
-Effect = {}
 ---@return Effect
 function Effect:asRef() end
 
 ---@class Boss
+Boss = {}
 ---@field obj Object
 ---@field info ObjectInfo
 ---@field index number
@@ -10517,11 +10558,11 @@ function Effect:asRef() end
 ---@field vwork Vec3f
 ---@field scale number
 ---@field sfxSource number
-Boss = {}
 ---@return Boss
 function Boss:asRef() end
 
 ---@class Actor
+Actor = {}
 ---@field obj Object
 ---@field info ObjectInfo
 ---@field index number
@@ -10560,7 +10601,6 @@ function Boss:asRef() end
 ---@field scale number
 ---@field fwork number
 ---@field vwork Vec3f
-Actor = {}
 ---@return Actor
 function Actor:asRef() end
 
@@ -28318,14 +28358,17 @@ EventPriority = {
 }
 
 ---@class IEvent
----@field cancelled boolean
 IEvent = {}
+---@field cancelled boolean
 
 ---@class EventListener
+EventListener = {}
 ---@field priority EventPriority
 ---@field function SmartFunctionCallback
-EventListener = {}
 
+---@param _name string
+---@return std::shared_ptr<Ship::CVar>
+function CVarGet(_name) end
 ---@param _name string
 ---@param defaultValue number
 ---@return number
@@ -28336,7 +28379,7 @@ function CVarGetInteger(_name, defaultValue) end
 function CVarGetFloat(_name, defaultValue) end
 ---@param _name string
 ---@param defaultValue string
----@return number
+---@return 
 function CVarGetString(_name, defaultValue) end
 ---@param _name string
 ---@param defaultValue Color_RGBA8
@@ -28524,6 +28567,25 @@ function UIWidgets.EnhancementCheckbox(_text, cvarName, disabled, disabledToolti
 ---@param defaultValue boolean
 ---@return boolean
 function UIWidgets.PaddedEnhancementCheckbox(_text, cvarName, padTop, padBottom, disabled, disabledTooltipText, disabledGraphic, defaultValue) end
+---@param _cvarName string
+---@param _std::span<char any
+---@param comboArray std::dynamic_extent>
+---@param defaultIndex number
+---@param disabled boolean
+---@param disabledTooltipText string
+---@param disabledValue number
+---@return boolean
+function UIWidgets.EnhancementCombobox(_cvarName, _std::span<char, comboArray, defaultIndex, disabled, disabledTooltipText, disabledValue) end
+---@param _label string
+---@param cvarName string
+---@param _std::span<char any
+---@param comboArray std::dynamic_extent>
+---@param defaultIndex number
+---@param disabled boolean
+---@param disabledTooltipText string
+---@param disabledValue number
+---@return boolean
+function UIWidgets.LabeledRightAlignedEnhancementCombobox(_label, cvarName, _std::span<char, comboArray, defaultIndex, disabled, disabledTooltipText, disabledValue) end
 ---@param _text string
 ---@param padTop boolean
 ---@param padBottom boolean
@@ -28641,6 +28703,12 @@ function UIWidgets.PopStyleButton(_) end
 ---@param options ButtonOptions
 ---@return boolean
 function UIWidgets.Button(_label, options) end
+---@param _label string
+---@param cvarName string
+---@param windowPtr std::shared_ptr<Ship::GuiWindow>
+---@param options ButtonOptions
+---@return boolean
+function UIWidgets.WindowButton(_label, cvarName, windowPtr, options) end
 ---@param _tooltip string
 ---@return CheckboxOptions
 function UIWidgets.DefaultCheckboxOptions(_tooltip) end
@@ -28666,6 +28734,20 @@ function UIWidgets.PushStyleCombobox(arg0) end
 ---@param _ any
 ---@return nil
 function UIWidgets.PopStyleCombobox(_) end
+---@param _label string
+---@param value number
+---@param _std::span<char any
+---@param comboArray std::dynamic_extent>
+---@param options ComboboxOptions
+---@return boolean
+function UIWidgets.Combobox(_label, value, _std::span<char, comboArray, options) end
+---@param _label string
+---@param cvarName string
+---@param _std::span<char any
+---@param comboArray std::dynamic_extent>
+---@param options ComboboxOptions
+---@return boolean
+function UIWidgets.CVarCombobox(_label, cvarName, _std::span<char, comboArray, options) end
 ---@param arg0 color
 ---@return nil
 function UIWidgets.PushStyleSlider(arg0) end
@@ -28706,7 +28788,7 @@ function UIWidgets.CVarSliderFloat(_label, cvarName, min, max, defaultValue, opt
 ---@return number
 function ResourceGetCrcByName(_name) end
 ---@param _crc number
----@return number
+---@return 
 function ResourceGetNameByCrc(_crc) end
 ---@param _name string
 ---@return number
@@ -28773,187 +28855,183 @@ function ResourceHasGameVersion(_hash) end
 ---@param _ any
 ---@return number
 function IsResourceManagerLoaded(_) end
----@class ItemDropEvent
----@field event IEvent
----@field item Item
+lua.new_usertype<ItemDropEvent>("ItemDropEvent",
+    "event", sol::property(&ItemDropEvent::event, &ItemDropEvent::event),
+    "item", sol::property(&ItemDropEvent::item, &ItemDropEvent::item)
+);
 
+lua.new_usertype<PlayerActionBoostEvent>("PlayerActionBoostEvent",
+    "event", sol::property(&PlayerActionBoostEvent::event, &PlayerActionBoostEvent::event),
+    "player", sol::property(&PlayerActionBoostEvent::player, &PlayerActionBoostEvent::player)
+);
 
----@class PlayerActionBoostEvent
----@field event IEvent
----@field player Player
+lua.new_usertype<PlayerActionBrakeEvent>("PlayerActionBrakeEvent",
+    "event", sol::property(&PlayerActionBrakeEvent::event, &PlayerActionBrakeEvent::event),
+    "player", sol::property(&PlayerActionBrakeEvent::player, &PlayerActionBrakeEvent::player)
+);
 
----@class PlayerActionBrakeEvent
----@field event IEvent
----@field player Player
+lua.new_usertype<PlayerActionPreShootEvent>("PlayerActionPreShootEvent",
+    "event", sol::property(&PlayerActionPreShootEvent::event, &PlayerActionPreShootEvent::event),
+    "player", sol::property(&PlayerActionPreShootEvent::player, &PlayerActionPreShootEvent::player),
+    "laser", sol::property(&PlayerActionPreShootEvent::laser, &PlayerActionPreShootEvent::laser)
+);
 
----@class PlayerActionPreShootEvent
----@field event IEvent
----@field player Player
----@field laser LaserStrength
+lua.new_usertype<PlayerActionPostShootEvent>("PlayerActionPostShootEvent",
+    "event", sol::property(&PlayerActionPostShootEvent::event, &PlayerActionPostShootEvent::event),
+    "player", sol::property(&PlayerActionPostShootEvent::player, &PlayerActionPostShootEvent::player),
+    "shot", sol::property(&PlayerActionPostShootEvent::shot, &PlayerActionPostShootEvent::shot)
+);
 
----@class PlayerActionPostShootEvent
----@field event IEvent
----@field player Player
----@field shot PlayerShot
+lua.new_usertype<PlayerActionPreShootChargedEvent>("PlayerActionPreShootChargedEvent",
+    "event", sol::property(&PlayerActionPreShootChargedEvent::event, &PlayerActionPreShootChargedEvent::event),
+    "player", sol::property(&PlayerActionPreShootChargedEvent::player, &PlayerActionPreShootChargedEvent::player)
+);
 
----@class PlayerActionPreShootChargedEvent
----@field event IEvent
----@field player Player
+lua.new_usertype<PlayerActionPostShootChargedEvent>("PlayerActionPostShootChargedEvent",
+    "event", sol::property(&PlayerActionPostShootChargedEvent::event, &PlayerActionPostShootChargedEvent::event),
+    "player", sol::property(&PlayerActionPostShootChargedEvent::player, &PlayerActionPostShootChargedEvent::player)
+);
 
----@class PlayerActionPostShootChargedEvent
----@field event IEvent
----@field player Player
+lua.new_usertype<PlayerActionPreBombEvent>("PlayerActionPreBombEvent",
+    "event", sol::property(&PlayerActionPreBombEvent::event, &PlayerActionPreBombEvent::event),
+    "player", sol::property(&PlayerActionPreBombEvent::player, &PlayerActionPreBombEvent::player)
+);
 
----@class PlayerActionPreBombEvent
----@field event IEvent
----@field player Player
+lua.new_usertype<PlayerActionPostBombEvent>("PlayerActionPostBombEvent",
+    "event", sol::property(&PlayerActionPostBombEvent::event, &PlayerActionPostBombEvent::event),
+    "player", sol::property(&PlayerActionPostBombEvent::player, &PlayerActionPostBombEvent::player)
+);
 
----@class PlayerActionPostBombEvent
----@field event IEvent
----@field player Player
+lua.new_usertype<EngineInitEvent>("EngineInitEvent",
+    "event", sol::property(&EngineInitEvent::event, &EngineInitEvent::event)
+);
 
+lua.new_usertype<EngineExitEvent>("EngineExitEvent",
+    "event", sol::property(&EngineExitEvent::event, &EngineExitEvent::event)
+);
 
----@class EngineInitEvent
----@field event IEvent
+lua.new_usertype<EngineRenderMenubarEvent>("EngineRenderMenubarEvent",
+    "event", sol::property(&EngineRenderMenubarEvent::event, &EngineRenderMenubarEvent::event)
+);
 
----@class EngineExitEvent
----@field event IEvent
+lua.new_usertype<DisplayPreUpdateEvent>("DisplayPreUpdateEvent",
+    "event", sol::property(&DisplayPreUpdateEvent::event, &DisplayPreUpdateEvent::event)
+);
 
----@class EngineRenderMenubarEvent
----@field event IEvent
+lua.new_usertype<DisplayPostUpdateEvent>("DisplayPostUpdateEvent",
+    "event", sol::property(&DisplayPostUpdateEvent::event, &DisplayPostUpdateEvent::event)
+);
 
----@class DisplayPreUpdateEvent
----@field event IEvent
+lua.new_usertype<GamePreUpdateEvent>("GamePreUpdateEvent",
+    "event", sol::property(&GamePreUpdateEvent::event, &GamePreUpdateEvent::event)
+);
 
----@class DisplayPostUpdateEvent
----@field event IEvent
+lua.new_usertype<GamePostUpdateEvent>("GamePostUpdateEvent",
+    "event", sol::property(&GamePostUpdateEvent::event, &GamePostUpdateEvent::event)
+);
 
----@class GamePreUpdateEvent
----@field event IEvent
+lua.new_usertype<PlayUpdateEvent>("PlayUpdateEvent",
+    "event", sol::property(&PlayUpdateEvent::event, &PlayUpdateEvent::event)
+);
 
----@class GamePostUpdateEvent
----@field event IEvent
+lua.new_usertype<PlayerPreUpdateEvent>("PlayerPreUpdateEvent",
+    "event", sol::property(&PlayerPreUpdateEvent::event, &PlayerPreUpdateEvent::event),
+    "player", sol::property(&PlayerPreUpdateEvent::player, &PlayerPreUpdateEvent::player)
+);
 
----@class PlayUpdateEvent
----@field event IEvent
+lua.new_usertype<PlayerPostUpdateEvent>("PlayerPostUpdateEvent",
+    "event", sol::property(&PlayerPostUpdateEvent::event, &PlayerPostUpdateEvent::event),
+    "player", sol::property(&PlayerPostUpdateEvent::player, &PlayerPostUpdateEvent::player)
+);
 
----@class PlayerPreUpdateEvent
----@field event IEvent
----@field player Player
+lua.new_usertype<DrawRadarHUDEvent>("DrawRadarHUDEvent",
+    "event", sol::property(&DrawRadarHUDEvent::event, &DrawRadarHUDEvent::event)
+);
 
----@class PlayerPostUpdateEvent
----@field event IEvent
----@field player Player
+lua.new_usertype<DrawRadarMarkArwingEvent>("DrawRadarMarkArwingEvent",
+    "event", sol::property(&DrawRadarMarkArwingEvent::event, &DrawRadarMarkArwingEvent::event),
+    "colorIdx", sol::property(&DrawRadarMarkArwingEvent::colorIdx, &DrawRadarMarkArwingEvent::colorIdx)
+);
 
----@class DrawRadarHUDEvent
----@field event IEvent
+lua.new_usertype<DrawRadarMarkWolfenEvent>("DrawRadarMarkWolfenEvent",
+    "event", sol::property(&DrawRadarMarkWolfenEvent::event, &DrawRadarMarkWolfenEvent::event)
+);
 
----@class DrawRadarMarkArwingEvent
----@field event IEvent
----@field colorIdx number
+lua.new_usertype<DrawBoostGaugeHUDEvent>("DrawBoostGaugeHUDEvent",
+    "event", sol::property(&DrawBoostGaugeHUDEvent::event, &DrawBoostGaugeHUDEvent::event)
+);
 
----@class DrawRadarMarkWolfenEvent
----@field event IEvent
+lua.new_usertype<DrawBombCounterHUDEvent>("DrawBombCounterHUDEvent",
+    "event", sol::property(&DrawBombCounterHUDEvent::event, &DrawBombCounterHUDEvent::event)
+);
 
----@class DrawBoostGaugeHUDEvent
----@field event IEvent
+lua.new_usertype<DrawIncomingMsgHUDEvent>("DrawIncomingMsgHUDEvent",
+    "event", sol::property(&DrawIncomingMsgHUDEvent::event, &DrawIncomingMsgHUDEvent::event)
+);
 
----@class DrawBombCounterHUDEvent
----@field event IEvent
+lua.new_usertype<PreSetupRadioMsgEvent>("PreSetupRadioMsgEvent",
+    "event", sol::property(&PreSetupRadioMsgEvent::event, &PreSetupRadioMsgEvent::event),
+    "radioRedBox", sol::property(&PreSetupRadioMsgEvent::radioRedBox, &PreSetupRadioMsgEvent::radioRedBox)
+);
 
----@class DrawIncomingMsgHUDEvent
----@field event IEvent
+lua.new_usertype<DrawGoldRingsHUDEvent>("DrawGoldRingsHUDEvent",
+    "event", sol::property(&DrawGoldRingsHUDEvent::event, &DrawGoldRingsHUDEvent::event)
+);
 
----@class PreSetupRadioMsgEvent
----@field event IEvent
----@field radioRedBox number
+lua.new_usertype<DrawLivesCounterHUDEvent>("DrawLivesCounterHUDEvent",
+    "event", sol::property(&DrawLivesCounterHUDEvent::event, &DrawLivesCounterHUDEvent::event)
+);
 
----@class DrawGoldRingsHUDEvent
----@field event IEvent
+lua.new_usertype<DrawTrainingRingPassCountHUDEvent>("DrawTrainingRingPassCountHUDEvent",
+    "event", sol::property(&DrawTrainingRingPassCountHUDEvent::event, &DrawTrainingRingPassCountHUDEvent::event)
+);
 
----@class DrawLivesCounterHUDEvent
----@field event IEvent
+lua.new_usertype<DrawEdgeArrowsHUDEvent>("DrawEdgeArrowsHUDEvent",
+    "event", sol::property(&DrawEdgeArrowsHUDEvent::event, &DrawEdgeArrowsHUDEvent::event)
+);
 
----@class DrawTrainingRingPassCountHUDEvent
----@field event IEvent
+lua.new_usertype<DrawBossHealthHUDEvent>("DrawBossHealthHUDEvent",
+    "event", sol::property(&DrawBossHealthHUDEvent::event, &DrawBossHealthHUDEvent::event)
+);
 
----@class DrawEdgeArrowsHUDEvent
----@field event IEvent
+lua.new_usertype<DrawGlobalHUDPreEvent>("DrawGlobalHUDPreEvent",
+    "event", sol::property(&DrawGlobalHUDPreEvent::event, &DrawGlobalHUDPreEvent::event)
+);
 
----@class DrawBossHealthHUDEvent
----@field event IEvent
+lua.new_usertype<DrawGlobalHUDPostEvent>("DrawGlobalHUDPostEvent",
+    "event", sol::property(&DrawGlobalHUDPostEvent::event, &DrawGlobalHUDPostEvent::event)
+);
 
----@class DrawGlobalHUDPreEvent
----@field event IEvent
+lua.new_usertype<ObjectInitEvent>("ObjectInitEvent",
+    "event", sol::property(&ObjectInitEvent::event, &ObjectInitEvent::event),
+    "type", sol::property(&ObjectInitEvent::type, &ObjectInitEvent::type),
+    "object", sol::property(&ObjectInitEvent::object, &ObjectInitEvent::object)
+);
 
----@class DrawGlobalHUDPostEvent
----@field event IEvent
+lua.new_usertype<ObjectUpdateEvent>("ObjectUpdateEvent",
+    "event", sol::property(&ObjectUpdateEvent::event, &ObjectUpdateEvent::event),
+    "type", sol::property(&ObjectUpdateEvent::type, &ObjectUpdateEvent::type),
+    "object", sol::property(&ObjectUpdateEvent::object, &ObjectUpdateEvent::object)
+);
 
+lua.new_usertype<ObjectDrawPreSetupEvent>("ObjectDrawPreSetupEvent",
+    "event", sol::property(&ObjectDrawPreSetupEvent::event, &ObjectDrawPreSetupEvent::event),
+    "type", sol::property(&ObjectDrawPreSetupEvent::type, &ObjectDrawPreSetupEvent::type),
+    "object", sol::property(&ObjectDrawPreSetupEvent::object, &ObjectDrawPreSetupEvent::object)
+);
 
----@class ObjectInitEvent
----@field event IEvent
----@field type ObjectEventType
----@field object Object
+lua.new_usertype<ObjectDrawPostSetupEvent>("ObjectDrawPostSetupEvent",
+    "event", sol::property(&ObjectDrawPostSetupEvent::event, &ObjectDrawPostSetupEvent::event),
+    "type", sol::property(&ObjectDrawPostSetupEvent::type, &ObjectDrawPostSetupEvent::type),
+    "object", sol::property(&ObjectDrawPostSetupEvent::object, &ObjectDrawPostSetupEvent::object)
+);
 
----@class ObjectUpdateEvent
----@field event IEvent
----@field type ObjectEventType
----@field object Object
-
----@class ObjectDrawPreSetupEvent
----@field event IEvent
----@field type ObjectEventType
----@field object Object
-
----@class ObjectDrawPostSetupEvent
----@field event IEvent
----@field type ObjectEventType
----@field object Object
-
----@class ObjectDestroyEvent
----@field event IEvent
----@field type ObjectEventType
----@field object Object
-
+lua.new_usertype<ObjectDestroyEvent>("ObjectDestroyEvent",
+    "event", sol::property(&ObjectDestroyEvent::event, &ObjectDestroyEvent::event),
+    "type", sol::property(&ObjectDestroyEvent::type, &ObjectDestroyEvent::type),
+    "object", sol::property(&ObjectDestroyEvent::object, &ObjectDestroyEvent::object)
+);
 
 ---@enum EventID
 EventID = {
-    ItemDropEvent = -1,
-    PlayerActionBoostEvent = -1,
-    PlayerActionBrakeEvent = -1,
-    PlayerActionPreShootEvent = -1,
-    PlayerActionPostShootEvent = -1,
-    PlayerActionPreShootChargedEvent = -1,
-    PlayerActionPostShootChargedEvent = -1,
-    PlayerActionPreBombEvent = -1,
-    PlayerActionPostBombEvent = -1,
-    EngineInitEvent = -1,
-    EngineExitEvent = -1,
-    EngineRenderMenubarEvent = -1,
-    DisplayPreUpdateEvent = -1,
-    DisplayPostUpdateEvent = -1,
-    GamePreUpdateEvent = -1,
-    GamePostUpdateEvent = -1,
-    PlayUpdateEvent = -1,
-    PlayerPreUpdateEvent = -1,
-    PlayerPostUpdateEvent = -1,
-    DrawRadarHUDEvent = -1,
-    DrawRadarMarkArwingEvent = -1,
-    DrawRadarMarkWolfenEvent = -1,
-    DrawBoostGaugeHUDEvent = -1,
-    DrawBombCounterHUDEvent = -1,
-    DrawIncomingMsgHUDEvent = -1,
-    PreSetupRadioMsgEvent = -1,
-    DrawGoldRingsHUDEvent = -1,
-    DrawLivesCounterHUDEvent = -1,
-    DrawTrainingRingPassCountHUDEvent = -1,
-    DrawEdgeArrowsHUDEvent = -1,
-    DrawBossHealthHUDEvent = -1,
-    DrawGlobalHUDPreEvent = -1,
-    DrawGlobalHUDPostEvent = -1,
-    ObjectInitEvent = -1,
-    ObjectUpdateEvent = -1,
-    ObjectDrawPreSetupEvent = -1,
-    ObjectDrawPostSetupEvent = -1,
-    ObjectDestroyEvent = -1
 }

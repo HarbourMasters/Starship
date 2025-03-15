@@ -71,7 +71,7 @@ typedef void (*EventCallback)(IEvent*);
 #include <unordered_map>
 #include <sol/sol.hpp>
 
-typedef std::variant<EventCallback, sol::function> SmartFunctionCallback;
+typedef std::variant<EventCallback, sol::protected_function> SmartFunctionCallback;
 #define is_type(var, type) std::holds_alternative<type>((var))
 
 struct EventListener {

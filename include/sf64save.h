@@ -34,6 +34,10 @@ typedef struct PlanetStats {
     (hitCount > 255 ? hitCount - 256 : hitCount),                             \
         ((planetId) | ((hitCount > 255 ? 1 : 0) << 4) | (peppyAlive << 5) | (falcoAlive << 6) | (slippyAlive << 7))
 
+#ifdef __cplusplus
+#include <vector>
+#endif
+
 typedef struct SaveData {
     /* 0x00 */ PlanetData planet[16];
     /* 0x10 */ char pad10[0x4];
@@ -50,6 +54,11 @@ typedef struct SaveData {
     /* 0xEB */ u8 textLanguage;  // EU Only text language selection
     /* 0xEC */ u8 voiceLanguage; // EU Only voice language selection
     /* 0xED */ char padEE[0x11];
+#ifdef __cplusplus
+    std::vector<PlanetStats> GetPlanetStats(uint32_t route) { // sol:not_global
+        std::vector<PlanetStats> result; for (auto & stat : stats) result.push_back(stat[route]); return result;  // sol:ignore
+    } // sol:ignore
+#endif
 } SaveData; // size = 0xFE
 
 typedef struct {

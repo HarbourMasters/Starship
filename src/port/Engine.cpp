@@ -188,6 +188,8 @@ GameEngine::GameEngine() {
                                     "Limb", static_cast<uint32_t>(SF64::ResourceType::Limb), 0);
     loader->RegisterResourceFactory(std::make_shared<SF64::ResourceFactoryBinaryMessageV0>(), RESOURCE_FORMAT_BINARY,
                                     "Message", static_cast<uint32_t>(SF64::ResourceType::Message), 0);
+    loader->RegisterResourceFactory(std::make_shared<SF64::ResourceFactoryXMLMessageV0>(), RESOURCE_FORMAT_XML,
+                                    "Message", static_cast<uint32_t>(SF64::ResourceType::Message), 0);
     loader->RegisterResourceFactory(std::make_shared<SF64::ResourceFactoryBinaryMessageLookupV0>(),
                                     RESOURCE_FORMAT_BINARY, "MessageTable",
                                     static_cast<uint32_t>(SF64::ResourceType::MessageTable), 0);

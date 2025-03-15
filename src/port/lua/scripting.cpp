@@ -14,6 +14,7 @@
 #include "port/resource/type/ResourceType.h"
 #include "port/resource/type/Text.h"
 #include "port/Engine.h"
+#include "port/notification/notification.h"
 
 #define SOL_ALL_SAFETIES_ON 1
 #include <sol/sol.hpp>
@@ -29,6 +30,9 @@ struct Asset {
 
     template<typename T>
     T* Get() {
+        if(this == nullptr){
+            return nullptr;
+        }
         return (T*) path.data();
     }
 
@@ -38,7 +42,7 @@ struct Asset {
 
     static Asset Register(const std::string path) {
         std::string full = "__OTR__" + path;
-        return Asset{full};
+        return Asset{ full };
     }
 };
 
@@ -173,6 +177,7 @@ void ScriptingLayer::Init() {
         }
     } catch (const sol::error& e) {
         SPDLOG_ERROR(std::string(e.what()));
+        Notification::Emit({ .message = "Mod error, check log for details", .messageColor = ImVec4(1.0f, 0.5f, 0.5f, 1.0f), .remainingTime = 7.0f });
         return;
     }
 }

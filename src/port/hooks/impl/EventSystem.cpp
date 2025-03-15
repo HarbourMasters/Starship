@@ -2,6 +2,7 @@
 #include <stdexcept>
 #include <algorithm>
 #include "port/hooks/Events.h"
+#include "port/notification/notification.h"
 
 EventSystem* EventSystem::Instance = new EventSystem();
 
@@ -46,11 +47,16 @@ void EventSystem::CallEvent(EventID id, IEvent* event) {
             std::get<EventCallback>(listener.function)(event);
         }
 
-        if(is_type(listener.function, sol::function)){
+        if(is_type(listener.function, sol::protected_function)){
             #undef DEFINE_EVENT
             #define DEFINE_EVENT(eventName, ...) \
                 if(id == eventName##ID) { \
-                    std::get<sol::function>(listener.function)((eventName*)event); \
+                    auto result = std::get<sol::protected_function>(listener.function)((eventName*)event); \
+                    if(!result.valid()) { \
+                        sol::error err = result; \
+                        SPDLOG_ERROR(std::string(err.what())); \
+                        Notification::Emit({ .message = "Mod error, check log for details", .messageColor = ImVec4(1.0f, 0.5f, 0.5f, 1.0f), .remainingTime = 7.0f }); \
+                    } \
                 }
             #define __LUA__
             #include "port/hooks/EventList.h"

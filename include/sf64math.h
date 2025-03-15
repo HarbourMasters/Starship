@@ -13,10 +13,11 @@ typedef struct Vec3f {
     /* 0x4 */ f32 y;
     /* 0x8 */ f32 z;
 #ifdef __cplusplus
-    Vec3f* asRef() { return this; } // sol:ignore
-    f32* xRef() { return &x; } // sol:ignore
-    f32* yRef() { return &y; } // sol:ignore
-    f32* zRef() { return &z; } // sol:ignore
+    Vec3f* asRef() { return this; } // sol:not_global
+    f32* xRef() { return &x; } // sol:not_global
+    f32* yRef() { return &y; } // sol:not_global
+    f32* zRef() { return &z; } // sol:not_global
+    f32* asArray() { if(this) return nullptr; return (f32*) this; } // sol:not_global
 #endif
 } Vec3f; // size = 0xC
 
@@ -25,10 +26,11 @@ typedef struct Vec3s {
     /* 0x2 */ s16 y;
     /* 0x4 */ s16 z;
 #ifdef __cplusplus
-    Vec3s* asRef() { return this; } // sol:ignore
-    s16* xRef() { return &x; } // sol:ignore
-    s16* yRef() { return &y; } // sol:ignore
-    s16* zRef() { return &z; } // sol:ignore
+    Vec3s* asRef() { return this; } // sol:not_global
+    s16* xRef() { return &x; } // sol:not_global
+    s16* yRef() { return &y; } // sol:not_global
+    s16* zRef() { return &z; } // sol:not_global
+    s16* asArray() { if(this) return nullptr; return (s16*) this; } // sol:not_global
 #endif
 } Vec3s; // size = 0x6;
 
@@ -36,7 +38,7 @@ typedef struct PosRot {
     /* 0x00 */ Vec3f pos;
     /* 0x0C */ Vec3f rot;
 #ifdef __cplusplus
-    PosRot* asRef() { return this; } // sol:ignore
+    PosRot* asRef() { return this; } // sol:not_global
 #endif
 } PosRot; // size = 0x18
 
@@ -44,14 +46,14 @@ typedef struct CameraPoint {
     /* 0x00 */ Vec3f eye;
     /* 0x0C */ Vec3f at;
 #ifdef __cplusplus
-    CameraPoint* asRef() { return this; } // sol:ignore
+    CameraPoint* asRef() { return this; } // sol:not_global
 #endif
 } CameraPoint; // size = 0x18
 
 typedef struct Triangle {
     /* 0x0 */ s16 vtx[3];
 #ifdef __cplusplus
-    Triangle* asRef() { return this; } // sol:ignore
+    Triangle* asRef() { return this; } // sol:not_global
 #endif
 } Triangle; // size = 0x6
 
@@ -59,7 +61,7 @@ typedef struct PlaneF {
     /* 0x0 */ Vec3f normal;
     /* 0xC */ f32 dist;
 #ifdef __cplusplus
-    PlaneF* asRef() { return this; } // sol:ignore
+    PlaneF* asRef() { return this; } // sol:not_global
 #endif
 } PlaneF; // size = 0x10
 
@@ -67,7 +69,7 @@ typedef struct PlaneI {
     /* 0x0 */ Vec3s normal;
     /* 0x8 */ s32 dist;
 #ifdef __cplusplus
-    PlaneI* asRef() { return this; } // sol:ignore
+    PlaneI* asRef() { return this; } // sol:not_global
 #endif
 } PlaneI; // size = 0xC
 

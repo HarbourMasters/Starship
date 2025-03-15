@@ -919,50 +919,52 @@ lua["Assets"]["sBoostGaugeArrow8"] = Asset{ sBoostGaugeArrow8 };
 lua.new_usertype<Vec3f>("Vec3f",
     "x", sol::property(&Vec3f::x, &Vec3f::x),
     "y", sol::property(&Vec3f::y, &Vec3f::y),
-    "z", sol::property(&Vec3f::z, &Vec3f::z)
-   ,"asRef", &Vec3f::asRef
-   ,"xRef", &Vec3f::xRef,
-   "yRef", &Vec3f::yRef,
-   "zRef", &Vec3f::zRef
+    "z", sol::property(&Vec3f::z, &Vec3f::z),
+    "asRef", &Vec3f::asRef,
+    "xRef", &Vec3f::xRef,
+    "yRef", &Vec3f::yRef,
+    "zRef", &Vec3f::zRef,
+    "asArray", &Vec3f::asArray
 );
 
 lua.new_usertype<Vec3s>("Vec3s",
     "x", sol::property(&Vec3s::x, &Vec3s::x),
     "y", sol::property(&Vec3s::y, &Vec3s::y),
-    "z", sol::property(&Vec3s::z, &Vec3s::z)
-   ,"asRef", &Vec3s::asRef
-   ,"xRef", &Vec3s::xRef,
-   "yRef", &Vec3s::yRef,
-   "zRef", &Vec3s::zRef
+    "z", sol::property(&Vec3s::z, &Vec3s::z),
+    "asRef", &Vec3s::asRef,
+    "xRef", &Vec3s::xRef,
+    "yRef", &Vec3s::yRef,
+    "zRef", &Vec3s::zRef,
+    "asArray", &Vec3s::asArray
 );
 
 lua.new_usertype<PosRot>("PosRot",
     "pos", sol::property(&PosRot::pos, &PosRot::pos),
-    "rot", sol::property(&PosRot::rot, &PosRot::rot)
-   ,"asRef", &PosRot::asRef
+    "rot", sol::property(&PosRot::rot, &PosRot::rot),
+    "asRef", &PosRot::asRef
 );
 
 lua.new_usertype<CameraPoint>("CameraPoint",
     "eye", sol::property(&CameraPoint::eye, &CameraPoint::eye),
-    "at", sol::property(&CameraPoint::at, &CameraPoint::at)
-   ,"asRef", &CameraPoint::asRef
+    "at", sol::property(&CameraPoint::at, &CameraPoint::at),
+    "asRef", &CameraPoint::asRef
 );
 
 lua.new_usertype<Triangle>("Triangle",
-    "vtx", sol::property(&Triangle::vtx, &Triangle::vtx)
-   ,"asRef", &Triangle::asRef
+    "vtx", sol::property(&Triangle::vtx, &Triangle::vtx),
+    "asRef", &Triangle::asRef
 );
 
 lua.new_usertype<PlaneF>("PlaneF",
     "normal", sol::property(&PlaneF::normal, &PlaneF::normal),
-    "dist", sol::property(&PlaneF::dist, &PlaneF::dist)
-   ,"asRef", &PlaneF::asRef
+    "dist", sol::property(&PlaneF::dist, &PlaneF::dist),
+    "asRef", &PlaneF::asRef
 );
 
 lua.new_usertype<PlaneI>("PlaneI",
     "normal", sol::property(&PlaneI::normal, &PlaneI::normal),
-    "dist", sol::property(&PlaneI::dist, &PlaneI::dist)
-   ,"asRef", &PlaneI::asRef
+    "dist", sol::property(&PlaneI::dist, &PlaneI::dist),
+    "asRef", &PlaneI::asRef
 );
 
 lua["Game"]["gIdentityMtx"] = sol::overload([]() -> Mtx { return gIdentityMtx; }, [](Mtx value) { gIdentityMtx = value; });
@@ -3288,6 +3290,15 @@ lua.set_function("RCP_SetupDL_50", RCP_SetupDL_50);
 lua.set_function("RCP_SetupDL_61", RCP_SetupDL_61);
 lua["Game"]["gRcpSetupDLs"] = sol::overload([](int index1, int index2) -> Gfx { return gRcpSetupDLs[index1][index2]; }, [](int index1, int index2, Gfx value) { gRcpSetupDLs[index1][index2] = value; });
 lua["Game"]["D_80178580"] = sol::overload([](int index) -> u8 { return D_80178580[index]; }, [](int index, u8 value) { D_80178580[index] = value; });
+lua.new_usertype<PlanetStats>("PlanetStats",
+    "hitCount", sol::property([] (PlanetStats& self) -> u16 { return self.hitCount; }, [] (PlanetStats& self, u16 value) { self.hitCount = value; }),
+    "planetId", sol::property([] (PlanetStats& self) -> u8 { return self.planetId; }, [] (PlanetStats& self, u8 value) { self.planetId = value; }),
+    "hitCountOver256", sol::property([] (PlanetStats& self) -> u8 { return self.hitCountOver256; }, [] (PlanetStats& self, u8 value) { self.hitCountOver256 = value; }),
+    "peppyAlive", sol::property([] (PlanetStats& self) -> u8 { return self.peppyAlive; }, [] (PlanetStats& self, u8 value) { self.peppyAlive = value; }),
+    "falcoAlive", sol::property([] (PlanetStats& self) -> u8 { return self.falcoAlive; }, [] (PlanetStats& self, u8 value) { self.falcoAlive = value; }),
+    "slippyAlive", sol::property([] (PlanetStats& self) -> u8 { return self.slippyAlive; }, [] (PlanetStats& self, u8 value) { self.slippyAlive = value; })
+);
+
 lua.new_usertype<SaveData>("SaveData",
     "planet", sol::property(&SaveData::planet, &SaveData::planet),
     "pad10", sol::property(&SaveData::pad10, &SaveData::pad10),
@@ -4876,8 +4887,8 @@ lua.new_usertype<Object>("Object",
     "status", sol::property(&Object::status, &Object::status),
     "id", sol::property(&Object::id, &Object::id),
     "pos", sol::property(&Object::pos, &Object::pos),
-    "rot", sol::property(&Object::rot, &Object::rot)
-   ,"asActor", &Object::asActor,
+    "rot", sol::property(&Object::rot, &Object::rot),
+    "asActor", &Object::asActor,
     "asBoss", &Object::asBoss,
     "asScenery", &Object::asScenery,
     "asScenery360", &Object::asScenery360,
@@ -4899,8 +4910,8 @@ lua.new_usertype<ObjectInfo>("ObjectInfo",
     "damage", sol::property(&ObjectInfo::damage, &ObjectInfo::damage),
     "unk_19", sol::property(&ObjectInfo::unk_19, &ObjectInfo::unk_19),
     "targetOffset", sol::property(&ObjectInfo::targetOffset, &ObjectInfo::targetOffset),
-    "bonus", sol::property(&ObjectInfo::bonus, &ObjectInfo::bonus)
-    ,"asRef", &ObjectInfo::asRef
+    "bonus", sol::property(&ObjectInfo::bonus, &ObjectInfo::bonus),
+    "asRef", &ObjectInfo::asRef
 );
 
 lua.new_usertype<Scenery360>("Scenery360",
@@ -4909,8 +4920,8 @@ lua.new_usertype<Scenery360>("Scenery360",
     "pathIndex", sol::property(&Scenery360::pathIndex, &Scenery360::pathIndex),
     "unk_41", sol::property(&Scenery360::unk_41, &Scenery360::unk_41),
     "sfxSource", sol::property(&Scenery360::sfxSource, &Scenery360::sfxSource),
-    "unk_54", sol::property(&Scenery360::unk_54, &Scenery360::unk_54)
-    ,"asRef", &Scenery360::asRef
+    "unk_54", sol::property(&Scenery360::unk_54, &Scenery360::unk_54),
+    "asRef", &Scenery360::asRef
 );
 
 lua.new_usertype<Scenery>("Scenery",
@@ -4925,8 +4936,8 @@ lua.new_usertype<Scenery>("Scenery",
     "effectVel", sol::property(&Scenery::effectVel, &Scenery::effectVel),
     "vel", sol::property(&Scenery::vel, &Scenery::vel),
     "sfxSource", sol::property(&Scenery::sfxSource, &Scenery::sfxSource),
-    "pad7C", sol::property(&Scenery::pad7C, &Scenery::pad7C)
-    ,"asRef", &Scenery::asRef
+    "pad7C", sol::property(&Scenery::pad7C, &Scenery::pad7C),
+    "asRef", &Scenery::asRef
 );
 
 lua.new_usertype<Sprite>("Sprite",
@@ -4936,8 +4947,8 @@ lua.new_usertype<Sprite>("Sprite",
     "pad44", sol::property(&Sprite::pad44, &Sprite::pad44),
     "sceneryId", sol::property(&Sprite::sceneryId, &Sprite::sceneryId),
     "destroy", sol::property(&Sprite::destroy, &Sprite::destroy),
-    "toLeft", sol::property(&Sprite::toLeft, &Sprite::toLeft)
-    ,"asRef", &Sprite::asRef
+    "toLeft", sol::property(&Sprite::toLeft, &Sprite::toLeft),
+    "asRef", &Sprite::asRef
 );
 
 lua.new_usertype<Item>("Item",
@@ -4954,8 +4965,8 @@ lua.new_usertype<Item>("Item",
     "unk_54", sol::property(&Item::unk_54, &Item::unk_54),
     "unk_58", sol::property(&Item::unk_58, &Item::unk_58),
     "sfxSource", sol::property(&Item::sfxSource, &Item::sfxSource),
-    "width", sol::property(&Item::width, &Item::width)
-    ,"asRef", &Item::asRef
+    "width", sol::property(&Item::width, &Item::width),
+    "asRef", &Item::asRef
 );
 
 lua.new_usertype<Effect>("Effect",
@@ -4978,8 +4989,8 @@ lua.new_usertype<Effect>("Effect",
     "unk_78", sol::property(&Effect::unk_78, &Effect::unk_78),
     "unk_7A", sol::property(&Effect::unk_7A, &Effect::unk_7A),
     "pad7C", sol::property(&Effect::pad7C, &Effect::pad7C),
-    "sfxSource", sol::property(&Effect::sfxSource, &Effect::sfxSource)
-    ,"asRef", &Effect::asRef
+    "sfxSource", sol::property(&Effect::sfxSource, &Effect::sfxSource),
+    "asRef", &Effect::asRef
 );
 
 lua.new_usertype<Boss>("Boss",
@@ -5012,8 +5023,8 @@ lua.new_usertype<Boss>("Boss",
     "fwork", sol::property(&Boss::fwork, &Boss::fwork),
     "vwork", sol::property(&Boss::vwork, &Boss::vwork),
     "scale", sol::property(&Boss::scale, &Boss::scale),
-    "sfxSource", sol::property(&Boss::sfxSource, &Boss::sfxSource)
-    ,"asRef", &Boss::asRef
+    "sfxSource", sol::property(&Boss::sfxSource, &Boss::sfxSource),
+    "asRef", &Boss::asRef
 );
 
 lua.new_usertype<Actor>("Actor",
@@ -5054,8 +5065,8 @@ lua.new_usertype<Actor>("Actor",
     "gravity", sol::property(&Actor::gravity, &Actor::gravity),
     "scale", sol::property(&Actor::scale, &Actor::scale),
     "fwork", sol::property(&Actor::fwork, &Actor::fwork),
-    "vwork", sol::property(&Actor::vwork, &Actor::vwork)
-    ,"asRef", &Actor::asRef
+    "vwork", sol::property(&Actor::vwork, &Actor::vwork),
+    "asRef", &Actor::asRef
 );
 
 lua.set_function("Game_SpawnActor", Game_SpawnActor);
