@@ -3312,7 +3312,8 @@ lua.new_usertype<SaveData>("SaveData",
     "unk_EA", sol::property(&SaveData::unk_EA, &SaveData::unk_EA),
     "textLanguage", sol::property(&SaveData::textLanguage, &SaveData::textLanguage),
     "voiceLanguage", sol::property(&SaveData::voiceLanguage, &SaveData::voiceLanguage),
-    "padEE", sol::property(&SaveData::padEE, &SaveData::padEE)
+    "padEE", sol::property(&SaveData::padEE, &SaveData::padEE),
+    "GetPlanetStats", &SaveData::GetPlanetStats
 );
 
 lua.set_function("Save_Write", Save_Write);
