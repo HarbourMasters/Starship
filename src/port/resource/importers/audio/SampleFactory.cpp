@@ -11,8 +11,9 @@
 #include "vorbis/vorbisfile.h"
 
 namespace SF64 {
-std::shared_ptr<Ship::IResource> ResourceFactoryBinarySampleV1::ReadResource(std::shared_ptr<Ship::File> file) {
-    if (!FileHasValidFormatAndReader(file)) {
+std::shared_ptr<Ship::IResource> ResourceFactoryBinarySampleV1::ReadResource(std::shared_ptr<Ship::File> file,
+                                                                             std::shared_ptr<Ship::ResourceInitData> initData) {
+    if (!FileHasValidFormatAndReader(file, initData)) {
         return nullptr;
     }
 
@@ -142,14 +143,14 @@ static void OggDecoderWorker(std::shared_ptr<Sample> sample, std::shared_ptr<Shi
     ov_clear(&vf);
 }
 
-std::shared_ptr<Ship::IResource> ResourceFactoryXMLSampleV0::ReadResource(std::shared_ptr<Ship::File> file) {
-    if (!FileHasValidFormatAndReader(file)) {
+std::shared_ptr<Ship::IResource> ResourceFactoryXMLSampleV0::ReadResource(std::shared_ptr<Ship::File> file,
+                                                                           std::shared_ptr<Ship::ResourceInitData> initData) {
+    if (!FileHasValidFormatAndReader(file, initData)) {
         return nullptr;
     }
 
     auto sample = std::make_shared<Sample>(file->InitData);
     auto child = std::get<std::shared_ptr<tinyxml2::XMLDocument>>(file->Reader)->FirstChildElement();
-    std::shared_ptr<Ship::ResourceInitData> initData = std::make_shared<Ship::ResourceInitData>();
     const char* customFormatStr = child->Attribute("CustomFormat");
     memset(&sample->mSample, 0, sizeof(sample->mSample));
     sample->mSample.isRelocated = 0;
@@ -190,10 +191,7 @@ std::shared_ptr<Ship::IResource> ResourceFactoryXMLSampleV0::ReadResource(std::s
     sample->mSample.size = size;
 
     const char* path = child->Attribute("Path");
-    initData->Path = path;
-    initData->IsCustom = false;
-    initData->ByteOrder = Ship::Endianness::Native;
-    auto sampleFile = Ship::Context::GetInstance()->GetResourceManager()->GetArchiveManager()->LoadFile(path, initData);
+    auto sampleFile = Ship::Context::GetInstance()->GetResourceManager()->GetArchiveManager()->LoadFile(path);
     if (customFormatStr != nullptr) {
         // Compressed files can take a really long time to decode (~250ms per).
         // This worked when we tested it (09/04/2024) (Works on my machine)

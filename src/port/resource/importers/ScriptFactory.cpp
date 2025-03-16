@@ -4,8 +4,9 @@
 #include "ResourceUtil.h"
 
 namespace SF64 {
-std::shared_ptr<Ship::IResource> ResourceFactoryBinaryScriptV0::ReadResource(std::shared_ptr<Ship::File> file) {
-    if (!FileHasValidFormatAndReader(file)) {
+std::shared_ptr<Ship::IResource> ResourceFactoryBinaryScriptV0::ReadResource(std::shared_ptr<Ship::File> file,
+                                                                             std::shared_ptr<Ship::ResourceInitData> initData) {
+    if (!FileHasValidFormatAndReader(file, initData)) {
         return nullptr;
     }
 

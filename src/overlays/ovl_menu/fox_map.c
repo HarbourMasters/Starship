@@ -3772,6 +3772,12 @@ bool Map_Input_CursorY(void) {
 
     if ((stickY > -40) && (stickY < 40)) {
         stickY = 0;
+    } 
+
+    if (gControllerPress[gMainController].button & D_JPAD) {
+        stickY = -30;
+    } else if (gControllerPress[gMainController].button & U_JPAD) {
+        stickY = +30;
     }
 
     if (stickY != 0) {

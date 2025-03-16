@@ -5,8 +5,9 @@
 #include "port/resource/type/audio/SoundFont.h"
 
 namespace SF64 {
-std::shared_ptr<Ship::IResource> ResourceFactoryBinarySoundFontV0::ReadResource(std::shared_ptr<Ship::File> file) {
-    if (!FileHasValidFormatAndReader(file)) {
+std::shared_ptr<Ship::IResource> ResourceFactoryBinarySoundFontV0::ReadResource(std::shared_ptr<Ship::File> file,
+                                                                                std::shared_ptr<Ship::ResourceInitData> initData) {
+    if (!FileHasValidFormatAndReader(file, initData)) {
         return nullptr;
     }
 
@@ -210,8 +211,9 @@ std::vector<EnvelopePointData> ResourceFactoryXMLSoundFontV0::ParseEnvelopes(Sou
     return envelopes;
 }
 
-std::shared_ptr<Ship::IResource> ResourceFactoryXMLSoundFontV0::ReadResource(std::shared_ptr<Ship::File> file) {
-    if (!FileHasValidFormatAndReader(file)) {
+std::shared_ptr<Ship::IResource> ResourceFactoryXMLSoundFontV0::ReadResource(std::shared_ptr<Ship::File> file,
+                                                                           std::shared_ptr<Ship::ResourceInitData> initData) {
+    if (!FileHasValidFormatAndReader(file, initData)) {
         return nullptr;
     }
     auto audioSoundFont = std::make_shared<SoundFont>(file->InitData);

@@ -37,14 +37,14 @@ void Ending_8018CE20(u32 arg0) {
                 if ((D_ending_80192E74[i].unk_11 == 0) || (gVenomHardClear == 1)) {
                     if (D_ending_80192E74[i].unk_10 == 1) {
                         xPos = (SCREEN_WIDTH - Graphics_GetLargeTextWidth(D_ending_80192E74[i].unk_00)) / 2;
-                        RCP_SetupDL(&gMasterDisp, SETUPDL_83);
+                        RCP_SetupDL(&gMasterDisp, SETUPDL_83_OPTIONAL);
                         gDPSetTextureFilter(gMasterDisp++, G_TF_POINT);
                         gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, alpha);
                         Graphics_DisplayLargeText(xPos, D_ending_80192E74[i].unk_0E, 1.0f, 1.0f,
                                                   D_ending_80192E74[i].unk_00);
 
                     } else if (D_ending_80192E74[i].unk_10 == 2) {
-                        RCP_SetupDL(&gMasterDisp, SETUPDL_83);
+                        RCP_SetupDL(&gMasterDisp, SETUPDL_83_OPTIONAL);
                         gDPSetTextureFilter(gMasterDisp++, G_TF_POINT);
                         gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, alpha);
                         Lib_TextureRect_IA8(&gMasterDisp, D_ending_80192E74[i].unk_00, 192, 30, 64.0f, 105.0f, 1.0f,
@@ -144,7 +144,7 @@ void Ending_8018D638(u32 arg0, AssetInfo* asset) {
     gFillScreenAlpha = gFillScreenAlphaTarget = alpha;
     gFillScreenAlphaStep = 0;
 
-    RCP_SetupDL(&gMasterDisp, SETUPDL_83);
+    RCP_SetupDL(&gMasterDisp, SETUPDL_83_OPTIONAL);
 
     gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, 255);
 
