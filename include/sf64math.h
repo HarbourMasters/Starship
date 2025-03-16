@@ -21,7 +21,7 @@ typedef struct Vec3f {
     f32* xRef() { return &x; } // sol:not_global
     f32* yRef() { return &y; } // sol:not_global
     f32* zRef() { return &z; } // sol:not_global
-    f32* asArray() { if(this) return nullptr; return (f32*) this; } // sol:not_global
+    f32* asArray() { if(this == nullptr) return nullptr; return (f32*) this; } // sol:not_global
 #endif
 } Vec3f; // size = 0xC
 
@@ -34,11 +34,11 @@ typedef struct Vec3s {
     Vec3s() : x(0), y(0), z(0) {} // sol:not_global
     Vec3s(s16 x, s16 y, s16 z) : x(x), y(y), z(z) {} // sol:not_global
 #endif
-    Vec3s* asRef() { return this; } // sol:not_global
+    Vec3s* asRef() { if(this == nullptr) return nullptr; return this; } // sol:not_global
     s16* xRef() { return &x; } // sol:not_global
     s16* yRef() { return &y; } // sol:not_global
     s16* zRef() { return &z; } // sol:not_global
-    s16* asArray() { if(this) return nullptr; return (s16*) this; } // sol:not_global
+    s16* asArray() { if(this == nullptr) return nullptr; return (s16*) this; } // sol:not_global
 #endif
 } Vec3s; // size = 0x6;
 

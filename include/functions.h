@@ -95,6 +95,7 @@ void Display_ArwingWings(ArwingInfo*);
 void Display_DrawEngineGlow(EngineGlowColor);
 void Display_SetupPlayerSfxPos(Player*);
 void Display_Update(void);
+void Display_Player_Update(Player* player, s32 reflectY);
 
 // fox_edata
 void Ve1Wall1_Draw(Scenery*);

@@ -9,6 +9,7 @@
 #include "assets.h"
 #include "fox_map.h"
 #include "global.h"
+#include <fstream>
 #include <filesystem>
 #include "port/ui/UIWidgets.h"
 #include "port/resource/type/ResourceType.h"
@@ -79,13 +80,23 @@ std::optional<std::string> LoadFromO2R(const std::string& path, const std::share
 int ScriptingLayer::Require(lua_State* L) {
     std::string path = sol::stack::get<std::string>(L, 1);
 
-    auto result = LoadFromO2R(path);
+    std::optional<std::string> result = LoadFromO2R(path);
 
     if(!result.has_value()){
-        const auto error = "Failed to load " + path;
-        SPDLOG_ERROR(error);
-        sol::stack::push(L, error);
-        return 0;
+        // TODO: This could be unsafe, validate it
+        const auto error = "Failed to load " + path + ", from both O2R and disk";
+        std::ifstream input("scripts/" + path);
+
+        if (!input.is_open()) {
+            SPDLOG_ERROR(error);
+            sol::stack::push(L, error);
+            return 0;
+        }
+
+        std::vector<uint8_t> data = std::vector<uint8_t>(std::istreambuf_iterator(input), {});
+        input.close();
+
+        result = std::string(data.begin(), data.end());
     }
 
     const auto& script = result.value();
