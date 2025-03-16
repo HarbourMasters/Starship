@@ -2871,6 +2871,16 @@ enum_EventPriority["LOW"] = (uint32_t) EVENT_PRIORITY_LOW;
 enum_EventPriority["NORMAL"] = (uint32_t) EVENT_PRIORITY_NORMAL;
 enum_EventPriority["HIGH"] = (uint32_t) EVENT_PRIORITY_HIGH;
 
+auto enum_ObjectEventType = lua["ObjectEventType"].force();
+enum_ObjectEventType["ACTOR"] = (uint32_t) OBJECT_TYPE_ACTOR;
+enum_ObjectEventType["ACTOR_EVENT"] = (uint32_t) OBJECT_TYPE_ACTOR_EVENT;
+enum_ObjectEventType["BOSS"] = (uint32_t) OBJECT_TYPE_BOSS;
+enum_ObjectEventType["SCENERY"] = (uint32_t) OBJECT_TYPE_SCENERY;
+enum_ObjectEventType["SCENERY360"] = (uint32_t) OBJECT_TYPE_SCENERY360;
+enum_ObjectEventType["SPRITE"] = (uint32_t) OBJECT_TYPE_SPRITE;
+enum_ObjectEventType["ITEM"] = (uint32_t) OBJECT_TYPE_ITEM;
+enum_ObjectEventType["EFFECT"] = (uint32_t) OBJECT_TYPE_EFFECT;
+
 auto enum_SF64Version = lua["SF64Version"].force();
 enum_SF64Version["US"] = (uint32_t) SF64_VER_US;
 enum_SF64Version["EU"] = (uint32_t) SF64_VER_EU;

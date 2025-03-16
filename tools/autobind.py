@@ -9,7 +9,7 @@ class OutputType(Enum):
     CPP = 2
 
 def write_lua_header():
-    bprint("""
+    print("""
 Game = {}
 Assets = {}
 UIWidgets = {}
@@ -219,6 +219,7 @@ def parse_enums(header, as_value=False, bprint=print):
                 key_name = key
                 key_name = key_name.replace('EVENT_PRIORITY_', '')
                 key_name = key_name.replace('SF64_VER_', '')
+                key_name = key_name.replace('OBJECT_TYPE_', '')
                 bprint(f'enum_{enum_name}["{key_name}"] = (uint32_t) {value if as_value else key};')
             bprint('')
         elif export_type == OutputType.LUA:
@@ -232,6 +233,7 @@ def parse_enums(header, as_value=False, bprint=print):
                 key_name = key
                 key_name = key_name.replace('EVENT_PRIORITY_', '')
                 key_name = key_name.replace('SF64_VER_', '')
+                key_name = key_name.replace('OBJECT_TYPE_', '')
                 bprint(f'    {key_name} = {value}{"," if i < len(values) - 1 else ""}')
             bprint('}')
             bprint('')
@@ -323,10 +325,7 @@ def parse_structs(header, bprint=print):
                 elif export == 'function':
                     bprint(f'    "{key}", &{struct_name}::{key}{"," if i < len(members) - 1 else ""}')
                 elif export == 'table':
-                    if type == 'char' or type == 'u8' or type == 'uint8_t':
-                        bprint(f'    "{key}", sol::overload([] ({struct_name}& self, int index) -> {type} {{ return self.{key}[index]; }}, [] ({struct_name}& self, int index, {type} value) {{ self.{key}[index] = value; }}){"," if i < len(members) - 1 else ""}')
-                    else:
-                        bprint(f'    "{key}", sol::property(&{struct_name}::{key}, &{struct_name}::{key}){"," if i < len(members) - 1 else ""}')
+                    bprint(f'    "{key}", sol::overload([] ({struct_name}& self, int index) -> {type} {{ return self.{key}[index]; }}, [] ({struct_name}& self, int index, {type} value) {{ self.{key}[index] = value; }}){"," if i < len(members) - 1 else ""}')
                 else:
                     bprint(f'    "{key}", sol::property(&{struct_name}::{key}, &{struct_name}::{key}){"," if i < len(members) - 1 else ""}')
             bprint(');')
@@ -352,15 +351,12 @@ def parse_structs(header, bprint=print):
                     bprint(f'---@return {type}')
                     bprint(f'function {struct_name}:{key}() end')
                 elif export == 'table':
-                    if original_type == 'char' or original_type == 'u8' or original_type == 'uint8_t':
-                        bprint(f'---@param index number')
-                        bprint(f'---@return number')
-                        bprint(f'function {struct_name}:{key}(index) end')
-                        bprint(f'---@param index number')
-                        bprint(f'---@param value number')
-                        bprint(f'function {struct_name}:{key}(index, value) end')
-                    else:
-                        bprint(f'---@field {key} {type}')
+                    bprint(f'---@param index number')
+                    bprint(f'---@return number')
+                    bprint(f'function {struct_name}:{key}(index) end')
+                    bprint(f'---@param index number')
+                    bprint(f'---@param value number')
+                    bprint(f'function {struct_name}:{key}(index, value) end')
                 else:
                     bprint(f'---@field {key} {type}')
             bprint(f'{struct_name} = {{}}')
@@ -560,8 +556,14 @@ if __name__ == "__main__":
             parse_enums(file_path, True if 'scripting.h' in file_path else False, bprint=bprint(enums))
             parse_structs(file_path, bprint=bprint(structs))
             parse_externs(file_path, bprint=bprint(externs))
-    
+
     parse_enums("src/port/hooks/impl/EventSystem.h", bprint=bprint(enums))
+
+    for root, dirs, files in os.walk("src/port/hooks/list"):
+        for file in files:
+            file_path = os.path.join(root, file)
+            parse_enums(file_path, bprint=bprint(enums))
+
     parse_structs("src/port/hooks/impl/EventSystem.h", bprint=bprint(structs))
     parse_externs("libultraship/src/public/bridge/consolevariablebridge.h", bprint=bprint(externs))
 

@@ -730,7 +730,12 @@ LaserStrength = {
 ---@field vel Vec3f
 ---@field index number
 ---@field obj Object
----@field sfxSource number
+---@param index number
+---@return number
+function PlayerShot:sfxSource(index) end
+---@param index number
+---@param value number
+function PlayerShot:sfxSource(index, value) end
 PlayerShot = {}
 
 ---@class ArwingInfo
@@ -911,9 +916,24 @@ PlayerSfx = {}
 ---@field unk_008 number
 ---@field unk_004 number
 ---@field unk_000 number
----@field sfxVel number
----@field sfxSource number
----@field jointTable Vec3f
+---@param index number
+---@return number
+function Player:sfxVel(index) end
+---@param index number
+---@param value number
+function Player:sfxVel(index, value) end
+---@param index number
+---@return number
+function Player:sfxSource(index) end
+---@param index number
+---@param value number
+function Player:sfxSource(index, value) end
+---@param index number
+---@return number
+function Player:jointTable(index) end
+---@param index number
+---@param value number
+function Player:jointTable(index, value) end
 ---@param index number
 ---@return number
 function Player:pad28C(index) end
@@ -1805,7 +1825,12 @@ function CameraPoint:asRef() end
 CameraPoint = {}
 
 ---@class Triangle
----@field vtx number
+---@param index number
+---@return number
+function Triangle:vtx(index) end
+---@param index number
+---@param value number
+function Triangle:vtx(index, value) end
 ---@return Triangle
 function Triangle:asRef() end
 Triangle = {}
@@ -2026,6 +2051,18 @@ function Matrix_GetYRPAngles(_mtx, rot) end
 ---@param rot Vec3f
 ---@return nil
 function Matrix_GetXYZAngles(_mtx, rot) end
+---@param _mtx Matrix
+---@param xEye number
+---@param yEye number
+---@param zEye number
+---@param xAt number
+---@param yAt number
+---@param zAt number
+---@param xUp number
+---@param yUp number
+---@param zUp number
+---@param mode number
+function Matrix_LookAt(_mtx, xEye, yEye, zEye, xAt, yAt, zAt, xUp, yUp, zUp, mode) end
 ---@param _gfx Gfx
 ---@return nil
 function Matrix_SetGfxMtx(_gfx) end
@@ -5580,7 +5617,12 @@ function SaveData:padEE(index) end
 ---@param index number
 ---@param value number
 function SaveData:padEE(index, value) end
----@field rankingMedal number
+---@param index number
+---@return number
+function SaveData:rankingMedal(index) end
+---@param index number
+---@param value number
+function SaveData:rankingMedal(index, value) end
 ---@param index number
 ---@return number
 function SaveData:rankingLives(index) end
@@ -5599,7 +5641,12 @@ function SaveData:pad10(index) end
 ---@param index number
 ---@param value number
 function SaveData:pad10(index, value) end
----@return PlanetStats[]
+---@param index number
+---@return number
+function SaveData:planet(index) end
+---@param index number
+---@param value number
+function SaveData:planet(index, value) end
 ---@param route number
 function SaveData:GetPlanetStats(route) end
 SaveData = {}
@@ -6009,6 +6056,9 @@ function Display_SetupPlayerSfxPos(_Player) end
 ---@param _void nil
 ---@return nil
 function Display_Update(_void) end
+---@param player Player
+---@param reflectY number
+function Display_Player_Update(player, reflectY) end
 ---@param _Scenery Scenery
 ---@return nil
 function Ve1Wall1_Draw(_Scenery) end
@@ -10563,7 +10613,12 @@ ObjectInfo = {}
 ---@field pathIndex number
 ---@field info ObjectInfo
 ---@field obj Object
----@field sfxSource number
+---@param index number
+---@return number
+function Scenery360:sfxSource(index) end
+---@param index number
+---@param value number
+function Scenery360:sfxSource(index, value) end
 ---@param index number
 ---@return number
 function Scenery360:unk_41(index) end
@@ -10591,6 +10646,12 @@ function Scenery:pad7C(index) end
 ---@param index number
 ---@param value number
 function Scenery:pad7C(index, value) end
+---@param index number
+---@return number
+function Scenery:sfxSource(index) end
+---@param index number
+---@param value number
+function Scenery:sfxSource(index, value) end
 ---@return Scenery
 function Scenery:asRef() end
 Scenery = {}
@@ -10626,7 +10687,12 @@ Sprite = {}
 ---@field index number
 ---@field info ObjectInfo
 ---@field obj Object
----@field sfxSource number
+---@param index number
+---@return number
+function Item:sfxSource(index) end
+---@param index number
+---@param value number
+function Item:sfxSource(index, value) end
 ---@return Item
 function Item:asRef() end
 Item = {}
@@ -10649,7 +10715,12 @@ Item = {}
 ---@field index number
 ---@field info ObjectInfo
 ---@field obj Object
----@field sfxSource number
+---@param index number
+---@return number
+function Effect:sfxSource(index) end
+---@param index number
+---@param value number
+function Effect:sfxSource(index, value) end
 ---@param index number
 ---@return number
 function Effect:pad7C(index) end
@@ -10693,10 +10764,30 @@ Effect = {}
 ---@field index number
 ---@field info ObjectInfo
 ---@field obj Object
----@field sfxSource number
----@field vwork Vec3f
----@field fwork number
----@field swork number
+---@param index number
+---@return number
+function Boss:sfxSource(index) end
+---@param index number
+---@param value number
+function Boss:sfxSource(index, value) end
+---@param index number
+---@return number
+function Boss:vwork(index) end
+---@param index number
+---@param value number
+function Boss:vwork(index, value) end
+---@param index number
+---@return number
+function Boss:fwork(index) end
+---@param index number
+---@param value number
+function Boss:fwork(index, value) end
+---@param index number
+---@return number
+function Boss:swork(index) end
+---@param index number
+---@param value number
+function Boss:swork(index, value) end
 ---@return Boss
 function Boss:asRef() end
 Boss = {}
@@ -10734,9 +10825,24 @@ Boss = {}
 ---@field index number
 ---@field info ObjectInfo
 ---@field obj Object
----@field vwork Vec3f
----@field fwork number
----@field sfxSource number
+---@param index number
+---@return number
+function Actor:vwork(index) end
+---@param index number
+---@param value number
+function Actor:vwork(index, value) end
+---@param index number
+---@return number
+function Actor:fwork(index) end
+---@param index number
+---@param value number
+function Actor:fwork(index, value) end
+---@param index number
+---@return number
+function Actor:sfxSource(index) end
+---@param index number
+---@param value number
+function Actor:sfxSource(index, value) end
 ---@param index number
 ---@return number
 function Actor:lockOnTimers(index) end
@@ -10749,7 +10855,12 @@ function Actor:pad0BA(index) end
 ---@param index number
 ---@param value number
 function Actor:pad0BA(index, value) end
----@field iwork number
+---@param index number
+---@return number
+function Actor:iwork(index) end
+---@param index number
+---@param value number
+function Actor:iwork(index, value) end
 ---@return Actor
 function Actor:asRef() end
 Actor = {}
@@ -28573,13 +28684,25 @@ EventPriority = {
     HIGH = 2
 }
 
+---@enum ObjectEventType
+ObjectEventType = {
+    ACTOR = 0,
+    ACTOR_EVENT = 1,
+    BOSS = 2,
+    SCENERY = 3,
+    SCENERY360 = 4,
+    SPRITE = 5,
+    ITEM = 6,
+    EFFECT = 7
+}
+
 ---@class IEvent
 ---@field cancelled boolean
 IEvent = {}
 
 ---@class EventListener
----@field priority EventPriority
 ---@field function SmartFunctionCallback
+---@field priority EventPriority
 EventListener = {}
 
 ---@param _name string
