@@ -14,7 +14,8 @@ class ResourceFactoryBinaryMessageV0 : public Ship::ResourceFactoryBinary {
 
 class ResourceFactoryXMLMessageV0 : public Ship::ResourceFactoryXML {
   public:
-    std::shared_ptr<Ship::IResource> ReadResource(std::shared_ptr<Ship::File> file) override;
+    std::shared_ptr<Ship::IResource> ReadResource(std::shared_ptr<Ship::File> file,
+                                                  std::shared_ptr<Ship::ResourceInitData> initData) override;
 };
 }; // namespace LUS
 #else

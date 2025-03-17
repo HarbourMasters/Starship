@@ -64,10 +64,10 @@ std::optional<std::string> LoadFromO2R(const std::string& path, const std::share
     std::shared_ptr<SF64::Text> res;
     
     if (archive == nullptr) {
-        res = static_pointer_cast<SF64::Text>(Ship::Context::GetInstance()->GetResourceManager()->LoadResource(path, true, init));
+        res = std::static_pointer_cast<SF64::Text>(Ship::Context::GetInstance()->GetResourceManager()->LoadResource(path, true, init));
     } else {
-        auto file = archive->LoadFile(path, init);
-        res = static_pointer_cast<SF64::Text>(loader->GetResourceLoader()->LoadResource(file));
+        auto file = archive->LoadFile(path);
+        res = std::static_pointer_cast<SF64::Text>(loader->GetResourceLoader()->LoadResource(path, file, init));
     }
 
     if (res == nullptr) {

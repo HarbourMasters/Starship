@@ -315,14 +315,14 @@ void GameEngine::LoadManifest() {
             continue;
         }
 
-        auto file = entry->LoadFile(path, init);
+        auto file = entry->LoadFile(path);
 
         if(file == nullptr){
             continue;
         }
 
-        auto raw = loader->LoadResource(file);
-        auto res = static_pointer_cast<Ship::Json>(raw);
+        auto raw = loader->LoadResource(path, file, init);
+        auto res = std::static_pointer_cast<Ship::Json>(raw);
         if (res == nullptr) {
             continue;
         }
