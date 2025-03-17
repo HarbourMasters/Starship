@@ -1,6 +1,4 @@
 #pragma once
 
-#include "list/EngineEvent.h"
-#include "list/ActorEvent.h"
-#include "list/ItemEvent.h"
-#include "list/ActionEvent.h"
+// In case you're wondering, why i did this, its because i wanted to use EventList.h inline on a function for the scripting system
+#include "EventList.h"

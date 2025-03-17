@@ -7,6 +7,9 @@
 #include "sf64player.h"
 #include "sf64mesg.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 extern Gfx* D_TI_801B7584[];
 extern Gfx* D_TI_801B7608[];
@@ -129,5 +132,9 @@ void Macbeth_Effect379_Draw(Effect*);
 void Macbeth_MaShockBox_Update(Actor*);
 void Macbeth_MaShockBox_Draw(Actor*);
 s32 Macbeth_801A55D4(s32 , Vec3f* , Vec3f* , s32 );
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

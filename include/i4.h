@@ -7,6 +7,10 @@
 #include "sf64player.h"
 #include "sf64mesg.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 extern s32 D_BO_801A03DC;
 extern Matrix D_BO_8019EE80;
 
@@ -28,7 +32,7 @@ void Bolse_DrawDynamicGround(void);
 void Katina_KaSaucerer_Init(Boss *);
 void Katina_UpdateEvents(Actor*);
 void Katina_Init(void);
-void SectorZ_MissileExplode(ActorAllRange* this, bool shotDown);
+void SectorZ_MissileExplode(ActorAllRange* thisx, bool shotDown);
 void SectorZ_Missile_Update(Actor*);
 void SectorZ_UpdateEvents(Actor*);
 void SectorZ_LoadLevelObjects(void);
@@ -49,5 +53,9 @@ void SectorZ_SpaceJunkUpdate(Actor*);
 void SectorZ_SpaceJunkDraw(Actor*);
 void SectorZ_SzGreatFox_Update(Boss*);
 void SectorZ_SzGreatFox_Draw(Boss*);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

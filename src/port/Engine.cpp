@@ -20,6 +20,9 @@
 #include "resource/importers/SkeletonFactory.h"
 #include "resource/importers/Vec3fFactory.h"
 #include "resource/importers/Vec3sFactory.h"
+#include "resource/importers/TextFactory.h"
+#include "port/notification/notification.h"
+#include "resource/type/Json.h"
 
 #include "resource/importers/audio/AudioTableFactory.h"
 #include "resource/importers/audio/BookFactory.h"
@@ -40,6 +43,7 @@
 #include "audio/GameAudio.h"
 #include "port/patches/DisplayListPatch.h"
 #include "port/mods/PortEnhancements.h"
+#include "port/lua/scripting.h"
 
 #include <Fast3D/gfx_pc.h>
 #include <filesystem>
@@ -183,6 +187,8 @@ GameEngine::GameEngine() {
                                     "Limb", static_cast<uint32_t>(SF64::ResourceType::Limb), 0);
     loader->RegisterResourceFactory(std::make_shared<SF64::ResourceFactoryBinaryMessageV0>(), RESOURCE_FORMAT_BINARY,
                                     "Message", static_cast<uint32_t>(SF64::ResourceType::Message), 0);
+    loader->RegisterResourceFactory(std::make_shared<SF64::ResourceFactoryXMLMessageV0>(), RESOURCE_FORMAT_XML,
+                                    "Message", static_cast<uint32_t>(SF64::ResourceType::Message), 0);
     loader->RegisterResourceFactory(std::make_shared<SF64::ResourceFactoryBinaryMessageLookupV0>(),
                                     RESOURCE_FORMAT_BINARY, "MessageTable",
                                     static_cast<uint32_t>(SF64::ResourceType::MessageTable), 0);
@@ -258,6 +264,9 @@ GameEngine::GameEngine() {
     loader->RegisterResourceFactory(std::make_shared<SF64::ResourceFactoryXMLSoundFontV0>(), RESOURCE_FORMAT_XML,
                                     "SoundFont", static_cast<uint32_t>(SF64::ResourceType::SoundFont), 0);
 
+    loader->RegisterResourceFactory(std::make_shared<SF64::ResourceFactoryBinaryTextV0>(), RESOURCE_FORMAT_BINARY,
+                                    "Text", static_cast<uint32_t>(SF64::ResourceType::Text), 0);
+
     prevAltAssets = CVarGetInteger("gEnhancements.Mods.AlternateAssets", 0);
     gEnableGammaBoost = CVarGetInteger("gGraphics.GammaMode", 0) == 0;
     context->GetResourceManager()->SetAltAssetsEnabled(prevAltAssets);
@@ -290,6 +299,61 @@ bool GameEngine::GenAssetFile(bool exitOnFail) {
     return extractor->GenerateOTR();
 }
 
+void GameEngine::LoadManifest() {
+    auto archive = Ship::Context::GetInstance()->GetResourceManager()->GetArchiveManager();
+    auto loader = Ship::Context::GetInstance()->GetResourceManager()->GetResourceLoader();
+    auto list = archive->GetArchives();
+    auto init = std::make_shared<Ship::ResourceInitData>();
+    init->Type = (uint32_t) Ship::ResourceType::Json;
+    init->ByteOrder = Ship::Endianness::Native;
+    init->Format = RESOURCE_FORMAT_BINARY;
+
+    for (auto& entry : *list) {
+        const auto path = "manifest.json";
+        if(!entry->HasFile(path)){
+            continue;
+        }
+
+        auto file = entry->LoadFile(path);
+
+        if(file == nullptr){
+            continue;
+        }
+
+        auto raw = loader->LoadResource(path, file, init);
+        auto res = std::static_pointer_cast<Ship::Json>(raw);
+        if (res == nullptr) {
+            continue;
+        }
+
+        auto json = res->Data;
+
+        try {
+            auto name = json["name"].get<std::string>();
+            auto main = json["main"].get<std::string>();
+            auto bindings = json.value("bindings", 1);
+            auto version = json.value("version", "1.0");
+            auto website = json.value("website", "https://github.com/HarbourMasters/Starship");
+            auto description = json.value("description", "");
+            auto author = json.value("author", "unknown");
+            auto license = json.value("license", "MIT");
+            auto dependencies = json.value("dependencies", std::vector<std::string>());
+
+            SPDLOG_INFO("Name: {}", name);
+            SPDLOG_INFO("Version: {}", version);
+            SPDLOG_INFO("License: {}", license);
+            SPDLOG_INFO("Author: {}", author);
+
+            ScriptingLayer::Instance->Load(main, bindings, entry);
+            Notification::Emit({ .message = "Loaded " + name, .remainingTime = 7.0f });
+        } catch (nlohmann::json::exception &e) {
+            SPDLOG_ERROR("Invalid manifest.json, skipping {}", entry->GetPath());
+            Notification::Emit({ .message = "Failed to load mod, check log for details", .messageColor = ImVec4(1.0f, 0.5f, 0.5f, 1.0f), .remainingTime = 7.0f });
+            continue;
+        }
+    }
+}
+
 void GameEngine::Create() {
     const auto instance = Instance = new GameEngine();
     instance->AudioInit();
@@ -300,6 +364,8 @@ void GameEngine::Create() {
     osSetTime(0);
 #endif
     PortEnhancements_Init();
+    ScriptingLayer::Instance->Init();
+    LoadManifest();
 }
 
 void GameEngine::Destroy() {
