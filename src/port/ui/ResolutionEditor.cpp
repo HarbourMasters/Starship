@@ -94,7 +94,7 @@ namespace AdvancedResolutionSettings {
             static int horizontalPixelCount = (verticalPixelCount / aspectRatioY) * aspectRatioX;
 
 #ifdef __APPLE__
-            ImGui::Text("Note: these settings may behave incorrectly on Apple Retina Displays.");
+            ImGui::Text("Note: These settings may behave incorrectly on Apple Retina Displays.");
             UIWidgets::PaddedSeparator(true, true, 3.0f, 3.0f);
 #endif
 
@@ -107,7 +107,7 @@ namespace AdvancedResolutionSettings {
                 Ship::Context::GetInstance()->GetWindow()->SetResolutionMultiplier(CVarGetFloat("gInternalResolution", 1));
             }
             UIWidgets::Tooltip("Multiplies your output resolution by the value entered, as a more intensive but effective "
-                               "form of anti-aliasing"); // Description pulled from SohMenuBar.cpp
+                               "form of anti-aliasing."); // Description pulled from SohMenuBar.cpp
 
             // N64 Mode toggle (again for convenience)
             // UIWidgets::PaddedEnhancementCheckbox("(Enhancements>Graphics) N64 Mode", "gLowResMode", false, false, false,
@@ -180,7 +180,7 @@ namespace AdvancedResolutionSettings {
 
             UIWidgets::Spacer(0);
             // Vertical Resolution
-            UIWidgets::PaddedEnhancementCheckbox("Set fixed vertical resolution (disables Resolution slider)",
+            UIWidgets::PaddedEnhancementCheckbox("Set fixed vertical resolution (disables resolution slider)",
                                                  "gAdvancedResolution.VerticalResolutionToggle", true, false, false, "",
                                                  UIWidgets::CheckboxGraphics::Cross, false);
             UIWidgets::Tooltip(
@@ -291,7 +291,7 @@ namespace AdvancedResolutionSettings {
             // The associated CVar is still functional on PC platforms if you want to use it though.
             UIWidgets::PaddedEnhancementCheckbox("Disable aspect correction and stretch the output image.\n"
                                                  "(Might be useful for 4:3 televisions!)\n"
-                                                 "Not available in Pixel Perfect Mode.",
+                                                 "Not available in pixel-perfect mode.",
                                                  "gAdvancedResolution.IgnoreAspectCorrection", false, true,
                                                  CVarGetInteger("gAdvancedResolution.PixelPerfectMode", 0), "",
                                                  UIWidgets::CheckboxGraphics::Cross, false);
