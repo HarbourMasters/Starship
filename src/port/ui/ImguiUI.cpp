@@ -684,15 +684,15 @@ void DrawDebugMenu() {
         });
 
         UIWidgets::CVarCheckbox("Enable Expert Mode", "gForceExpertMode", {
-            .tooltip = "Allows you to force expert mode."
+            .tooltip = "Allows you to force Expert Mode."
         });
 
         UIWidgets::CVarCheckbox("SFX Jukebox", "gSfxJukebox", {
-            .tooltip = "Press L in the expert sound options to play sound effects from the game."
+            .tooltip = "Press L in the Expert Sound Options to play sound effects from the game."
         });
 
-        UIWidgets::CVarCheckbox("Disable Starfield interpolation", "gDisableStarsInterpolation", {
-            .tooltip = "Disable Starfield interpolation to increase performance on slower CPUs."
+        UIWidgets::CVarCheckbox("Disable Starfield Interpolation", "gDisableStarsInterpolation", {
+            .tooltip = "Disable starfield interpolation to increase performance on slower CPUs."
         });
         UIWidgets::CVarCheckbox("Disable Gamma Boost (Needs reload)", "gGraphics.GammaMode", {
             .tooltip = "Disables the game's built-in Gamma Boost. Useful for modders.",
@@ -705,7 +705,7 @@ void DrawDebugMenu() {
                        "Controls:\n"
                        "D-pad left and right to set the object Id.\n"
                        "C-Right to change between spawn modes.\n"
-                       "Analog stick sets the spawn position.\n"
+                       "Analog Stick sets the spawn position.\n"
                        "L-Trigger to spawn the object.\n"
                        "D-pad UP to kill all objects.\n"
                        "D-pad DOWN to freeze/unfreeze the ship speed.\n"
