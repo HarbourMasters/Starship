@@ -47,31 +47,31 @@ void SetupGuiElements() {
 
     if (gui->GetMenuBar() && !gui->GetMenuBar()->IsVisible()) {
 #if defined(__SWITCH__) || defined(__WIIU__)
-        Notification::Emit({ .message = "Press - to access enhancements menu", .remainingTime = 10.0f });
+        Notification::Emit({ .message = "Press - to access enhancements menu.", .remainingTime = 10.0f });
 #else
-        Notification::Emit({ .message = "Press F1 to access enhancements menu", .remainingTime = 10.0f });
+        Notification::Emit({ .message = "Press F1 to access enhancements menu.", .remainingTime = 10.0f });
 #endif
     }
 
     mStatsWindow = gui->GetGuiWindow("Stats");
     if (mStatsWindow == nullptr) {
-        SPDLOG_ERROR("Could not find stats window");
+        SPDLOG_ERROR("Could not find stats window.");
     }
 
     mConsoleWindow = gui->GetGuiWindow("Console");
     if (mConsoleWindow == nullptr) {
-        SPDLOG_ERROR("Could not find console window");
+        SPDLOG_ERROR("Could not find console window.");
     }
 
     mInputEditorWindow = gui->GetGuiWindow("Input Editor");
     if (mInputEditorWindow == nullptr) {
-        SPDLOG_ERROR("Could not find input editor window");
+        SPDLOG_ERROR("Could not find input editor window.");
         return;
     }
 
     mGfxDebuggerWindow = gui->GetGuiWindow("GfxDebuggerWindow");
     if (mGfxDebuggerWindow == nullptr) {
-        SPDLOG_ERROR("Could not find input GfxDebuggerWindow");
+        SPDLOG_ERROR("Could not find input GfxDebuggerWindow.");
     }
 
     mAdvancedResolutionSettingsWindow = std::make_shared<AdvancedResolutionSettings::AdvancedResolutionSettingsWindow>("gAdvancedResolutionEditorEnabled", "Advanced Resolution Settings");
@@ -183,7 +183,7 @@ void DrawSettingsMenu(){
                 UIWidgets::Spacer(0);
                 if (UIWidgets::CVarCombobox("Voices", "gVoiceLanguage", voiceLangs, 
                 {
-                    .tooltip = "Changes the language of the voice acting in the game",
+                    .tooltip = "Changes the language of the voice acting in the game.",
                     .defaultIndex = 0,
                 })) {
                     Audio_SetVoiceLanguage(CVarGetInteger("gVoiceLanguage", 0));
@@ -212,11 +212,11 @@ void DrawSettingsMenu(){
             UIWidgets::Spacer(0);
 
             UIWidgets::CVarCheckbox("Menubar Controller Navigation", "gControlNav", {
-                .tooltip = "Allows controller navigation of the SOH menu bar (Settings, Enhancements,...)\nCAUTION: This will disable game inputs while the menubar is visible.\n\nD-pad to move between items, A to select, and X to grab focus on the menu bar"
+                .tooltip = "Allows controller navigation of the SOH menu bar (Settings, Enhancements, ...)\nCAUTION: This will disable game inputs while the menubar is visible.\n\nD-pad to move between items, A to select, and X to grab focus on the menu bar."
             });
 
             UIWidgets::CVarCheckbox("Invert Y Axis", "gInvertYAxis",{
-                .tooltip = "Inverts the Y axis for controlling vehicles"
+                .tooltip = "Inverts the Y axis for controlling vehicles."
             });
 
             ImGui::EndMenu();
@@ -236,7 +236,7 @@ void DrawSettingsMenu(){
         // UIWidgets::Tooltip("Multiplies your output resolution by the value inputted, as a more intensive but effective form of anti-aliasing");
 #ifndef __WIIU__
         if (UIWidgets::CVarSliderInt("MSAA: %d", "gMSAAValue", 1, 8, 1, {
-            .tooltip = "Activates multi-sample anti-aliasing when above 1x up to 8x for 8 samples for every pixel"
+            .tooltip = "Activates multi-sample anti-aliasing when above 1x up to 8x for 8 samples for every pixel."
         })) {
             Ship::Context::GetInstance()->GetWindow()->SetMsaaLevel(CVarGetInteger("gMSAAValue", 1));
         }
@@ -321,13 +321,13 @@ void DrawSettingsMenu(){
             if (Ship::Context::GetInstance()->GetWindow()->GetWindowBackend() == Ship::WindowBackend::FAST3D_DXGI_DX11) {
                 UIWidgets::Tooltip(
                     "Uses Matrix Interpolation to create extra frames, resulting in smoother graphics. This is purely "
-                    "visual and does not impact game logic, execution of glitches etc.\n\n"
+                    "visual and does not impact game logic, execution of glitches, etc.\n\n"
                     "A higher target FPS than your monitor's refresh rate will waste resources, and might give a worse result."
                 );
             } else {
                 UIWidgets::Tooltip(
                     "Uses Matrix Interpolation to create extra frames, resulting in smoother graphics. This is purely "
-                    "visual and does not impact game logic, execution of glitches etc."
+                    "visual and does not impact game logic, execution of glitches, etc."
                 );
             }
         } // END FPS Slider
@@ -345,7 +345,7 @@ void DrawSettingsMenu(){
             UIWidgets::PaddedEnhancementCheckbox("Match Refresh Rate", "gMatchRefreshRate", true, false);
         }
 
-        UIWidgets::Tooltip("Matches interpolation value to the current game's window refresh rate");
+        UIWidgets::Tooltip("Matches interpolation value to the current game's window refresh rate.");
 
         if (Ship::Context::GetInstance()->GetWindow()->GetWindowBackend() == Ship::WindowBackend::FAST3D_DXGI_DX11) {
             UIWidgets::PaddedEnhancementSliderInt(CVarGetInteger("gExtraLatencyThreshold", 0) == 0 ? "Jitter fix: Off" : "Jitter fix: >= %d FPS",
@@ -478,14 +478,14 @@ void DrawEnhancementsMenu() {
 
         if (UIWidgets::BeginMenu("Gameplay")) {
             UIWidgets::CVarCheckbox("No Level of Detail (LOD)", "gDisableLOD", {
-                .tooltip = "Disable Level of Detail (LOD) to avoid models using lower poly versions at a distance",
+                .tooltip = "Disable Level of Detail (LOD) to avoid models using lower poly versions at a distance.",
                 .defaultValue = true
             });
             UIWidgets::CVarCheckbox("Character heads inside Arwings at all times", "gTeamFaces", {
-                .tooltip = "Character heads are displayed inside Arwings in all cutscenes",
+                .tooltip = "Character heads are displayed inside Arwings in all cutscenes.",
                 .defaultValue = true
             });
-            UIWidgets::CVarCheckbox("Use red radio backgrounds for enemies.", "gEnemyRedRadio");
+            UIWidgets::CVarCheckbox("Use red radio backgrounds for enemies", "gEnemyRedRadio");
             UIWidgets::CVarSliderInt("Cockpit Glass Opacity: %d", "gCockpitOpacity", 0, 255, 120);
             
 
@@ -494,7 +494,7 @@ void DrawEnhancementsMenu() {
         
         if (UIWidgets::BeginMenu("Fixes")) {
             UIWidgets::CVarCheckbox("Macbeth: Level ending cutscene camera fix", "gMaCameraFix", {
-                .tooltip = "Fixes a camera bug found in the code of the game"
+                .tooltip = "Fixes a camera bug found in the code of the game."
             });
 
             UIWidgets::CVarCheckbox("Sector Z: Spawn all actors", "gSzActorFix", {
@@ -506,15 +506,15 @@ void DrawEnhancementsMenu() {
 
         if (UIWidgets::BeginMenu("Restoration")) {
             UIWidgets::CVarCheckbox("Sector Z: Missile cutscene bug", "gSzMissileBug", {
-                .tooltip = "Restores the missile cutscene bug present in JP 1.0"
+                .tooltip = "Restores the missile cutscene bug present in JP 1.0."
             });
 
             UIWidgets::CVarCheckbox("Beta: Restore beta coin", "gRestoreBetaCoin", {
-                .tooltip = "Restores the beta coin that got replaced with the gold ring"
+                .tooltip = "Restores the beta coin that got replaced with the gold ring."
             });
 
             UIWidgets::CVarCheckbox("Beta: Restore beta boost/brake gauge", "gRestoreBetaBoostGauge", {
-                .tooltip = "Restores the beta boost gauge that was seen in some beta footage"
+                .tooltip = "Restores the beta boost gauge that was seen in some beta footage."
             });
 
             ImGui::EndMenu();
@@ -523,7 +523,7 @@ void DrawEnhancementsMenu() {
         if (UIWidgets::BeginMenu("HUD")) {
             if (UIWidgets::CVarCombobox("HUD Aspect Ratio", "gHUDAspectRatio.Selection", hudAspects, 
             {
-                .tooltip = "Which Aspect Ratio to use when drawing the HUD (Radar, gauges and radio messages)",
+                .tooltip = "Which Aspect Ratio to use when drawing the HUD (radar, gauges and radio messages).",
                 .defaultIndex = 0,
             })) {
                 CVarSetInteger("gHUDAspectRatio.Enabled", 1);
@@ -611,23 +611,23 @@ void DrawCheatsMenu() {
                 });
             }
         UIWidgets::CVarCheckbox("Self destruct button", "gHit64SelfDestruct", {
-                .tooltip = "Press Down on the D-PAD to instantly self destruct."
+                .tooltip = "Press Down on the D-pad to instantly self-destruct."
             });
         UIWidgets::CVarCheckbox("Start with Falco dead", "gHit64FalcoDead", {
-                .tooltip = "Start the level with with Falco dead."
+                .tooltip = "Start the level with Falco dead."
             });
         UIWidgets::CVarCheckbox("Start with Slippy dead", "gHit64SlippyDead", {
-                .tooltip = "Start the level with with Slippy dead."
+                .tooltip = "Start the level with Slippy dead."
             });
         UIWidgets::CVarCheckbox("Start with Peppy dead", "gHit64PeppyDead", {
-                .tooltip = "Start the level with with Peppy dead."
+                .tooltip = "Start the level with Peppy dead."
             });
         
-        UIWidgets::CVarCheckbox("Score Editor", "gScoreEditor", { .tooltip = "Enable the score editor" });
+        UIWidgets::CVarCheckbox("Score Editor", "gScoreEditor", { .tooltip = "Enable the score editor." });
 
         if (CVarGetInteger("gScoreEditor", 0) == 1) {
             UIWidgets::CVarSliderInt("Score: %d", "gScoreEditValue", 0, 999, 0,
-                { .tooltip = "Increase or decrease the current mission score number" });
+                { .tooltip = "Increase or decrease the current mission score number." });
         }
 
         ImGui::EndMenu();
@@ -651,7 +651,7 @@ void DrawDebugMenu() {
     if (UIWidgets::BeginMenu("Developer")) {
         if (UIWidgets::CVarCombobox("Log Level", "gDeveloperTools.LogLevel", logLevels, {
             .tooltip = "The log level determines which messages are printed to the "
-                        "console. This does not affect the log file output",
+                       "console. This does not affect the log file output.",
             .defaultIndex = 1,
         })) {
             Ship::Context::GetInstance()->GetLogger()->set_level((spdlog::level::level_enum)CVarGetInteger("gDeveloperTools.LogLevel", 1));
@@ -659,7 +659,7 @@ void DrawDebugMenu() {
 
 #ifdef __SWITCH__
         if (UIWidgets::CVarCombobox("Switch CPU Profile", "gSwitchPerfMode", SWITCH_CPU_PROFILES, {
-            .tooltip = "Switches the CPU profile to a different one",
+            .tooltip = "Switches the CPU profile to a different one.",
             .defaultIndex = (int)Ship::SwitchProfiles::STOCK
         })) {
             SPDLOG_INFO("Profile:: %s", SWITCH_CPU_PROFILES[CVarGetInteger("gSwitchPerfMode", (int)Ship::SwitchProfiles::STOCK)]);
@@ -668,7 +668,7 @@ void DrawDebugMenu() {
 #endif
 
         UIWidgets::WindowButton("Gfx Debugger", "gGfxDebuggerEnabled", GameUI::mGfxDebuggerWindow, {
-            .tooltip = "Enables the Gfx Debugger window, allowing you to input commands, type help for some examples"
+            .tooltip = "Enables the Gfx Debugger window, allowing you to input commands, type help for some examples."
         });
 
         // UIWidgets::CVarCheckbox("Debug mode", "gEnableDebugMode", {
@@ -676,26 +676,26 @@ void DrawDebugMenu() {
         // });
 
         UIWidgets::CVarCheckbox("Level Selector", "gLevelSelector", {
-            .tooltip = "Allows you to select any level from the main menu"
+            .tooltip = "Allows you to select any level from the main menu."
         });
 
         UIWidgets::CVarCheckbox("Skip Briefing", "gSkipBriefing", {
-            .tooltip = "Allows you to skip the briefing sequence in level select"
+            .tooltip = "Allows you to skip the briefing sequence in level select."
         });
 
         UIWidgets::CVarCheckbox("Enable Expert Mode", "gForceExpertMode", {
-            .tooltip = "Allows you to force expert mode"
+            .tooltip = "Allows you to force expert mode."
         });
 
         UIWidgets::CVarCheckbox("SFX Jukebox", "gSfxJukebox", {
-            .tooltip = "Press L in the Expert Sound options to play sound effects from the game"
+            .tooltip = "Press L in the expert sound options to play sound effects from the game."
         });
 
         UIWidgets::CVarCheckbox("Disable Starfield interpolation", "gDisableStarsInterpolation", {
-            .tooltip = "Disable starfield interpolation to increase performance on slower CPUs"
+            .tooltip = "Disable Starfield interpolation to increase performance on slower CPUs."
         });
         UIWidgets::CVarCheckbox("Disable Gamma Boost (Needs reload)", "gGraphics.GammaMode", {
-            .tooltip = "Disables the game's Built-in Gamma Boost. Useful for modders",
+            .tooltip = "Disables the game's built-in Gamma Boost. Useful for modders.",
             .defaultValue = false
         });
 
@@ -703,51 +703,51 @@ void DrawDebugMenu() {
             .tooltip = "Spawn Scenery, Actors, Bosses, Sprites, Items, Effects and even Event Actors.\n"
                        "\n"
                        "Controls:\n"
-                       "D-Pad left and right to set the object Id.\n"
+                       "D-pad left and right to set the object Id.\n"
                        "C-Right to change between spawn modes.\n"
                        "Analog stick sets the spawn position.\n"
                        "L-Trigger to spawn the object.\n"
-                       "D-Pad UP to kill all objects.\n"
-                       "D-Pad DOWN to freeze/unfreeze the ship speed.\n"
+                       "D-pad UP to kill all objects.\n"
+                       "D-pad DOWN to freeze/unfreeze the ship speed.\n"
                        "WARNING: Spawning an object that's not loaded in memory will likely result in a crash."
         });
 
         UIWidgets::CVarCheckbox("Jump To Map", "gDebugJumpToMap", {
-            .tooltip = "Press Z + R + C-UP to get back to the map"
+            .tooltip = "Press Z + R + C-UP to get back to the map."
         });
 
         UIWidgets::CVarCheckbox("L To Warp Zone", "gDebugWarpZone", {
-            .tooltip = "Press L to get into the Warp Zone"
+            .tooltip = "Press L to get into the Warp Zone."
         });
 
         UIWidgets::CVarCheckbox("L to Level Complete", "gDebugLevelComplete", {
-            .tooltip = "Press L to Level Complete"
+            .tooltip = "Press L to Level Complete."
         });
 
         UIWidgets::CVarCheckbox("L to All-Range mode", "gDebugJumpToAllRange", {
-            .tooltip = "Press L to switch to All-Range mode"
+            .tooltip = "Press L to switch to All-Range mode."
         });
 
         UIWidgets::CVarCheckbox("Disable Collision", "gDebugNoCollision", {
-            .tooltip = "Disable vehicle collision"
+            .tooltip = "Disable vehicle collision."
         });
         
         UIWidgets::CVarCheckbox("Speed Control", "gDebugSpeedControl", {
-            .tooltip = "Arwing speed control. Use D-PAD Left and Right to Increase/Decrease the Arwing Speed, D-PAD Down to stop movement."
+            .tooltip = "Arwing speed control. Use D-pad Left and Right to Increase/Decrease the Arwing Speed, D-pad Down to stop movement."
         });
 
         UIWidgets::CVarCheckbox("Debug Ending", "gDebugEnding", {
-            .tooltip = "Jump to credits at the main menu"
+            .tooltip = "Jump to credits at the main menu."
         });
 
         UIWidgets::CVarCheckbox("Debug Pause", "gLToDebugPause", {
-            .tooltip = "Press L to toggle Debug Pause"
+            .tooltip = "Press L to toggle Debug Pause."
         });
         if (CVarGetInteger("gLToDebugPause", 0)) {
             ImGui::Dummy(ImVec2(22.0f, 0.0f));
             ImGui::SameLine();
             UIWidgets::CVarCheckbox("Frame Advance", "gLToFrameAdvance", {
-            .tooltip = "Pressing L again advances one frame instead"
+            .tooltip = "Pressing L again advances one frame instead."
         });
         }
 
@@ -769,10 +769,10 @@ void DrawDebugMenu() {
         UIWidgets::Spacer(0);
 
         UIWidgets::WindowButton("Stats", "gStatsEnabled", GameUI::mStatsWindow, {
-            .tooltip = "Shows the stats window, with your FPS and frametimes, and the OS you're playing on"
+            .tooltip = "Shows the stats window, with your FPS and frametimes, and the OS you're playing on."
         });
         UIWidgets::WindowButton("Console", "gConsoleEnabled", GameUI::mConsoleWindow, {
-            .tooltip = "Enables the console window, allowing you to input commands, type help for some examples"
+            .tooltip = "Enables the console window, allowing you to input commands, type help for some examples."
         });
 
         ImGui::EndMenu();
