@@ -241,8 +241,8 @@ namespace AdvancedResolutionSettings {
 
             // Integer scaling settings group
             if (ImGui::CollapsingHeader("Integer Scaling Settings")) {
-                // Pixel-perfect Mode
-                UIWidgets::PaddedEnhancementCheckbox("Pixel-perfect Mode", "gAdvancedResolution.PixelPerfectMode", true,
+                // Pixel Perfect Mode
+                UIWidgets::PaddedEnhancementCheckbox("Pixel Perfect Mode", "gAdvancedResolution.PixelPerfectMode", true,
                                                      true,
                                                      !CVarGetInteger("gAdvancedResolution.VerticalResolutionToggle", 0), "",
                                                      UIWidgets::CheckboxGraphics::Cross, false);
@@ -258,7 +258,7 @@ namespace AdvancedResolutionSettings {
                                                 1, true,
                                                 !CVarGetInteger("gAdvancedResolution.PixelPerfectMode", 0) ||
                                                 CVarGetInteger("gAdvancedResolution.IntegerScale.FitAutomatically", 0));
-                UIWidgets::Tooltip("Integer scales the image. Only available in pixel-perfect mode.");
+                UIWidgets::Tooltip("Integer scales the image. Only available in Pixel Perfect Mode.");
                 // Display warning if size is being clamped or if framebuffer is larger than viewport.
                 if (CVarGetInteger("gAdvancedResolution.PixelPerfectMode", 0) &&
                     (CVarGetInteger("gAdvancedResolution.IntegerScale.NeverExceedBounds", 1) &&
@@ -271,7 +271,7 @@ namespace AdvancedResolutionSettings {
                                                      "gAdvancedResolution.IntegerScale.FitAutomatically", true, true,
                                                      !CVarGetInteger("gAdvancedResolution.PixelPerfectMode", 0), "",
                                                      UIWidgets::CheckboxGraphics::Cross, false);
-                UIWidgets::Tooltip("Automatically sets scale factor to fit window. Only available in pixel-perfect mode.");
+                UIWidgets::Tooltip("Automatically sets scale factor to fit window. Only available in Pixel Perfect Mode.");
                 if (CVarGetInteger("gAdvancedResolution.IntegerScale.FitAutomatically", 0)) {
                     // This is just here to update the value shown on the slider.
                     // The function in LUS to handle this setting will ignore IntegerScaleFactor while active.
@@ -291,7 +291,7 @@ namespace AdvancedResolutionSettings {
             // The associated CVar is still functional on PC platforms if you want to use it though.
             UIWidgets::PaddedEnhancementCheckbox("Disable aspect correction and stretch the output image.\n"
                                                  "(Might be useful for 4:3 televisions!)\n"
-                                                 "Not available in pixel-perfect mode.",
+                                                 "Not available in Pixel Perfect Mode.",
                                                  "gAdvancedResolution.IgnoreAspectCorrection", false, true,
                                                  CVarGetInteger("gAdvancedResolution.PixelPerfectMode", 0), "",
                                                  UIWidgets::CheckboxGraphics::Cross, false);
