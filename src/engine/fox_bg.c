@@ -1397,7 +1397,7 @@ void Background_DrawGround(void) {
 				float xScroll = temp_fv0;
 				float yScroll = temp_s0;
 
-				float inc = ((gPathTexScroll - gLastPathTexScroll) * 0.2133333f) / (float)interpolatedFrames;
+				float inc = (2.0f * (gPathTexScroll - gLastPathTexScroll) * 0.2133333f) / (float)interpolatedFrames;
 
 				for (int i = 0; i < interpolatedFrames; i++)
 				{
@@ -1517,7 +1517,7 @@ void Background_DrawGround(void) {
 			float xScroll = temp_fv0;
 			float yScroll = temp_s0;
 
-			float inc = ((gPathTexScroll - gLastPathTexScroll) * 0.2133333f) / (float)interpolatedFrames;
+			float inc = (2.0f * (gPathTexScroll - gLastPathTexScroll) * 0.2133333f) / (float)interpolatedFrames;
 
 
 			for (int i = 0; i < interpolatedFrames; i++)
@@ -1625,7 +1625,7 @@ void Background_DrawGround(void) {
 				float xScroll = temp_fv0;
 				float yScroll = temp_s0;
 
-				float inc = ((gPathTexScroll - gLastPathTexScroll) * 0.2133333f) / (float)interpolatedFrames;
+				float inc = (2.0f * (gPathTexScroll - gLastPathTexScroll) * 0.2133333f) / (float)interpolatedFrames;
 
 				for (int i = 0; i < interpolatedFrames; i++)
 				{
@@ -1717,7 +1717,7 @@ void Background_DrawGround(void) {
 				float xScroll = temp_fv0;
 				float yScroll = temp_s0;
 
-				float inc = ((gPathTexScroll - gLastPathTexScroll) * 0.2133333f) / (float)interpolatedFrames;
+				float inc = (2.0f * (gPathTexScroll - gLastPathTexScroll) * 0.2133333f) / (float)interpolatedFrames;
 
 				for (int i = 0; i < interpolatedFrames; i++)
 				{
@@ -1791,7 +1791,7 @@ void Background_DrawGround(void) {
 				float xScroll = temp_fv0;
 				float yScroll = temp_s0;
 
-				float inc = ((gPathTexScroll - gLastPathTexScroll) * 0.2133333f) / (float)interpolatedFrames;
+				float inc = (2.0f * (gPathTexScroll - gLastPathTexScroll) * 0.2133333f) / (float)interpolatedFrames;
 
 				for (int i = 0; i < interpolatedFrames; i++)
 				{
