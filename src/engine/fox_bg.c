@@ -1410,7 +1410,8 @@ void Background_DrawGround(void) {
 
 					gMasterDisp += 3;
 
-					yScroll += inc;
+					yScroll += inc >= 0 ? inc : -inc;
+					yScroll = fabs(Math_ModF(yScroll, 128.0f));
 				}
 
                 switch (gGroundSurface) {
@@ -1519,7 +1520,6 @@ void Background_DrawGround(void) {
 
 			float inc = (2.0f * (gPathTexScroll - gLastPathTexScroll) * 0.2133333f) / (float)interpolatedFrames;
 
-
 			for (int i = 0; i < interpolatedFrames; i++)
 			{
 				gDPSetInterpolation(gMasterDisp++, i);
@@ -1531,7 +1531,8 @@ void Background_DrawGround(void) {
 
 				gMasterDisp += 3;
 
-				yScroll += inc;
+				yScroll += inc >= 0 ? inc : -inc;
+				yScroll = fabs(Math_ModF(yScroll, 128.0f));
 			}
 
             // CENTER FAR
@@ -1638,7 +1639,8 @@ void Background_DrawGround(void) {
 
 					gMasterDisp += 3;
 
-					yScroll += inc;
+					yScroll += inc >= 0 ? inc : -inc;
+					yScroll = fabs(Math_ModF(yScroll, 128.0f));
 				}
 
                 // Original Display (Center)
@@ -1730,7 +1732,8 @@ void Background_DrawGround(void) {
 
 					gMasterDisp += 3;
 
-					yScroll += inc;
+					yScroll += inc >= 0 ? inc : -inc;
+					yScroll = fabs(Math_ModF(yScroll, 128.0f));
 				}
 			
                 // CENTER FAR
@@ -1804,7 +1807,8 @@ void Background_DrawGround(void) {
 
 					gMasterDisp += 3;
 
-					yScroll += inc;
+					yScroll += inc >= 0 ? inc : -inc;
+					yScroll = fabs(Math_ModF(yScroll, 128.0f));
 				}
 
                 if (gAqDrawMode != 0) {
