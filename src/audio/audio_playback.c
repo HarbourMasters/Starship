@@ -214,6 +214,7 @@ Instrument* Audio_GetInstrument(s32 fontId, s32 instId) {
         D_80155D88 = (fontId << 8) + instId + 0x01000000;
         return instrument;
     }
+    printf("InstId: %d\n", instId);
     return instrument;
 }
 
