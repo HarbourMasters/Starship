@@ -8,7 +8,7 @@ std::shared_ptr<Ship::IResource> ResourceFactoryBinaryAdpcmBookV0::ReadResource(
         return nullptr;
     }
 
-    auto book = std::make_shared<AdpcmBook>(file->InitData);
+    auto book = std::make_shared<AdpcmBook>(initData);
     auto reader = std::get<std::shared_ptr<Ship::BinaryReader>>(file->Reader);
 
     book->mBook.order = reader->ReadUInt32();

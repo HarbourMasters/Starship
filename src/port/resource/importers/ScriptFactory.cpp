@@ -10,7 +10,7 @@ std::shared_ptr<Ship::IResource> ResourceFactoryBinaryScriptV0::ReadResource(std
         return nullptr;
     }
 
-    auto script = std::make_shared<Script>(file->InitData);
+    auto script = std::make_shared<Script>(initData);
     auto reader = std::get<std::shared_ptr<Ship::BinaryReader>>(file->Reader);
 
     auto size = reader->ReadUInt32();

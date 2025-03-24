@@ -9,7 +9,7 @@ std::shared_ptr<Ship::IResource> ResourceFactoryBinaryMessageV0::ReadResource(st
         return nullptr;
     }
 
-    auto msg = std::make_shared<Message>(file->InitData);
+    auto msg = std::make_shared<Message>(initData);
     auto reader = std::get<std::shared_ptr<Ship::BinaryReader>>(file->Reader);
 
     auto size = reader->ReadUInt32();

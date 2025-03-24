@@ -10,7 +10,7 @@ std::shared_ptr<Ship::IResource> ResourceFactoryBinaryScriptCMDV0::ReadResource(
         return nullptr;
     }
 
-    auto cmds = std::make_shared<ScriptCMDs>(file->InitData);
+    auto cmds = std::make_shared<ScriptCMDs>(initData);
     auto reader = std::get<std::shared_ptr<Ship::BinaryReader>>(file->Reader);
 
     auto size = reader->ReadUInt32();

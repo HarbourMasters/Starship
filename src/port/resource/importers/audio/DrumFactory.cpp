@@ -9,7 +9,7 @@ std::shared_ptr<Ship::IResource> ResourceFactoryBinaryDrumV0::ReadResource(std::
         return nullptr;
     }
 
-    auto drum = std::make_shared<Drum>(file->InitData);
+    auto drum = std::make_shared<Drum>(initData);
     auto reader = std::get<std::shared_ptr<Ship::BinaryReader>>(file->Reader);
 
     drum->mDrum.adsrDecayIndex = reader->ReadUByte();
