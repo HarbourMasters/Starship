@@ -75,8 +75,13 @@ typedef enum OptionId {
     /*  200 */ OPTION_NAME_ENTRY = 200,
     /*  300 */ OPTION_SCORE = 300,
     /*  400 */ OPTION_INVOICE = 400,
-    /*  401 */ OPTION_MAX
+    /*  401 */ OPTION_MAX = 401,
+    /*  500 */ OPTION_LANGUAGE = 500,
 } OptionId;
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 extern u8* gBSSMapPlanetTextures[9];
 extern u8* gAssetMapPlanetTextures[9];
@@ -225,5 +230,9 @@ void Map_Main(void);
 void Map_Texture_Sphere(u8*, u8*, f32*);
 void Map_RemainingLives_Draw(s32, s32, s32);
 void Map_801A9FD4(bool);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

@@ -16,7 +16,10 @@ enum class ResourceType {
     ObjectInit = 0x4F42494E,   // OBIN
     Vec3f = 0x56433346,        // VC3F
     Vec3s = 0x56433353,        // VC3S
+
+    // Generic
     GenericArray = 0x47415252, // GARR
+    Text = 0x54455854,         // TEXT
 
     // NAudio v0
     Bank = 0x42414E4B,         // BANK

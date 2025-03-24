@@ -952,7 +952,7 @@ u8* sSmallCharTex[] = { NULL,           aSmallText_A, aSmallText_B,         aSma
                         aSmallText_4,   aSmallText_5, aSmallText_6,         aSmallText_7,     aSmallText_8,
                         aSmallText_9 };
 
-void Graphics_DisplayLargeText(s32 xPos, s32 yPos, f32 xScale, f32 yScale, char* text) {
+void Graphics_DisplayLargeText(s32 xPos, s32 yPos, f32 xScale, f32 yScale, const char* text) {
     u32 charIndex;
     f32 xPosCurrent = xPos;
     s32 pad4C;
@@ -1085,7 +1085,7 @@ void Graphics_DisplayLargeText(s32 xPos, s32 yPos, f32 xScale, f32 yScale, char*
     }
 }
 
-s32 Graphics_GetLargeTextWidth(char* text) {
+s32 Graphics_GetLargeTextWidth(const char* text) {
     s32 startPrint = false;
     s32 xPos = 0;
     u32 charIndex;
@@ -1226,7 +1226,7 @@ void Graphics_DisplayLargeNumber(s32 xPos, s32 yPos, s32 number) {
     Lib_TextureRect_IA8(&gMasterDisp, sLargeNumberTex[number / place], 16, 15, xPos, yPos, 1.0f, 1.0f);
 }
 
-void Graphics_DisplaySmallText(s32 xPos, s32 yPos, f32 xScale, f32 yScale, char* text) {
+void Graphics_DisplaySmallText(s32 xPos, s32 yPos, f32 xScale, f32 yScale, const char* text) {
     u32 var_t0;
     f32 xPosCurrent = xPos;
     s32 width;
@@ -1266,7 +1266,7 @@ void Graphics_DisplaySmallText(s32 xPos, s32 yPos, f32 xScale, f32 yScale, char*
     }
 }
 
-s32 Graphics_GetSmallTextWidth(char* text) {
+s32 Graphics_GetSmallTextWidth(const char* text) {
     u32 charIndex;
     s32 xPos = 0;
 

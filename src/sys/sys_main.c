@@ -1,6 +1,6 @@
 #include "sys.h"
 #include "sf64audio_external.h"
-
+#include "port/hooks/Events.h"
 #include <functions.h>
 
 s32 sGammaMode = 1;
@@ -366,6 +366,8 @@ void Main_ThreadEntry(void* arg0) {
     Controller_Init();
 
     Main_InitMesgQueues();
+
+    CALL_EVENT(EngineInitEvent);
 
     // LTODO: Implement timers
     // Timer_ThreadEntry(NULL);

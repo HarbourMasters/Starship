@@ -133,11 +133,31 @@ typedef enum ObjectStatus {
     /* 3 */ OBJ_DYING,
 } ObjectStatus;
 
+#ifdef __cplusplus
+struct Actor;
+struct Boss;
+struct Scenery;
+struct Scenery360;
+struct Sprite;
+struct Item;
+struct Effect;
+#endif
+
 typedef struct Object {
     /* 0x00 */ u8 status;
     /* 0x02 */ u16 id;
     /* 0x04 */ Vec3f pos;
     /* 0x10 */ Vec3f rot;
+#ifdef __cplusplus
+    Actor* asActor() { if(this == nullptr) return nullptr; return (Actor*)this; } // sol:not_global
+    Boss* asBoss() { if(this == nullptr) return nullptr; return (Boss*)this; } // sol:not_global
+    Scenery* asScenery() { if(this == nullptr) return nullptr; return (Scenery*)this; } // sol:not_global
+    Scenery360* asScenery360() { if(this == nullptr) return nullptr; return (Scenery360*)this; } // sol:not_global
+    Sprite* asSprite() { if(this == nullptr) return nullptr; return (Sprite*)this; } // sol:not_global
+    Item* asItem() { if(this == nullptr) return nullptr; return (Item*)this; } // sol:not_global
+    Effect* asEffect() { if(this == nullptr) return nullptr; return (Effect*)this; } // sol:not_global
+    Object* asRef() { if(this == nullptr) return nullptr; return this; } // sol:not_global
+#endif
 } Object; // size = 0x1C
 
 typedef void (*ObjectFunc)(Object*);
@@ -151,12 +171,15 @@ typedef struct ObjectInfo {
     /* 0x08 */ ObjectFunc action; // argument must have object type.
     /* 0x0C */ f32* hitbox;
     /* 0x10 */ f32 cullDistance;  // z coordinate of something
-    /* 0x14 */ s16 unk_14;        // can be -1, 0, 1. governs camera-related behavior in effects (billboarding?)
+    /* 0x14 */ s16 unk_14;        // can be -1, 0, 1. governs camera-related behavior in effects
     /* 0x16 */ s16 unk_16;        // can be 0, 1, 2. affects death behavior?
     /* 0x18 */ u8 damage;
     /* 0x19 */ u8 unk_19;         // can be 0, 1, 2. Also camera-related?
     /* 0x1C */ f32 targetOffset;  // target lock y offset. 0.0f can't be targeted
     /* 0x20 */ u8 bonus;          // hits when killed. numbers above 1 indicate the hit+ bonus
+#ifdef __cplusplus
+    ObjectInfo* asRef() { if(this == nullptr) return nullptr; return this; } // sol:not_global
+#endif
 } ObjectInfo;                     // size = 0x24
 
 typedef struct Scenery360 {
@@ -166,6 +189,9 @@ typedef struct Scenery360 {
     /* 0x41 */ char unk_41[7];
     /* 0x48 */ f32 sfxSource[3];
     /* 0x54 */ f32 unk_54;
+#ifdef __cplusplus
+    Scenery360* asRef() { if(this == nullptr) return nullptr; return this; } // sol:not_global
+#endif
 } Scenery360; // size = 0x58
 
 typedef struct Scenery {
@@ -181,6 +207,9 @@ typedef struct Scenery {
     /* 0x64 */ Vec3f vel;
     /* 0x70 */ f32 sfxSource[3];
     /* 0x7C */ char pad7C[4];
+#ifdef __cplusplus
+    Scenery* asRef() { if(this == nullptr) return nullptr; return this; } // sol:not_global
+#endif
 } Scenery; // size = 0x80
 
 typedef struct Sprite {
@@ -191,6 +220,9 @@ typedef struct Sprite {
     /* 0x45 */ u8 sceneryId;
     /* 0x46 */ s8 destroy;
     /* 0x48 */ s32 toLeft;
+#ifdef __cplusplus
+    Sprite* asRef() { if(this == nullptr) return nullptr; return this; } // sol:not_global
+#endif
 } Sprite; // size = 0x4C
 
 typedef struct Item {
@@ -208,6 +240,9 @@ typedef struct Item {
     /* 0x58 */ f32 unk_58;
     /* 0x5C */ f32 sfxSource[3];
     /* 0x68 */ f32 width;
+#ifdef __cplusplus
+    Item* asRef() { if(this == nullptr) return nullptr; return this; } // sol:not_global
+#endif
 } Item; // size 0x6C
 
 typedef struct Effect {
@@ -231,6 +266,9 @@ typedef struct Effect {
     /* 0x7A */ s16 unk_7A;
     /* 0x7C */ char pad7C[4];
     /* 0x80 */ f32 sfxSource[3];
+#ifdef __cplusplus
+    Effect* asRef() { if(this == nullptr) return nullptr; return this; } // sol:not_global
+#endif
 } Effect; // size 0x8C
 
 typedef struct Boss {
@@ -264,6 +302,9 @@ typedef struct Boss {
     /* 0x1A0 */ Vec3f vwork[50];
     /* 0x3F8 */ f32 scale;
     /* 0x3FC */ f32 sfxSource[3];
+#ifdef __cplusplus
+    Boss* asRef() { if(this == nullptr) return nullptr; return this; } // sol:not_global
+#endif
 } Boss; // size = 0x408
 
 #define DMG_COLLISION 3
@@ -312,6 +353,9 @@ typedef struct Actor {
     /* 0x110 */ f32 scale;
     /* 0x114 */ f32 fwork[30];
     /* 0x18C */ Vec3f vwork[30];
+#ifdef __cplusplus
+    Actor* asRef() { if(this == nullptr) return nullptr; return this; } // sol:not_global
+#endif
 } Actor; // size = 0x2F4
 
 typedef enum ObjectId {
@@ -820,7 +864,15 @@ typedef enum ActorCutsceneModels {
     /* 1000 */ ACTOR_CS_JAMES_ARWING = 1000 // James McCloud Arwing seen for the last time in the ending CS.
 } ActorCutsceneModels;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 Actor* Game_SpawnActor(ObjectId);
+
+#ifdef __cplusplus
+}
+#endif
 
 // template enums for boss work buffers
 
