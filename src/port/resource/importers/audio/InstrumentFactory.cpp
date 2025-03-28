@@ -3,12 +3,13 @@
 #include "port/resource/type/audio/Instrument.h"
 
 namespace SF64 {
-std::shared_ptr<Ship::IResource> ResourceFactoryBinaryInstrumentV0::ReadResource(std::shared_ptr<Ship::File> file) {
-    if (!FileHasValidFormatAndReader(file)) {
+std::shared_ptr<Ship::IResource> ResourceFactoryBinaryInstrumentV0::ReadResource(std::shared_ptr<Ship::File> file,
+                                                                                 std::shared_ptr<Ship::ResourceInitData> initData) {
+    if (!FileHasValidFormatAndReader(file, initData)) {
         return nullptr;
     }
 
-    auto instrument = std::make_shared<Instrument>(file->InitData);
+    auto instrument = std::make_shared<Instrument>(initData);
     auto reader = std::get<std::shared_ptr<Ship::BinaryReader>>(file->Reader);
 
     instrument->mInstrument.isRelocated = reader->ReadUByte();

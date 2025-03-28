@@ -36,6 +36,9 @@ cd starship
 # Generate sf64.o2r
 & 'C:\Program Files\CMake\bin\cmake.exe' --build .\build\x64 --target ExtractAssets
 
+# Generate starship.o2r
+& 'C:\Program Files\CMake\bin\cmake.exe' --build .\build\x64 --target GeneratePortO2R
+
 # Compile project
 # Add `--config Release` if you're packaging
 & 'C:\Program Files\CMake\bin\cmake.exe' --build .\build\x64
@@ -133,6 +136,9 @@ cmake -H. -Bbuild-cmake -GNinja
 # Generate sf64.o2r
 cmake --build build-cmake --target ExtractAssets
 
+# Generate starship.o2r
+cmake --build build-cmake --target GeneratePortO2R
+
 # Compile the project
 # Add `--config Release` if you're packaging
 cmake --build build-cmake
@@ -179,6 +185,9 @@ cmake -H. -Bbuild-cmake -GNinja
 
 # Generate sf64.o2r
 cmake --build build-cmake --target ExtractAssets
+
+# Generate starship.o2r
+cmake --build build-cmake --target GeneratePortO2R
 
 # Compile the project
 # Add `--config Release` if you're packaging

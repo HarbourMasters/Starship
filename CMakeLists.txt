@@ -607,7 +607,7 @@ add_custom_target(
 )
 
 add_custom_target(
-    GeneratePortOTR
+    GeneratePortO2R
     DEPENDS TorchExternal
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
     COMMAND ${TORCH_EXECUTABLE} pack port starship.o2r o2r

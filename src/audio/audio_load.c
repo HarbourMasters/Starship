@@ -418,6 +418,10 @@ void AudioLoad_SyncInitSeqPlayerInternal(s32 playerIdx, s32 seqId, s32 arg2) {
 
 void* AudioLoad_SyncLoadSeq(s32 seqId) {
     AudioTable* table = AudioLoad_GetLoadTable(SEQUENCE_TABLE);
+    char* seqPath = ResourceGetNameByCrc((uint64_t) table->entries[seqId].romAddr);
+    printf("seqId: %d\n", seqId);
+    printf("seqPath: %s\n", seqPath);
+
     return ResourceGetDataByCrc((uint64_t) table->entries[seqId].romAddr);
 }
 
@@ -612,6 +616,7 @@ void AudioLoad_RelocateFont(s32 fontId, uintptr_t fontBaseAddr, SampleBankRelocI
     SoundFont* font = Audio_LoadFont(table->entries[fontId], fontId);
 
     gSoundFontList[fontId] = *font;
+
 }
 
 void AudioLoad_SyncDma(uintptr_t devAddr, u8* ramAddr, u32 size, s32 medium) {

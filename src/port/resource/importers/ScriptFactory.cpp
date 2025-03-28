@@ -4,12 +4,13 @@
 #include "ResourceUtil.h"
 
 namespace SF64 {
-std::shared_ptr<Ship::IResource> ResourceFactoryBinaryScriptV0::ReadResource(std::shared_ptr<Ship::File> file) {
-    if (!FileHasValidFormatAndReader(file)) {
+std::shared_ptr<Ship::IResource> ResourceFactoryBinaryScriptV0::ReadResource(std::shared_ptr<Ship::File> file,
+                                                                             std::shared_ptr<Ship::ResourceInitData> initData) {
+    if (!FileHasValidFormatAndReader(file, initData)) {
         return nullptr;
     }
 
-    auto script = std::make_shared<Script>(file->InitData);
+    auto script = std::make_shared<Script>(initData);
     auto reader = std::get<std::shared_ptr<Ship::BinaryReader>>(file->Reader);
 
     auto size = reader->ReadUInt32();
