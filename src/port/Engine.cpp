@@ -509,11 +509,9 @@ void GameEngine::ProcessGfxCommands(Gfx* commands) {
 
     time -= fps;
 
-    int threshold = CVarGetInteger("gExtraLatencyThreshold", 80);
-
     if (wnd != nullptr) {
         wnd->SetTargetFps(fps);
-        wnd->SetMaximumFrameLatency(threshold > 0 && target_fps >= threshold ? 2 : 1);
+        wnd->SetMaximumFrameLatency(CVarGetInteger("gRenderParallelization", 0) ? 2 : 1);
     }
 
     // When the gfx debugger is active, only run with the final mtx

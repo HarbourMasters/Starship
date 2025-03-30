@@ -325,9 +325,12 @@ void DrawSettingsMenu(){
         UIWidgets::Tooltip("Matches interpolation value to the refresh rate of your display.");
 
         if (Ship::Context::GetInstance()->GetWindow()->GetWindowBackend() == Ship::WindowBackend::FAST3D_DXGI_DX11) {
-            UIWidgets::PaddedEnhancementSliderInt(CVarGetInteger("gExtraLatencyThreshold", 0) == 0 ? "Jitter fix: Off" : "Jitter fix: >= %d FPS",
-                                                  "##ExtraLatencyThreshold", "gExtraLatencyThreshold", 0, 360, "", 0, true, true, false);
-            UIWidgets::Tooltip("When Interpolation FPS setting is at least this threshold, add one frame of input lag (e.g. 16.6 ms for 60 FPS) in order to avoid jitter. This setting allows the CPU to work on one frame while GPU works on the previous frame.\nThis setting should be used when your computer is too slow to do CPU + GPU work in time.");
+            UIWidgets::PaddedEnhancementCheckbox("Render parallelization","gRenderParallelization", true, false);
+            UIWidgets::Tooltip(
+                "This setting allows the CPU to work on one frame while GPU works on the previous frame.\n"
+                "Recommended if you can't reach the FPS you set, despite it being set below your refresh rate "
+                "or if you notice other performance problems.\n"
+                "Adds up to one frame of input lag under certain scenarios.");
         }
       
         UIWidgets::PaddedSeparator(true, true, 3.0f, 3.0f);
