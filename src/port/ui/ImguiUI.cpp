@@ -371,7 +371,7 @@ void DrawSettingsMenu(){
         }
 
         if (Ship::Context::GetInstance()->GetWindow()->CanDisableVerticalSync()) {
-            UIWidgets::PaddedEnhancementCheckbox("Enable Vsync", "gVsyncEnabled", true, false);
+            UIWidgets::PaddedEnhancementCheckbox("Enable Vsync", "gVsyncEnabled", true, false, false, "", UIWidgets::CheckboxGraphics::Cross, true);
             UIWidgets::Tooltip("Removes tearing, but clamps your max FPS to your displays refresh rate.");
         }
 
