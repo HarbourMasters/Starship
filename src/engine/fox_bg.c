@@ -1712,7 +1712,6 @@ void Background_DrawGround(void) {
                                    32);
                 gDPSetTextureImage(gMasterDisp++, G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, SEGMENTED_TO_VIRTUAL(D_AQ_600AB68));
 
-                #ifdef TEXTURE_INTERPOLATION_FIX_PENDING
 				int interpolatedFrames = GameEngine_GetInterpolationFrameCount();
 
 				temp_s0 = fabsf(Math_ModF(2.0f * (gPathTexScroll * 0.2133333f), 128.0f));
@@ -1737,13 +1736,6 @@ void Background_DrawGround(void) {
 					yScroll += inc >= 0 ? inc : -inc;
 					yScroll = fabs(Math_ModF(yScroll, 128.0f));
 				}
-                #else
-                temp_s0 = fabsf(Math_ModF(2.0f * (gPathTexScroll * 0.2133333f), 128.0f));
-                temp_fv0 = Math_ModF((10000.0f - gPlayer[gPlayerNum].xPath) * 0.32f, 128.0f);
-                
-                gDPSetupTile(gMasterDisp++, G_IM_FMT_RGBA, G_IM_SIZ_16b, 32, 32, temp_fv0, temp_s0,
-                    G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, 5, 5, G_TX_NOLOD, G_TX_NOLOD);
-                #endif
 			
                 // CENTER FAR
                 Matrix_Push(&gGfxMatrix);
@@ -1796,7 +1788,6 @@ void Background_DrawGround(void) {
                                    32);
                 gDPSetTextureImage(gMasterDisp++, G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, SEGMENTED_TO_VIRTUAL(D_AQ_602ACC0));
 
-                #ifdef TEXTURE_INTERPOLATION_FIX_PENDING
 				int interpolatedFrames = GameEngine_GetInterpolationFrameCount();
 
 				temp_s0 = fabsf(Math_ModF(2.0f * (gPathTexScroll * 0.2133333f), 128.0f));
@@ -1821,13 +1812,6 @@ void Background_DrawGround(void) {
 					yScroll += inc >= 0 ? inc : -inc;
 					yScroll = fabs(Math_ModF(yScroll, 128.0f));
 				}
-                #else
-                temp_s0 = fabsf(Math_ModF(2.0f * (gPathTexScroll * 0.2133333f), 128.0f));
-                temp_fv0 = Math_ModF((10000.0f - gPlayer[gPlayerNum].xPath) * 0.32f, 128.0f);
-
-                gDPSetupTile(gMasterDisp++, G_IM_FMT_RGBA, G_IM_SIZ_16b, 32, 32, temp_fv0, temp_s0,
-                    G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, 5, 5, G_TX_NOLOD, G_TX_NOLOD);
-                #endif
 
                 if (gAqDrawMode != 0) {
                     RCP_SetupDL(&gMasterDisp, SETUPDL_47);

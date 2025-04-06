@@ -541,7 +541,7 @@ uint32_t GameEngine::GetInterpolationFPS() {
 
 uint32_t GameEngine::GetInterpolationFrameCount()
 {
-	return ceil((float)GetInterpolationFPS() / 30.0f);
+	return ceil((float)GetInterpolationFPS() / (60.0f / gVIsPerFrame));
 }
 
 extern "C" uint32_t GameEngine_GetInterpolationFrameCount() {
