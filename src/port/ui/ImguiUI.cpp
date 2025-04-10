@@ -9,7 +9,7 @@
 
 #include <imgui_internal.h>
 #include <libultraship/libultraship.h>
-#include <Fast3D/gfx_pc.h>
+#include <Fast3D/interpreter.h>
 #include "port/Engine.h"
 #include "port/notification/notification.h"
 #include "utils/StringHelper.h"

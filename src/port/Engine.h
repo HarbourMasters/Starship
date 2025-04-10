@@ -12,7 +12,7 @@ typedef enum {
 #ifdef __cplusplus
 #include <vector>
 #include <SDL2/SDL.h>
-#include <Fast3D/gfx_pc.h>
+#include <Fast3D/interpreter.h>
 #include "libultraship/src/Context.h"
 
 #ifndef IDYES
@@ -48,21 +48,23 @@ class GameEngine {
     static bool HasVersion(SF64Version ver);
 };
 
-extern "C" void* GameEngine_Malloc(size_t size);
-
+Fast::Interpreter* GameEngine_GetInterpreter();
 #define memallocn(type, n) (type*) GameEngine_Malloc(sizeof(type) * n)
 #define memalloc(type) memallocn(type, 1)
 
+extern "C" {
 #else
 #include <stdint.h>
+#define memalloc(size) GameEngine_Malloc(size)
+#endif
 
+void* GameEngine_Malloc(size_t size);
 bool GameEngine_HasVersion(SF64Version ver);
 void GameEngine_ProcessGfxCommands(Gfx* commands);
 float GameEngine_GetAspectRatio();
-uint8_t GameEngine_OTRSigCheck(char* imgData);
+uint8_t GameEngine_OTRSigCheck(const char* imgData);
 uint32_t OTRGetCurrentWidth(void);
 uint32_t OTRGetCurrentHeight(void);
-float OTRGetAspectRatio(void);
 float OTRGetHUDAspectRatio();
 int32_t OTRConvertHUDXToScreenX(int32_t v);
 float OTRGetDimensionFromLeftEdge(float v);
@@ -83,5 +85,7 @@ void* GameEngine_Malloc(size_t size);
 void GameEngine_GetTextureInfo(const char* path, int32_t* width, int32_t* height, float* scale, bool* custom);
 void gDPSetTileSizeInterp(Gfx* pkt, int t, float uls, float ult, float lrs, float lrt);
 uint32_t GameEngine_GetInterpolationFrameCount();
-#define memalloc(size) GameEngine_Malloc(size)
+
+#ifdef __cplusplus
+}
 #endif
