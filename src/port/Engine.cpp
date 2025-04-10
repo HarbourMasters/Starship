@@ -326,6 +326,10 @@ void GameEngine::StartFrame() const {
             CVarSetInteger("gEnhancements.Mods.AlternateAssets", !CVarGetInteger("gEnhancements.Mods.AlternateAssets", 0));
             break;
         }
+        case KbScancode::LUS_KB_F4: {
+            gNextGameState = GSTATE_BOOT;
+            break;
+        }
         default:
             break;
     }

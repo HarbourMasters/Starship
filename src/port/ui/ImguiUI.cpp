@@ -423,13 +423,7 @@ void DrawMenuBarIcon() {
 
 void DrawGameMenu() {
     if (UIWidgets::BeginMenu("Starship")) {
-        if (UIWidgets::MenuItem("Reset",
-#ifdef __APPLE__
-                "Command-R"
-#else
-                "Ctrl+R"
-#endif
-        )) {
+        if (UIWidgets::MenuItem("Reset", "F4")) {
             gNextGameState = GSTATE_BOOT;
         }
 #if !defined(__SWITCH__) && !defined(__WIIU__)
