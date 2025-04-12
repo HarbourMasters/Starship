@@ -48,21 +48,21 @@ class GameEngine {
     static bool HasVersion(SF64Version ver); // sol:ignore
 };
 
-extern "C" void* GameEngine_Malloc(size_t size); // sol:ignore
-
-#define memallocn(type, n) (type*) GameEngine_Malloc(sizeof(type) * n) // sol:ignore
-#define memalloc(type) memallocn(type, 1) // sol:ignore
+Fast::Interpreter* GameEngine_GetInterpreter();
+#define memallocn(type, n) (type*) GameEngine_Malloc(sizeof(type) * n)
+#define memalloc(type) memallocn(type, 1)
 
 extern "C" {
 #else
 #include <stdint.h>
+#define memalloc(size) GameEngine_Malloc(size)
 #endif
 
 void* GameEngine_Malloc(size_t size);
 bool GameEngine_HasVersion(SF64Version ver);
 void GameEngine_ProcessGfxCommands(Gfx* commands); // sol:ignore
 float GameEngine_GetAspectRatio();
-uint8_t GameEngine_OTRSigCheck(const char* imgData); // sol:ignore
+uint8_t GameEngine_OTRSigCheck(const char* imgData);
 uint32_t OTRGetCurrentWidth(void);
 uint32_t OTRGetCurrentHeight(void);
 float OTRGetHUDAspectRatio();
@@ -81,9 +81,10 @@ int16_t OTRGetRectDimensionFromLeftEdgeOverride(float v);
 int16_t OTRGetRectDimensionFromRightEdgeOverride(float v);
 uint32_t OTRGetGameRenderWidth();
 uint32_t OTRGetGameRenderHeight();
-void* GameEngine_Malloc(size_t size); // sol:ignore
-void GameEngine_GetTextureInfo(const char* path, int32_t* width, int32_t* height, float* scale, bool* custom); // sol:ignore
-#define memalloc(size) GameEngine_Malloc(size) // sol:ignore
+void* GameEngine_Malloc(size_t size);
+void GameEngine_GetTextureInfo(const char* path, int32_t* width, int32_t* height, float* scale, bool* custom);
+void gDPSetTileSizeInterp(Gfx* pkt, int t, float uls, float ult, float lrs, float lrt);
+uint32_t GameEngine_GetInterpolationFrameCount();
 
 #ifdef __cplusplus
 }
