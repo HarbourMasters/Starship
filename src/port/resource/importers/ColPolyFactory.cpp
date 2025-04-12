@@ -9,7 +9,7 @@ std::shared_ptr<Ship::IResource> ResourceFactoryBinaryColPolyV0::ReadResource(st
         return nullptr;
     }
 
-    auto colPoly = std::make_shared<ColPoly>(file->InitData);
+    auto colPoly = std::make_shared<ColPoly>(initData);
     auto reader = std::get<std::shared_ptr<Ship::BinaryReader>>(file->Reader);
 
     auto colPolysCount = reader->ReadUInt32();

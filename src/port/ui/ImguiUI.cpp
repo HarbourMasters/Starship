@@ -9,7 +9,7 @@
 
 #include <imgui_internal.h>
 #include <libultraship/libultraship.h>
-#include <Fast3D/gfx_pc.h>
+#include <Fast3D/interpreter.h>
 #include "port/Engine.h"
 #include "port/hooks/Events.h"
 #include "port/notification/notification.h"
@@ -173,39 +173,37 @@ void DrawSettingsMenu(){
             if (Ship::Context::GetInstance()->GetAudio()->GetAvailableAudioBackends()->size() <= 1) {
                 UIWidgets::ReEnableComponent("");
             }
+            
+            UIWidgets::PaddedEnhancementCheckbox("Surround 5.1 (Needs reload)", "gAudioChannelsSetting", 1, 0);
 
             ImGui::EndMenu();
         }
-
-        UIWidgets::Spacer(0);
-
-        if (UIWidgets::BeginMenu("Language")) {
-            ImGui::Dummy(ImVec2(150, 0.0f));
-            if(GameEngine::HasVersion(SF64_VER_EU)){
-                UIWidgets::Spacer(0);
-                if (UIWidgets::CVarCombobox("Voices", "gVoiceLanguage", voiceLangs, 
-                {
-                    .tooltip = "Changes the language of the voice acting in the game",
-                    .defaultIndex = 0,
-                })) {
-                    Audio_SetVoiceLanguage(CVarGetInteger("gVoiceLanguage", 0));
-                };
-            } else {
-                if(UIWidgets::Button("Install EU Audio")){
-                    if(!GameEngine::GenAssetFile()){
-                        GameEngine::ShowMessage("Success", "EU Audio Installed, restart the game to apply changes.");
+        
+        if (!GameEngine::HasVersion(SF64_VER_JP) || GameEngine::HasVersion(SF64_VER_EU)) {
+            UIWidgets::Spacer(0);
+            if (UIWidgets::BeginMenu("Language")) {
+                ImGui::Dummy(ImVec2(150, 0.0f));
+                if (!GameEngine::HasVersion(SF64_VER_JP) && GameEngine::HasVersion(SF64_VER_EU)){
+                    //UIWidgets::Spacer(0);
+                    if (UIWidgets::CVarCombobox("Voices", "gVoiceLanguage", voiceLangs, 
+                    {
+                        .tooltip = "Changes the language of the voice acting in the game",
+                        .defaultIndex = 0,
+                    })) {
+                        Audio_SetVoiceLanguage(CVarGetInteger("gVoiceLanguage", 0));
+                    };
+                } else {
+                    if (UIWidgets::Button("Install JP/EU Audio")) {
+                        if (GameEngine::GenAssetFile()){
+                            GameEngine::ShowMessage("Success", "Audio assets installed. Changes will be applied on the next startup.", SDL_MESSAGEBOX_INFORMATION);
+                            Ship::Context::GetInstance()->GetWindow()->Close();
+                        }
                     }
                 }
+                ImGui::EndMenu();
             }
-
-            if(!GameEngine::HasVersion(SF64_VER_JP) && UIWidgets::Button("Install JP Audio")) {
-                if(GameEngine::GenAssetFile()){
-                    GameEngine::ShowMessage("Success", "EU Audio Installed, restart the game to apply changes.");
-                }
-            }
-            ImGui::EndMenu();
         }
-
+        
         UIWidgets::Spacer(0);
 
         if (UIWidgets::BeginMenu("Controller")) {
@@ -246,12 +244,7 @@ void DrawSettingsMenu(){
 
         { // FPS Slider
             const int minFps = 30;
-            static int maxFps;
-            if (Ship::Context::GetInstance()->GetWindow()->GetWindowBackend() == Ship::WindowBackend::FAST3D_DXGI_DX11) {
-                maxFps = 360;
-            } else {
-                maxFps = Ship::Context::GetInstance()->GetWindow()->GetCurrentRefreshRate();
-            }
+            static int maxFps = 360;
             int currentFps = 0;
         #ifdef __WIIU__
             UIWidgets::Spacer(0);
@@ -314,45 +307,28 @@ void DrawSettingsMenu(){
             CVarSetInteger("gInterpolationFPS", currentFps);
             Ship::Context::GetInstance()->GetWindow()->GetGui()->SaveConsoleVariablesNextFrame();
         #else
-            bool matchingRefreshRate =
-                CVarGetInteger("gMatchRefreshRate", 0) && Ship::Context::GetInstance()->GetWindow()->GetWindowBackend() != Ship::WindowBackend::FAST3D_DXGI_DX11;
+            bool matchingRefreshRate = CVarGetInteger("gMatchRefreshRate", 0);
             UIWidgets::CVarSliderInt((currentFps == 30) ? "FPS: Original (30)" : "FPS: %d", "gInterpolationFPS", minFps, maxFps, 60, {
                 .disabled = matchingRefreshRate
             });
         #endif
-            if (Ship::Context::GetInstance()->GetWindow()->GetWindowBackend() == Ship::WindowBackend::FAST3D_DXGI_DX11) {
-                UIWidgets::Tooltip(
-                    "Uses Matrix Interpolation to create extra frames, resulting in smoother graphics. This is purely "
-                    "visual and does not impact game logic, execution of glitches etc.\n\n"
-                    "A higher target FPS than your monitor's refresh rate will waste resources, and might give a worse result."
-                );
-            } else {
-                UIWidgets::Tooltip(
-                    "Uses Matrix Interpolation to create extra frames, resulting in smoother graphics. This is purely "
-                    "visual and does not impact game logic, execution of glitches etc."
-                );
-            }
+            UIWidgets::Tooltip(
+                "Uses Matrix Interpolation to create extra frames, resulting in smoother graphics. This is purely "
+                "visual and does not impact game logic, execution of glitches etc.\n\n"
+                "A higher target FPS than your monitor's refresh rate will waste resources, and might give a worse result."
+            );
         } // END FPS Slider
 
-        if (Ship::Context::GetInstance()->GetWindow()->GetWindowBackend() == Ship::WindowBackend::FAST3D_DXGI_DX11) {
-            UIWidgets::Spacer(0);
-            if (ImGui::Button("Match Refresh Rate")) {
-                int hz = Ship::Context::GetInstance()->GetWindow()->GetCurrentRefreshRate();
-                if (hz >= 30 && hz <= 360) {
-                    CVarSetInteger("gInterpolationFPS", hz);
-                    Ship::Context::GetInstance()->GetWindow()->GetGui()->SaveConsoleVariablesNextFrame();
-                }
-            }
-        } else {
-            UIWidgets::PaddedEnhancementCheckbox("Match Refresh Rate", "gMatchRefreshRate", true, false);
-        }
-
-        UIWidgets::Tooltip("Matches interpolation value to the current game's window refresh rate");
+        UIWidgets::PaddedEnhancementCheckbox("Match Refresh Rate", "gMatchRefreshRate", true, false);
+        UIWidgets::Tooltip("Matches interpolation value to the refresh rate of your display.");
 
         if (Ship::Context::GetInstance()->GetWindow()->GetWindowBackend() == Ship::WindowBackend::FAST3D_DXGI_DX11) {
-            UIWidgets::PaddedEnhancementSliderInt(CVarGetInteger("gExtraLatencyThreshold", 0) == 0 ? "Jitter fix: Off" : "Jitter fix: >= %d FPS",
-                                                  "##ExtraLatencyThreshold", "gExtraLatencyThreshold", 0, 360, "", 0, true, true, false);
-            UIWidgets::Tooltip("When Interpolation FPS setting is at least this threshold, add one frame of input lag (e.g. 16.6 ms for 60 FPS) in order to avoid jitter. This setting allows the CPU to work on one frame while GPU works on the previous frame.\nThis setting should be used when your computer is too slow to do CPU + GPU work in time.");
+            UIWidgets::PaddedEnhancementCheckbox("Render parallelization","gRenderParallelization", true, false);
+            UIWidgets::Tooltip(
+                "This setting allows the CPU to work on one frame while GPU works on the previous frame.\n"
+                "Recommended if you can't reach the FPS you set, despite it being set below your refresh rate "
+                "or if you notice other performance problems.\n"
+                "Adds up to one frame of input lag under certain scenarios.");
         }
       
         UIWidgets::PaddedSeparator(true, true, 3.0f, 3.0f);
@@ -393,7 +369,8 @@ void DrawSettingsMenu(){
         }
 
         if (Ship::Context::GetInstance()->GetWindow()->CanDisableVerticalSync()) {
-            UIWidgets::PaddedEnhancementCheckbox("Enable Vsync", "gVsyncEnabled", true, false);
+            UIWidgets::PaddedEnhancementCheckbox("Enable Vsync", "gVsyncEnabled", true, false, false, "", UIWidgets::CheckboxGraphics::Cross, true);
+            UIWidgets::Tooltip("Removes tearing, but clamps your max FPS to your displays refresh rate.");
         }
 
         if (Ship::Context::GetInstance()->GetWindow()->SupportsWindowedFullscreen()) {
@@ -448,13 +425,7 @@ void DrawMenuBarIcon() {
 
 void DrawGameMenu() {
     if (UIWidgets::BeginMenu("Starship")) {
-        if (UIWidgets::MenuItem("Reset",
-#ifdef __APPLE__
-                "Command-R"
-#else
-                "Ctrl+R"
-#endif
-        )) {
+        if (UIWidgets::MenuItem("Reset", "F4")) {
             gNextGameState = GSTATE_BOOT;
         }
 #if !defined(__SWITCH__) && !defined(__WIIU__)

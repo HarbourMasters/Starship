@@ -2775,6 +2775,10 @@ void ActorCutscene_Draw(ActorCutscene* this) {
             break;
 
         case ACTOR_CS_37:
+            // Fixes the white flash on the right side of the screen during the Sector Y Intro Cutscene.
+            if ((gCurrentLevel == LEVEL_SECTOR_Y) && (gCsFrameCount == 350) && (gPlayer[0].csState == 2)) {
+                break;
+            }
             RCP_SetupDL_49();
             gDPSetPrimColor(gMasterDisp++, 0, 0, this->iwork[0], this->iwork[1], this->iwork[2], this->iwork[3]);
             gDPSetEnvColor(gMasterDisp++, this->iwork[4], this->iwork[5], this->iwork[6], this->iwork[7]);

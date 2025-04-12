@@ -24,6 +24,7 @@
 #include "assets/ast_zoness.h"
 #include "port/interpolation/FrameInterpolation.h"
 #include "port/mods/PortEnhancements.h"
+#include "sf64_tagging.h"
 
 // rodata
 const char D_800D7230[] = "Enm->wrk3=<%d>\n";
@@ -363,11 +364,18 @@ void Effect_Effect389_Draw(Effect389* this) {
     for (i = 0; i < 10; i++) {
         if ((i >= this->unk_48) && (i < this->unk_46)) {
             Matrix_Push(&gGfxMatrix);
+
+            // @port: Tag the transform.
+            FrameInterpolation_RecordOpenChild("ElectricArc1", TAG_EFFECT(this) + i);
+
             Matrix_Translate(gGfxMatrix, 0.0f, -60.0f, 0.0f, MTXF_APPLY);
             Matrix_Scale(gGfxMatrix, 0.8f, 3.0f, 1.0f, MTXF_APPLY);
             Matrix_SetGfxMtx(&gMasterDisp);
             gSPDisplayList(gMasterDisp++, D_102F5E0);
             Matrix_Pop(&gGfxMatrix);
+
+            // @port: Pop the transform.
+            FrameInterpolation_RecordCloseChild();
         }
         Matrix_Translate(gGfxMatrix, 0.0f, -120.0f, 0.0f, MTXF_APPLY);
         Matrix_RotateZ(gGfxMatrix, D_800D1534[this->unk_4C][i] * M_DTOR, MTXF_APPLY);

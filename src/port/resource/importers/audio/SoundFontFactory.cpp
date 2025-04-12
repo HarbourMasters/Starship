@@ -11,7 +11,7 @@ std::shared_ptr<Ship::IResource> ResourceFactoryBinarySoundFontV0::ReadResource(
         return nullptr;
     }
 
-    auto font = std::make_shared<SoundFont>(file->InitData);
+    auto font = std::make_shared<SoundFont>(initData);
     auto reader = std::get<std::shared_ptr<Ship::BinaryReader>>(file->Reader);
 
     font->mFont.numInstruments = reader->ReadUByte();
@@ -216,7 +216,7 @@ std::shared_ptr<Ship::IResource> ResourceFactoryXMLSoundFontV0::ReadResource(std
     if (!FileHasValidFormatAndReader(file, initData)) {
         return nullptr;
     }
-    auto audioSoundFont = std::make_shared<SoundFont>(file->InitData);
+    auto audioSoundFont = std::make_shared<SoundFont>(initData);
     auto child = std::get<std::shared_ptr<tinyxml2::XMLDocument>>(file->Reader)->FirstChildElement();
     // Header data
     memset(&audioSoundFont->mFont, 0, sizeof(audioSoundFont->mFont));

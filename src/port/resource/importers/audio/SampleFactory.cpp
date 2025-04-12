@@ -17,7 +17,7 @@ std::shared_ptr<Ship::IResource> ResourceFactoryBinarySampleV1::ReadResource(std
         return nullptr;
     }
 
-    auto sample = std::make_shared<Sample>(file->InitData);
+    auto sample = std::make_shared<Sample>(initData);
     auto reader = std::get<std::shared_ptr<Ship::BinaryReader>>(file->Reader);
 
     sample->mSample.codec = reader->ReadUByte();
@@ -149,12 +149,12 @@ std::shared_ptr<Ship::IResource> ResourceFactoryXMLSampleV0::ReadResource(std::s
         return nullptr;
     }
 
-    auto sample = std::make_shared<Sample>(file->InitData);
+    auto sample = std::make_shared<Sample>(initData);
     auto child = std::get<std::shared_ptr<tinyxml2::XMLDocument>>(file->Reader)->FirstChildElement();
     const char* customFormatStr = child->Attribute("CustomFormat");
     memset(&sample->mSample, 0, sizeof(sample->mSample));
     sample->mSample.isRelocated = 0;
-    sample->mSample.codec = CodecStrToInt(child->Attribute("Codec"), file->InitData->Path.c_str());
+    sample->mSample.codec = CodecStrToInt(child->Attribute("Codec"), initData->Path.c_str());
     sample->mSample.medium = MediumStrToInt(child->Attribute("Medium"));
     sample->mSample.unk = child->IntAttribute("bit26");
 

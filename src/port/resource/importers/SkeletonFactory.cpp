@@ -11,7 +11,7 @@ std::shared_ptr<Ship::IResource> ResourceFactoryBinarySkeletonV0::ReadResource(s
         return nullptr;
     }
 
-    auto skel = std::make_shared<Skeleton>(file->InitData);
+    auto skel = std::make_shared<Skeleton>(initData);
     auto reader = std::get<std::shared_ptr<Ship::BinaryReader>>(file->Reader);
 
     auto count = reader->ReadUInt32();

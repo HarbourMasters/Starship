@@ -6260,6 +6260,7 @@ void Venom1_LevelStart2(Player* player) {
 
         player->pos.x += player->vel.x;
         player->pos.y += player->vel.y;
+		gLastPathTexScroll = gPathTexScroll;
         gPathTexScroll += player->vel.z;
 
         player->bankAngle = player->rot.z + player->zRotBank + player->zRotBarrelRoll;

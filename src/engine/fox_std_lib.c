@@ -1,5 +1,6 @@
 #include "global.h"
 #include "assets/ast_text.h"
+#include "sf64_tagging.h"
 
 char D_801619A0[100];
 
@@ -205,9 +206,6 @@ s32 Animation_GetLimbIndex(Limb* limb, Limb** skeleton) {
     }
     return 0;
 }
-
-#define TAG_LIMB_ADDRESS(ptr, data) ((((u32) (ptr) << 16) & 0xFFFF0000) | ((u32) (data) & 0x0000FFFF))
-#define TAG_LIMB(limb, data) ((u32) (0x80000000 | (TAG_LIMB_ADDRESS(limb, data))))
 
 void Animation_DrawLimb(s32 mode, Limb* limb, Limb** skeleton, Vec3f* jointTable, OverrideLimbDraw overrideLimbDraw,
                         PostLimbDraw postLimbDraw, void* data) {

@@ -9,7 +9,7 @@ std::shared_ptr<Ship::IResource> ResourceFactoryBinaryAnimV0::ReadResource(std::
         return nullptr;
     }
 
-    auto anim = std::make_shared<Animation>(file->InitData);
+    auto anim = std::make_shared<Animation>(initData);
     auto reader = std::get<std::shared_ptr<Ship::BinaryReader>>(file->Reader);
 
     int16_t frameCount = reader->ReadInt16();

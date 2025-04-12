@@ -51,9 +51,9 @@ Congratulations, you are now sailing with Starship! Have fun!
 | Keys | Action |
 | - | - |
 | F1 | Toggle menubar |
+| F4 | Reset |
 | F11 | Fullscreen |
 | Tab | Toggle Alternate assets |
-| Ctrl+R | Reset |
 
 ### Graphics Backends
 Currently, there are three rendering APIs supported: DirectX11 (Windows), OpenGL (all platforms), and Metal (macOS). You can change which API to use in the `Settings` menu of the menubar, which requires a restart.  If you're having an issue with crashing, you can change the API in the `starship.cfg.json` file by finding the line `"Backend":{`... and changing the `id` value to `3` and set the `Name` to `OpenGL`. `DirectX 11` with id `2` is the default on Windows. `Metal` with id `4` is the default on macOS.

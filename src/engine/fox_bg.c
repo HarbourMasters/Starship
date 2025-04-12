@@ -27,6 +27,8 @@
 
 #include "water_effect.inc"
 
+#include <libultra/gbi.h>
+
 f32 gWarpZoneBgAlpha;
 u8 D_bg_8015F964;  // related to water surfaces
 f32 D_bg_8015F968; // heat shimmer effect for SO and TI?
@@ -205,7 +207,7 @@ void Background_DrawStarfield(void) {
     float starfieldHeight;
     float vx;
     float vy;
-    const float STAR_MARGIN = 10.0f; // Margin to hide seam stars
+    const float STAR_MARGIN = 40.0f; // Margin to hide seam stars
 
     // Set projection to orthographic before drawing stars
     Lib_InitOrtho(&gMasterDisp);
@@ -256,7 +258,7 @@ void Background_DrawStarfield(void) {
 
         float originalWidth = currentScreenWidth / 3;
         float originalAspect = originalWidth / (currentScreenHeight / 3);
-        float renderMaskWidth = originalWidth * (OTRGetAspectRatio() / originalAspect);
+        float renderMaskWidth = originalWidth * (GameEngine_GetAspectRatio() / originalAspect);
         float marginX = (currentScreenWidth - renderMaskWidth) / 2;
         float renderMaskHeight = currentScreenHeight / 3;
 
@@ -293,8 +295,8 @@ void Background_DrawStarfield(void) {
             if (vx >= (marginX - STAR_MARGIN) && vx <= (marginX + renderMaskWidth + STAR_MARGIN) &&
                 vy >= (renderMaskHeight - STAR_MARGIN) && vy <= ((renderMaskHeight * 2) + STAR_MARGIN)) {
 
-                bool skipInterpolation = (fabsf(vx - gStarPrevX[i]) > starfieldWidth / 2.0f) ||
-                                         (fabsf(vy - gStarPrevY[i]) > starfieldHeight / 2.0f);
+                bool skipInterpolation = (fabsf(vx - gStarPrevX[i]) > (marginX + renderMaskWidth) / 2.0f) ||
+                                         (fabsf(vy - gStarPrevY[i]) > ((renderMaskHeight * 2)) / 2.0f);
 
                 if (skipInterpolation) {
                     // @port Skip interpolation
@@ -326,7 +328,7 @@ void Background_DrawStarfield(void) {
                 Matrix_Pop(&gGfxMatrix);
 
                 if (skipInterpolation) {
-                    // @port Skip interpolation
+                    // @port Re-enable Interpolation if it was skipped
                     FrameInterpolation_ShouldInterpolateFrame(true);
                 } else {
                     FrameInterpolation_RecordCloseChild();
@@ -1386,10 +1388,32 @@ void Background_DrawGround(void) {
 
             if (gLevelMode == LEVELMODE_ON_RAILS) {
                 gDPSetTextureImage(gMasterDisp++, G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, SEGMENTED_TO_VIRTUAL(D_CO_601B6C0));
-                temp_s0 = fabsf(Math_ModF(2.0f * (gPathTexScroll * 0.2133333f), 128.0f)); // 0.64f / 3.0f
-                temp_fv0 = Math_ModF((10000.0f - gPlayer[gPlayerNum].xPath) * 0.32f, 128.0f);
-                gDPSetupTile(gMasterDisp++, G_IM_FMT_RGBA, G_IM_SIZ_16b, 32, 32, temp_fv0, temp_s0,
-                             G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, 5, 5, G_TX_NOLOD, G_TX_NOLOD);
+                
+				int interpolatedFrames = GameEngine_GetInterpolationFrameCount();
+
+				temp_s0 = fabsf(Math_ModF(2.0f * (gPathTexScroll * 0.2133333f), 128.0f)); // 0.64f / 3.0f
+				temp_fv0 = Math_ModF((10000.0f - gPlayer[gPlayerNum].xPath) * 0.32f, 128.0f);
+
+				float xScroll = temp_fv0;
+				float yScroll = temp_s0;
+
+				float inc = (2.0f * (gPathTexScroll - gLastPathTexScroll) * 0.2133333f) / (float)interpolatedFrames;
+
+				for (int i = 0; i < interpolatedFrames; i++)
+				{
+					gDPSetInterpolation(gMasterDisp++, i);
+
+					gDPSetupTile2(gMasterDisp++, G_IM_FMT_RGBA, G_IM_SIZ_16b, 32, 32, temp_fv0, temp_s0,
+						G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, 5, 5, G_TX_NOLOD, G_TX_NOLOD);
+
+					gDPSetTileSizeInterp(gMasterDisp, G_TX_RENDERTILE, xScroll, yScroll, 32 << 2, 32 << 2);
+
+					gMasterDisp += 3;
+
+					yScroll += inc >= 0 ? inc : -inc;
+					yScroll = fabs(Math_ModF(yScroll, 128.0f));
+				}
+
                 switch (gGroundSurface) {
                     case SURFACE_GRASS:
                         gDPLoadTileTexture(gMasterDisp++, D_CO_601B6C0, G_IM_FMT_RGBA, G_IM_SIZ_16b, 32, 32);
@@ -1482,10 +1506,34 @@ void Background_DrawGround(void) {
                     break;
             }
             gDPSetTextureImage(gMasterDisp++, G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, sp1C4);
-            temp_s0 = fabsf(Math_ModF(2.0f * (gPathTexScroll * 0.2133333f), 128.0f));
-            temp_fv0 = Math_ModF((10000.0f - gPlayer[gPlayerNum].xPath) * 0.32f, 128.0f);
-            gDPSetupTile(gMasterDisp++, G_IM_FMT_RGBA, G_IM_SIZ_16b, 32, 32, temp_fv0, temp_s0,
-                         G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, 5, 5, G_TX_NOLOD, G_TX_NOLOD);
+            
+            //gDPSetupTile(gMasterDisp++, G_IM_FMT_RGBA, G_IM_SIZ_16b, 32, 32, temp_fv0, temp_s0,
+                         //G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, 5, 5, G_TX_NOLOD, G_TX_NOLOD);
+
+			int interpolatedFrames = GameEngine_GetInterpolationFrameCount();
+
+			temp_s0 = fabsf(Math_ModF(2.0f * (gPathTexScroll * 0.2133333f), 128.0f));
+			temp_fv0 = Math_ModF((10000.0f - gPlayer[gPlayerNum].xPath) * 0.32f, 128.0f);
+
+			float xScroll = temp_fv0;
+			float yScroll = temp_s0;
+
+			float inc = (2.0f * (gPathTexScroll - gLastPathTexScroll) * 0.2133333f) / (float)interpolatedFrames;
+
+			for (int i = 0; i < interpolatedFrames; i++)
+			{
+				gDPSetInterpolation(gMasterDisp++, i);
+
+				gDPSetupTile2(gMasterDisp++, G_IM_FMT_RGBA, G_IM_SIZ_16b, 32, 32, temp_fv0, temp_s0,
+					G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, 5, 5, G_TX_NOLOD, G_TX_NOLOD);
+
+				gDPSetTileSizeInterp(gMasterDisp, G_TX_RENDERTILE, xScroll, yScroll, 32 << 2, 32 << 2);
+
+				gMasterDisp += 3;
+
+				yScroll += inc >= 0 ? inc : -inc;
+				yScroll = fabs(Math_ModF(yScroll, 128.0f));
+			}
 
             // CENTER FAR
             Matrix_Push(&gGfxMatrix);
@@ -1569,10 +1617,31 @@ void Background_DrawGround(void) {
                 //     gPathTexScroll -= (32.0f * 36.7f) / 2.0f;
                 // }
                 gDPSetTextureImage(gMasterDisp++, G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, sp1C4);
-                temp_s0 = fabsf(Math_ModF(2.0f * (gPathTexScroll * 0.2133333f), 128.0f)); // 0.64f / 3.0f
-                temp_fv0 = Math_ModF((10000.0f - gPlayer[gPlayerNum].xPath) * 0.32f, 128.0f);
-                gDPSetupTile(gMasterDisp++, G_IM_FMT_RGBA, G_IM_SIZ_16b, 32, 32, temp_fv0, temp_s0,
-                             G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, 5, 5, G_TX_NOLOD, G_TX_NOLOD);
+                
+				int interpolatedFrames = GameEngine_GetInterpolationFrameCount();
+
+				temp_s0 = fabsf(Math_ModF(2.0f * (gPathTexScroll * 0.2133333f), 128.0f)); // 0.64f / 3.0f
+				temp_fv0 = Math_ModF((10000.0f - gPlayer[gPlayerNum].xPath) * 0.32f, 128.0f);
+
+				float xScroll = temp_fv0;
+				float yScroll = temp_s0;
+
+				float inc = (2.0f * (gPathTexScroll - gLastPathTexScroll) * 0.2133333f) / (float)interpolatedFrames;
+
+				for (int i = 0; i < interpolatedFrames; i++)
+				{
+					gDPSetInterpolation(gMasterDisp++, i);
+
+					gDPSetupTile2(gMasterDisp++, G_IM_FMT_RGBA, G_IM_SIZ_16b, 32, 32, temp_fv0, temp_s0,
+						G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, 5, 5, G_TX_NOLOD, G_TX_NOLOD);
+
+					gDPSetTileSizeInterp(gMasterDisp, G_TX_RENDERTILE, xScroll, yScroll, 32 << 2, 32 << 2);
+
+					gMasterDisp += 3;
+
+					yScroll += inc >= 0 ? inc : -inc;
+					yScroll = fabs(Math_ModF(yScroll, 128.0f));
+				}
 
                 // Original Display (Center)
                 Matrix_Push(&gGfxMatrix);
@@ -1636,16 +1705,38 @@ void Background_DrawGround(void) {
             sp1C0 = D_AQ_600AB10;
             gSPFogPosition(gMasterDisp++, gFogNear, gFogFar);
 
+            // Bottom Water floor
             if ((D_bg_8015F964 == 0) && ((gAqDrawMode == 0) || (gAqDrawMode == 2))) {
 
                 gDPLoadTileTexture(gMasterDisp++, SEGMENTED_TO_VIRTUAL(D_AQ_600AB68), G_IM_FMT_RGBA, G_IM_SIZ_16b, 32,
                                    32);
                 gDPSetTextureImage(gMasterDisp++, G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, SEGMENTED_TO_VIRTUAL(D_AQ_600AB68));
-                temp_s0 = fabsf(Math_ModF(2.0f * (gPathTexScroll * 0.2133333f), 128.0f));
-                temp_fv0 = Math_ModF((10000.0f - gPlayer[gPlayerNum].xPath) * 0.32f, 128.0f);
-                gDPSetupTile(gMasterDisp++, G_IM_FMT_RGBA, G_IM_SIZ_16b, 32, 32, temp_fv0, temp_s0,
-                             G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, 5, 5, G_TX_NOLOD, G_TX_NOLOD);
 
+				int interpolatedFrames = GameEngine_GetInterpolationFrameCount();
+
+				temp_s0 = fabsf(Math_ModF(2.0f * (gPathTexScroll * 0.2133333f), 128.0f));
+				temp_fv0 = Math_ModF((10000.0f - gPlayer[gPlayerNum].xPath) * 0.32f, 128.0f);
+
+				float xScroll = temp_fv0;
+				float yScroll = temp_s0;
+
+				float inc = (2.0f * (gPathTexScroll - gLastPathTexScroll) * 0.2133333f) / (float)interpolatedFrames;
+
+				for (int i = 0; i < interpolatedFrames; i++)
+				{
+					gDPSetInterpolation(gMasterDisp++, i);
+
+					gDPSetupTile2(gMasterDisp++, G_IM_FMT_RGBA, G_IM_SIZ_16b, 32, 32, temp_fv0, temp_s0,
+						G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, 5, 5, G_TX_NOLOD, G_TX_NOLOD);
+
+					gDPSetTileSizeInterp(gMasterDisp, G_TX_RENDERTILE, xScroll, yScroll, 32 << 2, 32 << 2);
+
+					gMasterDisp += 3;
+
+					yScroll += inc >= 0 ? inc : -inc;
+					yScroll = fabs(Math_ModF(yScroll, 128.0f));
+				}
+			
                 // CENTER FAR
                 Matrix_Push(&gGfxMatrix);
                 Matrix_Translate(gGfxMatrix, 0.0f, 0.0f, -3000.0f, MTXF_APPLY);
@@ -1691,14 +1782,37 @@ void Background_DrawGround(void) {
                 Matrix_Pop(&gGfxMatrix);
             }
 
+            // Top water surface:
             if ((D_bg_8015F964 != 0) || (gAqDrawMode == 0)) {
                 gDPLoadTileTexture(gMasterDisp++, SEGMENTED_TO_VIRTUAL(D_AQ_602ACC0), G_IM_FMT_RGBA, G_IM_SIZ_16b, 32,
                                    32);
                 gDPSetTextureImage(gMasterDisp++, G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, SEGMENTED_TO_VIRTUAL(D_AQ_602ACC0));
-                temp_s0 = fabsf(Math_ModF(2.0f * (gPathTexScroll * 0.2133333f), 128.0f));
-                temp_fv0 = Math_ModF((10000.0f - gPlayer[gPlayerNum].xPath) * 0.32f, 128.0f);
-                gDPSetupTile(gMasterDisp++, G_IM_FMT_RGBA, G_IM_SIZ_16b, 32, 32, temp_fv0, temp_s0,
-                             G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, 5, 5, G_TX_NOLOD, G_TX_NOLOD);
+
+				int interpolatedFrames = GameEngine_GetInterpolationFrameCount();
+
+				temp_s0 = fabsf(Math_ModF(2.0f * (gPathTexScroll * 0.2133333f), 128.0f));
+				temp_fv0 = Math_ModF((10000.0f - gPlayer[gPlayerNum].xPath) * 0.32f, 128.0f);
+
+				float xScroll = temp_fv0;
+				float yScroll = temp_s0;
+
+				float inc = (2.0f * (gPathTexScroll - gLastPathTexScroll) * 0.2133333f) / (float)interpolatedFrames;
+
+				for (int i = 0; i < interpolatedFrames; i++)
+				{
+					gDPSetInterpolation(gMasterDisp++, i);
+
+					gDPSetupTile2(gMasterDisp++, G_IM_FMT_RGBA, G_IM_SIZ_16b, 32, 32, temp_fv0, temp_s0,
+						G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, 5, 5, G_TX_NOLOD, G_TX_NOLOD);
+
+					gDPSetTileSizeInterp(gMasterDisp, G_TX_RENDERTILE, xScroll, yScroll, 32 << 2, 32 << 2);
+
+					gMasterDisp += 3;
+
+					yScroll += inc >= 0 ? inc : -inc;
+					yScroll = fabs(Math_ModF(yScroll, 128.0f));
+				}
+
                 if (gAqDrawMode != 0) {
                     RCP_SetupDL(&gMasterDisp, SETUPDL_47);
                 } else {

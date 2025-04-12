@@ -12,7 +12,7 @@ typedef enum SF64Version {
 #ifdef __cplusplus
 #include <vector>
 #include <SDL2/SDL.h>
-#include <Fast3D/gfx_pc.h>
+#include <Fast3D/interpreter.h>
 #include "libultraship/src/Context.h"
 
 #ifndef IDYES
@@ -32,7 +32,6 @@ class GameEngine {
     void StartFrame() const; // sol:ignore
     static bool GenAssetFile(bool exitOnFail = true); // sol:ignore
     static void Create(); // sol:ignore
-    static void LoadManifest(); // sol:ignore
     static void HandleAudioThread(); // sol:ignore
     static void StartAudioFrame(); // sol:ignore
     static void EndAudioFrame(); // sol:ignore
@@ -40,7 +39,8 @@ class GameEngine {
     static void AudioExit(); // sol:ignore
     static void RunCommands(Gfx* Commands, const std::vector<std::unordered_map<Mtx*, MtxF>>& mtx_replacements); // sol:ignore
     static void Destroy(); // sol:ignore
-    static uint32_t GetInterpolationFPS(); // sol:ignore
+	static uint32_t GetInterpolationFPS(); // sol:ignore
+	static uint32_t GetInterpolationFrameCount(); // sol:ignore
     static void ProcessGfxCommands(Gfx* commands); // sol:ignore
 
     static int ShowYesNoBox(const char* title, const char* box); // sol:ignore
@@ -48,23 +48,23 @@ class GameEngine {
     static bool HasVersion(SF64Version ver); // sol:ignore
 };
 
-extern "C" void* GameEngine_Malloc(size_t size); // sol:ignore
-
-#define memallocn(type, n) (type*) GameEngine_Malloc(sizeof(type) * n) // sol:ignore
-#define memalloc(type) memallocn(type, 1) // sol:ignore
+Fast::Interpreter* GameEngine_GetInterpreter();  // sol:ignore
+#define memallocn(type, n) (type*) GameEngine_Malloc(sizeof(type) * n)  // sol:ignore
+#define memalloc(type) memallocn(type, 1)  // sol:ignore
 
 extern "C" {
 #else
 #include <stdint.h>
+#define memalloc(size) GameEngine_Malloc(size)
 #endif
 
+void* GameEngine_Malloc(size_t size);
 bool GameEngine_HasVersion(SF64Version ver);
 void GameEngine_ProcessGfxCommands(Gfx* commands); // sol:ignore
 float GameEngine_GetAspectRatio();
 uint8_t GameEngine_OTRSigCheck(const char* imgData); // sol:ignore
 uint32_t OTRGetCurrentWidth(void);
 uint32_t OTRGetCurrentHeight(void);
-float OTRGetAspectRatio(void);
 float OTRGetHUDAspectRatio();
 int32_t OTRConvertHUDXToScreenX(int32_t v);
 float OTRGetDimensionFromLeftEdge(float v);
@@ -83,7 +83,8 @@ uint32_t OTRGetGameRenderWidth();
 uint32_t OTRGetGameRenderHeight();
 void* GameEngine_Malloc(size_t size); // sol:ignore
 void GameEngine_GetTextureInfo(const char* path, int32_t* width, int32_t* height, float* scale, bool* custom); // sol:ignore
-#define memalloc(size) GameEngine_Malloc(size) // sol:ignore
+void gDPSetTileSizeInterp(Gfx* pkt, int t, float uls, float ult, float lrs, float lrt); // sol:ignore
+uint32_t GameEngine_GetInterpolationFrameCount(); // sol:ignore
 
 #ifdef __cplusplus
 }

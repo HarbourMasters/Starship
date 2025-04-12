@@ -430,11 +430,10 @@ void Macbeth_Texture_RotateZ(u8* destTex, u8* srcTex, f32 angle) {
         }
     }
     Matrix_Pop(&gCalcMatrix);
+    gSPInvalidateTexCache(gMasterDisp++, destTex);
 }
 
 void Macbeth_Texture_Scroll(u8* tex, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
-    // return;
-
     // LTODO: this is causing corruption, overflow.
     // Texture at D_MA_6023228 might be the culprit.
     u8* texPtr = SEGMENTED_TO_VIRTUAL(tex);
@@ -455,6 +454,7 @@ void Macbeth_Texture_Scroll(u8* tex, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
         texPtr[((arg2 - 2) * arg1) + i] = b;
         texPtr[((arg2 - 1) * arg1) + i] = a;
     }
+    gSPInvalidateTexCache(gMasterDisp++, tex);
 }
 
 void Macbeth_Texture_Scroll2(u16* tex, s32 arg1, s32 arg2) {
@@ -472,6 +472,7 @@ void Macbeth_Texture_Scroll2(u16* tex, s32 arg1, s32 arg2) {
 
         texPtr[i] = a;
     }
+    gSPInvalidateTexCache(gMasterDisp++, tex);
 }
 
 void Macbeth_Train_Init(Actor* this) {

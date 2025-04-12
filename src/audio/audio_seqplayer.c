@@ -89,7 +89,8 @@ void AudioSeq_InitSequenceChannel(SequenceChannel* channel) {
     for (i = 0; i < 8; i++) {
         channel->seqScriptIO[i] = -1;
     }
-    channel->unused = 0;
+    channel->is_sfx = 0;
+    channel->is_voice = 0;
     Audio_InitNoteLists(&channel->notePool);
 }
 

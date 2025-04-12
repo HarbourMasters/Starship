@@ -9,7 +9,7 @@ std::shared_ptr<Ship::IResource> ResourceFactoryBinaryVec3fV0::ReadResource(std:
         return nullptr;
     }
 
-    auto vec = std::make_shared<Vec3fArray>(file->InitData);
+    auto vec = std::make_shared<Vec3fArray>(initData);
     auto reader = std::get<std::shared_ptr<Ship::BinaryReader>>(file->Reader);
 
     auto vecCount = reader->ReadUInt32();

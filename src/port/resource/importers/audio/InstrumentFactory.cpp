@@ -9,7 +9,7 @@ std::shared_ptr<Ship::IResource> ResourceFactoryBinaryInstrumentV0::ReadResource
         return nullptr;
     }
 
-    auto instrument = std::make_shared<Instrument>(file->InitData);
+    auto instrument = std::make_shared<Instrument>(initData);
     auto reader = std::get<std::shared_ptr<Ship::BinaryReader>>(file->Reader);
 
     instrument->mInstrument.isRelocated = reader->ReadUByte();

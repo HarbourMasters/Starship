@@ -11,7 +11,7 @@ std::shared_ptr<Ship::IResource> ResourceFactoryBinaryMessageLookupV0::ReadResou
         return nullptr;
     }
 
-    auto table = std::make_shared<MessageLookup>(file->InitData);
+    auto table = std::make_shared<MessageLookup>(initData);
     auto reader = std::get<std::shared_ptr<Ship::BinaryReader>>(file->Reader);
     auto count = reader->ReadUInt32();
 

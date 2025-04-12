@@ -612,6 +612,8 @@ void Game_Update(void) {
 
         // @port: @event: Call GamePostUpdateEvent
         CALL_EVENT(GamePostUpdateEvent);
+
+		gLastPathTexScroll = gPathTexScroll;
     }
 }
 

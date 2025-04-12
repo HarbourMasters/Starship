@@ -9,7 +9,11 @@
 
 #ifdef OTR_AUDIO
 extern "C" SoundFont* Audio_LoadFont(AudioTableEntry entry, uint32_t fontId) {
-    return (SoundFont*) ResourceGetDataByCrc((uint64_t) gSoundFontTable->entries[fontId].romAddr);
+    auto crc = (uint64_t) gSoundFontTable->entries[fontId].romAddr;
+    auto path = ResourceGetNameByCrc(crc);
+    printf("Font: %s\n", path);
+  
+    return (SoundFont*) ResourceGetDataByCrc(crc);
 }
 #else
 namespace fs = std::filesystem;

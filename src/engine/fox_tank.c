@@ -53,6 +53,7 @@ void func_tank_80043280(u16* text0, u16* text1, f32 zRot) {
         }
     }
     Matrix_Pop(&gCalcMatrix);
+    gSPInvalidateTexCache(gMasterDisp++, text0);
 }
 
 void Player_UpdateTankCamOnRails(Player* player) {

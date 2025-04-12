@@ -9,7 +9,7 @@ std::shared_ptr<Ship::IResource> ResourceFactoryBinaryAudioTableV0::ReadResource
         return nullptr;
     }
 
-    auto table = std::make_shared<AudioTable>(file->InitData);
+    auto table = std::make_shared<AudioTable>(initData);
     auto reader = std::get<std::shared_ptr<Ship::BinaryReader>>(file->Reader);
 
     int16_t med = reader->ReadInt16();
