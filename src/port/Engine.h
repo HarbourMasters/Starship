@@ -32,6 +32,7 @@ class GameEngine {
     void StartFrame() const; // sol:ignore
     static bool GenAssetFile(bool exitOnFail = true); // sol:ignore
     static void Create(); // sol:ignore
+    static void LoadManifest(); // sol:ignore
     static void HandleAudioThread(); // sol:ignore
     static void StartAudioFrame(); // sol:ignore
     static void EndAudioFrame(); // sol:ignore
