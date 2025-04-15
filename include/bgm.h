@@ -3,6 +3,10 @@
 
 #include "sys.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 void Audio_SetBgmParam(s8 bgmParam);
 void Audio_PlaySequence(u8 seqPlayId, u16 seqId, u8 fadeinTime, u8 bgmParam);
 void Audio_PlayFanfare(u16 seqId, u8 bgmVolume, u8 bgmFadeoutTime, u8 bgmFadeinTime);
@@ -11,6 +15,10 @@ void Audio_PlaySoundTest(u8 enable);
 void Audio_PlaySequenceDistorted(u8 seqPlayId, u16 seqId, u16 distortion, u8 fadeinTime, u8 unused);
 void Audio_PlaySoundTestTrack(u8 trackNumber);
 void Audio_PlayBgm(u16 seqId);
+
+#ifdef __cplusplus
+}
+#endif
 
 #define AUDIO_PLAY_BGM(seqId) Audio_PlaySequence(SEQ_PLAYER_BGM, (seqId), 0, -1)
 

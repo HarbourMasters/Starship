@@ -258,7 +258,7 @@ void Background_DrawStarfield(void) {
 
         float originalWidth = currentScreenWidth / 3;
         float originalAspect = originalWidth / (currentScreenHeight / 3);
-        float renderMaskWidth = originalWidth * (OTRGetAspectRatio() / originalAspect);
+        float renderMaskWidth = originalWidth * (GameEngine_GetAspectRatio() / originalAspect);
         float marginX = (currentScreenWidth - renderMaskWidth) / 2;
         float renderMaskHeight = currentScreenHeight / 3;
 

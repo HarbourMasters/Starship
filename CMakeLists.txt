@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.16.0 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.24)
 
 # Set the project version and language
 project(Starship VERSION 0.1.0 LANGUAGES C CXX ASM)
@@ -174,6 +174,21 @@ list(FILTER ALL_FILES EXCLUDE REGEX "src/sys/sys_timer.c")
 list(FILTER ALL_FILES EXCLUDE REGEX "src/sys/sys_fault.c")
 list(FILTER ALL_FILES EXCLUDE REGEX "src/mods/object_ram.c")
 
+if (MSVC)
+macro(GroupSources curdir)
+    file(GLOB children RELATIVE ${PROJECT_SOURCE_DIR}/${curdir} ${PROJECT_SOURCE_DIR}/${curdir}/*)
+    foreach(child ${children})
+        if(IS_DIRECTORY ${PROJECT_SOURCE_DIR}/${curdir}/${child})
+            GroupSources(${curdir}/${child})
+        else()
+            string(REPLACE "/" "\\" groupname ${curdir})
+            source_group(${groupname} FILES ${PROJECT_SOURCE_DIR}/${curdir}/${child})
+        endif()
+   endforeach()
+endmacro()
+GroupSources(src)
+endif()
+
 if (CMAKE_SYSTEM_NAME STREQUAL "iOS")
     set(IOS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/libultraship/ios)
 
@@ -233,12 +248,37 @@ file(DOWNLOAD "https://raw.githubusercontent.com/DLTcollab/sse2neon/refs/heads/m
 
 include_directories(${SSE2NEON_DIR})
 
+option(DR_LIBS_BUILD_TESTS OFF)
 FetchContent_Declare(
     dr_libs
     GIT_REPOSITORY https://github.com/mackron/dr_libs.git
-	GIT_TAG da35f9d6c7374a95353fd1df1d394d44ab66cf01
+	GIT_TAG 1445333280272d42cf3dcf6ce850bafa83b51543
 )
 FetchContent_MakeAvailable(dr_libs)
+
+#==================== SOL2 ======================
+
+include(FetchContent)
+
+FetchContent_Declare(
+    lua
+    GIT_REPOSITORY https://github.com/Net64DD/lua.git
+    GIT_TAG 846ebf927d9d6c404a00c88b28380ef2a47a69ad
+)
+
+FetchContent_MakeAvailable(lua)
+
+FetchContent_Declare(
+    sol2
+    GIT_REPOSITORY https://github.com/ThePhD/sol2.git
+	GIT_TAG c1f95a773c6f8f4fde8ca3efe872e7286afe4444
+)
+FetchContent_MakeAvailable(sol2)
+target_link_libraries(${PROJECT_NAME} PRIVATE lua::lua sol2)
+
+if (MSVC AND CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    set_target_properties(liblua PROPERTIES MSVC_RUNTIME_LIBRARY ${MSVC_RUNTIME_LIBRARY_STR})
+endif()
 
 #==============================================================================#
 # Libultraship Integration                                                     #
@@ -415,83 +455,49 @@ endif()
 # Compile and link options
 ################################################################################
 if(MSVC)
-  if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
-      target_compile_options(${PROJECT_NAME} PRIVATE
-          $<$<CONFIG:Debug>:
-              /w;
-              /Od;
-              /MTd
-          >
-          $<$<CONFIG:Release>:
-              /Oi;
-              /Gy;
-              /W3;
-              /MT
-          >
-          /permissive-;
-          /MP;
-          ${DEFAULT_CXX_DEBUG_INFORMATION_FORMAT};
-          ${DEFAULT_CXX_EXCEPTION_HANDLING}
-      )
-      target_compile_options(${PROJECT_NAME} PRIVATE  $<$<CONFIG:Debug>:/ZI;>)
-      target_compile_options(${PROJECT_NAME} PRIVATE  $<$<CONFIG:Release>:/Zi;>)
-  elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
-      target_compile_options(${PROJECT_NAME} PRIVATE
-          $<$<CONFIG:Debug>:
-              /MTd
-          >
-          $<$<CONFIG:Release>:
-              /O2;
-              /Oi;
-              /Gy;
-              /MT
-          >
-          /permissive-;
-          /MP;
-          /w;
-          ${DEFAULT_CXX_DEBUG_INFORMATION_FORMAT};
-          ${DEFAULT_CXX_EXCEPTION_HANDLING}
-      )
-  endif()
-  if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
-      target_link_options(${PROJECT_NAME} PRIVATE
-          $<$<CONFIG:Debug>:
-              /INCREMENTAL
-          >
-          $<$<CONFIG:Release>:
-              /OPT:REF;
-              /OPT:ICF;
-              /INCREMENTAL:NO;
-              /FORCE:MULTIPLE
-          >
-          /MANIFEST:NO;
-          /DEBUG;
-          /SUBSYSTEM:WINDOWS
-      )
-  elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
-      target_link_options(${PROJECT_NAME} PRIVATE
-          $<$<CONFIG:Debug>:
-              /STACK:8777216
-          >
-          $<$<CONFIG:Release>:
-              /OPT:REF;
-              /OPT:ICF;
-              /INCREMENTAL:NO;
-              /FORCE:MULTIPLE
-          >
-          /MANIFEST:NO;
-          /DEBUG;
-          /SUBSYSTEM:WINDOWS
-      )
-  endif()
+    target_compile_options(${PROJECT_NAME} PRIVATE
+        $<$<CONFIG:Debug>:
+            /w;
+            /Od;
+            /MTd;
+            /ZI;
+        >
+        $<$<CONFIG:Release>:
+            /O3;
+            /Gy;
+            /W3;
+            /MT;
+            /Zi;
+        >
+        /bigobj;
+        /permissive-;
+        /MP;
+        ${DEFAULT_CXX_DEBUG_INFORMATION_FORMAT};
+        ${DEFAULT_CXX_EXCEPTION_HANDLING}
+    )
+    target_link_options(${PROJECT_NAME} PRIVATE
+        $<$<CONFIG:Debug>:
+            /INCREMENTAL
+        >
+        $<$<CONFIG:Release>:
+            /OPT:REF;
+            /OPT:ICF;
+            /INCREMENTAL:NO;
+            /FORCE:MULTIPLE
+        >
+        /MANIFEST:NO;
+        /DEBUG;
+        /SUBSYSTEM:WINDOWS;
+        /STACK:4194304
+    )
 
-  # Remove /RTC from msvc flags
-  foreach (fentry
-    CMAKE_C_FLAGS
-    CMAKE_CXX_FLAGS
-  )
-    string (REGEX REPLACE "/RTC(su|[1su])" "" ${fentry} "${${fentry}}")
-  endforeach(fentry)
+    # Remove /RTC from msvc flags
+    foreach (fentry
+        CMAKE_C_FLAGS
+        CMAKE_CXX_FLAGS
+    )
+        string (REGEX REPLACE "/RTC(su|[1su])" "" ${fentry} "${${fentry}}")
+    endforeach(fentry)
 endif()
 
 if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang|AppleClang")

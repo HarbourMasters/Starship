@@ -20,6 +20,9 @@
 #include "resource/importers/SkeletonFactory.h"
 #include "resource/importers/Vec3fFactory.h"
 #include "resource/importers/Vec3sFactory.h"
+#include "resource/importers/TextFactory.h"
+#include "port/notification/notification.h"
+#include "resource/type/Json.h"
 
 #include "resource/importers/audio/AudioTableFactory.h"
 #include "resource/importers/audio/BookFactory.h"
@@ -40,8 +43,9 @@
 #include "audio/GameAudio.h"
 #include "port/patches/DisplayListPatch.h"
 #include "port/mods/PortEnhancements.h"
+#include "port/lua/scripting.h"
 
-#include <Fast3D/gfx_pc.h>
+#include <Fast3D/interpreter.h>
 #include <filesystem>
 
 #ifdef __SWITCH__
@@ -184,6 +188,8 @@ GameEngine::GameEngine() {
                                     "Limb", static_cast<uint32_t>(SF64::ResourceType::Limb), 0);
     loader->RegisterResourceFactory(std::make_shared<SF64::ResourceFactoryBinaryMessageV0>(), RESOURCE_FORMAT_BINARY,
                                     "Message", static_cast<uint32_t>(SF64::ResourceType::Message), 0);
+    loader->RegisterResourceFactory(std::make_shared<SF64::ResourceFactoryXMLMessageV0>(), RESOURCE_FORMAT_XML,
+                                    "Message", static_cast<uint32_t>(SF64::ResourceType::Message), 0);
     loader->RegisterResourceFactory(std::make_shared<SF64::ResourceFactoryBinaryMessageLookupV0>(),
                                     RESOURCE_FORMAT_BINARY, "MessageTable",
                                     static_cast<uint32_t>(SF64::ResourceType::MessageTable), 0);
@@ -259,6 +265,9 @@ GameEngine::GameEngine() {
     loader->RegisterResourceFactory(std::make_shared<SF64::ResourceFactoryXMLSoundFontV0>(), RESOURCE_FORMAT_XML,
                                     "SoundFont", static_cast<uint32_t>(SF64::ResourceType::SoundFont), 0);
 
+    loader->RegisterResourceFactory(std::make_shared<SF64::ResourceFactoryBinaryTextV0>(), RESOURCE_FORMAT_BINARY,
+                                    "Text", static_cast<uint32_t>(SF64::ResourceType::Text), 0);
+
     prevAltAssets = CVarGetInteger("gEnhancements.Mods.AlternateAssets", 0);
     gEnableGammaBoost = CVarGetInteger("gGraphics.GammaMode", 0) == 0;
     context->GetResourceManager()->SetAltAssetsEnabled(prevAltAssets);
@@ -291,6 +300,61 @@ bool GameEngine::GenAssetFile(bool exitOnFail) {
     return extractor->GenerateOTR();
 }
 
+void GameEngine::LoadManifest() {
+    auto archive = Ship::Context::GetInstance()->GetResourceManager()->GetArchiveManager();
+    auto loader = Ship::Context::GetInstance()->GetResourceManager()->GetResourceLoader();
+    auto list = archive->GetArchives();
+    auto init = std::make_shared<Ship::ResourceInitData>();
+    init->Type = (uint32_t) Ship::ResourceType::Json;
+    init->ByteOrder = Ship::Endianness::Native;
+    init->Format = RESOURCE_FORMAT_BINARY;
+
+    for (auto& entry : *list) {
+        const auto path = "manifest.json";
+        if(!entry->HasFile(path)){
+            continue;
+        }
+
+        auto file = entry->LoadFile(path);
+
+        if(file == nullptr){
+            continue;
+        }
+
+        auto raw = loader->LoadResource(path, file, init);
+        auto res = std::static_pointer_cast<Ship::Json>(raw);
+        if (res == nullptr) {
+            continue;
+        }
+
+        auto json = res->Data;
+
+        try {
+            auto name = json["name"].get<std::string>();
+            auto main = json["main"].get<std::string>();
+            auto bindings = json.value("bindings", 1);
+            auto version = json.value("version", "1.0");
+            auto website = json.value("website", "https://github.com/HarbourMasters/Starship");
+            auto description = json.value("description", "");
+            auto author = json.value("author", "unknown");
+            auto license = json.value("license", "MIT");
+            auto dependencies = json.value("dependencies", std::vector<std::string>());
+
+            SPDLOG_INFO("Name: {}", name);
+            SPDLOG_INFO("Version: {}", version);
+            SPDLOG_INFO("License: {}", license);
+            SPDLOG_INFO("Author: {}", author);
+
+            ScriptingLayer::Instance->Load(main, bindings, entry);
+            Notification::Emit({ .message = "Loaded " + name, .remainingTime = 7.0f });
+        } catch (nlohmann::json::exception &e) {
+            SPDLOG_ERROR("Invalid manifest.json, skipping {}", entry->GetPath());
+            Notification::Emit({ .message = "Failed to load mod, check log for details", .messageColor = ImVec4(1.0f, 0.5f, 0.5f, 1.0f), .remainingTime = 7.0f });
+            continue;
+        }
+    }
+}
+
 void GameEngine::Create() {
     const auto instance = Instance = new GameEngine();
     instance->AudioInit();
@@ -301,6 +365,8 @@ void GameEngine::Create() {
     osSetTime(0);
 #endif
     PortEnhancements_Init();
+    ScriptingLayer::Instance->Init();
+    LoadManifest();
 }
 
 void GameEngine::Destroy() {
@@ -453,14 +519,16 @@ void GameEngine::RunCommands(Gfx* Commands, const std::vector<std::unordered_map
         return;
     }
 
+    auto interpreter = wnd->GetInterpreterWeak().lock().get();
+
     // Process window events for resize, mouse, keyboard events
     wnd->HandleEvents();
 
-	gInterpolationIndex = 0;
+    interpreter->mInterpolationIndex = 0;
 
     for (const auto& m : mtx_replacements) {
         wnd->DrawAndRunGraphicsCommands(Commands, m);
-		gInterpolationIndex++;
+        interpreter->mInterpolationIndex++;
     }
 
     bool curAltAssets = CVarGetInteger("gEnhancements.Mods.AlternateAssets", 0);
@@ -616,8 +684,16 @@ extern "C" uint32_t GameEngine_GetSamplesPerFrame() {
 
 // End
 
+Fast::Interpreter* GameEngine_GetInterpreter() {
+    return static_pointer_cast<Fast::Fast3dWindow>(Ship::Context::GetInstance()->GetWindow())
+             ->GetInterpreterWeak()
+             .lock()
+             .get();
+}
+
 extern "C" float GameEngine_GetAspectRatio() {
-    return gfx_current_dimensions.aspect_ratio;
+    auto interpreter = GameEngine_GetInterpreter();
+    return interpreter->mCurDimensions.aspect_ratio;
 }
 
 extern "C" uint32_t GameEngine_GetGameVersion() {
@@ -730,34 +806,33 @@ extern "C" uint32_t OTRGetCurrentHeight() {
     return GameEngine::Instance->context->GetWindow()->GetHeight();
 }
 
-extern "C" float OTRGetAspectRatio() {
-    return gfx_current_dimensions.aspect_ratio;
-}
-
 extern "C" float OTRGetHUDAspectRatio() {
-    if (CVarGetInteger("gHUDAspectRatio.Enabled", 0) == 0 || CVarGetInteger("gHUDAspectRatio.X", 0) == 0 || CVarGetInteger("gHUDAspectRatio.Y", 0) == 0)
-    {
-        return OTRGetAspectRatio();
+    if (CVarGetInteger("gHUDAspectRatio.Enabled", 0) == 0 || CVarGetInteger("gHUDAspectRatio.X", 0) == 0 || CVarGetInteger("gHUDAspectRatio.Y", 0) == 0) {
+        return GameEngine_GetAspectRatio();
     }
     return ((float)CVarGetInteger("gHUDAspectRatio.X", 1) / (float)CVarGetInteger("gHUDAspectRatio.Y", 1));
 }
 
 extern "C" float OTRGetDimensionFromLeftEdge(float v) {
-    return (gfx_native_dimensions.width / 2 - gfx_native_dimensions.height / 2 * OTRGetAspectRatio() + (v));
+    auto interpreter = GameEngine_GetInterpreter();
+    return (interpreter->mNativeDimensions.width / 2 - interpreter->mNativeDimensions.height / 2 * interpreter->mCurDimensions.aspect_ratio + (v));
 }
 
 extern "C" float OTRGetDimensionFromRightEdge(float v) {
-    return (gfx_native_dimensions.width / 2 + gfx_native_dimensions.height / 2 * OTRGetAspectRatio() -
-            (gfx_native_dimensions.width - v));
+    auto interpreter = GameEngine_GetInterpreter();
+    return (interpreter->mNativeDimensions.width / 2 + interpreter->mNativeDimensions.height / 2 * interpreter->mCurDimensions.aspect_ratio -
+            (interpreter->mNativeDimensions.width - v));
 }
 
 extern "C" float OTRGetDimensionFromLeftEdgeForcedAspect(float v, float aspectRatio) {
-    return (gfx_native_dimensions.width / 2 - gfx_native_dimensions.height / 2 * (aspectRatio > 0 ? aspectRatio : OTRGetAspectRatio()) + (v));
+    auto interpreter = GameEngine_GetInterpreter();
+    return (interpreter->mNativeDimensions.width / 2 - interpreter->mNativeDimensions.height / 2 * (aspectRatio > 0 ? aspectRatio : interpreter->mCurDimensions.aspect_ratio) + (v));
 }
 
 extern "C" float OTRGetDimensionFromRightEdgeForcedAspect(float v, float aspectRatio) {
-    return (gfx_native_dimensions.width / 2 + gfx_native_dimensions.height / 2 * (aspectRatio > 0 ? aspectRatio : OTRGetAspectRatio()) -
-            (gfx_native_dimensions.width - v));
+    auto interpreter = GameEngine_GetInterpreter();
+    return (interpreter->mNativeDimensions.width / 2 + interpreter->mNativeDimensions.height / 2 * (aspectRatio > 0 ? aspectRatio : interpreter->mCurDimensions.aspect_ratio) -
+            (interpreter->mNativeDimensions.width - v));
 }
 
 extern "C" float OTRGetDimensionFromLeftEdgeOverride(float v) {
@@ -770,12 +845,14 @@ extern "C" float OTRGetDimensionFromRightEdgeOverride(float v) {
 
 // Gets the width of the current render target area
 extern "C" uint32_t OTRGetGameRenderWidth() {
-    return gfx_current_dimensions.width;
+    auto interpreter = GameEngine_GetInterpreter();
+    return interpreter->mCurDimensions.width;
 }
 
 // Gets the height of the current render target area
 extern "C" uint32_t OTRGetGameRenderHeight() {
-    return gfx_current_dimensions.height;
+    auto interpreter = GameEngine_GetInterpreter();
+    return interpreter->mCurDimensions.height;
 }
 
 extern "C" int16_t OTRGetRectDimensionFromLeftEdge(float v) {
@@ -803,9 +880,10 @@ extern "C" int16_t OTRGetRectDimensionFromRightEdgeOverride(float v) {
 }
 
 extern "C" int32_t OTRConvertHUDXToScreenX(int32_t v) {
-    float gameAspectRatio = gfx_current_dimensions.aspect_ratio;
-    int32_t gameHeight = gfx_current_dimensions.height;
-    int32_t gameWidth = gfx_current_dimensions.width;
+    auto interpreter = GameEngine_GetInterpreter();
+    float gameAspectRatio = interpreter->mCurDimensions.aspect_ratio;
+    int32_t gameHeight = interpreter->mCurDimensions.height;
+    int32_t gameWidth = interpreter->mCurDimensions.width;
     float hudAspectRatio = 4.0f / 3.0f;
     int32_t hudHeight = gameHeight;
     int32_t hudWidth = hudHeight * hudAspectRatio;

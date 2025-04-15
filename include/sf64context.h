@@ -6,6 +6,10 @@
 #include "sf64object.h"
 #include "sf64player.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 extern s32 gSceneId;
 extern s32 gSceneSetup;
 extern s32 gClearPlayerInfo;
@@ -84,6 +88,7 @@ extern Vec3f gFormationInitPos;
 extern UNK_TYPE F_80178020;
 extern s32 gGroundClipMode;
 extern LevelId gCurrentLevel;
+extern PlanetId sCurrentPlanetId;
 extern s32 gLevelPhase;
 extern s32 gBossActive;
 extern bool gKillEventActors;
@@ -206,7 +211,6 @@ extern s32 gLight1B;
 extern s32 gAmbientR;
 extern s32 gAmbientG;
 extern s32 gAmbientB;
-extern UNK_TYPE F_801784560;
 extern s32 gLight2R;
 extern s32 gLight2G;
 extern s32 gLight2B;
@@ -317,11 +321,11 @@ extern s32 gVsMatchWon;
 extern bool gVsMatchStart;
 extern bool gChangeTo360;
 extern Vec3f gTeamArrowsViewPos[10];
-extern f32 D_ctx_80177F20[65];
-extern f32 D_ctx_80178028[65];
-extern f32 D_ctx_80178130[65];
+// extern f32 D_ctx_80177F20[65];
+// extern f32 D_ctx_80178028[65];
+// extern f32 D_ctx_80178130[65];
 // extern u8 D_ctx_80178238[65];
-extern Player* gPlayer;
+extern Player* gPlayer; // sol:array
 extern f32* gStarOffsetsX;
 extern f32* gStarOffsetsY;
 extern u32* gStarFillColors;
@@ -350,5 +354,8 @@ extern UNK_TYPE F_8017833C;
 extern UNK_TYPE F_80178344;
 extern UNK_TYPE F_8017834C;
 
+#ifdef __cplusplus
+}
+#endif
 
 #endif

@@ -3,8 +3,6 @@
 #include "Engine.h"
 #include "DisplayList.h"
 
-extern "C" uint8_t GameEngine_OTRSigCheck(const char* data);
-
 extern "C" void gSPDisplayList(Gfx* pkt, Gfx* dl) {
     char* imgData = (char*)dl;
 
