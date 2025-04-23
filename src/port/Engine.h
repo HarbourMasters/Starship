@@ -61,8 +61,8 @@ extern "C" {
 void* GameEngine_Malloc(size_t size);
 bool GameEngine_HasVersion(SF64Version ver);
 void GameEngine_ProcessGfxCommands(Gfx* commands); // sol:ignore
-float GameEngine_GetAspectRatio();
-uint8_t GameEngine_OTRSigCheck(const char* imgData);
+float OTRGetAspectRatio();
+uint8_t GameEngine_OTRSigCheck(const char* imgData); // sol:ignore
 uint32_t OTRGetCurrentWidth(void);
 uint32_t OTRGetCurrentHeight(void);
 float OTRGetHUDAspectRatio();

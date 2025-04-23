@@ -14,7 +14,7 @@ Note that RECT commands must be enhanced to support negative coordinates with th
 #include "port/Engine.h"
 #include <math.h>
 
-#define GFX_DIMENSIONS_ASPECT_RATIO GameEngine_GetAspectRatio()
+#define GFX_DIMENSIONS_ASPECT_RATIO OTRGetAspectRatio()
 #define GFX_DIMENSIONS_FROM_LEFT_EDGE(v) (SCREEN_WIDTH / 2 - SCREEN_HEIGHT / 2 * GFX_DIMENSIONS_ASPECT_RATIO + (v))
 #define GFX_DIMENSIONS_FROM_RIGHT_EDGE(v) (SCREEN_WIDTH / 2 + SCREEN_HEIGHT / 2 * GFX_DIMENSIONS_ASPECT_RATIO - (v))
 #define GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(v) ((int)floorf(GFX_DIMENSIONS_FROM_LEFT_EDGE(v)))

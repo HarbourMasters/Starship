@@ -28796,7 +28796,7 @@ SF64Version = {
 function GameEngine_HasVersion(_ver) end
 ---@param _ any
 ---@return number
-function GameEngine_GetAspectRatio(_) end
+function OTRGetAspectRatio(_) end
 ---@param _void nil
 ---@return number
 function OTRGetCurrentWidth(_void) end

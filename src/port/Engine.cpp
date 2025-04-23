@@ -691,7 +691,7 @@ Fast::Interpreter* GameEngine_GetInterpreter() {
              .get();
 }
 
-extern "C" float GameEngine_GetAspectRatio() {
+extern "C" float OTRGetAspectRatio() {
     auto interpreter = GameEngine_GetInterpreter();
     return interpreter->mCurDimensions.aspect_ratio;
 }
@@ -808,7 +808,7 @@ extern "C" uint32_t OTRGetCurrentHeight() {
 
 extern "C" float OTRGetHUDAspectRatio() {
     if (CVarGetInteger("gHUDAspectRatio.Enabled", 0) == 0 || CVarGetInteger("gHUDAspectRatio.X", 0) == 0 || CVarGetInteger("gHUDAspectRatio.Y", 0) == 0) {
-        return GameEngine_GetAspectRatio();
+        return OTRGetAspectRatio();
     }
     return ((float)CVarGetInteger("gHUDAspectRatio.X", 1) / (float)CVarGetInteger("gHUDAspectRatio.Y", 1));
 }

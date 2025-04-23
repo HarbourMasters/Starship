@@ -10489,7 +10489,6 @@ lua.set_function("CVarCopy", CVarCopy);
 lua.set_function("CVarLoad", CVarLoad);
 lua.set_function("CVarSave", CVarSave);
 lua.set_function("GameEngine_HasVersion", GameEngine_HasVersion);
-lua.set_function("GameEngine_GetAspectRatio", GameEngine_GetAspectRatio);
 lua.set_function("OTRGetCurrentWidth", OTRGetCurrentWidth);
 lua.set_function("OTRGetCurrentHeight", OTRGetCurrentHeight);
 lua.set_function("OTRGetAspectRatio", OTRGetAspectRatio);
