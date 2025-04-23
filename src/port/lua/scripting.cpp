@@ -193,23 +193,6 @@ void ScriptingLayer::Init() {
     BindEnums();
     BindExterns();
     BindEvents();
-
-    try {
-        // TODO: Decide if we want to load scripts from the game's directory for debugging
-        if (!fs::exists("scripts")) {
-            return;
-        }
-        for (const auto& entry : fs::directory_iterator("scripts")) {
-            if (entry.path().extension() == ".lua") {
-                sol::environment env(lua, sol::create, lua.globals());
-                lua.safe_script_file(entry.path().string(), env);
-            }
-        }
-    } catch (const sol::error& e) {
-        SPDLOG_ERROR(std::string(e.what()));
-        Notification::Emit({ .message = "Mod error, check log for details", .messageColor = ImVec4(1.0f, 0.5f, 0.5f, 1.0f), .remainingTime = 7.0f });
-        return;
-    }
 }
 
 void ScriptingLayer::Clean() {
