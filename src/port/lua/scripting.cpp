@@ -83,20 +83,10 @@ int ScriptingLayer::Require(lua_State* L) {
     std::optional<std::string> result = LoadFromO2R(path);
 
     if(!result.has_value()){
-        // TODO: This could be unsafe, validate it
-        const auto error = "Failed to load " + path + ", from both O2R and disk";
-        std::ifstream input("scripts/" + path);
-
-        if (!input.is_open()) {
-            SPDLOG_ERROR(error);
-            sol::stack::push(L, error);
-            return 0;
-        }
-
-        std::vector<uint8_t> data = std::vector<uint8_t>(std::istreambuf_iterator(input), {});
-        input.close();
-
-        result = std::string(data.begin(), data.end());
+        const auto error = "Failed to include " + path;
+        SPDLOG_ERROR(error);
+        sol::stack::push(L, error);
+        return 0;
     }
 
     const auto& script = result.value();
