@@ -611,8 +611,7 @@ uint32_t GameEngine::GetInterpolationFPS() {
     return CVarGetInteger("gInterpolationFPS", 60);
 }
 
-uint32_t GameEngine::GetInterpolationFrameCount()
-{
+uint32_t GameEngine::GetInterpolationFrameCount() {
 	return ceil((float)GetInterpolationFPS() / (60.0f / gVIsPerFrame));
 }
 

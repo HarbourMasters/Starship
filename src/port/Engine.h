@@ -41,6 +41,7 @@ class GameEngine {
     static void RunCommands(Gfx* Commands, const std::vector<std::unordered_map<Mtx*, MtxF>>& mtx_replacements); // sol:ignore
     static void Destroy(); // sol:ignore
     static uint32_t GetInterpolationFPS(); // sol:ignore
+    static uint32_t GetInterpolationFrameCount(); // sol:ignore
     static void ProcessGfxCommands(Gfx* commands); // sol:ignore
 
     static int ShowYesNoBox(const char* title, const char* box); // sol:ignore
