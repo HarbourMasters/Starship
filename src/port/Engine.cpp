@@ -376,7 +376,7 @@ void GameEngine::HandleAudioThread() {
         // gVIsPerFrame = 2;
 
 #define AUDIO_FRAMES_PER_UPDATE (gVIsPerFrame > 0 ? gVIsPerFrame : 1)
-#define MAX_AUDIO_FRAMES_PER_UPDATE 3 // Compile-time constant with max value of gVIsPerFrame
+#define MAX_AUDIO_FRAMES_PER_UPDATE 5 // Compile-time constant with max value of gVIsPerFrame
 
         std::unique_lock<std::mutex> Lock(audio.mutex);
         int samples_left = AudioPlayerBuffered();

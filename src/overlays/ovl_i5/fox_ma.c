@@ -10,6 +10,7 @@
 #include "assets/ast_landmaster.h"
 #include "assets/ast_enmy_planet.h"
 // #include "prevent_bss_reordering2.h"
+#include "fox_record.h"
 
 typedef struct {
     /* 0x00 */ f32 unk_00;
@@ -58,6 +59,29 @@ Vec3f D_i5_801BE430[50];
 Vec3f D_i5_801BE688[2];
 Vec3f D_i5_801BE6A0[12];
 s32 D_i5_801BE734[4];
+
+// Train cutscene timings recorded from a real N64
+Record sf64_virecord_macbeth_records[] = {
+    // Train breaking barriers
+    { 0x02, 0x000000 },
+    { 0x03, 0x000002 },
+    { 0x02, 0x00001F },
+    { 0x03, 0x000190 },
+    { 0x02, 0x0001A2 },
+    { 0x03, 0x0001B1 },
+    { 0x04, 0x0001B3 },
+    { 0x03, 0x0001BC },
+    { 0x02, 0x0001FD },
+    // { 0x03, 0x00022F },
+    // { 0x02, 0x000245 },
+    // { 0x03, 0x00024B },
+    // Explosions
+    { 0x02, 0x00024D },
+    { 0x03, 0x0002CA },
+    { 0x04, 0x000335 },
+    { 0x05, 0x000351 },
+    { 0x02, 0x0003AE },
+};
 
 UnkStruct_D_i5_801B8E50 D_i5_801B8E50[156] = {
     { 5174.4f, -2141.0f, 0.0f, 350.0f, OBJ_SCENERY_MA_TRAIN_TRACK_3 },
@@ -6472,12 +6496,20 @@ f32 D_i5_801BA854[8] = { 1.5f, -1.0f, 0.7f, 0.0f, 0.9f, 0.7f, -1.0f, 1.5f };
 f32 D_i5_801BA874[8] = { 200.0f, 300.0f, 400.0f, 0.0f, 500.0f, 100.0f, 120.0f, 100.0f };
 f32 D_i5_801BA894[8] = { 200.0f, 250.0f, 220.0f, 0.0f, 200.0f, 230.0f, 220.0f, 350.0f };
 
+
+
+
+
+
+
 void Macbeth_LevelComplete2(Player* player) {
     s32 i;
     s32 j;
     Vec3f spE4;
     Vec3f spD8;
     f32 zeroVar = 0.0f;
+
+    UpdateVisPerFrameFromRecording2(sf64_virecord_macbeth_records, ARRAY_COUNT(sf64_virecord_macbeth_records));
 
     switch (player->csState) {
         case 0:
