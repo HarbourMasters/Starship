@@ -275,7 +275,7 @@ void DrawSettingsMenu(){
                 .format = "%d",
             });
 
-            // Subwoofer threshold
+            // Rear music volume slider
             UIWidgets::CVarSliderInt("Rear music volume", "gVolumeRearMusic", 0.0f, 1.0f, 1.0f, {
                 .format = "%.0f%%",
                 .isPercentage = true,
