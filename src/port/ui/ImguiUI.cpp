@@ -117,10 +117,34 @@ static const char* voiceLangs[] = {
 };
 
 void DrawSpeakerPositionEditor() {
+    static ImVec2 lastCanvasPos;
     ImGui::Text("Speaker Position Editor");
     ImVec2 canvasSize = ImVec2(200, 200); // Static canvas size
     ImVec2 canvasPos = ImGui::GetCursorScreenPos();
     ImVec2 center = ImVec2(canvasPos.x + canvasSize.x / 2, canvasPos.y + canvasSize.y / 2);
+
+    // Speaker positions
+    static ImVec2 speakerPositions[4];
+    static bool initialized = false;
+    static float radius = 80.0f;
+
+    // Reset positions if canvas position changed (window resized/moved)
+    if (!initialized || (lastCanvasPos.x != canvasPos.x || lastCanvasPos.y != canvasPos.y)) {
+        const char* cvarNames[4] = { "gPositionFrontLeft", "gPositionFrontRight", "gPositionRearLeft", "gPositionRearRight" };
+        float angles[4] = { 240.f, 300.f, 160.f, 20.f }; // Default angles
+        
+        for (int i = 0; i < 4; i++) {
+            int savedAngle = CVarGetInteger(cvarNames[i], -1);
+            if (savedAngle != -1) {
+                angles[i] = static_cast<float>(savedAngle);
+            }
+
+            float rad = angles[i] * (M_PI / 180.0f);
+            speakerPositions[i] = ImVec2(center.x + radius * cosf(rad), center.y + radius * sinf(rad));
+        }
+        initialized = true;
+        lastCanvasPos = canvasPos;
+    }
 
     // Draw canvas
     ImDrawList* drawList = ImGui::GetWindowDrawList();
@@ -128,40 +152,20 @@ void DrawSpeakerPositionEditor() {
     drawList->AddCircleFilled(center, 5.0f, IM_COL32(255, 255, 255, 255)); // Central person
 
     // Draw circle line for speaker positions
-    float radius = 80.0f;
     drawList->AddCircle(center, radius, IM_COL32(163, 163, 163, 255), 100);
 
     // Add markers at 0, 22.5, 45, etc.
     for (float angle = 0; angle < 360; angle += 22.5f) {
-        float rad = angle * (3.14159265f / 180.0f);
+        float rad = angle * (M_PI / 180.0f);
         ImVec2 markerStart = ImVec2(center.x + (radius - 5) * cosf(rad), center.y + (radius - 5) * sinf(rad));
         ImVec2 markerEnd = ImVec2(center.x + radius * cosf(rad), center.y + radius * sinf(rad));
         drawList->AddLine(markerStart, markerEnd, IM_COL32(163, 163, 163, 255));
     }
 
-    // Speaker positions
-    static ImVec2 speakerPositions[4];
-    static bool initialized = false;
-
-    const char* speakerLabels[4] = { "FL", "FR", "RL", "RR" };
+    const char* speakerLabels[4] = { "L", "R", "RL", "RR" };
     const char* cvarNames[4] = { "gPositionFrontLeft", "gPositionFrontRight", "gPositionRearLeft", "gPositionRearRight" };
 
     const float snapThreshold = 2.5f; // Degrees within which snapping occurs
-
-    if (!initialized) {
-        float angles[4] = { 242.0f, 298.0f, 166.5f, 22.5f }; // Default angles
-        for (int i = 0; i < 4; i++) {
-            // Load saved angle if it exists
-            int savedAngle = CVarGetInteger(cvarNames[i], -1);
-            if (savedAngle != -1) {
-                angles[i] = static_cast<float>(savedAngle);
-            }
-
-            float rad = angles[i] * (3.14159265f / 180.0f);
-            speakerPositions[i] = ImVec2(center.x + radius * cosf(rad), center.y + radius * sinf(rad));
-        }
-        initialized = true;
-    }
 
     for (int i = 0; i < 4; i++) {
         // Draw speaker as a darker blue circle
@@ -181,13 +185,13 @@ void DrawSpeakerPositionEditor() {
             ImVec2 constrainedPos = ImVec2(center.x + (direction.x / length) * radius, center.y + (direction.y / length) * radius);
 
             // Calculate angle of the constrained position
-            float angle = atan2f(constrainedPos.y - center.y, constrainedPos.x - center.x) * (180.0f / 3.14159265f);
+            float angle = atan2f(constrainedPos.y - center.y, constrainedPos.x - center.x) * (180.0f / M_PI);
             if (angle < 0) angle += 360.0f;
 
             // Snap to the nearest 22.5-degree marker if within the snap threshold
             float snappedAngle = roundf(angle / 22.5f) * 22.5f;
             if (fabsf(snappedAngle - angle) <= snapThreshold) {
-                float rad = snappedAngle * (3.14159265f / 180.0f);
+                float rad = snappedAngle * (M_PI / 180.0f);
                 constrainedPos = ImVec2(center.x + radius * cosf(rad), center.y + radius * sinf(rad));
             }
 
@@ -195,14 +199,14 @@ void DrawSpeakerPositionEditor() {
             ImGui::ResetMouseDragDelta();
 
             // Save the updated angle to CVar after dragging
-            float updatedAngle = atan2f(speakerPositions[i].y - center.y, speakerPositions[i].x - center.x) * (180.0f / 3.14159265f);
+            float updatedAngle = atan2f(speakerPositions[i].y - center.y, speakerPositions[i].x - center.x) * (180.0f / M_PI);
             if (updatedAngle < 0) updatedAngle += 360.0f;
             CVarSetInteger(cvarNames[i], static_cast<int>(updatedAngle));
             Ship::Context::GetInstance()->GetWindow()->GetGui()->SaveConsoleVariablesNextFrame(); // Mark for saving
         }
 
         // Calculate angle and save to CVar
-        float angle = atan2f(speakerPositions[i].y - center.y, speakerPositions[i].x - center.x) * (180.0f / 3.14159265f);
+        float angle = atan2f(speakerPositions[i].y - center.y, speakerPositions[i].x - center.x) * (180.0f / M_PI);
         if (angle < 0) angle += 360.0f;
         CVarSetInteger(cvarNames[i], static_cast<int>(angle));
     }
@@ -276,7 +280,7 @@ void DrawSettingsMenu(){
             });
 
             // Rear music volume slider
-            UIWidgets::CVarSliderInt("Rear music volume", "gVolumeRearMusic", 0.0f, 1.0f, 1.0f, {
+            UIWidgets::CVarSliderFloat("Rear music volume", "gVolumeRearMusic", 0.0f, 1.0f, 1.0f, {
                 .format = "%.0f%%",
                 .isPercentage = true,
             });

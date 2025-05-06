@@ -77,7 +77,6 @@ static __m128i m256i_clamp_to_m128i(m256i a) {
 #define BUF_S16(a) (int16_t*) BUF_U8(a)
 
 #define SAMPLE_RATE 32000  // Adjusted to match the actual sample rate of 32 kHz
-#define CUTOFF_FREQ_LFE 80     // Cutoff frequency of 80 Hz
 
 static struct {
     uint16_t in;
@@ -645,7 +644,8 @@ void aEnvSetup2Impl(uint16_t initial_vol_left, uint16_t initial_vol_right, int16
 
 void aEnvMixerImpl(uint16_t in_addr, uint16_t n_samples, bool swap_reverb,
                    bool neg_left, bool neg_right,
-                   uint32_t wet_dry_addr, uint32_t haas_temp_addr, uint32_t num_channels)
+                   uint32_t wet_dry_addr, uint32_t haas_temp_addr, uint32_t num_channels,
+                   uint32_t cutoff_freq_lfe)
 {
     // Note: max number of samples is 192 (192 * 2 = 384 bytes = 0x180)
     int max_num_samples = 192;
@@ -675,7 +675,7 @@ void aEnvMixerImpl(uint16_t in_addr, uint16_t n_samples, bool swap_reverb,
 
     if (num_channels == 6) {
         // Calculate the filter coefficient
-        float RC = 1.f / (2 * M_PI * CUTOFF_FREQ_LFE);
+        float RC = 1.f / (2 * M_PI * cutoff_freq_lfe);
         float dt = 1.f / SAMPLE_RATE;
         float alpha = dt / (RC + dt);
 
