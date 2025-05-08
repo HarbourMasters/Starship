@@ -1083,7 +1083,9 @@ void Ending_801924EC(u32 arg0) {
 }
 
 void Ending_801926D4(void) {
-    gControllerLock = 10000;
+    if (!CVarGetInteger("gSkipCredits", 0)) {
+        gControllerLock = 10000;
+    }
 
     Matrix_Push(&gGfxMatrix);
 
