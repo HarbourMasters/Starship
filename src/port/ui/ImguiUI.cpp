@@ -211,6 +211,18 @@ void DrawSpeakerPositionEditor() {
         CVarSetInteger(cvarNames[i], static_cast<int>(angle));
     }
 
+    // Reset cursor position for button placement
+    ImGui::SetCursorScreenPos(ImVec2(canvasPos.x, canvasPos.y + canvasSize.y + 10));
+    if (ImGui::Button("Reset Positions")) {
+        float defaultAngles[4] = { 240.f, 300.f, 160.f, 20.f };
+        for (int i = 0; i < 4; i++) {
+            float rad = defaultAngles[i] * (M_PI / 180.0f);
+            speakerPositions[i] = ImVec2(center.x + radius * cosf(rad), center.y + radius * sinf(rad));
+            CVarSetInteger(cvarNames[i], static_cast<int>(defaultAngles[i]));
+        }
+        Ship::Context::GetInstance()->GetWindow()->GetGui()->SaveConsoleVariablesNextFrame();
+    }
+
     // Reset cursor position to ensure canvas size remains static
     ImGui::SetCursorScreenPos(ImVec2(canvasPos.x, canvasPos.y + canvasSize.y + 10));
 }
