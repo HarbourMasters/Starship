@@ -148,7 +148,8 @@ void Display_DrawHelpAlert(void) {
                 RCP_SetupDL(&gMasterDisp, SETUPDL_76_OPTIONAL);
                 gDPSetPrimColor(gMasterDisp++, 0x00, 0x00, 255, 255, 0, 255);
                 if (sp78 < 0.0f) {
-                    Graphics_DisplaySmallText(OTRGetRectDimensionFromLeftEdgeOverride(38.0f), 106, 1.0f, 1.0f, "HELP!!");
+                    Graphics_DisplaySmallText(OTRGetRectDimensionFromLeftEdgeOverride(38.0f), 106, 1.0f, 1.0f,
+                                              "HELP!!");
                 } else {
                     Graphics_DisplaySmallText(OTRGetRectDimensionFromRightEdgeOverride(248), 106, 1.0f, 1.0f, "HELP!!");
                 }
@@ -1138,7 +1139,7 @@ void Display_ArwingLaserCharge(Player* player) {
 
                 // @port: Tag the transform.
                 FrameInterpolation_RecordOpenChild("ArwingMuzzleFlash", 0);
-                
+
                 Matrix_Translate(gGfxMatrix, sp94.x, sp94.y, sp94.z, MTXF_NEW);
                 Matrix_Scale(gGfxMatrix, gMuzzleFlashScale[player->num], gMuzzleFlashScale[player->num], 1.0f,
                              MTXF_APPLY);
@@ -2047,6 +2048,16 @@ void Display_Update(void) {
     Graphics_DisplaySmallNumber(60, 220, (int) ABS(gInputPress->stick_y));
     if (gInputPress->stick_x < 0) Graphics_DisplaySmallText(110, 210, 1.0f, 1.0f, "NEG:");
     if (gInputPress->stick_y < 0) Graphics_DisplaySmallText(110, 220, 1.0f, 1.0f, "NEG:");
+#endif
+
+// For debugging cutscene timings
+#if 0
+    RCP_SetupDL(&gMasterDisp, SETUPDL_83);
+    gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 0, 255);
+    Graphics_DisplaySmallText(10 + 210, 190, 1.0f, 1.0f, "CSFMS:");
+    Graphics_DisplaySmallNumber(60 + 210, 190, (int) gCsFrameCount);
+    Graphics_DisplaySmallText(10 + 210, 200, 1.0f, 1.0f, "PLTIM:");
+    Graphics_DisplaySmallNumber(60 + 210, 200, (int) gPlayer->csTimer);
 #endif
 
     // @port: @event: Call DisplayPostUpdateEvent

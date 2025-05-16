@@ -19,6 +19,28 @@
 #include "assets/ast_katina.h"
 #include "assets/ast_allies.h"
 #include "port/hooks/Events.h"
+#include "fox_co.h"
+#include "fox_record.h"
+
+void UpdateVisPerFrameFromRecording(u8* record, s32 maxFrames) {
+    if (gCsFrameCount < maxFrames) {
+        gVIsPerFrame = record[gCsFrameCount];
+    }
+}
+
+void UpdateVisPerFrameFromRecording2(Record* record, s32 maxFrames) {
+    int i;
+
+    if (gCsFrameCount > record[maxFrames - 1].frame) {
+        return;
+    }
+
+    for (i = 0; i < maxFrames; i++) {
+        if (gCsFrameCount == record[i].frame) {
+            gVIsPerFrame = record[i].vis;
+        }
+    }
+}
 
 void func_demo_80048AC0(TeamId teamId) {
     s32 teamShield;
@@ -924,6 +946,8 @@ void Cutscene_CoComplete2(Player* player) {
     player->flags_228 = 0;
 
     Math_SmoothStepToF(&player->camRoll, 0.0f, 0.1f, 5.0f, 0.01f);
+
+    UpdateVisPerFrameFromRecording(gCarrierCutsceneRecord, ARRAY_COUNT(gCarrierCutsceneRecord));
 
     switch (player->csState) {
         case 10:
