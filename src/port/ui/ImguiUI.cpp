@@ -285,20 +285,22 @@ void DrawSettingsMenu(){
             
             UIWidgets::PaddedEnhancementCheckbox("Surround 5.1 (Needs reload)", "gAudioChannelsSetting", 1, 0);
             
-            // Subwoofer threshold
-            UIWidgets::CVarSliderInt("Subwoofer threshold (Hz)", "gSubwooferThreshold", 10u, 1000u, 80u, {
-                .tooltip = "The threshold for the subwoofer to be activated. Any sound under this frequency will be played on the subwoofer.",
-                .format = "%d",
-            });
+            if (CVarGetInteger("gAudioChannelsSetting", 0) == 1) {
+                // Subwoofer threshold
+                UIWidgets::CVarSliderInt("Subwoofer threshold (Hz)", "gSubwooferThreshold", 10u, 1000u, 80u, {
+                    .tooltip = "The threshold for the subwoofer to be activated. Any sound under this frequency will be played on the subwoofer.",
+                    .format = "%d",
+                });
 
-            // Rear music volume slider
-            UIWidgets::CVarSliderFloat("Rear music volume", "gVolumeRearMusic", 0.0f, 1.0f, 1.0f, {
-                .format = "%.0f%%",
-                .isPercentage = true,
-            });
+                // Rear music volume slider
+                UIWidgets::CVarSliderFloat("Rear music volume", "gVolumeRearMusic", 0.0f, 1.0f, 1.0f, {
+                    .format = "%.0f%%",
+                    .isPercentage = true,
+                });
 
-            // Configurable positioning of speakers
-            DrawSpeakerPositionEditor();
+                // Configurable positioning of speakers
+                DrawSpeakerPositionEditor();
+            }
 
             ImGui::EndMenu();
         }
