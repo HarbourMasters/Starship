@@ -47,7 +47,8 @@ void aEnvSetup1Impl(uint8_t initial_vol_wet, uint16_t rate_wet, uint16_t rate_le
 void aEnvSetup2Impl(uint16_t initial_vol_left, uint16_t initial_vol_right, int16_t initial_vol_center,
     int16_t initial_vol_lfe, int16_t initial_vol_rear_left, int16_t initial_vol_rear_right);
 void aEnvMixerImpl(uint16_t in_addr, uint16_t n_samples, bool swap_reverb, bool neg_left,
-                   bool neg_right, uint32_t wet_dry_addr, uint32_t haas_temp_addr, uint32_t num_channels);
+                   bool neg_right, uint32_t wet_dry_addr, uint32_t haas_temp_addr, uint32_t num_channels,
+                   uint32_t cutoff_freq_lfe);
 void aMixImpl(uint16_t count, int16_t gain, uint16_t in_addr, uint16_t out_addr);
 void aS8DecImpl(uint8_t flags, ADPCM_STATE state);
 void aAddMixerImpl(uint16_t count, uint16_t in_addr, uint16_t out_addr);
@@ -76,8 +77,8 @@ void aUnkCmd19Impl(uint8_t f, uint16_t count, uint16_t out_addr, uint16_t in_add
     aEnvSetup1Impl(initialVolReverb, rampReverb, rampLeft, rampRight, rampCenter, rampLfe, rampRLeft, rampRRight)
 #define aEnvSetup2(pkt, initialVolLeft, initialVolRight, initialVolCenter, initialVolLfe, initialVolRLeft, initialVolRRight) \
     aEnvSetup2Impl(initialVolLeft, initialVolRight, initialVolCenter, initialVolLfe, initialVolRLeft, initialVolRRight)
-#define aEnvMixer(pkt, inAddr, nSamples, swapReverb, negLeft, negRight, wetDryAddr, haasTempAddr, numChannels) \
-    aEnvMixerImpl(inAddr, nSamples, swapReverb, negLeft, negRight, wetDryAddr, haasTempAddr, numChannels)
+#define aEnvMixer(pkt, inAddr, nSamples, swapReverb, negLeft, negRight, wetDryAddr, haasTempAddr, numChannels, cutoffFreqLfe) \
+    aEnvMixerImpl(inAddr, nSamples, swapReverb, negLeft, negRight, wetDryAddr, haasTempAddr, numChannels, cutoffFreqLfe)
 #define aMix(pkt, c, g, i, o) aMixImpl(c, g, i, o)
 #define aS8Dec(pkt, f, s) aS8DecImpl(f, s)
 #define aAddMixer(pkt, s, d, c) aAddMixerImpl(s, d, c)
