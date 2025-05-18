@@ -1,6 +1,7 @@
 #pragma once
 
 #include "resourcebridge.h"
+#include "ResourceManager.h"
 #include "Context.h"
 
 namespace SF64 {

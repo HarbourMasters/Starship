@@ -2075,6 +2075,7 @@ void Map_Texture_Sphere(u8* textureDest, u8* textureSrc, f32* offset) {
     if (*offset > 95.0f) {
         *offset = 0.0f;
     }
+    gSPInvalidateTexCache(gMasterDisp++, NULL);
 }
 
 void Map_Prologue_Update(void) {
