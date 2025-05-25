@@ -18,8 +18,11 @@ math(EXPR PATCH_INDEX "${PROJECT_VERSION_PATCH}")
 list(GET NATO_PHONETIC_ALPHABET ${PATCH_INDEX} PROJECT_PATCH_WORD)
 
 set(PROJECT_BUILD_NAME "Barnard ${PROJECT_PATCH_WORD}" CACHE STRING "" FORCE)
-# set(PROJECT_TEAM "github.com/harbourmasters" CACHE STRING "" FORCE)
-set(PROJECT_TEAM "Lywx & YoshiCrystal" CACHE STRING "" FORCE)
+set(PROJECT_TEAM "github.com/harbourmasters" CACHE STRING "" FORCE)
+# Set a different team/company for Switch
+if (CMAKE_SYSTEM_NAME STREQUAL "NintendoSwitch")
+  set(PROJECT_TEAM "Lywx & YoshiCrystal" CACHE STRING "" FORCE)
+endif()
 
 if(APPLE)
   enable_language(OBJCXX)
