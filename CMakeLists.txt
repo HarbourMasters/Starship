@@ -543,6 +543,8 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang|AppleClang")
           >
           -pthread
       )
+      
+      set(CPU_OPTION -mfpu=neon)
 
       target_link_options(${PROJECT_NAME} PRIVATE
           -pthread
