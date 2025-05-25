@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16.0 FATAL_ERROR)
 
 # Set the project version and language
-project(Starship VERSION 0.1.0 LANGUAGES C CXX ASM)
+project(Starship VERSION 2.0.1 LANGUAGES C CXX ASM)
 include(FetchContent)
 
 set(NATO_PHONETIC_ALPHABET
@@ -18,7 +18,8 @@ math(EXPR PATCH_INDEX "${PROJECT_VERSION_PATCH}")
 list(GET NATO_PHONETIC_ALPHABET ${PATCH_INDEX} PROJECT_PATCH_WORD)
 
 set(PROJECT_BUILD_NAME "Barnard ${PROJECT_PATCH_WORD}" CACHE STRING "" FORCE)
-set(PROJECT_TEAM "github.com/harbourmasters" CACHE STRING "" FORCE)
+# set(PROJECT_TEAM "github.com/harbourmasters" CACHE STRING "" FORCE)
+set(PROJECT_TEAM "Lywx & YoshiCrystal" CACHE STRING "" FORCE)
 
 if(APPLE)
   enable_language(OBJCXX)
@@ -30,10 +31,6 @@ set(CMAKE_OSX_DEPLOYMENT_TARGET "10.15" CACHE STRING "Minimum OS X deployment ve
 # Set the C++ standard and enable the MSVC parallel build option
 set(CMAKE_CXX_STANDARD 20 CACHE STRING "The C++ standard to use")
 set(CMAKE_C_STANDARD 11 CACHE STRING "The C standard to use")
-set(PROJECT_TEAM "Lywx & YoshiCrystal")
-set(PROJECT_VERSION_MAJOR 2)
-set(PROJECT_VERSION_MINOR 0)
-set(PROJECT_VERSION_PATCH 0)
 #add_compile_options(-fsanitize=address)
 #add_link_options(-fsanitize=address)
 
