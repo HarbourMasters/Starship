@@ -166,7 +166,7 @@ cmake --build build-cmake --target clean
 ```
 
 ## macOS
-Requires Xcode (or xcode-tools) && `sdl2, libpng, glew, ninja, cmake, nlohmann-json, libzip, vorbis-tools` (can be installed via homebrew, macports, etc)
+Requires Xcode (or xcode-tools) && `sdl2, libpng, glew, ninja, cmake, nlohmann-json, tinyxml2, libzip, vorbis-tools` (can be installed via homebrew, macports, etc)
 
 **Important: For maximum performance make sure you have ninja build tools installed!**
 
@@ -194,7 +194,7 @@ cmake --build build-cmake --target GeneratePortO2R
 cmake --build build-cmake
 
 # Now you can run the executable file:
-./build-cmake/mm/starship-macos
+./build-cmake/Starship
 # To develop the project open the repository in VSCode (or your preferred editor)
 ```
 
