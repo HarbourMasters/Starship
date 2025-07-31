@@ -63,6 +63,9 @@ std::vector<uint8_t*> MemoryPool;
 GameEngine* GameEngine::Instance;
 
 GameEngine::GameEngine() {
+    // Initialize context properties early to recognize paths properly for non-portable builds
+    this->context = Ship::Context::CreateUninitializedInstance("Starship", "ship", "starship.cfg.json");
+
 #ifdef __SWITCH__
     Ship::Switch::Init(Ship::PreInitPhase);
     Ship::Switch::Init(Ship::PostInitPhase);
@@ -70,20 +73,11 @@ GameEngine::GameEngine() {
 
     std::vector<std::string> archiveFiles;
     const std::string main_path = Ship::Context::GetPathRelativeToAppDirectory("sf64.o2r");
-#ifdef __linux__
-    const std::string assets_path = Ship::Context::GetPathRelativeToAppBundle("starship.o2r");
-#else
-    const std::string assets_path = Ship::Context::GetPathRelativeToAppDirectory("starship.o2r");
-#endif
-
+    const std::string assets_path = Ship::Context::LocateFileAcrossAppDirs("starship.o2r");
 
 #ifdef _WIN32
     AllocConsole();
 #endif
-
-    if (!fs::exists("mods")) {
-        fs::create_directories("mods");
-    }
 
     if (std::filesystem::exists(main_path)) {
         archiveFiles.push_back(main_path);
@@ -111,7 +105,11 @@ GameEngine::GameEngine() {
     }
 
     if (const std::string patches_path = Ship::Context::GetPathRelativeToAppDirectory("mods");
-        !patches_path.empty() && std::filesystem::exists(patches_path)) {
+        !patches_path.empty()) {
+        if (!std::filesystem::exists(patches_path)) {
+            std::filesystem::create_directories(patches_path);
+        }
+
         if (std::filesystem::is_directory(patches_path)) {
             for (const auto& p : std::filesystem::recursive_directory_iterator(patches_path)) {
                 const auto ext = p.path().extension().string();
@@ -126,8 +124,6 @@ GameEngine::GameEngine() {
             }
         }
     }
-
-    this->context = Ship::Context::CreateUninitializedInstance("Starship", "ship", "starship.cfg.json");
 
     this->context->InitConfiguration();    // without this line InitConsoleVariables fails at Config::Reload()
     this->context->InitConsoleVariables(); // without this line the controldeck constructor failes in
