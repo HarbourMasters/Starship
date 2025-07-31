@@ -12,7 +12,7 @@ std::shared_ptr<Ship::IResource> ResourceFactoryBinaryObjectInitV0::ReadResource
         return nullptr;
     }
 
-    auto obj = std::make_shared<ObjectInit>(initData);
+    auto obj = std::make_shared<ObjectInitResource>(initData);
     auto reader = std::get<std::shared_ptr<Ship::BinaryReader>>(file->Reader);
     auto count = reader->ReadUInt32();
 
