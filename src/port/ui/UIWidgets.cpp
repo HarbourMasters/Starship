@@ -1,3 +1,4 @@
+#define NOMINMAX  // prevent defining min/max macros on windows
 #include "UIWidgets.h"
 
 #include "libultraship/src/Context.h"
