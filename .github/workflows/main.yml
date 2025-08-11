@@ -98,7 +98,7 @@ jobs:
           mv build-cmake/starship.o2r starship-release/
           mv config.yml starship-release/
           mv assets starship-release/
-          wget -O starship-release/gamecontrollerdb.txt https://github.com/mdqinc/SDL_GameControllerDB/blob/master/gamecontrollerdb.txt
+          curl -o starship-release/gamecontrollerdb.txt -sSL 'https://raw.githubusercontent.com/mdqinc/SDL_GameControllerDB/refs/heads/master/gamecontrollerdb.txt'
       - name: Publish packaged artifacts
         uses: actions/upload-artifact@v4
         with:
