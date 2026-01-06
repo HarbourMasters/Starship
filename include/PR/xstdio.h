@@ -3,6 +3,10 @@
 #include <libultraship.h>
 #include <stdio.h>
 
+#ifdef __OpenBSD__
+#include <stdarg.h> /* va_list */
+#endif
+
 #define FLAGS_SPACE 1
 #define FLAGS_PLUS 2
 #define FLAGS_MINUS 4
