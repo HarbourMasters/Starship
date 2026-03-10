@@ -3852,80 +3852,6 @@ f32 D_i6_801A7F4C;
 f32 D_i6_801A7F50;
 f32 D_i6_801A7F54;
 
-// clang-format off
-
-// After defeating Andross
-/*
-03 00 00 00 02 00 00 08 03 00 00 13 02 00 00 23 03 00 00 9C 02 00 00 A6 03 00 00 C1 04 00 00 C6 03 00 00 C7 04 00 00 C9
-03 00 00 CD 04 00 00 CF 03 00 00 D7 04 00 00 EA 03 00 00 EC 04 00 00 ED 03 00 00 EF 04 00 00 F4 03 00 00 F5 04 00 00 F6
-03 00 01 10 04 00 01 12 03 00 01 22 04 00 01 24 03 00 01 27 04 00 01 2D 03 00 01 2E 04 00 01 30 03 00 01 31 04 00 01 33
-03 00 01 4C 04 00 01 4E 03 00 01 4F
-*/
-Record gAndrossRobotKillCutscene1[] = {
-    { 3, 0 },
-    { 2, 8 },
-    { 3, 19 },
-    { 2, 35 },
-    { 3, 156 },
-    { 2, 166 },
-    { 3, 193 },
-    { 4, 198 },
-    { 3, 199 },
-    { 4, 201 },
-    { 3, 205 },
-    { 4, 207 },
-    { 3, 215 },
-    { 4, 234 },
-    // { 3, 236 },
-    { 4, 237 },
-    { 3, 239 },
-    { 4, 244 },
-    // { 3, 245 },
-    { 4, 246 },
-    // { 3, 272 },
-    { 4, 274 },
-    // { 3, 290 },
-    { 4, 292 },
-    // { 3, 295 }, // too much?
-    { 4, 301 },
-    // { 3, 302 },
-    { 4, 304 },
-    // { 3, 305 },
-    { 4, 307 },
-    // { 3, 332 },
-    { 4, 334 },
-    // { 3, 335 },
-    { 2, 339 },
-};
-
-/*
-04 00 00 00 02 00 00 01 05 00 00 02 02 00 00 03 03 00 00 2A 02 00 00 2B 03 00 00 39 02 00 00 3A 03 00 00 3F 02 00 00 45
-03 00 00 9E 04 00 00 A1 05 00 00 A3 04 00 00 B6 03 00 00 B9 04 00 00 BD 05 00 00 C1 04 00 00 CD 03 00 00 CF 02 00 00 D3
-*/
-Record gAndrossRobotKillCutscene2[] = {
-    { 4, 0 },
-    { 2, 1 },
-    { 5, 2 },
-    { 2, 3 },
-    { 3, 42 },
-    { 2, 43 },
-    { 3, 57 },
-    { 2, 58 },
-    { 3, 63 },
-    { 2, 69 },
-    { 3, 158 },
-    { 4, 161 },
-    { 5, 163 },
-    { 4, 182 },
-    { 3, 185 },
-    { 4, 189 },
-    { 5, 193 },
-    { 4, 205 },
-    { 3, 207 },
-    { 2, 211 },
-};
-// clang-format on
-
 // Andross_LevelComplete
 void Andross_80193C4C(Player* player) {
     s32 i;
@@ -3938,10 +3864,11 @@ void Andross_80193C4C(Player* player) {
     Vec3f sp68;
     s32 rnd;
 
+    // @Port: Vi recording
     if (player->csState < 3) {
-        UpdateVisPerFrameFromRecording(gAndrossRobotKillCutscene1, ARRAY_COUNT(gAndrossRobotKillCutscene1));
+        UpdateVisPerFrameFromRecording(gAndrossRobotKillCutscene1, ARRAY_COUNT(gAndrossRobotKillCutscene1), &gCsFrameCount);
     } else if ((player->csState > 2) && player->csState < 6) {
-        UpdateVisPerFrameFromRecording(gAndrossRobotKillCutscene2, ARRAY_COUNT(gAndrossRobotKillCutscene2));
+        UpdateVisPerFrameFromRecording(gAndrossRobotKillCutscene2, ARRAY_COUNT(gAndrossRobotKillCutscene2), &gCsFrameCount);
     }
 
     Math_SmoothStepToF(D_ctx_80177A48, 1.0f, 1.0f, 0.01f, 0.0f);

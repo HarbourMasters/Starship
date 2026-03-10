@@ -22,55 +22,6 @@
 #include "fox_co.h"
 #include "fox_record.h"
 
-int gWarpzoneCsFrameCount = 0;
-
-Record gWarpzoneCsRecord[] = {
-    { 2, 1 },  { 3, 3 },  { 4, 4 },   { 3, 8 },   { 2, 9 },   { 3, 52 },  { 2, 54 },  { 3, 69 },  { 2, 70 },  { 3, 75 },
-    { 2, 76 }, { 3, 79 }, { 2, 117 }, { 3, 118 }, { 2, 120 }, { 3, 145 }, { 2, 215 }, { 3, 216 }, { 2, 230 },
-};
-
-void UpdateVisPerFrameFromRecording(Record* record, s32 maxFrames) {
-    int i;
-
-    if (gCsFrameCount > record[maxFrames - 1].frame) {
-        return;
-    }
-
-    for (i = 0; i < maxFrames; i++) {
-        if (gCsFrameCount == record[i].frame) {
-            gVIsPerFrame = record[i].vis;
-        }
-    }
-}
-
-void UpdateVisPerFrameFromRecording_Warpzone(Record* record, s32 maxFrames) {
-    int i;
-
-    if (gWarpzoneCsFrameCount > record[maxFrames - 1].frame) {
-        return;
-    }
-
-    for (i = 0; i < maxFrames; i++) {
-        if (gWarpzoneCsFrameCount == record[i].frame) {
-            gVIsPerFrame = record[i].vis;
-        }
-    }
-}
-
-void UpdateVisPerFrameFromRecording_Ending(Record* record, s32 maxFrames) {
-    int i;
-
-    if (gGameFrameCount > record[maxFrames - 1].frame) {
-        return;
-    }
-
-    for (i = 0; i < maxFrames; i++) {
-        if (gGameFrameCount == record[i].frame) {
-            gVIsPerFrame = record[i].vis;
-        }
-    }
-}
-
 void func_demo_80048AC0(TeamId teamId) {
     s32 teamShield;
 
@@ -448,8 +399,9 @@ void Cutscene_EnterWarpZone(Player* player) {
     s32 var_v0;
     s32 pad[4];
 
+    // @Port: Vi recording
     gWarpzoneCsFrameCount++;
-    UpdateVisPerFrameFromRecording_Warpzone(gWarpzoneCsRecord, ARRAY_COUNT(gWarpzoneCsRecord));
+    UpdateVisPerFrameFromRecording(gWarpzoneCsRecord, ARRAY_COUNT(gWarpzoneCsRecord), &gWarpzoneCsFrameCount);
 
     player->pos.x += player->vel.x;
     player->flags_228 = 0;
@@ -982,7 +934,8 @@ void Cutscene_CoComplete2(Player* player) {
 
     Math_SmoothStepToF(&player->camRoll, 0.0f, 0.1f, 5.0f, 0.01f);
 
-    UpdateVisPerFrameFromRecording(gCarrierCutsceneRecord, ARRAY_COUNT(gCarrierCutsceneRecord));
+    // @Port: Vi recording
+    UpdateVisPerFrameFromRecording(gCarrierCutsceneRecord, ARRAY_COUNT(gCarrierCutsceneRecord), &gCsFrameCount);
 
     switch (player->csState) {
         case 10:

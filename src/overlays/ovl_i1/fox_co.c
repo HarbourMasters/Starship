@@ -11,40 +11,6 @@
 #include "port/hooks/Events.h"
 #include "fox_record.h"
 
-// Carrier destroy cutscene timings recorded from a real N64
-Record gCarrierCutsceneRecord[] = {
-    { 2, 0 },
-    { 3, 2 },
-    { 4, 16 },
-    { 3, 50 },
-    { 4, 58 },
-    { 5, 67 },
-    { 4, 68 },
-    { 5, 71 },
-    { 4, 73 },
-    { 5, 74 },
-    { 4, 106 },
-    { 3, 146 },
-    { 2, 194 },
-};
-
-// Granga destroy cutscene timings recorded from a real N64
-Record gGrangaCutsceneRecord[] = {
-    { 2, 0 },
-    { 3, 1 },
-    { 2, 5 },
-    { 3, 7 },
-    { 2, 52 },
-    { 3, 78 },
-    { 4, 103 },
-    { 3, 125 },
-    { 2, 153 },
-    { 3, 155 },
-    { 2, 157 },
-    { 3, 158 },
-    { 2, 160 },
-};
-
 u8 sFightCarrier;
 f32 sCoGrangaWork[68];
 
@@ -3489,7 +3455,8 @@ void Corneria_LevelComplete1(Player* player) {
     f32 temp_fa1;
     f32 temp_deg;
 
-    UpdateVisPerFrameFromRecording(gGrangaCutsceneRecord, ARRAY_COUNT(gGrangaCutsceneRecord));
+    // @Port: Vi recording
+    UpdateVisPerFrameFromRecording(gGrangaCutsceneRecord, ARRAY_COUNT(gGrangaCutsceneRecord), &gCsFrameCount);
 
     player->arwing.upperRightFlapYrot = player->arwing.upperLeftFlapYrot = player->arwing.bottomRightFlapYrot =
         player->arwing.bottomLeftFlapYrot = 0.0f;

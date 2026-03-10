@@ -30,13 +30,6 @@ void SectorY_801A0510(ActorCutscene*, s32);
 void SectorY_ActorDebris_Setup(Actor*, f32, f32, f32, f32, f32, f32, s32);
 void SectorY_ActorDebris_Spawn(f32, f32, f32, f32, f32, f32, s32);
 
-// SyRobot destroy cutscene timings recorded from a real N64
-Record gSyRobotCutsceneRecord[] = {
-    { 2, 0 },
-    { 3, 129 },
-    { 2, 230 },
-};
-
 f32 D_i6_801A8440[3];
 
 void SectorY_80197B30(ActorCutscene* this, s32 timer) {
@@ -2144,7 +2137,8 @@ void SectorY_LevelComplete(Player* player) {
     SyShogun* boss = &gBosses[0];
     f32 temp_ft1;
 
-    UpdateVisPerFrameFromRecording(gSyRobotCutsceneRecord, ARRAY_COUNT(gSyRobotCutsceneRecord));
+    // @Port: Vi recording
+    UpdateVisPerFrameFromRecording(gSyRobotCutsceneRecord, ARRAY_COUNT(gSyRobotCutsceneRecord), &gCsFrameCount);
 
     switch (player->csState) {
         case 0:

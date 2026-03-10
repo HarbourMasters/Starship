@@ -6,6 +6,7 @@
 
 #include "global.h"
 #include "assets/ast_area_6.h"
+#include "fox_record.h"
 
 void Area6_8018A1B0(Boss* this, s32 arg1);
 void Area6_8018A2C4(Boss* this);
@@ -424,6 +425,9 @@ void Area6_A6Gorgon_Init(A6Gorgon* this) {
     gBossActive = true;
     gProjectFar = 25000.0f;
     gBossFrameCount = 0;
+
+    // @Port: Vi recording
+    gA6GorgonCsFrameCount = 0;
 
     this->health = 780;
 
@@ -1187,6 +1191,10 @@ void Area6_A6Gorgon_Update(A6Gorgon* this) {
             break;
 
         case 11:
+            // @Port: Vi recording
+            UpdateVisPerFrameFromRecording(gA6GorgonCsRecord, ARRAY_COUNT(gA6GorgonCsRecord), &gA6GorgonCsFrameCount);
+            gA6GorgonCsFrameCount++;
+
             if ((this->timer_052 == 160) &&
                 ((gPlayer[0].state == PLAYERSTATE_ACTIVE) || (gPlayer[0].state == PLAYERSTATE_U_TURN))) {
                 gPlayer[0].state = PLAYERSTATE_LEVEL_COMPLETE;
