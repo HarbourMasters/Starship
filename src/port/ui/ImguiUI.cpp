@@ -570,6 +570,10 @@ static const char* hudAspects[] = {
     "Expand", "Custom", "Original (4:3)", "Widescreen (16:9)", "Nintendo 3DS (5:3)", "16:10 (8:5)", "Ultrawide (21:9)"
 };
 
+static const char* radioCommBox[] = {
+    "Original", "Expand"
+};
+
 void DrawEnhancementsMenu() {
     if (UIWidgets::BeginMenu("Enhancements")) {
 
@@ -622,6 +626,21 @@ void DrawEnhancementsMenu() {
         }
 
         if (UIWidgets::BeginMenu("HUD")) {
+            if (UIWidgets::CVarCombobox("Radio Communication Box", "gRadioCommBox.Selection", radioCommBox, 
+            {
+                .tooltip = "Which Aspect Ratio to use when drawing the Radio Communication Box",
+                .defaultIndex = 0,
+            })) {
+                switch (CVarGetInteger("gRadioCommBox.Selection", 0)) {
+                    case 0:
+                        CVarSetInteger("gRadioCommBox.expand", 0);
+                        break;
+                    case 1:
+                        CVarSetInteger("gRadioCommBox.expand", 1);
+                        break;
+                }
+            }
+
             if (UIWidgets::CVarCombobox("HUD Aspect Ratio", "gHUDAspectRatio.Selection", hudAspects, 
             {
                 .tooltip = "Which Aspect Ratio to use when drawing the HUD (Radar, gauges and radio messages)",
