@@ -308,7 +308,6 @@ void Background_DrawStarfield(void) {
                     FrameInterpolation_ShouldInterpolateFrame(false);
                 } else {
                     FrameInterpolation_RecordOpenChild("Starfield", i);
-                    FrameInterpolation_RecordMarker(__FILE__, __LINE__);
                 }
 
                 // Translate to (vx, vy) in ortho coordinates
@@ -442,9 +441,8 @@ void Background_DrawPartialStarfield(s32 yMin, s32 yMax) { // Stars that are in 
 
         // Check if the star is within the visible screen area
         if ((vx >= 0) && (vx < currentScreenWidth) && (yMin < vy) && (vy < yMax)) {
-            // Tag the transform. Assuming TAG_STARFIELD is a defined base tag value
-            FrameInterpolation_RecordOpenChild("SmallStarfield", i);
-            FrameInterpolation_RecordMarker(__FILE__, __LINE__);
+            
+            FrameInterpolation_RecordOpenChild("PartialStarfield", i);
             // Translate to (vx, vy) in ortho coordinates
             Matrix_Push(&gGfxMatrix);
             Matrix_Translate(gGfxMatrix, vx - (currentScreenWidth / 2.0f), -(vy - (currentScreenHeight / 2.0f)), 0.0f,
@@ -551,7 +549,6 @@ void Background_DrawBackdrop(void) {
                         } else {
                             // @port: Tag the transform.
                             FrameInterpolation_RecordOpenChild("Backdrop", i);
-                            FrameInterpolation_RecordMarker(__FILE__, __LINE__);
                         }
 
                         switch (gCurrentLevel) {
@@ -627,7 +624,6 @@ void Background_DrawBackdrop(void) {
                         } else {
                             // @port: Tag the transform.
                             FrameInterpolation_RecordOpenChild("Backdrop", i);
-                            FrameInterpolation_RecordMarker(__FILE__, __LINE__);
                         }
 
                         switch ((s32) gCurrentLevel) {
@@ -669,7 +665,6 @@ void Background_DrawBackdrop(void) {
                         } else {
                             // @port: Tag the transform.
                             FrameInterpolation_RecordOpenChild("Backdrop", 0);
-                            FrameInterpolation_RecordMarker(__FILE__, __LINE__);
                         }
 
                         if ((gDrawBackdrop == 2) || (gDrawBackdrop == 7)) {
@@ -771,7 +766,6 @@ void Background_DrawBackdrop(void) {
                         // Render the textures across the screen (left to right)
                         for (int i = 0; i < 5; i++) {
                             FrameInterpolation_RecordOpenChild("Backdrop", i);
-                            FrameInterpolation_RecordMarker(__FILE__, __LINE__);
                             if (gPlayer[0].state == PLAYERSTATE_LEVEL_INTRO) {
                                 gSPDisplayList(gMasterDisp++, D_AQ_601AFF0);
                             } else {
@@ -839,7 +833,6 @@ void Background_DrawBackdrop(void) {
                         } else {
                             // @port: Tag the transform.
                             FrameInterpolation_RecordOpenChild("Backdrop", i);
-                            FrameInterpolation_RecordMarker(__FILE__, __LINE__);
                         }
 
                         if (gCurrentLevel == LEVEL_TITANIA) {
@@ -1139,12 +1132,16 @@ void Background_DrawSun(void) {
             sunScale = sKaSunScales;
         }
         for (i = 0; i < 5; i++, sunColor++, sunAlpha++, sunDL++, sunScale++) {
+            FrameInterpolation_RecordOpenChild("Sun", i);
+
             Matrix_Push(&gGfxMatrix);
             Matrix_Scale(gGfxMatrix, *sunScale, *sunScale, *sunScale, MTXF_APPLY);
             Matrix_SetGfxMtx(&gMasterDisp);
             gDPSetPrimColor(gMasterDisp++, 0x00, 0x00, sunColor->r, sunColor->g, sunColor->b, *sunAlpha);
             gSPDisplayList(gMasterDisp++, *sunDL);
             Matrix_Pop(&gGfxMatrix);
+
+            FrameInterpolation_RecordCloseChild();
         }
         Matrix_Pop(&gGfxMatrix);
     }
@@ -1265,7 +1262,7 @@ void AllRangeGround_Draw(void) {
         // LOWER RIGHT QUADRANT
         if (gPlayer[0].pos.x > maxDistX && gPlayer[0].pos.z > maxDistZ) {
             // lower right corner piece : 4
-            // // lower middle left piece : 5
+            // lower middle left piece : 5
             // lower middle right piece : 6
             // side upper right piece: 14
             // side lower right piece : 15
@@ -1274,10 +1271,10 @@ void AllRangeGround_Draw(void) {
             }
         }
 
-        Matrix_Push(&gGfxMatrix);
-
         // @port: Tag the transform.
         FrameInterpolation_RecordOpenChild("360Ground", i);
+
+        Matrix_Push(&gGfxMatrix);
 
         Matrix_Translate(gGfxMatrix, sGroundPositions360x_FIX[i], 0.0f, sGroundPositions360z_FIX[i], MTXF_APPLY);
 
@@ -1393,6 +1390,8 @@ void Background_DrawGround(void) {
         }
 #endif
     }
+
+    FrameInterpolation_RecordOpenChild("Ground", 0);
 
     Matrix_Push(&gGfxMatrix);
     Matrix_Translate(gGfxMatrix, gPlayer[gPlayerNum].xPath, -3.0f + gCameraShakeY, sp1D4, MTXF_APPLY);
@@ -2255,6 +2254,8 @@ void Background_DrawGround(void) {
             break;
     }
     Matrix_Pop(&gGfxMatrix);
+
+    FrameInterpolation_RecordCloseChild();
 }
 
 // Unused. Early water implementation in Aquas?

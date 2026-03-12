@@ -2919,7 +2919,7 @@ void Play_Init(void) {
     D_ctx_801782C8 = 0;
 
     if (gCurrentLevel == LEVEL_TITANIA) {
-        Ground_801B5110(0.0f, 0.0f, 200.0f);
+        Ground_Init(0.0f, 0.0f, 200.0f);
     }
     if (gCurrentLevel == LEVEL_AQUAS) {
         gWaterLevel = 1000.0f;

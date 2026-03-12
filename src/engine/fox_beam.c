@@ -1067,6 +1067,8 @@ void PlayerShot_DrawHitmark(PlayerShot* shot) {
             return;
         }
     } else {
+        FrameInterpolation_RecordOpenChild(shot, 1);
+
         shot->obj.rot.y = -gPlayer[gPlayerNum].camYaw;
         Matrix_RotateY(gGfxMatrix, shot->obj.rot.y, MTXF_APPLY);
         Matrix_Scale(gGfxMatrix, 2.0f, 2.0f, 2.0f, MTXF_APPLY);
@@ -1088,6 +1090,8 @@ void PlayerShot_DrawHitmark(PlayerShot* shot) {
                 gSPDisplayList(gMasterDisp++, D_1025800);
                 break;
         }
+
+        FrameInterpolation_RecordCloseChild();
     }
 }
 
@@ -1249,6 +1253,8 @@ void PlayerShot_DrawShot(PlayerShot* shot) {
             Object_Kill(&shot->obj, shot->sfxSource);
         }
     } else {
+        FrameInterpolation_RecordOpenChild(shot, 0);
+        
         if ((shot->obj.id == PLAYERSHOT_TANK) || (shot->obj.id == PLAYERSHOT_ON_FOOT) ||
             (shot->obj.id == PLAYERSHOT_7)) {
             shot->obj.rot.y = RAD_TO_DEG(-gPlayer[gPlayerNum].camYaw);
@@ -1512,12 +1518,11 @@ void PlayerShot_DrawShot(PlayerShot* shot) {
                 gSPDisplayList(gMasterDisp++, D_GREAT_FOX_E00DFB0);
                 break;
         }
+        FrameInterpolation_RecordCloseChild();
     }
 }
 
 void PlayerShot_Draw(PlayerShot* shot) {
-    FrameInterpolation_RecordOpenChild(shot, 0);
-    FrameInterpolation_RecordMarker(__FILE__, __LINE__);
     switch (shot->obj.status) {
         case SHOT_ACTIVE:
             PlayerShot_DrawShot(shot);
@@ -1526,7 +1531,6 @@ void PlayerShot_Draw(PlayerShot* shot) {
             PlayerShot_DrawHitmark(shot);
             break;
     }
-    FrameInterpolation_RecordCloseChild();
 }
 
 void PlayerShot_UpdateHitmark(PlayerShot* shot) {
