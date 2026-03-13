@@ -6,24 +6,18 @@ on:
 
 jobs:
   build:
-    runs-on: macOS-latest
+    runs-on: macOS-15
     steps:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
+      - uses: actions/cache@v4
+        with:
+          path: ~/Library/Caches/Homebrew
+          key: ${{ runner.os }}-${{ runner.arch }}-homebrew-${{ github.ref }}-${{ github.sha }}
       - name: Install dependencies
-        run: brew install sdl2 libpng glew ninja cmake libzip nlohmann-json tinyxml2 spdlog vorbis-tools
+        run: HOMEBREW_NO_AUTO_UPDATE=1 brew bundle --no-upgrade
       - name: Build
         run: |
           cmake -H. -Bbuild-cmake -GNinja -DCMAKE_BUILD_TYPE=Release
           cmake --build build-cmake -j
-      - name: Create Package
-        run: |
-          mkdir starship-release
-          mv build-cmake/Starship starship-release/
-      - name: Publish packaged artifacts
-        uses: actions/upload-artifact@v4
-        with:
-            name: starship-mac-x64
-            path: starship-release
-            retention-days: 1

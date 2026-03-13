@@ -73,19 +73,23 @@ jobs:
           name: starship-windows
           path: starship-release
 
-  build-macos:
+  build-macos-x64:
     needs: generate-port-o2r
-    runs-on: macOS-latest
+    runs-on: macos-15-intel
     steps:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
+      - uses: actions/cache@v4
+        with:
+          path: ~/Library/Caches/Homebrew
+          key: ${{ runner.os }}-${{ runner.arch }}-homebrew-${{ github.ref }}-${{ github.sha }}
       - name: Install dependencies
-        run: brew install sdl2 libpng glew ninja cmake libzip nlohmann-json tinyxml2 spdlog vorbis-tools
+        run: HOMEBREW_NO_AUTO_UPDATE=1 brew bundle --no-upgrade
       - name: Build
         run: |
           cmake -H. -Bbuild-cmake -GNinja -DCMAKE_BUILD_TYPE=Release
-          cmake --build build-cmake --config Release -j3
+          cmake --build build-cmake -j
       - name: Download starship.o2r
         uses: actions/download-artifact@v4
         with:
@@ -93,17 +97,51 @@ jobs:
           path: ./build-cmake
       - name: Create Package
         run: |
-          mkdir starship-release
-          mv build-cmake/Starship starship-release/
-          mv build-cmake/starship.o2r starship-release/
-          mv config.yml starship-release/
-          mv assets starship-release/
-          curl -o starship-release/gamecontrollerdb.txt -sSL 'https://raw.githubusercontent.com/mdqinc/SDL_GameControllerDB/refs/heads/master/gamecontrollerdb.txt'
+          (cd build-cmake && cpack)
+          mv _packages/*.dmg Starship.dmg
+          mv README.md readme.txt
       - name: Publish packaged artifacts
         uses: actions/upload-artifact@v4
         with:
-            name: starship-mac-x64
-            path: starship-release
+          name: Starship-mac-x64
+          path: |
+            Starship.dmg
+            readme.txt
+
+  build-macos-arm64:
+    needs: generate-port-o2r
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: actions/cache@v4
+        with:
+          path: ~/Library/Caches/Homebrew
+          key: ${{ runner.os }}-${{ runner.arch }}-homebrew-${{ github.ref }}-${{ github.sha }}
+      - name: Install dependencies
+        run: HOMEBREW_NO_AUTO_UPDATE=1 brew bundle --no-upgrade
+      - name: Build
+        run: |
+          cmake -H. -Bbuild-cmake -GNinja -DCMAKE_BUILD_TYPE=Release
+          cmake --build build-cmake -j
+      - name: Download starship.o2r
+        uses: actions/download-artifact@v4
+        with:
+          name: starship.o2r
+          path: ./build-cmake
+      - name: Create Package
+        run: |
+          (cd build-cmake && cpack)
+          mv _packages/*.dmg Starship.dmg
+          mv README.md readme.txt
+      - name: Publish packaged artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: Starship-mac-arm64
+          path: |
+            Starship.dmg
+            readme.txt
 
   build-linux:
     needs: generate-port-o2r

@@ -22,7 +22,7 @@ endif()
 
 if (CPACK_GENERATOR MATCHES "Bundle")
     set(CPACK_BUNDLE_NAME "Starship")
-    set(CPACK_BUNDLE_PLIST "macosx/Info.plist")
+    set(CPACK_BUNDLE_PLIST "Info.plist")
     set(CPACK_BUNDLE_ICON "macosx/Starship.icns")
     # set(CPACK_BUNDLE_STARTUP_COMMAND "macosx/Starship-macos.sh")
     set(CPACK_BUNDLE_APPLE_CERT_APP "-")

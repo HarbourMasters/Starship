@@ -1,0 +1,8 @@
+brew "sdl2"
+brew "libpng"
+brew "glew"
+brew "libzip"
+brew "nlohmann-json"
+brew "tinyxml2"
+brew "spdlog"
+brew "vorbis-tools"
