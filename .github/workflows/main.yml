@@ -75,7 +75,7 @@ jobs:
 
   build-macos-x64:
     needs: generate-port-o2r
-    runs-on: macos-15-intel
+    runs-on: macos-14-large # macos-14-large is the only way we can get x64
     steps:
       - uses: actions/checkout@v4
         with:
@@ -110,7 +110,7 @@ jobs:
 
   build-macos-arm64:
     needs: generate-port-o2r
-    runs-on: macos-15
+    runs-on: macos-14
     steps:
       - uses: actions/checkout@v4
         with:
