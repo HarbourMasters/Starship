@@ -633,6 +633,9 @@ add_custom_target(
     COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_SOURCE_DIR}/starship.o2r" "${CMAKE_BINARY_DIR}/starship.o2r"
 )
 
+find_program(CURL NAMES curl DOC "Path to the curl program.  Used to download files.")
+execute_process(COMMAND ${CURL} -sSfL https://raw.githubusercontent.com/gabomdq/SDL_GameControllerDB/master/gamecontrollerdb.txt -o ${CMAKE_BINARY_DIR}/gamecontrollerdb.txt OUTPUT_VARIABLE RESULT)
+
 if("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux")
   install(FILES "${CMAKE_BINARY_DIR}/starship.o2r" DESTINATION . COMPONENT ${PROJECT_NAME})
 endif()
@@ -656,6 +659,17 @@ add_custom_target(CreateOSXIcons
     )
     add_dependencies(${PROJECT_NAME} CreateOSXIcons)
     configure_file("${CMAKE_SOURCE_DIR}/Info.plist" "${CMAKE_BINARY_DIR}/Info.plist" COPYONLY)
+    INSTALL(TARGETS ${PROJECT_NAME} DESTINATION ../MacOS COMPONENT Starship)
+    INSTALL(FILES ${CMAKE_BINARY_DIR}/gamecontrollerdb.txt DESTINATION ../MacOS COMPONENT Starship)
+    INSTALL(FILES ${CMAKE_BINARY_DIR}/starship.o2r DESTINATION ../Resources COMPONENT Starship)
+    INSTALL(FILES ${CMAKE_BINARY_DIR}/config.yml DESTINATION ../Resources COMPONENT Starship)
+    INSTALL(DIRECTORY ${CMAKE_BINARY_DIR}/assets/ DESTINATION ../Resources/assets COMPONENT Starship)
+
+    # Fix bundle to include and relink all dependencies
+    install(CODE "
+        include(BundleUtilities)
+        fixup_bundle(\"\${CMAKE_INSTALL_PREFIX}/../MacOS/Starship\" \"\" \"${dirs}\")
+    ")
 endif()
 
 set_property(TARGET ${PROJECT_NAME} PROPERTY APPIMAGE_DESKTOP_FILE_TERMINAL YES)
