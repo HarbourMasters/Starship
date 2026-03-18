@@ -24,6 +24,7 @@ extern Record gMacbethCutsceneRecord[14];
 extern Record gGrangaCutsceneRecord[13];
 extern Record gMeCrusherCutsceneRecord[3];
 extern Record gEndingCsRecord[37];
+extern Record gSolarIntroCsRecord[16];
 
 extern int gA6GorgonCsFrameCount;
 extern int gWarpzoneCsFrameCount;

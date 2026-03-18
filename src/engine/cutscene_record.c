@@ -18,6 +18,8 @@ void UpdateVisPerFrameFromRecording(Record* record, s32 maxFrames, int* frameCou
 int gWarpzoneCsFrameCount = 0;
 int gA6GorgonCsFrameCount = 0;
 
+// clang-format off
+
 Record gWarpzoneCsRecord[19] = {
     { 2, 1 },  { 3, 3 },  { 4, 4 },   { 3, 8 },   { 2, 9 },   { 3, 52 },  { 2, 54 },  { 3, 69 },  { 2, 70 },  { 3, 75 },
     { 2, 76 }, { 3, 79 }, { 2, 117 }, { 3, 118 }, { 2, 120 }, { 3, 145 }, { 2, 215 }, { 3, 216 }, { 2, 230 },
@@ -100,15 +102,7 @@ Record gMacbethCutsceneRecord[14] = {
     { 2, 942 },
 };
 
-// clang-format off
-
 // After defeating Andross
-/*
-03 00 00 00 02 00 00 08 03 00 00 13 02 00 00 23 03 00 00 9C 02 00 00 A6 03 00 00 C1 04 00 00 C6 03 00 00 C7 04 00 00 C9
-03 00 00 CD 04 00 00 CF 03 00 00 D7 04 00 00 EA 03 00 00 EC 04 00 00 ED 03 00 00 EF 04 00 00 F4 03 00 00 F5 04 00 00 F6
-03 00 01 10 04 00 01 12 03 00 01 22 04 00 01 24 03 00 01 27 04 00 01 2D 03 00 01 2E 04 00 01 30 03 00 01 31 04 00 01 33
-03 00 01 4C 04 00 01 4E 03 00 01 4F
-*/
 Record gAndrossRobotKillCutscene1[25] = {
     { 3, 0 },
     { 2, 8 },
@@ -146,10 +140,6 @@ Record gAndrossRobotKillCutscene1[25] = {
     { 2, 339 },
 };
 
-/*
-04 00 00 00 02 00 00 01 05 00 00 02 02 00 00 03 03 00 00 2A 02 00 00 2B 03 00 00 39 02 00 00 3A 03 00 00 3F 02 00 00 45
-03 00 00 9E 04 00 00 A1 05 00 00 A3 04 00 00 B6 03 00 00 B9 04 00 00 BD 05 00 00 C1 04 00 00 CD 03 00 00 CF 02 00 00 D3
-*/
 Record gAndrossRobotKillCutscene2[20] = {
     { 4, 0 },
     { 2, 1 },
@@ -172,7 +162,6 @@ Record gAndrossRobotKillCutscene2[20] = {
     { 3, 207 },
     { 2, 211 },
 };
-// clang-format on
 
 // SyRobot destroy cutscene timings recorded from a real N64
 Record gSyRobotCutsceneRecord[3] = {
@@ -180,3 +169,24 @@ Record gSyRobotCutsceneRecord[3] = {
     { 3, 129 },
     { 2, 230 },
 };
+
+Record gSolarIntroCsRecord[16] = {
+    { 2, 0   },
+    { 3, 94  },
+    { 2, 105 },
+    { 3, 362 },
+    { 4, 377 },
+    { 3, 379 },
+    { 4, 381 },
+    { 2, 382 },
+    { 3, 443 },
+    { 2, 444 },
+    { 3, 456 },
+    { 2, 492 },
+    { 3, 494 },
+    { 2, 499 },
+    { 3, 552 },
+    { 2, 629 },
+};
+
+// clang-format on

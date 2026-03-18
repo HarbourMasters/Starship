@@ -630,6 +630,8 @@ void Cutscene_LevelStart(Player* player) {
                 break;
 
             case LEVEL_SOLAR:
+                // @Port: Vi recording
+                UpdateVisPerFrameFromRecording(gSolarIntroCsRecord, ARRAY_COUNT(gSolarIntroCsRecord), &gCsFrameCount);
                 Solar_LevelStart(player);
                 break;
 
