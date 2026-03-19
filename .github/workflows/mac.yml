@@ -6,7 +6,7 @@ on:
 
 jobs:
   build:
-    runs-on: macOS-15
+    runs-on: macos-14
     steps:
       - uses: actions/checkout@v4
         with:
