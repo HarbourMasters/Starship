@@ -1690,7 +1690,7 @@ void Corneria_CoCarrier_Init(CoCarrier* this) {
     timer = this->timer_05A;
 
     // OBJ_BOSS_CO_CARRIER_LEFT to OBJ_BOSS_CO_CARRIER_BOTTOM
-    for (i = CARRIER_LEFT; i < ARRAY_COUNT(gBosses); i++) {
+    for (i = CARRIER_LEFT; i <= CARRIER_BOTTOM; i++) {
         Boss_Initialize(&gBosses[i]);
         gBosses[i].obj.status = OBJ_INIT;
         gBosses[i].obj.id = (i - 1) + OBJ_BOSS_CO_CARRIER_LEFT;
