@@ -73,57 +73,22 @@ jobs:
           name: starship-windows
           path: starship-release
 
-  build-macos-x64:
-    needs: generate-port-o2r
-    runs-on: macos-14-large # macos-14-large is the only way we can get x64
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          submodules: recursive
-      - uses: actions/cache@v4
-        with:
-          path: ~/Library/Caches/Homebrew
-          key: ${{ runner.os }}-${{ runner.arch }}-homebrew-${{ github.ref }}-${{ github.sha }}
-      - name: Install dependencies
-        run: HOMEBREW_NO_AUTO_UPDATE=1 brew bundle --no-upgrade
-      - name: Build
-        run: |
-          cmake -H. -Bbuild-cmake -GNinja -DCMAKE_BUILD_TYPE=Release
-          cmake --build build-cmake -j
-      - name: Download starship.o2r
-        uses: actions/download-artifact@v4
-        with:
-          name: starship.o2r
-          path: ./build-cmake
-      - name: Create Package
-        run: |
-          (cd build-cmake && cpack)
-          mv _packages/*.dmg Starship.dmg
-          mv README.md readme.txt
-      - name: Publish packaged artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: Starship-mac-x64
-          path: |
-            Starship.dmg
-            readme.txt
-
-  build-macos-arm64:
+  build-macos:
     needs: generate-port-o2r
     runs-on: macos-14
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           submodules: recursive
-      - uses: actions/cache@v4
+      - uses: melusina-org/setup-macports@v1
         with:
-          path: ~/Library/Caches/Homebrew
-          key: ${{ runner.os }}-${{ runner.arch }}-homebrew-${{ github.ref }}-${{ github.sha }}
-      - name: Install dependencies
-        run: HOMEBREW_NO_AUTO_UPDATE=1 brew bundle --no-upgrade
+          parameters: '.github/macports.yml'
+      - uses: hendrikmuhs/ccache-action@v1.2
+        with:
+          key: macos-ccache-${{ github.ref }}
       - name: Build
         run: |
-          cmake -H. -Bbuild-cmake -GNinja -DCMAKE_BUILD_TYPE=Release
+          cmake -H. -Bbuild-cmake -GNinja -DCMAKE_BUILD_TYPE=Release -D CMAKE_C_COMPILER_LAUNCHER=ccache -D CMAKE_CXX_COMPILER_LAUNCHER=ccache -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64"
           cmake --build build-cmake -j
       - name: Download starship.o2r
         uses: actions/download-artifact@v4
@@ -138,7 +103,7 @@ jobs:
       - name: Publish packaged artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: Starship-mac-arm64
+          name: Starship-mac
           path: |
             Starship.dmg
             readme.txt

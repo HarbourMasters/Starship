@@ -8,16 +8,16 @@ jobs:
   build:
     runs-on: macos-14
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           submodules: recursive
-      - uses: actions/cache@v4
+      - uses: melusina-org/setup-macports@v1
         with:
-          path: ~/Library/Caches/Homebrew
-          key: ${{ runner.os }}-${{ runner.arch }}-homebrew-${{ github.ref }}-${{ github.sha }}
-      - name: Install dependencies
-        run: HOMEBREW_NO_AUTO_UPDATE=1 brew bundle --no-upgrade
+          parameters: '.github/macports.yml'
+      - uses: hendrikmuhs/ccache-action@v1.2
+        with:
+          key: macos-ccache-${{ github.ref }}
       - name: Build
         run: |
-          cmake -H. -Bbuild-cmake -GNinja -DCMAKE_BUILD_TYPE=Release
+          cmake -H. -Bbuild-cmake -GNinja -DCMAKE_BUILD_TYPE=Release -D CMAKE_C_COMPILER_LAUNCHER=ccache -D CMAKE_CXX_COMPILER_LAUNCHER=ccache -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64"
           cmake --build build-cmake -j

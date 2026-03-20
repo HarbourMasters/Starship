@@ -83,8 +83,7 @@ If you want to manually compile Starship, please consult the [building instructi
 If you want to playtest a continuous integration build, you can find them at the links below. Keep in mind that these are for playtesting only, and you will likely encounter bugs and possibly crashes. 
 
 * [Windows](https://nightly.link/HarbourMasters/Starship/workflows/main/main/starship-windows.zip)
-* [macOS (Apple Silicon)](https://nightly.link/HarbourMasters/Starship/workflows/main/main/Starship-mac-arm64.zip)
-* [macOS (Intel)](https://nightly.link/HarbourMasters/Starship/workflows/main/main/Starship-mac-x64.zip)
+* [macOS](https://nightly.link/HarbourMasters/Starship/workflows/main/main/Starship-mac.zip)
 * [Linux](https://nightly.link/HarbourMasters/Starship/workflows/main/main/Starship-linux.zip)
 * [Switch](https://nightly.link/HarbourMasters/Starship/workflows/main/main/Starship-switch.zip)
 
