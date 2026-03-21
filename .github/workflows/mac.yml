@@ -17,6 +17,9 @@ jobs:
       - uses: hendrikmuhs/ccache-action@v1.2
         with:
           key: macos-ccache-${{ github.ref }}
+          restore-keys: |
+            macos-ccache-${{ github.ref }}
+            macos-ccache-
       - name: Build
         run: |
           cmake -H. -Bbuild-cmake -GNinja -DCMAKE_BUILD_TYPE=Release -D CMAKE_C_COMPILER_LAUNCHER=ccache -D CMAKE_CXX_COMPILER_LAUNCHER=ccache -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64"

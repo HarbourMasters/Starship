@@ -111,3 +111,4 @@ If you want to playtest a continuous integration build, you can find them at the
 * [Thar0](https://github.com/Thar0) : for contributing with an improved Starfield that can be interpolated to any framerate.
 * [TheBoy181](https://github.com/TheBoy181) : for contributing to this project with various widescreen enhancements such as level floors, an extended Starfield among other things.
 * [Wiseguy](https://github.com/Mr-Wiseguy) : for providing important information about the inner workings of the N64 platform, as well as helping with the decompilation process.
+
