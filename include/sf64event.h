@@ -255,7 +255,7 @@ typedef enum EventCondition {
     /* 35 */ EVC_SINGLE_LASER,
     /* 36 */ EVC_TWIN_LASER,
     /* 37 */ EVC_HYPER_LASER,
-    /* 38 */ EVC_UNK3_LASER,
+    /* 38 */ EVC_NOVA_LASER,
     /* 39 */ EVC_SHOT_CLOSE_150,
     /* 40 */ EVC_SHOT_CLOSE_300,
     /* 41 */ EVC_NO_LEADER,

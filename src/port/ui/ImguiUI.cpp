@@ -718,6 +718,7 @@ void DrawCheatsMenu() {
         UIWidgets::CVarCheckbox("Infinite Bombs", "gInfiniteBombs");
         UIWidgets::CVarCheckbox("Infinite Boost/Brake", "gInfiniteBoost");
         UIWidgets::CVarCheckbox("Hyper Laser", "gHyperLaser");
+        UIWidgets::CVarCheckbox("Nova Laser", "gNovaLaser");
         UIWidgets::CVarSliderInt("Laser Range Multiplier: %d%%", "gLaserRangeMult", 15, 800, 100,
             { .tooltip = "Changes how far your lasers fly." });
         UIWidgets::CVarCheckbox("Rapid-fire mode", "gRapidFire", {

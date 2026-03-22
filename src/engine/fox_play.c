@@ -3189,6 +3189,7 @@ void Player_ArwingLaser(Player* player) {
             break;
         case LASERS_TWIN:
         case LASERS_HYPER:
+        case LASERS_NOVA:
             for (i = 0; i < ARRAY_COUNT(gPlayerShots) - 1; i++) {
                 if (gPlayerShots[i].obj.status == SHOT_FREE) {
                     Player_SetupArwingShot(player, &gPlayerShots[i], 0.0f, -10.0f, PLAYERSHOT_TWIN_LASER,
@@ -3196,9 +3197,12 @@ void Player_ArwingLaser(Player* player) {
                     if (laser == LASERS_TWIN) {
                         Player_PlaySfx(player->sfxSource, NA_SE_ARWING_TWIN_LASER, player->num);
                         gMuzzleFlashScale[player->num] = 0.5f;
-                    } else {
+                    } else if (laser == LASERS_HYPER) {
                         Player_PlaySfx(player->sfxSource, NA_SE_ARWING_TWIN_LASER2, player->num);
                         gMuzzleFlashScale[player->num] = 0.75f;
+                    } else {
+                        Player_PlaySfx(player->sfxSource, NA_SE_ARWING_TWIN_LASER2, player->num);
+                        gMuzzleFlashScale[player->num] = 1.0f;
                     }
                     break;
                 }
@@ -3207,7 +3211,6 @@ void Player_ArwingLaser(Player* player) {
     }
     CALL_EVENT(PlayerActionPostShootEvent, player, &gPlayerShots[i]);
 }
-
 void Player_SmartBomb(Player* player) {
 
     if ((gBombCount[player->num] != 0) && (gBombButton[player->num] & gInputPress->button) &&

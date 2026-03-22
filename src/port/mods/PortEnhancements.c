@@ -133,11 +133,11 @@ void OnDisplayUpdatePost(IEvent* event) {
         gBombCount[0] = 9;
     }
 
-    if (CVarGetInteger("gHyperLaser", 0) == 1) {
+    if (CVarGetInteger("gNovaLaser", 0) == 1) {
         if ((gGameState != GSTATE_PLAY) || (gPlayState <= PLAY_INIT)) {
             return;
         }
-        gLaserStrength[0] = LASERS_HYPER;
+        gLaserStrength[0] = LASERS_NOVA;
     }
 
     if (CVarGetInteger("gScoreEditor", 0) == 1) {

@@ -1166,14 +1166,18 @@ void Display_ArwingLaserCharge(Player* player) {
                 FrameInterpolation_RecordCloseChild();
                 break;
 
-            case LASERS_TWIN:
+           case LASERS_TWIN:
             case LASERS_HYPER:
+            case LASERS_NOVA:
                 if (laserStrength == LASERS_TWIN) {
                     gDPSetPrimColor(gMasterDisp++, 0x00, 0x00, 192, 255, 192, 128);
                     gDPSetEnvColor(gMasterDisp++, 64, 255, 64, 128);
-                } else {
+                } else if (laserStrength == LASERS_HYPER) {
                     gDPSetPrimColor(gMasterDisp++, 0x00, 0x00, 128, 255, 255, 160);
                     gDPSetEnvColor(gMasterDisp++, 128, 128, 255, 160);
+                } else {
+                    gDPSetPrimColor(gMasterDisp++, 0x00, 0x00, 180, 64, 255, 200);
+                    gDPSetEnvColor(gMasterDisp++, 120, 0, 255, 200);
                 }
                 Matrix_MultVec3f(gCalcMatrix, &spAC, &sp94);
                 Matrix_MultVec3f(gCalcMatrix, &spA0, &sp88);

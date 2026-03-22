@@ -2251,8 +2251,8 @@ void ItemPickup_Update(Item* this) {
                     this->unk_50 = 60.0f;
 
                     gLaserStrength[this->playerNum]++;
-                    if (gLaserStrength[this->playerNum] > LASERS_HYPER) {
-                        gLaserStrength[this->playerNum] = LASERS_HYPER;
+                    if (gLaserStrength[this->playerNum] > LASERS_NOVA) {
+                        gLaserStrength[this->playerNum] = LASERS_NOVA;
                     }
 
                     Object_PlayerSfx(gPlayer[this->playerNum].sfxSource, NA_SE_TWIN_LASER_GET, this->playerNum);

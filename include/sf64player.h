@@ -111,7 +111,7 @@ typedef enum LaserStrength {
     /* 0 */ LASERS_SINGLE,
     /* 1 */ LASERS_TWIN,
     /* 2 */ LASERS_HYPER,
-    /* 3 */ LASERS_UNK_3,
+    /* 3 */ LASERS_NOVA,
     /* 4 */ LASERS_MAX,
 } LaserStrength;
 

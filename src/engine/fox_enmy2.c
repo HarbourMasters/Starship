@@ -2597,8 +2597,8 @@ void ActorEvent_ProcessTriggers(ActorEvent* this) {
             }
             break;
 
-        case EVC_UNK3_LASER:
-            if ((gPlayer[0].arwing.laserGunsYpos < -8.0f) && (gLaserStrength[0] == LASERS_UNK_3)) {
+       case EVC_NOVA_LASER:
+            if ((gPlayer[0].arwing.laserGunsYpos < -8.0f) && (gLaserStrength[0] == LASERS_NOVA)) {
                 ActorEvent_TriggerBranch(this);
             }
             break;
