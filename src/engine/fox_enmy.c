@@ -2005,6 +2005,13 @@ void Sprite167_Update(Sprite167* this) {
 
 // World-aligned billboarding
 void SceneryRotateTowardsCamera(Scenery* this) {
+    bool isBuilding = (this->obj.id >= OBJ_SCENERY_CO_BUILDING_5 && this->obj.id <= OBJ_SCENERY_CO_BUILDING_8 ||
+                       this->obj.id == OBJ_SCENERY_CO_BUILDING_10);
+
+    if (isBuilding) {
+        return;
+    }
+
     this->obj.rot.y = 0.0f;
     if (gPlayer[0].cam.eye.x < this->obj.pos.x) {
         this->obj.rot.y = 271.0f;
