@@ -1,10 +1,8 @@
 #include "Engine.h"
 #include "ui/ImguiUI.h"
-#include "StringHelper.h"
+#include <ship/utils/StringHelper.h>
 
 #include "extractor/GameExtractor.h"
-#include "libultraship/src/Context.h"
-#include "libultraship/src/controller/controldevice/controller/mapping/ControllerDefaultMappings.h"
 #include "resource/type/ResourceType.h"
 #include "resource/importers/AnimFactory.h"
 #include "resource/importers/ColPolyFactory.h"
@@ -31,21 +29,26 @@
 #include "resource/importers/audio/SoundFontFactory.h"
 
 #include "port/interpolation/FrameInterpolation.h"
-#include <Fast3D/Fast3dWindow.h>
-#include <DisplayListFactory.h>
-#include <TextureFactory.h>
-#include <MatrixFactory.h>
-#include <BlobFactory.h>
-#include <VertexFactory.h>
+#include <fast/Fast3dWindow.h>
+#include <fast/resource/factory/DisplayListFactory.h>
+#include <fast/resource/factory/TextureFactory.h>
+#include <fast/resource/factory/MatrixFactory.h>
+#include <fast/resource/factory/VertexFactory.h>
+#include <fast/resource/factory/LightFactory.h>
+#include <ship/resource/factory/BlobFactory.h>
+#include <ship/resource/factory/JsonFactory.h>
 #include "audio/GameAudio.h"
+#include "controller/controldeck/ControlDeck.h"
+#include "fast/resource/ResourceType.h"
 #include "port/patches/DisplayListPatch.h"
 #include "port/mods/PortEnhancements.h"
+#include "port/ui/cvar_prefixes.h"
+#include "port/build.h"
 
-#include <Fast3D/interpreter.h>
 #include <filesystem>
 
 #ifdef __SWITCH__
-#include <port/switch/SwitchImpl.h>
+#include <ship/port/switch/SwitchImpl.h>
 #endif
 
 namespace fs = std::filesystem;
@@ -160,21 +163,36 @@ GameEngine::GameEngine() {
         // SDLAxisDirectionToAxisDirectionMappings - use built-in LUS defaults
         std::unordered_map<Ship::StickIndex, std::vector<std::pair<Ship::Direction, std::pair<SDL_GameControllerAxis, int32_t>>>>()
     );
-    auto controlDeck = std::make_shared<LUS::ControlDeck>(std::vector<CONTROLLERBUTTONS_T>(), defaultMappings);
+    std::unordered_map<CONTROLLERBUTTONS_T, std::string> names;
+    auto controlDeck = std::make_shared<LUS::ControlDeck>();
 
-    this->context->InitResourceManager(archiveFiles, {}, 3); // without this line InitWindow fails in Gui::Init()
-    this->context->InitConsole(); // without this line the GuiWindow constructor fails in ConsoleWindow::InitElement()
+    this->context->InitControlDeck(controlDeck);
+    this->context->InitResourceManager(archiveFiles, {}, 3);
+    this->context->InitConsole();
 
     auto window = std::make_shared<Fast::Fast3dWindow>(std::vector<std::shared_ptr<Ship::GuiWindow>>({}));
+    this->context->InitWindow(window);
+    this->context->InitEventSystem();
 
-    auto audioChannelsSetting = Ship::Context::GetInstance()->GetConfig()->GetCurrentAudioChannelsSetting();
-    this->context->Init(archiveFiles, {}, 3, { 32000, 1024, 1680, audioChannelsSetting }, window, controlDeck);
-
-#ifndef __SWITCH__
-    Ship::Context::GetInstance()->GetLogger()->set_level(
-        (spdlog::level::level_enum) CVarGetInteger("gDeveloperTools.LogLevel", 1));
-    Ship::Context::GetInstance()->GetLogger()->set_pattern("[%H:%M:%S.%e] [%s:%#] [%l] %v");
+#if (_DEBUG)
+    auto defaultLogLevel = spdlog::level::debug;
+#else
+    auto defaultLogLevel = spdlog::level::info;
 #endif
+    auto logLevel =
+        static_cast<spdlog::level::level_enum>(CVarGetInteger(CVAR_DEVELOPER_TOOLS("LogLevel"), defaultLogLevel));
+    context->InitLogging(logLevel, logLevel);
+    Ship::Context::GetInstance()->GetLogger()->set_pattern("[%H:%M:%S.%e] [%s:%#] [%l] %v");
+    SPDLOG_INFO("Starting Starship version {} (Branch: {} | Commit: {})", (char*)gBuildVersion, (char*)gGitBranch,
+                (char*)gGitCommitHash);
+
+    this->context->InitGfxDebugger();
+    this->context->InitFileDropMgr();
+    this->context->InitCrashHandler();
+
+    // this->context->InitScriptSystem(defines, 1);
+
+    this->context->InitAudio({ .SampleRate = 32000, .SampleLength = 1024, .DesiredBuffered = 1680 });
 
     auto loader = context->GetResourceManager()->GetResourceLoader();
     loader->RegisterResourceFactory(std::make_shared<SF64::ResourceFactoryBinaryAnimV0>(), RESOURCE_FORMAT_BINARY,

@@ -1,8 +1,8 @@
 #include "sys.h"
 #include "sf64audio_provisional.h"
 #include "audio/mixer.h"
-#include "endianness.h"
 #include "port/Engine.h"
+#include <ship/utils/binarytools/endianness.h>
 
 #define DMEM_WET_SCRATCH 0x470
 #define DMEM_COMPRESSED_ADPCM_DATA 0xD50

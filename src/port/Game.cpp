@@ -1,6 +1,6 @@
 #include <libultraship.h>
 
-#include <Fast3D/interpreter.h>
+#include <fast/interpreter.h>
 #include "Engine.h"
 
 extern "C" {

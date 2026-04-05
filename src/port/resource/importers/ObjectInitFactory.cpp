@@ -1,7 +1,7 @@
 #include "ObjectInitFactory.h"
 
-#include "Context.h"
-#include "resourcebridge.h"
+#include <ship/Context.h>
+#include <bridge/resourcebridge.h>
 #include "../type/ObjectInit.h"
 
 namespace SF64 {

@@ -9,6 +9,10 @@ struct FrameUniforms {
     float noiseScale;
 };
 
+struct DrawUniforms {
+    int textureFiltering[2];
+};
+
 struct Vertex {
     float4 position [[attribute(@{get_vertex_index()})]];
     @{update_floats(4)}
@@ -123,31 +127,41 @@ float4 mod(float4 a, float4 b) {
 #define WRAP(x, low, high) mod((x)-(low), (high)-(low)) + (low)
 #define TEX_OFFSET(tex, texSmplr, texCoord, off, texSize) tex.sample(texSmplr, texCoord - off / texSize)
 
-@if(o_three_point_filtering)
-    float4 filter3point(thread const texture2d<float> tex, thread const sampler texSmplr, thread const float2& texCoord, thread const float2& texSize) {
-        float2 offset = fract((texCoord * texSize) - float2(0.5));
-        offset -= float2(step(1.0, offset.x + offset.y));
-        float4 c0 = TEX_OFFSET(tex, texSmplr, texCoord, offset, texSize);
-        float4 c1 = TEX_OFFSET(tex, texSmplr, texCoord, float2(offset.x - sign(offset.x), offset.y), texSize);
-        float4 c2 = TEX_OFFSET(tex, texSmplr, texCoord, float2(offset.x, offset.y - sign(offset.y)), texSize);
-        return c0 + abs(offset.x) * (c1 - c0) + abs(offset.y) * (c2 - c0);
-    }
+float4 filter3point(thread const texture2d<float> tex, thread const sampler texSmplr, thread const float2& texCoord, thread const float2& texSize) {
+    float2 offset = fract((texCoord * texSize) - float2(0.5));
+    offset -= float2(step(1.0, offset.x + offset.y));
+    float4 c0 = TEX_OFFSET(tex, texSmplr, texCoord, offset, texSize);
+    float4 c1 = TEX_OFFSET(tex, texSmplr, texCoord, float2(offset.x - sign(offset.x), offset.y), texSize);
+    float4 c2 = TEX_OFFSET(tex, texSmplr, texCoord, float2(offset.x, offset.y - sign(offset.y)), texSize);
+    return c0 + abs(offset.x) * (c1 - c0) + abs(offset.y) * (c2 - c0);
+}
 
-    float4 hookTexture2D(thread const texture2d<float> tex, thread const sampler texSmplr, thread const float2& uv, thread const float2& texSize) {
+float4 hookTexture2D(thread const texture2d<float> tex, thread const sampler texSmplr, thread const float2& uv, thread const float2& texSize, thread const int filtering) {
+@if(o_three_point_filtering)
+    if(filtering == @{FILTER_THREE_POINT}) {
         return filter3point(tex, texSmplr, uv, texSize);
     }
-@else
-    float4 hookTexture2D(thread const texture2d<float> tex, thread const sampler texSmplr, thread const float2& uv, thread const float2& texSize) {
-        return tex.sample(texSmplr, uv);
-    }
 @end
+    return tex.sample(texSmplr, uv);
+}
 
 float random(float3 value) {
     float random = dot(sin(value), float3(12.9898, 78.233, 37.719));
     return fract(sin(random) * 143758.5453);
 }
 
-fragment float4 fragmentShader(ProjectedVertex in [[stage_in]], constant FrameUniforms &frameUniforms [[buffer(0)]]
+float4 fromLinear(float4 linearRGB) {
+    bool3 cutoff = linearRGB.rgb < 0.0031308f;
+    float3 higher = 1.055f * pow(linearRGB.rgb, 1.0f / 2.4f) - 0.055f;
+    float3 lower = linearRGB.rgb * 12.92f;
+    float3 srgbOut = select(higher, lower, cutoff);
+    return float4(srgbOut, linearRGB.a);
+}
+
+fragment float4 fragmentShader(
+    ProjectedVertex in [[stage_in]],
+    constant FrameUniforms &frameUniforms [[buffer(0)]],
+    constant DrawUniforms &drawUniforms [[buffer(1)]]
 @if(o_textures[0])
     , texture2d<float> uTex0 [[texture(0)]], sampler uTex0Smplr [[sampler(0)]]
 @end
@@ -184,13 +198,13 @@ fragment float4 fragmentShader(ProjectedVertex in [[stage_in]], constant FrameUn
                 @end
             @end
 
-            float4 texVal@{i} = hookTexture2D(uTex@{i}, uTex@{i}Smplr, vTexCoordAdj@{i}, texSize@{i});
+            float4 texVal@{i} = hookTexture2D(uTex@{i}, uTex@{i}Smplr, vTexCoordAdj@{i}, texSize@{i}, drawUniforms.textureFiltering[@{i}]);
 
             @if(o_masks[i])
                 float2 maskSize@{i} = float2(uTexMask@{i}.get_width(), uTexMask@{i}.get_height());
-                float4 maskVal@{i} = hookTexture2D(uTexMask@{i}, uTex@{i}Smplr, vTexCoordAdj@{i}, maskSize@{i});
+                float4 maskVal@{i} = hookTexture2D(uTexMask@{i}, uTex@{i}Smplr, vTexCoordAdj@{i}, maskSize@{i}, drawUniforms.textureFiltering[@{i}]);
                 @if(o_blend[i])
-                    float4 blendVal@{i} = hookTexture2D(uTexBlend@{i}, uTex@{i}Smplr, vTexCoordAdj@{i}, texSize@{i});
+                    float4 blendVal@{i} = hookTexture2D(uTexBlend@{i}, uTex@{i}Smplr, vTexCoordAdj@{i}, texSize@{i}, drawUniforms.textureFiltering[@{i}]);
                 @else
                     float4 blendVal@{i} = float4(0, 0, 0, 0);
                 @end
@@ -266,8 +280,8 @@ fragment float4 fragmentShader(ProjectedVertex in [[stage_in]], constant FrameUn
     @end
 
     @if(o_alpha && o_noise)
-        float2 coords = screenSpace.xy * noise_scale;
-        texel.w *= round(saturate(random(float3(floor(coords), noise_frame)) + texel.w - 0.5));
+        float2 coords = in.position.xy * frameUniforms.noiseScale;
+        texel.w *= round(saturate(random(float3(floor(coords), float(frameUniforms.frameCount))) + texel.w - 0.5));
     @end
 
     @if(o_alpha)
@@ -277,8 +291,8 @@ fragment float4 fragmentShader(ProjectedVertex in [[stage_in]], constant FrameUn
         @if(o_invisible)
             texel.w = 0.0;
         @end
-        return texel;
+        return fromLinear(texel);
     @else
-        return float4(texel, 1.0);
+        return fromLinear(float4(texel, 1.0));
     @end
 }

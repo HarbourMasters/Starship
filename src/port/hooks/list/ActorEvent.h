@@ -2,7 +2,6 @@
 
 #include "gfx.h"
 #include "sf64object.h"
-#include "port/hooks/impl/EventSystem.h"
 
 typedef enum {
     OBJECT_TYPE_ACTOR,

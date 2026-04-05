@@ -1,3 +1,5 @@
+#define INIT_EVENT_IDS
+
 #include "PortEnhancements.h"
 #include "global.h"
 #include "hit64.h"
@@ -5,7 +7,6 @@
 #include "hud.h"
 #include "assets/ast_star_wolf.h"
 
-#define INIT_EVENT_IDS
 #include "port/hooks/Events.h"
 
 bool gBackToMap = false;
@@ -181,7 +182,7 @@ void OnPlayUpdateEvent(IEvent* event) {
         CVarSetInteger("gDebugPause", 0); // Unpause if we disable the shortcut
     }
 
-    event->cancelled = CVarGetInteger("gDebugPause", 0);
+    event->Cancelled = CVarGetInteger("gDebugPause", 0);
     if (shouldRepause) {
         CVarSetInteger("gDebugPause", 1);
     }
@@ -228,7 +229,7 @@ void OnItemGoldRingDraw(ObjectDrawPostSetupEvent* event) {
         return;
     }
 
-    event->event.cancelled = true;
+    event->Event.Cancelled = true;
     RCP_SetupDL(&gMasterDisp, SETUPDL_29_OPTIONAL);
     Graphics_SetScaleMtx(item->width * 2.0f);
     gSPDisplayList(gMasterDisp++, D_101D870);
@@ -290,7 +291,7 @@ void OnBoostGaugeDraw(IEvent* event) {
         return;
     }
 
-    event->cancelled = true;
+    event->Cancelled = true;
     u8 step = MIN(8, (u8) ((gPlayer[0].boostMeter / 90.0f) * ARRAY_COUNT(sBoostGaugeArrow)));
     f32 x = 70;
     f32 y = 30;
@@ -311,7 +312,7 @@ void OnBombCounterDraw(IEvent* ev) {
         return;
     }
 
-    ev->cancelled = true;
+    ev->Cancelled = true;
     HUD_BombCounter_Draw(253.0f, 18.0f);
 }
 
@@ -337,7 +338,7 @@ void OnRadarMarkArwingDraw(DrawRadarMarkArwingEvent* ev) {
         return;
     }
 
-    ev->event.cancelled = true;
+    ev->Event.Cancelled = true;
 
     s32 arwingMarkColor[][4] = {
         { 177, 242, 12, 255 }, { 89, 121, 6, 128 }, { 90, 90, 255, 255 }, { 45, 45, 128, 128 },
@@ -373,7 +374,7 @@ void OnRadarMarkWolfenDraw(IEvent* ev) {
     if (!outlines) {
         return;
     }
-    ev->cancelled = true;
+    ev->Cancelled = true;
 
     RCP_SetupDL(&gMasterDisp, SETUPDL_62);
     gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 255, 255);
@@ -393,7 +394,7 @@ void OnLivesCounterDraw(IEvent* ev) {
     if (!restore) {
         return;
     }
-    ev->cancelled = true;
+    ev->Cancelled = true;
 
     HUD_LivesCount2_Draw(258.0f, SCREEN_HEIGHT - 20, gLifeCount[gPlayerNum]);
 }
@@ -408,25 +409,25 @@ void PortEnhancements_Init() {
     PortEnhancements_Register();
 
     // Register event listeners
-    REGISTER_LISTENER(DisplayPostUpdateEvent, OnDisplayUpdatePost, EVENT_PRIORITY_NORMAL);
-    REGISTER_LISTENER(GamePostUpdateEvent, OnGameUpdatePost, EVENT_PRIORITY_NORMAL);
-    REGISTER_LISTENER(PlayUpdateEvent, OnPlayUpdateEvent, EVENT_PRIORITY_NORMAL);
-    REGISTER_LISTENER(PlayerPostUpdateEvent, OnPlayerUpdatePost, EVENT_PRIORITY_NORMAL);
-    REGISTER_LISTENER(DrawBoostGaugeHUDEvent, OnBoostGaugeDraw, EVENT_PRIORITY_NORMAL);
-    REGISTER_LISTENER(DrawLivesCounterHUDEvent, OnLivesCounterDraw, EVENT_PRIORITY_NORMAL);
-    REGISTER_LISTENER(DrawBombCounterHUDEvent, OnBombCounterDraw, EVENT_PRIORITY_NORMAL);
-    REGISTER_LISTENER(PreSetupRadioMsgEvent, OnPreSetupRadioMsgEvent, EVENT_PRIORITY_NORMAL);
-    REGISTER_LISTENER(DrawRadarMarkArwingEvent, OnRadarMarkArwingDraw, EVENT_PRIORITY_NORMAL);
-    REGISTER_LISTENER(DrawRadarMarkWolfenEvent, OnRadarMarkWolfenDraw, EVENT_PRIORITY_NORMAL);
+    REGISTER_LISTENER(DisplayPostUpdateEvent, EVENT_PRIORITY_LOW, OnDisplayUpdatePost);
+    REGISTER_LISTENER(GamePostUpdateEvent, EVENT_PRIORITY_LOW, OnGameUpdatePost);
+    REGISTER_LISTENER(PlayUpdateEvent, EVENT_PRIORITY_LOW, OnPlayUpdateEvent);
+    REGISTER_LISTENER(PlayerPostUpdateEvent, EVENT_PRIORITY_LOW, OnPlayerUpdatePost);
+    REGISTER_LISTENER(DrawBoostGaugeHUDEvent, EVENT_PRIORITY_LOW, OnBoostGaugeDraw);
+    REGISTER_LISTENER(DrawLivesCounterHUDEvent, EVENT_PRIORITY_LOW, OnLivesCounterDraw);
+    REGISTER_LISTENER(DrawBombCounterHUDEvent, EVENT_PRIORITY_LOW, OnBombCounterDraw);
+    REGISTER_LISTENER(PreSetupRadioMsgEvent, EVENT_PRIORITY_LOW, OnPreSetupRadioMsgEvent);
+    REGISTER_LISTENER(DrawRadarMarkArwingEvent, EVENT_PRIORITY_LOW, OnRadarMarkArwingDraw);
+    REGISTER_LISTENER(DrawRadarMarkWolfenEvent, EVENT_PRIORITY_LOW, OnRadarMarkWolfenDraw);
 
-    REGISTER_LISTENER(ObjectUpdateEvent, OnItemGoldRingUpdate, EVENT_PRIORITY_NORMAL);
-    REGISTER_LISTENER(ObjectDrawPostSetupEvent, OnItemGoldRingDraw, EVENT_PRIORITY_NORMAL);
+    REGISTER_LISTENER(ObjectUpdateEvent, EVENT_PRIORITY_LOW, OnItemGoldRingUpdate);
+    REGISTER_LISTENER(ObjectDrawPostSetupEvent, EVENT_PRIORITY_LOW, OnItemGoldRingDraw);
 
     // Register Action listeners
-    REGISTER_LISTENER(PlayerActionBoostEvent, OnPlayerBoost, EVENT_PRIORITY_NORMAL);
-    REGISTER_LISTENER(PlayerActionBrakeEvent, OnPlayerBrake, EVENT_PRIORITY_NORMAL);
-    REGISTER_LISTENER(PlayerActionPostShootEvent, OnPlayerShootPost, EVENT_PRIORITY_NORMAL);
-    REGISTER_LISTENER(PlayerActionPreShootChargedEvent, OnPlayerShootChargedPre, EVENT_PRIORITY_NORMAL);
+    REGISTER_LISTENER(PlayerActionBoostEvent, EVENT_PRIORITY_LOW, OnPlayerBoost);
+    REGISTER_LISTENER(PlayerActionBrakeEvent, EVENT_PRIORITY_LOW, OnPlayerBrake);
+    REGISTER_LISTENER(PlayerActionPostShootEvent, EVENT_PRIORITY_LOW, OnPlayerShootPost);
+    REGISTER_LISTENER(PlayerActionPreShootChargedEvent, EVENT_PRIORITY_LOW, OnPlayerShootChargedPre);
 
     // If we close the game while debug pause is active, we want it to be deactivated when we run again.
     CVarSetInteger("gDebugPause", 0);
@@ -434,6 +435,8 @@ void PortEnhancements_Init() {
 
 void PortEnhancements_Register() {
     // Register engine events
+    REGISTER_EVENT(DisplayPreUpdateEvent);
+
     REGISTER_EVENT(DisplayPreUpdateEvent);
     REGISTER_EVENT(DisplayPostUpdateEvent);
 

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <cstdint>
-#include <Resource.h>
+#include <ship/resource/Resource.h>
 #include "Envelope.h"
 #include "AdpcmLoop.h"
 #include "AdpcmBook.h"

@@ -5,14 +5,15 @@
 #include <spdlog/spdlog.h>
 #include <imgui.h>
 #define IMGUI_DEFINE_MATH_OPERATORS
-#include "libultraship/src/Context.h"
+#include <ship/Context.h>
 
 #include <imgui_internal.h>
 #include <libultraship/libultraship.h>
-#include <Fast3D/interpreter.h>
+#include <fast/interpreter.h>
 #include "port/Engine.h"
+#include "port/hooks/Events.h"
 #include "port/notification/notification.h"
-#include "utils/StringHelper.h"
+#include <ship/utils/StringHelper.h>
 
 #ifdef __SWITCH__
 #include <port/switch/SwitchImpl.h>
@@ -260,8 +261,9 @@ void DrawSettingsMenu(){
             }
 
             static std::unordered_map<Ship::AudioBackend, const char*> audioBackendNames = {
-                    { Ship::AudioBackend::WASAPI, "Windows Audio Session API" },
-                    { Ship::AudioBackend::SDL, "SDL" },
+                { Ship::AudioBackend::WASAPI, "Windows Audio Session API" },
+                { Ship::AudioBackend::SDL, "SDL" },
+                { Ship::AudioBackend::COREAUDIO, "CoreAudio" }
             };
 
             ImGui::Text("Audio API (Needs reload)");
@@ -272,7 +274,7 @@ void DrawSettingsMenu(){
             }
             if (ImGui::BeginCombo("##AApi", audioBackendNames[currentAudioBackend])) {
                 for (uint8_t i = 0; i < Ship::Context::GetInstance()->GetAudio()->GetAvailableAudioBackends()->size(); i++) {
-                    auto backend = Ship::Context::GetInstance()->GetAudio()->GetAvailableAudioBackends()->data()[i];
+                    auto backend = (*Ship::Context::GetInstance()->GetAudio()->GetAvailableAudioBackends())[i];
                     if (ImGui::Selectable(audioBackendNames[backend], backend == currentAudioBackend)) {
                         Ship::Context::GetInstance()->GetAudio()->SetCurrentAudioBackend(backend);
                     }
@@ -922,6 +924,8 @@ void GameMenuBar::DrawElement() {
         ImGui::SetCursorPosY(0.0f);
 
         DrawDebugMenu();
+
+        CALL_EVENT(EngineRenderMenubarEvent);
 
         ImGui::EndMenuBar();
     }

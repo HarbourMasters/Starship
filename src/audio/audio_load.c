@@ -4,8 +4,8 @@
 #include "sf64audio_provisional.h"
 #include "assets/ast_audio.h"
 #include "port/Engine.h"
-#include "endianness.h"
 #include "port/resource/loaders/AudioLoader.h"
+#include <ship/utils/binarytools/endianness.h>
 
 s32 D_80146D80;
 s32 PAD_80146D88[2];

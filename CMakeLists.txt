@@ -4,6 +4,9 @@ cmake_minimum_required(VERSION 3.16.0 FATAL_ERROR)
 project(Starship VERSION 2.0.0 LANGUAGES C CXX ASM)
 include(FetchContent)
 
+include(cmake/starship-cvars.cmake)
+include(cmake/lus-cvars.cmake)
+
 set(NATO_PHONETIC_ALPHABET
   "Alfa" "Bravo" "Charlie" "Delta" "Echo" "Foxtrot" "Golf" "Hotel"
   "India" "Juliett" "Kilo" "Lima" "Mike" "November" "Oscar" "Papa"
@@ -20,6 +23,41 @@ list(GET NATO_PHONETIC_ALPHABET ${PATCH_INDEX} PROJECT_PATCH_WORD)
 set(PROJECT_BUILD_NAME "Barnard ${PROJECT_PATCH_WORD}" CACHE STRING "" FORCE)
 set(PROJECT_TEAM "SonicDcer & Lywx" CACHE STRING "" FORCE)
 
+# Get Git Information
+execute_process(
+    COMMAND git branch --show-current
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    OUTPUT_VARIABLE GIT_BRANCH
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+
+set(CMAKE_PROJECT_GIT_BRANCH "${GIT_BRANCH}" CACHE STRING "Git branch" FORCE)
+
+execute_process(
+    COMMAND git rev-parse HEAD
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    OUTPUT_VARIABLE GIT_COMMIT_HASH
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+
+# Get only the first 7 characters of the hash
+string(SUBSTRING "${GIT_COMMIT_HASH}" 0 7 SHORT_COMMIT_HASH)
+
+set(CMAKE_PROJECT_GIT_COMMIT_HASH "${SHORT_COMMIT_HASH}" CACHE STRING "Git commit hash" FORCE)
+
+execute_process(
+    COMMAND git describe --tags --abbrev=0 --exact-match HEAD
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    OUTPUT_VARIABLE GIT_COMMIT_TAG
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+
+if(NOT GIT_COMMIT_TAG)
+    set(GIT_COMMIT_TAG "" CACHE STRING "Git commit tag" FORCE)
+endif()
+
+set(CMAKE_PROJECT_GIT_COMMIT_TAG "${GIT_COMMIT_TAG}" CACHE STRING "Git commit tag" FORCE)
+
 if(APPLE)
   enable_language(OBJCXX)
 endif()
@@ -30,8 +68,8 @@ set(CMAKE_OSX_DEPLOYMENT_TARGET "10.15" CACHE STRING "Minimum OS X deployment ve
 # Set the C++ standard and enable the MSVC parallel build option
 set(CMAKE_CXX_STANDARD 20 CACHE STRING "The C++ standard to use")
 set(CMAKE_C_STANDARD 11 CACHE STRING "The C standard to use")
-#add_compile_options(-fsanitize=address)
-#add_link_options(-fsanitize=address)
+# add_compile_options(-fsanitize=address)
+# add_link_options(-fsanitize=address)
 
 # Add a custom module path to locate additional CMake modules
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/modules/")
@@ -56,14 +94,19 @@ set(CPP "${CMAKE_C_COMPILER}" "-E" "-P" "-Wno-trigraphs" "-x" "c")
 endif()
 
 if(IOS)
-set(PLATFORM "OS64")
-include(cmake/ios.toolchain.cmake)
-add_compile_definitions(
-    PLATFORM_IOS=1
-)
-set(CMAKE_XCODE_ATTRIBUTE_DEVELOPMENT_TEAM "YOUR_TEAM_ID")
-set(PROJECT_ID "dev.net64.game")
+    set(PLATFORM "OS64")
+    include(cmake/ios.toolchain.cmake)
+    add_compile_definitions(
+        PLATFORM_IOS=1
+    )
+    set(CMAKE_XCODE_ATTRIBUTE_DEVELOPMENT_TEAM "YOUR_TEAM_ID")
+    set(PROJECT_ID "${BUNDLE_ID}")
 endif()
+
+################################################################################
+# Sources
+################################################################################
+configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/src/port/build.c.in ${CMAKE_CURRENT_SOURCE_DIR}/src/port/build.c @ONLY)
 
 ################################################################################
 # Set target arch type if empty. Visual studio solution generator provides it.
@@ -79,6 +122,11 @@ if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
         message(FATAL_ERROR "${CMAKE_VS_PLATFORM_NAME} arch is not supported!")
     endif()
 endif()
+
+################################################################################
+# Use solution folders feature
+################################################################################
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 ################################################################################
 # Global configuration types
@@ -110,7 +158,7 @@ add_compile_definitions(
     NON_MATCHING=1
     NON_EQUIVALENT=1
 	AVOID_UB=1
-    GBI_FLOATS=1
+    # GBI_FLOATS=1
 )
 
 # Find necessary libraries
@@ -165,8 +213,15 @@ list(FILTER ALL_FILES EXCLUDE REGEX "src/sys/sys_timer.c")
 list(FILTER ALL_FILES EXCLUDE REGEX "src/sys/sys_fault.c")
 list(FILTER ALL_FILES EXCLUDE REGEX "src/mods/object_ram.c")
 
+# Create source groups that match the real file directory paths
+foreach(source IN LISTS ALL_FILES)
+    get_filename_component(source_path "${source}" PATH)
+    string(REPLACE "/" "\\" source_path_adjusted "${source_path}")
+    source_group("${source_path_adjusted}" FILES "${source}")
+endforeach()
+
 if (CMAKE_SYSTEM_NAME STREQUAL "iOS")
-    set(IOS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/libultraship/ios)
+    set(IOS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ios)
 
     set(STORYBOARD_FILE ${IOS_DIR}/Launch.storyboard)
     set(IMAGE_FILES ${IOS_DIR}/PoweredBy.png)
@@ -175,7 +230,6 @@ if (CMAKE_SYSTEM_NAME STREQUAL "iOS")
     list(APPEND ALL_FILES ${STORYBOARD_FILE} ${IMAGE_FILES} ${ICON_FILES})
 
     add_executable(${PROJECT_NAME} ${ALL_FILES})
-    set_xcode_property(${PROJECT_NAME} PRODUCT_BUNDLE_IDENTIFIER ${PROJECT_ID} All)
     set_target_properties(
         ${PROJECT_NAME}
         PROPERTIES
@@ -235,36 +289,19 @@ FetchContent_MakeAvailable(dr_libs)
 # Libultraship Integration                                                     #
 #==============================================================================#
 
+# Removes MPQ/OTR support
+set(EXCLUDE_MPQ_SUPPORT TRUE CACHE BOOL "")
+set(ENABLE_EXP_AUTO_CONFIGURE_CONTROLLERS ON CACHE BOOL "")
+add_compile_definitions(EXCLUDE_MPQ_SUPPORT)
+
+if(CMAKE_SYSTEM_NAME STREQUAL "NintendoSwitch")
+    find_package(SDL2)
+endif()
+
 include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}
-  ${CMAKE_CURRENT_SOURCE_DIR}/src
-  ${CMAKE_CURRENT_BINARY_DIR}
   ${CMAKE_CURRENT_SOURCE_DIR}/libultraship/include
   ${CMAKE_CURRENT_SOURCE_DIR}/libultraship/include/libultraship
-  ${CMAKE_CURRENT_SOURCE_DIR}/libultraship/src
-  ${CMAKE_CURRENT_SOURCE_DIR}/libultraship/src/log
-  ${CMAKE_CURRENT_SOURCE_DIR}/libultraship/src/debug
-  ${CMAKE_CURRENT_SOURCE_DIR}/libultraship/src/menu
-  ${CMAKE_CURRENT_SOURCE_DIR}/libultraship/src/utils
-  ${CMAKE_CURRENT_SOURCE_DIR}/libultraship/src/utils/binarytools
-  ${CMAKE_CURRENT_SOURCE_DIR}/libultraship/src/config
-  ${CMAKE_CURRENT_SOURCE_DIR}/libultraship/src/resource
-  ${CMAKE_CURRENT_SOURCE_DIR}/libultraship/src/resource/type
-  ${CMAKE_CURRENT_SOURCE_DIR}/libultraship/src/resource/factory
-  ${CMAKE_CURRENT_SOURCE_DIR}/libultraship/src/audio
-  ${CMAKE_CURRENT_SOURCE_DIR}/libultraship/src/window
-  ${CMAKE_CURRENT_SOURCE_DIR}/libultraship/src/window/gui
-  ${CMAKE_CURRENT_SOURCE_DIR}/libultraship/src/config
-  ${CMAKE_CURRENT_SOURCE_DIR}/libultraship/src/public
-  ${CMAKE_CURRENT_SOURCE_DIR}/libultraship/src/public/libultra
-  ${CMAKE_CURRENT_SOURCE_DIR}/libultraship/src/public/bridge
-  ${CMAKE_CURRENT_SOURCE_DIR}/libultraship/extern
-  ${CMAKE_CURRENT_SOURCE_DIR}/libultraship/extern/tinyxml2
-  ${CMAKE_CURRENT_SOURCE_DIR}/libultraship/libultraship/Lib/
-  ${CMAKE_CURRENT_SOURCE_DIR}/libultraship/libultraship/Lib/libjpeg/include/
-  ${CMAKE_CURRENT_SOURCE_DIR}/libultraship/libultraship/Lib/spdlog/include/
-  ${CMAKE_CURRENT_SOURCE_DIR}/libultraship/src/graphic/Fast3D/U64/PR
-  ${CMAKE_CURRENT_SOURCE_DIR}/libultraship/src/graphic
   ${SDL2_INCLUDE_DIRS}
   ${GLEW_INCLUDE_DIRS}
   ${dr_libs_SOURCE_DIR}
@@ -273,6 +310,13 @@ include_directories(
 add_subdirectory(libultraship ${CMAKE_CURRENT_SOURCE_DIR}/libultraship)
 add_dependencies(${PROJECT_NAME} libultraship)
 target_link_libraries(${PROJECT_NAME} PRIVATE libultraship)
+
+if(${CMAKE_SYSTEM_NAME} STREQUAL "iOS")
+    get_property(IOS_TOOLCHAIN_FILE GLOBAL PROPERTY IOS_TOOLCHAIN_FILE)
+    include(${IOS_TOOLCHAIN_FILE})
+    set(BUNDLE_ID "dev.hm64.soh")
+    set(SIGN_LIBRARY ON)
+endif()
 
 if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
     target_compile_definitions(${PROJECT_NAME} PRIVATE
@@ -377,17 +421,7 @@ if(USE_NETWORKING)
     target_compile_definitions(${PROJECT_NAME} PRIVATE USE_NETWORKING)
 endif()
 
-option(USE_STANDALONE "Build as a standalone executable" OFF)
-option(BUILD_STORMLIB "Build with StormLib support" OFF)
-
-option(BUILD_SM64 "Build with Super Mario 64 support" OFF)
-option(BUILD_MK64 "Build with Mario Kart 64 support" OFF)
-option(BUILD_FZERO "Build with F-Zero X support" OFF)
-add_subdirectory(tools/Torch)
-target_link_libraries(${PROJECT_NAME} PRIVATE torch "${ADDITIONAL_LIBRARY_DEPENDENCIES}")
-
 if(CMAKE_SYSTEM_NAME MATCHES "NintendoSwitch")
-
 nx_generate_nacp(${PROJECT_NAME}.nacp
    NAME "${PROJECT_NAME}"
    AUTHOR "${PROJECT_TEAM}"
@@ -400,81 +434,62 @@ nx_create_nro(${PROJECT_NAME}
 )
 
 INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.nro DESTINATION . COMPONENT ${PROJECT_NAME})
+else()
+option(USE_STANDALONE "Build as a standalone executable" OFF)
+option(BUILD_STORMLIB "Build with StormLib support" OFF)
+
+option(BUILD_SM64 "Build with Super Mario 64 support" OFF)
+option(BUILD_MK64 "Build with Mario Kart 64 support" OFF)
+option(BUILD_SF64 "Build with Star Fox 64 support" ON)
+option(BUILD_FZERO "Build with F-Zero X support" OFF)
+option(BUILD_MARIO_ARTIST "Build with Mario Artist support" OFF)
+add_subdirectory(tools/Torch)
+list(APPEND ADDITIONAL_LIBRARY_DEPENDENCIES torch)
 endif()
 
+target_link_libraries(${PROJECT_NAME} PRIVATE "${ADDITIONAL_LIBRARY_DEPENDENCIES}")
 ################################################################################
 # Compile and link options
 ################################################################################
 if(MSVC)
-  if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
-      target_compile_options(${PROJECT_NAME} PRIVATE
-          $<$<CONFIG:Debug>:
-              /w;
-              /Od;
-              /MTd
-          >
-          $<$<CONFIG:Release>:
-              /Oi;
-              /Gy;
-              /W3;
-              /MT
-          >
-          /permissive-;
-          /MP;
-          ${DEFAULT_CXX_DEBUG_INFORMATION_FORMAT};
-          ${DEFAULT_CXX_EXCEPTION_HANDLING}
-      )
-      target_compile_options(${PROJECT_NAME} PRIVATE  $<$<CONFIG:Debug>:/ZI;>)
-      target_compile_options(${PROJECT_NAME} PRIVATE  $<$<CONFIG:Release>:/Zi;>)
-  elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
-      target_compile_options(${PROJECT_NAME} PRIVATE
-          $<$<CONFIG:Debug>:
-              /MTd
-          >
-          $<$<CONFIG:Release>:
-              /O2;
-              /Oi;
-              /Gy;
-              /MT
-          >
-          /permissive-;
-          /MP;
-          /w;
-          ${DEFAULT_CXX_DEBUG_INFORMATION_FORMAT};
-          ${DEFAULT_CXX_EXCEPTION_HANDLING}
-      )
-  endif()
-  if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
-      target_link_options(${PROJECT_NAME} PRIVATE
-          $<$<CONFIG:Debug>:
-              /INCREMENTAL
-          >
-          $<$<CONFIG:Release>:
-              /OPT:REF;
-              /OPT:ICF;
-              /INCREMENTAL:NO;
-              /FORCE:MULTIPLE
-          >
-          /MANIFEST:NO;
-          /DEBUG;
-          /SUBSYSTEM:WINDOWS
-      )
-  elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
-      target_link_options(${PROJECT_NAME} PRIVATE
-          $<$<CONFIG:Debug>:
-              /STACK:8777216
-          >
-          $<$<CONFIG:Release>:
-              /OPT:REF;
-              /OPT:ICF;
-              /INCREMENTAL:NO;
-              /FORCE:MULTIPLE
-          >
-          /MANIFEST:NO;
-          /DEBUG;
-          /SUBSYSTEM:WINDOWS
-      )
-  endif()
+    target_compile_options(${PROJECT_NAME} PRIVATE
+        $<$<CONFIG:Debug>:
+            /w;
+            /Od
+        >
+        $<$<CONFIG:Release>:
+            /Oi;
+            /Gy;
+            /W3
+        >
+
+        /wd4024 #different types for formal and actual parameter [x]. Usually seen along side 4047.
+        /wd4047 #'uintptr_t' differs in levels of indirection from 'Gfx *'. Usually caused by passing a uintptr_t into a function expecting a pointer-types
+        /wd4090 #'initializing': different 'const' qualifiers. Caused when initializing a non const struct member with a const char*.		
+        /wd4101 # unreferenced local variable. Things like stack pads.
+        /wd4133 #incompatible types. Usually caused by passing a c string into a function that takes a pointer.
+        /wd4244 #conversion from [a] to [b]. Used to warn when copying to smaller type without a cast.
+        /sdl-;
+        /permissive-;
+        /MP;
+        ${DEFAULT_CXX_DEBUG_INFORMATION_FORMAT};
+        ${DEFAULT_CXX_EXCEPTION_HANDLING}
+    )
+  target_compile_options(${PROJECT_NAME} PRIVATE  $<$<CONFIG:Debug>:/ZI;>)
+  target_link_options(${PROJECT_NAME} PRIVATE
+        $<$<CONFIG:Debug>:
+            /INCREMENTAL
+        >
+        $<$<CONFIG:Release>:
+            /OPT:REF;
+            /OPT:ICF;
+            /INCREMENTAL:NO;
+            /FORCE:MULTIPLE
+        >
+        /MANIFEST:NO;
+        /DEBUG;
+        /SUBSYSTEM:WINDOWS
+    )
 
   # Remove /RTC from msvc flags
   foreach (fentry
@@ -621,7 +636,7 @@ add_custom_target(
     ExtractAssets
     DEPENDS TorchExternal
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-    COMMAND ${TORCH_EXECUTABLE} o2r baserom.z64
+    COMMAND ${TORCH_EXECUTABLE} o2r baserom.z64 -u ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}
     COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_SOURCE_DIR}/sf64.o2r" "${CMAKE_BINARY_DIR}/sf64.o2r"
 )
 
@@ -629,7 +644,7 @@ add_custom_target(
     GeneratePortO2R
     DEPENDS TorchExternal
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-    COMMAND ${TORCH_EXECUTABLE} pack port starship.o2r o2r
+    COMMAND ${TORCH_EXECUTABLE} pack port starship.o2r o2r -u ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}
     COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_SOURCE_DIR}/starship.o2r" "${CMAKE_BINARY_DIR}/starship.o2r"
 )
 
@@ -637,6 +652,13 @@ find_program(CURL NAMES curl DOC "Path to the curl program.  Used to download fi
 execute_process(COMMAND ${CURL} -sSfL https://raw.githubusercontent.com/gabomdq/SDL_GameControllerDB/master/gamecontrollerdb.txt -o ${CMAKE_BINARY_DIR}/gamecontrollerdb.txt OUTPUT_VARIABLE RESULT)
 
 if("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux")
+  install(FILES "${CMAKE_BINARY_DIR}/starship.o2r" DESTINATION . COMPONENT ${PROJECT_NAME})
+  install(DIRECTORY "${CMAKE_SOURCE_DIR}/assets/" DESTINATION ./assets COMPONENT ${PROJECT_NAME})
+  install(FILES "${CMAKE_BINARY_DIR}/config.yml" DESTINATION . COMPONENT ${PROJECT_NAME})
+endif()
+
+if ("${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
+  install(FILES $<TARGET_PDB_FILE:${PROJECT_NAME}> DESTINATION ./debug COMPONENT ${PROJECT_NAME})
   install(FILES "${CMAKE_BINARY_DIR}/starship.o2r" DESTINATION . COMPONENT ${PROJECT_NAME})
 endif()
 
@@ -673,7 +695,7 @@ add_custom_target(CreateOSXIcons
 endif()
 
 set_property(TARGET ${PROJECT_NAME} PROPERTY APPIMAGE_DESKTOP_FILE_TERMINAL YES)
-set_property(TARGET ${PROJECT_NAME} PROPERTY APPIMAGE_DESKTOP_FILE "${CMAKE_SOURCE_DIR}/Starship.desktop")
+set_property(TARGET ${PROJECT_NAME} PROPERTY APPIMAGE_DESKTOP_FILE "${CMAKE_SOURCE_DIR}/${PROJECT_NAME}.desktop")
 set_property(TARGET ${PROJECT_NAME} PROPERTY APPIMAGE_ICON_FILE "${CMAKE_SOURCE_DIR}/logo.png")
 endif()
 
