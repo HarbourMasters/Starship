@@ -1,0 +1,10 @@
+{
+    "name": "Demo Mod",
+    "main": "build.gen",
+    "version": "1.0.0",
+    "website": "https://example.com",
+    "description": "A simple demo mod for testing purposes.",
+    "author": "Your Name",
+    "license": "MIT",
+    "code-version": 1
+}

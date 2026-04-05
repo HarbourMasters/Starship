@@ -31,6 +31,7 @@ class GameEngine {
     GameEngine();
     void StartFrame() const;
     static bool GenAssetFile(bool exitOnFail = true);
+    static void LoadScripts();
     static void Create();
     static void HandleAudioThread();
     static void StartAudioFrame();

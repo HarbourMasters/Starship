@@ -44,6 +44,8 @@
 #include "port/mods/PortEnhancements.h"
 #include "port/ui/cvar_prefixes.h"
 #include "port/build.h"
+#include <ship/scripting/ScriptSystem.h>
+#include "port/notification/notification.h"
 
 #include <filesystem>
 
@@ -107,8 +109,9 @@ GameEngine::GameEngine() {
         archiveFiles.push_back(assets_path);
     }
 
-    if (const std::string patches_path = Ship::Context::GetPathRelativeToAppDirectory("mods");
-        !patches_path.empty()) {
+    const std::string patches_path = Ship::Context::GetPathRelativeToAppDirectory("mods");
+
+    if (!patches_path.empty()) {
         if (!std::filesystem::exists(patches_path)) {
             std::filesystem::create_directories(patches_path);
         }
@@ -122,6 +125,13 @@ GameEngine::GameEngine() {
 
                 if (StringHelper::IEquals(ext, ".zip")) {
                     SPDLOG_WARN("Zip files should be only used for development purposes, not for distribution");
+                    archiveFiles.push_back(p.path().generic_string());
+                }
+            }
+
+            for (const auto& p : std::filesystem::directory_iterator(patches_path)) {
+                if (p.is_directory()) {
+                    SPDLOG_INFO("Found mod directory: {}", p.path().generic_string());
                     archiveFiles.push_back(p.path().generic_string());
                 }
             }
@@ -190,7 +200,18 @@ GameEngine::GameEngine() {
     this->context->InitFileDropMgr();
     this->context->InitCrashHandler();
 
-    // this->context->InitScriptSystem(defines, 1);
+    std::unordered_map<std::string, std::string> defines = {
+        { "VERSION_US", "1" },
+        { "ENABLE_RUMBLE", "1" },
+        { "F3DEX_GBI", "1" },
+        { "_LANGUAGE_C", "1" },
+        { "_USE_MATH_DEFINES", "1" },
+        { "NON_MATCHING", "1" },
+        { "NON_EQUIVALENT", "1" },
+        { "AVOID_UB", "1" }
+    };
+
+    this->context->InitScriptSystem(defines, 1);
 
     this->context->InitAudio({ .SampleRate = 32000, .SampleLength = 1024, .DesiredBuffered = 1680 });
 
@@ -310,6 +331,20 @@ bool GameEngine::GenAssetFile(bool exitOnFail) {
     return extractor->GenerateOTR();
 }
 
+void GameEngine::LoadScripts() {
+    auto scripting = Ship::Context::GetInstance()->GetScriptSystem();
+
+    try {
+        scripting->LoadAll();
+        Notification::Emit({ .message = "Loaded all scripts", .remainingTime = 7.0f });
+    } catch (std::exception& e) {
+        SPDLOG_ERROR("Failed to load scripts: {}", e.what());
+        Notification::Emit({ .message = "Failed to load scripts, check log for details",
+                                .messageColor = ImVec4(1.0f, 0.5f, 0.5f, 1.0f),
+                                .remainingTime = 7.0f });
+    }
+}
+
 void GameEngine::Create() {
     const auto instance = Instance = new GameEngine();
     instance->AudioInit();
@@ -320,6 +355,7 @@ void GameEngine::Create() {
     osSetTime(0);
 #endif
     PortEnhancements_Init();
+    LoadScripts();
 }
 
 void GameEngine::Destroy() {

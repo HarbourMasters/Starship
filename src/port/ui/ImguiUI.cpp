@@ -14,6 +14,7 @@
 #include "port/hooks/Events.h"
 #include "port/notification/notification.h"
 #include <ship/utils/StringHelper.h>
+#include <ship/scripting/ScriptSystem.h>
 
 #ifdef __SWITCH__
 #include <port/switch/SwitchImpl.h>
@@ -792,6 +793,11 @@ void DrawDebugMenu() {
         UIWidgets::WindowButton("Gfx Debugger", "gGfxDebuggerEnabled", GameUI::mGfxDebuggerWindow, {
             .tooltip = "Enables the Gfx Debugger window, allowing you to input commands, type help for some examples"
         });
+
+        if (UIWidgets::Button("Reload Scripts")) {
+            Ship::Context::GetInstance()->GetScriptSystem()->UnloadAll();
+            GameEngine::LoadScripts();
+        }
 
         // UIWidgets::CVarCheckbox("Debug mode", "gEnableDebugMode", {
         //     .tooltip = "TBD"
