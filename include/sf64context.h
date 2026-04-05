@@ -6,6 +6,10 @@
 #include "sf64object.h"
 #include "sf64player.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 extern s32 gSceneId;
 extern s32 gSceneSetup;
 extern s32 gClearPlayerInfo;
@@ -350,5 +354,9 @@ extern UNK_TYPE F_8017833C;
 extern UNK_TYPE F_80178344;
 extern UNK_TYPE F_8017834C;
 extern bool gCamera1Skipped;
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
