@@ -59,6 +59,8 @@ src/cn/
 
 properties.h
 mods*/
+/src/port/build.c
+!/src/port/build.h
 !/src/port/mods/
 workspace/*
 !workspace/template
