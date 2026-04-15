@@ -16,6 +16,10 @@
 #define extern_s API_EXTERN
 #endif
 
+#ifdef __cplusplus
+#define this thisx
+#endif
+
 #define SCREEN_WIDTH  320
 #define SCREEN_HEIGHT 240
 // This should be part of a CVar

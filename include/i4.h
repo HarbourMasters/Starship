@@ -28,7 +28,7 @@ void Bolse_DrawDynamicGround(void);
 void Katina_KaSaucerer_Init(Boss *);
 void Katina_UpdateEvents(Actor*);
 void Katina_Init(void);
-void SectorZ_MissileExplode(ActorAllRange* actor, bool shotDown);
+void SectorZ_MissileExplode(ActorAllRange* this, bool shotDown);
 void SectorZ_Missile_Update(Actor*);
 void SectorZ_UpdateEvents(Actor*);
 void SectorZ_LoadLevelObjects(void);

@@ -197,7 +197,6 @@ add_compile_definitions(
     F3DEX_GBI=1
     _LANGUAGE_C
     _USE_MATH_DEFINES
-    CIMGUI_DEFINE_ENUMS_AND_STRUCTS
     NON_MATCHING=1
     NON_EQUIVALENT=1
     AVOID_UB=1
@@ -355,6 +354,38 @@ add_dependencies(${PROJECT_NAME} libultraship)
 target_link_libraries(${PROJECT_NAME} PRIVATE "$<LINK_LIBRARY:WHOLE_ARCHIVE,libultraship>")
 set_target_properties(${PROJECT_NAME} PROPERTIES ENABLE_EXPORTS TRUE)
 set_target_properties(${PROJECT_NAME} PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
+
+#=================== cimgui ===================
+FetchContent_Declare(
+    cimgui
+    GIT_REPOSITORY https://github.com/cimgui/cimgui.git
+    GIT_TAG        1.91.9bdock
+)
+FetchContent_GetProperties(cimgui)
+if(NOT cimgui_POPULATED)
+    FetchContent_Populate(cimgui)
+endif()
+
+add_library(cimgui STATIC ${cimgui_SOURCE_DIR}/cimgui.cpp)
+set_property(TARGET cimgui PROPERTY CXX_STANDARD 11)
+
+target_include_directories(cimgui PUBLIC  ${cimgui_SOURCE_DIR})
+target_include_directories(cimgui PRIVATE ${imgui_SOURCE_DIR} ${imgui_SOURCE_DIR}/backends)
+
+target_compile_definitions(cimgui
+    PRIVATE "IMGUI_USER_CONFIG=\"${cimgui_SOURCE_DIR}/cimconfig.h\""
+    PUBLIC  IMGUI_DISABLE_OBSOLETE_FUNCTIONS=1
+)
+if(WIN32)
+    target_compile_definitions(cimgui PUBLIC
+        "IMGUI_IMPL_API=extern \"C\" __declspec(dllexport)")
+else()
+    target_compile_definitions(cimgui PUBLIC
+        "IMGUI_IMPL_API=extern \"C\"")
+endif()
+
+target_link_libraries(cimgui PUBLIC ImGui)
+target_link_libraries(${PROJECT_NAME} PRIVATE cimgui)
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "iOS")
     get_property(IOS_TOOLCHAIN_FILE GLOBAL PROPERTY IOS_TOOLCHAIN_FILE)
