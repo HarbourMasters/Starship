@@ -705,7 +705,7 @@ elseif (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
         COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:Starship>/.tcc/"
         COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:Starship>/.tcc/lib/"
         COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:Starship>/.tcc/include/"
-        COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_BINARY_DIR}/libultraship/_deps/tinycc-src/include/" "$<TARGET_FILE_DIR:Starship>/.tcc/include/"
+        COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_BINARY_DIR}/_deps/tinycc-src/include/" "$<TARGET_FILE_DIR:Starship>/.tcc/include/"
         COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE:libtcc1>" "$<TARGET_FILE_DIR:Starship>/.tcc/lib/libtcc1.a"
         VERBATIM
     )
