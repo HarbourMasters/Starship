@@ -360,29 +360,23 @@ FetchContent_Declare(
     cimgui
     GIT_REPOSITORY https://github.com/cimgui/cimgui.git
     GIT_TAG        1.91.9bdock
+    GIT_SUBMODULES ""
 )
-FetchContent_GetProperties(cimgui)
-if(NOT cimgui_POPULATED)
-    FetchContent_Populate(cimgui)
-endif()
+FetchContent_Populate(cimgui)
+FetchContent_GetProperties(ImGui)
+file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/_deps")
+file(CREATE_LINK "${imgui_SOURCE_DIR}" "${CMAKE_BINARY_DIR}/_deps/imgui" SYMBOLIC)
 
 add_library(cimgui STATIC ${cimgui_SOURCE_DIR}/cimgui.cpp)
-set_property(TARGET cimgui PROPERTY CXX_STANDARD 11)
 
-target_include_directories(cimgui PUBLIC  ${cimgui_SOURCE_DIR})
-target_include_directories(cimgui PRIVATE ${imgui_SOURCE_DIR} ${imgui_SOURCE_DIR}/backends)
+target_include_directories(cimgui
+    PRIVATE "${CMAKE_BINARY_DIR}/_deps"
+    PUBLIC  "${cimgui_SOURCE_DIR}"
+)
 
 target_compile_definitions(cimgui
-    PRIVATE "IMGUI_USER_CONFIG=\"${cimgui_SOURCE_DIR}/cimconfig.h\""
-    PUBLIC  IMGUI_DISABLE_OBSOLETE_FUNCTIONS=1
+    INTERFACE CIMGUI_DEFINE_ENUMS_AND_STRUCTS
 )
-if(WIN32)
-    target_compile_definitions(cimgui PUBLIC
-        "IMGUI_IMPL_API=extern \"C\" __declspec(dllexport)")
-else()
-    target_compile_definitions(cimgui PUBLIC
-        "IMGUI_IMPL_API=extern \"C\"")
-endif()
 
 target_link_libraries(cimgui PUBLIC ImGui)
 target_link_libraries(${PROJECT_NAME} PRIVATE cimgui)
