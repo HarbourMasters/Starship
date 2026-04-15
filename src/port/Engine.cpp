@@ -69,7 +69,7 @@ GameEngine* GameEngine::Instance;
 
 GameEngine::GameEngine() {
     // Initialize context properties early to recognize paths properly for non-portable builds
-    this->context = Ship::Context::CreateUninitializedInstance("Starship", "ship", "starship.cfg.json");
+    context = Ship::Context::CreateUninitializedInstance("Starship", "ship", "starship.cfg.json");
 
 #ifdef __SWITCH__
     Ship::Switch::Init(Ship::PreInitPhase);
@@ -138,8 +138,8 @@ GameEngine::GameEngine() {
         }
     }
 
-    this->context->InitConfiguration();    // without this line InitConsoleVariables fails at Config::Reload()
-    this->context->InitConsoleVariables(); // without this line the controldeck constructor failes in
+    context->InitConfiguration();    // without this line InitConsoleVariables fails at Config::Reload()
+    context->InitConsoleVariables(); // without this line the controldeck constructor failes in
                                            // ShipDeviceIndexMappingManager::UpdateControllerNamesFromConfig()
 
     auto defaultMappings = std::make_shared<Ship::ControllerDefaultMappings>(
@@ -176,13 +176,13 @@ GameEngine::GameEngine() {
     std::unordered_map<CONTROLLERBUTTONS_T, std::string> names;
     auto controlDeck = std::make_shared<LUS::ControlDeck>();
 
-    this->context->InitControlDeck(controlDeck);
-    this->context->InitResourceManager(archiveFiles, {}, 3);
-    this->context->InitConsole();
+    context->InitControlDeck(controlDeck);
+    context->InitResourceManager(archiveFiles, {}, 3);
+    context->InitConsole();
 
     auto window = std::make_shared<Fast::Fast3dWindow>(std::vector<std::shared_ptr<Ship::GuiWindow>>({}));
-    this->context->InitWindow(window);
-    this->context->InitEventSystem();
+    context->InitWindow(window);
+    context->InitEventSystem();
 
 #if (_DEBUG)
     auto defaultLogLevel = spdlog::level::debug;
@@ -196,9 +196,9 @@ GameEngine::GameEngine() {
     SPDLOG_INFO("Starting Starship version {} (Branch: {} | Commit: {})", (char*)gBuildVersion, (char*)gGitBranch,
                 (char*)gGitCommitHash);
 
-    this->context->InitGfxDebugger();
-    this->context->InitFileDropMgr();
-    this->context->InitCrashHandler();
+    context->InitGfxDebugger();
+    context->InitFileDropMgr();
+    context->InitCrashHandler();
 
     constexpr int codeVersion = 1;
     std::unordered_map<std::string, std::string> defines = {
@@ -234,9 +234,9 @@ GameEngine::GameEngine() {
     context->InitScriptLoader(defines, codeVersion, "-g -Wl", includePaths, libraryPaths, {});
 #endif
 
-    this->context->InitScriptLoader(defines, 1);
+    context->InitScriptLoader(defines, 1);
 
-    this->context->GetResourceManager()->GetArchiveManager()->SetUntrustedArchiveHandler(
+    context->GetResourceManager()->GetArchiveManager()->SetUntrustedArchiveHandler(
         [](Ship::Archive& archive, Ship::KeystoreEntry& key) {
             const auto info = archive.GetManifest();
 
@@ -279,7 +279,7 @@ GameEngine::GameEngine() {
             return buttonid == 1;
         });
 
-    this->context->InitAudio({ .SampleRate = 32000, .SampleLength = 1024, .DesiredBuffered = 1680 });
+    context->InitAudio({ .SampleRate = 32000, .SampleLength = 1024, .DesiredBuffered = 1680 });
 
     auto loader = context->GetResourceManager()->GetResourceLoader();
     loader->RegisterResourceFactory(std::make_shared<SF64::ResourceFactoryBinaryAnimV0>(), RESOURCE_FORMAT_BINARY,
@@ -439,8 +439,8 @@ void GameEngine::Destroy() {
 
 void GameEngine::StartFrame() const {
     using Ship::KbScancode;
-    const int32_t dwScancode = this->context->GetWindow()->GetLastScancode();
-    this->context->GetWindow()->SetLastScancode(-1);
+    const int32_t dwScancode = context->GetWindow()->GetLastScancode();
+    context->GetWindow()->SetLastScancode(-1);
 
     switch (dwScancode) {
         case KbScancode::LUS_KB_TAB: {
