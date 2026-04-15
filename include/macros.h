@@ -4,6 +4,17 @@
 #include "alignment.h"
 #include "libc/math.h"
 #include <math.h>
+#include <ship/Api.h>
+
+#ifdef _WIN32
+#ifndef __DLL__
+#define extern_s API_EXTERN __declspec(dllexport)
+#else
+#define extern_s API_EXTERN __declspec(dllimport)
+#endif
+#else
+#define extern_s API_EXTERN
+#endif
 
 #define SCREEN_WIDTH  320
 #define SCREEN_HEIGHT 240
@@ -43,8 +54,8 @@
 #define RAD_TO_DEG(radians) (((radians) * 180.0f) / M_PI)
 #define DEG_TO_RAD(degrees) (((degrees) / 180.0f) * M_PI)
 
-extern f32 SIN_DEG(f32 angle);
-extern f32 COS_DEG(f32 angle);
+extern_s f32 SIN_DEG(f32 angle);
+extern_s f32 COS_DEG(f32 angle);
 
 #define USEC_TO_CYCLES(n) (((u64)(n)*(OS_CLOCK_RATE/15625LL))/(1000000LL/15625LL))
 #define MSEC_TO_CYCLES(n) (USEC_TO_CYCLES((n) * 1000LL))

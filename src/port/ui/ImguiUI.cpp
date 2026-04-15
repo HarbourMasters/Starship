@@ -14,7 +14,7 @@
 #include "port/hooks/Events.h"
 #include "port/notification/notification.h"
 #include <ship/utils/StringHelper.h>
-#include <ship/scripting/ScriptSystem.h>
+#include <ship/scripting/ScriptLoader.h>
 
 #ifdef __SWITCH__
 #include <port/switch/SwitchImpl.h>
@@ -770,6 +770,19 @@ static const char* logLevels[] = {
     "trace", "debug", "info", "warn", "error", "critical", "off",
 };
 
+void DrawModsMenu() {
+    if (UIWidgets::BeginMenu("Mods")) {
+        if (UIWidgets::Button("Reload Scripts")) {
+            Ship::Context::GetInstance()->GetScriptLoader()->UnloadAll();
+            GameEngine::LoadScripts();
+        }
+
+        CALL_EVENT(EngineRenderMenubarEvent);
+
+        ImGui::EndMenu();
+    }
+}
+
 void DrawDebugMenu() {
     if (UIWidgets::BeginMenu("Developer")) {
         if (UIWidgets::CVarCombobox("Log Level", "gDeveloperTools.LogLevel", logLevels, {
@@ -793,11 +806,6 @@ void DrawDebugMenu() {
         UIWidgets::WindowButton("Gfx Debugger", "gGfxDebuggerEnabled", GameUI::mGfxDebuggerWindow, {
             .tooltip = "Enables the Gfx Debugger window, allowing you to input commands, type help for some examples"
         });
-
-        if (UIWidgets::Button("Reload Scripts")) {
-            Ship::Context::GetInstance()->GetScriptSystem()->UnloadAll();
-            GameEngine::LoadScripts();
-        }
 
         // UIWidgets::CVarCheckbox("Debug mode", "gEnableDebugMode", {
         //     .tooltip = "TBD"
@@ -930,8 +938,6 @@ void GameMenuBar::DrawElement() {
         ImGui::SetCursorPosY(0.0f);
 
         DrawDebugMenu();
-
-        CALL_EVENT(EngineRenderMenubarEvent);
 
         ImGui::EndMenuBar();
     }

@@ -3,13 +3,13 @@
 
 #include "sys.h"
 
+extern_s f32 gDefaultSfxSource[];
+extern_s f32 gDefaultMod;
+extern_s s8 gDefaultReverb;
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-extern f32 gDefaultSfxSource[];
-extern f32 gDefaultMod;
-extern s8 gDefaultReverb;
 
 void Audio_PlaySfx(u32 sfxId, f32* sfxSource, u8 token, f32* freqMod, f32* volMod, s8* reverbAdd);
 void Audio_KillSfxByBank(u8 bankId);

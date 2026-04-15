@@ -76,6 +76,35 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/modules/")
 set(YAML_CPP_STATIC_DEFINE ON)
 add_compile_definitions(YAML_CPP_STATIC_DEFINE)
 
+set(VENV_PATH "${CMAKE_CURRENT_BINARY_DIR}/venv")
+set(VENV_PYTHON "${VENV_PATH}/bin/python")
+
+if(NOT EXISTS "${VENV_PYTHON}")
+    message(STATUS "Creating Python virtual environment...")
+    execute_process(
+        COMMAND python3 -m venv ${VENV_PATH}
+        RESULT_VARIABLE VENV_RET
+    )
+    if(NOT VENV_RET EQUAL 0)
+        message(FATAL_ERROR "Failed to create virtual environment")
+    endif()
+endif()
+
+message(STATUS "Ensuring cryptography is installed in venv...")
+execute_process(
+    COMMAND "${VENV_PYTHON}" -m pip install cryptography
+    RESULT_VARIABLE PIP_RET
+)
+
+if(NOT PIP_RET EQUAL 0)
+    message(FATAL_ERROR "Failed to install cryptography in venv")
+endif()
+
+set(Python3_EXECUTABLE ${VENV_PYTHON})
+find_package(Python3 REQUIRED COMPONENTS Interpreter)
+
+message(STATUS "Using Python from venv: ${Python3_EXECUTABLE}")
+
 if (WIN32)
 include(cmake/automate-vcpkg.cmake)
 set(VCPKG_TRIPLET x64-windows-static)

@@ -78,13 +78,13 @@ bool Save_WriteData(void);
 s32 Save_WriteEeprom(SaveFile*);
 s32 Save_ReadEeprom(SaveFile*);
 
-extern SaveFile gSaveIOBuffer;
-extern SaveFile sPrevSaveData;
-extern Save gDefaultSave;
-extern SaveFile gSaveFile;
-
 #ifdef __cplusplus
 }
 #endif
+
+extern_s SaveFile gSaveIOBuffer;
+extern_s SaveFile sPrevSaveData;
+extern_s Save gDefaultSave;
+extern_s SaveFile gSaveFile;
 
 #endif

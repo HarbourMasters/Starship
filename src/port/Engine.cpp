@@ -44,7 +44,7 @@
 #include "port/mods/PortEnhancements.h"
 #include "port/ui/cvar_prefixes.h"
 #include "port/build.h"
-#include <ship/scripting/ScriptSystem.h>
+#include <ship/scripting/ScriptLoader.h>
 #include "port/notification/notification.h"
 
 #include <filesystem>
@@ -211,7 +211,50 @@ GameEngine::GameEngine() {
         { "AVOID_UB", "1" }
     };
 
-    this->context->InitScriptSystem(defines, 1);
+    this->context->InitScriptLoader(defines, 1);
+
+    this->context->GetResourceManager()->GetArchiveManager()->SetUntrustedArchiveHandler(
+        [](Ship::Archive& archive, Ship::KeystoreEntry& key) {
+            const auto info = archive.GetManifest();
+
+            std::string message = "An archive from an unknown author was detected.\n\n";
+            message += "Mod Name: " + info.Name + "\n";
+            message += "Author: " + info.Author + "\n\n";
+            message += "Do you want to trust this author and load the mod?";
+
+            constexpr SDL_MessageBoxButtonData buttons[] = {
+                { SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 1, "Yes" },
+                { SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT, 0, "No" },
+            };
+
+            const SDL_MessageBoxColorScheme colorScheme = { {
+                /* [SDL_MESSAGEBOX_COLOR_BACKGROUND] */
+                { 35, 35, 35 }, // Dark Grey
+                /* [SDL_MESSAGEBOX_COLOR_TEXT] */
+                { 240, 240, 240 }, // Off-White
+                /* [SDL_MESSAGEBOX_COLOR_BUTTON_BORDER] */
+                { 255, 100, 100 }, // Warning Red/Orange
+                /* [SDL_MESSAGEBOX_COLOR_BUTTON_BACKGROUND] */
+                { 60, 60, 60 }, // Lighter Grey
+                /* [SDL_MESSAGEBOX_COLOR_BUTTON_SELECTED] */
+                { 200, 60, 60 } // Dark Red/Orange when hovered/selected
+            } };
+
+            const SDL_MessageBoxData messageboxdata = { SDL_MESSAGEBOX_WARNING,
+                                                        nullptr,
+                                                        "Security Warning: Untrusted Author",
+                                                        message.c_str(),
+                                                        SDL_arraysize(buttons),
+                                                        buttons,
+                                                        &colorScheme };
+
+            int buttonid;
+            if (SDL_ShowMessageBox(&messageboxdata, &buttonid) < 0) {
+                return false;
+            }
+
+            return buttonid == 1;
+        });
 
     this->context->InitAudio({ .SampleRate = 32000, .SampleLength = 1024, .DesiredBuffered = 1680 });
 
@@ -332,9 +375,10 @@ bool GameEngine::GenAssetFile(bool exitOnFail) {
 }
 
 void GameEngine::LoadScripts() {
-    auto scripting = Ship::Context::GetInstance()->GetScriptSystem();
+    auto scripting = Ship::Context::GetInstance()->GetScriptLoader();
 
     try {
+        scripting->CompileAll();
         scripting->LoadAll();
         Notification::Emit({ .message = "Loaded all scripts", .remainingTime = 7.0f });
     } catch (std::exception& e) {

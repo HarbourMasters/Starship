@@ -8,13 +8,13 @@
 #include "sf64mesg.h"
 
 
-extern Gfx* D_TI_801B7584[];
-extern Gfx* D_TI_801B7608[];
-extern Gfx* D_TI_801B769C[];
-extern f32 aTiGorasHitbox[];
-extern u8 D_MA_801BA1E8;
-extern f32 D_MA_801BE250[40];
-extern s16 D_MA_801BE2F0[9];
+extern_s Gfx* D_TI_801B7584[];
+extern_s Gfx* D_TI_801B7608[];
+extern_s Gfx* D_TI_801B769C[];
+extern_s f32 aTiGorasHitbox[];
+extern_s u8 D_MA_801BA1E8;
+extern_s f32 D_MA_801BE250[40];
+extern_s s16 D_MA_801BE2F0[9];
 
 void Titania_LevelStart(Player*);
 void Titania_LevelComplete(Player*);
