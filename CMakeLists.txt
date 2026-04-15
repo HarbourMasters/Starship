@@ -7,6 +7,42 @@ include(FetchContent)
 include(cmake/starship-cvars.cmake)
 include(cmake/lus-cvars.cmake)
 
+set(VENV_PATH "${CMAKE_CURRENT_BINARY_DIR}/venv")
+
+if(WIN32)
+    set(VENV_PYTHON "${VENV_PATH}/Scripts/python.exe")
+else()
+    set(VENV_PYTHON "${VENV_PATH}/bin/python")
+endif()
+
+if(NOT EXISTS "${VENV_PYTHON}")
+    message(STATUS "Creating Python virtual environment...")
+    find_package(Python3 COMPONENTS Interpreter REQUIRED)
+    execute_process(
+        COMMAND ${Python3_EXECUTABLE} -m venv ${VENV_PATH}
+        RESULT_VARIABLE VENV_RET
+    )
+    if(NOT VENV_RET EQUAL 0)
+        message(FATAL_ERROR "Failed to create virtual environment")
+    endif()
+endif()
+
+message(STATUS "Ensuring cryptography is installed in venv...")
+execute_process(
+    COMMAND "${VENV_PYTHON}" -m pip install cryptography
+    RESULT_VARIABLE PIP_RET
+)
+
+if(NOT PIP_RET EQUAL 0)
+    message(FATAL_ERROR "Failed to install cryptography in venv")
+endif()
+
+set(Python3_EXECUTABLE ${VENV_PYTHON} CACHE FILEPATH "Path to venv python" FORCE)
+set(Python_EXECUTABLE ${VENV_PYTHON} CACHE FILEPATH "Path to venv python" FORCE)
+find_package(Python3 REQUIRED COMPONENTS Interpreter)
+
+message(STATUS "Using Python from venv: ${Python3_EXECUTABLE}")
+
 set(NATO_PHONETIC_ALPHABET
   "Alfa" "Bravo" "Charlie" "Delta" "Echo" "Foxtrot" "Golf" "Hotel"
   "India" "Juliett" "Kilo" "Lima" "Mike" "November" "Oscar" "Papa"
@@ -75,41 +111,6 @@ set(CMAKE_C_STANDARD 11 CACHE STRING "The C standard to use")
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/modules/")
 set(YAML_CPP_STATIC_DEFINE ON)
 add_compile_definitions(YAML_CPP_STATIC_DEFINE)
-
-set(VENV_PATH "${CMAKE_CURRENT_BINARY_DIR}/venv")
-
-if(WIN32)
-    set(VENV_PYTHON "${VENV_PATH}/Scripts/python.exe")
-else()
-    set(VENV_PYTHON "${VENV_PATH}/bin/python")
-endif()
-
-if(NOT EXISTS "${VENV_PYTHON}")
-    message(STATUS "Creating Python virtual environment...")
-    find_package(Python3 COMPONENTS Interpreter REQUIRED)
-    execute_process(
-        COMMAND ${Python3_EXECUTABLE} -m venv ${VENV_PATH}
-        RESULT_VARIABLE VENV_RET
-    )
-    if(NOT VENV_RET EQUAL 0)
-        message(FATAL_ERROR "Failed to create virtual environment")
-    endif()
-endif()
-
-message(STATUS "Ensuring cryptography is installed in venv...")
-execute_process(
-    COMMAND "${VENV_PYTHON}" -m pip install cryptography
-    RESULT_VARIABLE PIP_RET
-)
-
-if(NOT PIP_RET EQUAL 0)
-    message(FATAL_ERROR "Failed to install cryptography in venv")
-endif()
-
-set(Python3_EXECUTABLE ${VENV_PYTHON})
-find_package(Python3 REQUIRED COMPONENTS Interpreter)
-
-message(STATUS "Using Python from venv: ${Python3_EXECUTABLE}")
 
 if (WIN32)
 include(cmake/automate-vcpkg.cmake)
@@ -192,7 +193,7 @@ add_compile_definitions(
     CIMGUI_DEFINE_ENUMS_AND_STRUCTS
     NON_MATCHING=1
     NON_EQUIVALENT=1
-	AVOID_UB=1
+    AVOID_UB=1
     # GBI_FLOATS=1
 )
 
@@ -281,8 +282,8 @@ endif()
 ################################################################################
 if (MSVC)
   if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
-	  get_property(MSVC_RUNTIME_LIBRARY_DEFAULT TARGET ${PROJECT_NAME} PROPERTY MSVC_RUNTIME_LIBRARY)
-	  if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
+      get_property(MSVC_RUNTIME_LIBRARY_DEFAULT TARGET ${PROJECT_NAME} PROPERTY MSVC_RUNTIME_LIBRARY)
+      if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
 		  string(CONCAT "MSVC_RUNTIME_LIBRARY_STR"
 			  $<$<CONFIG:Debug>:
                 MultiThreadedDebug
@@ -292,7 +293,7 @@ if (MSVC)
 			  >
 			  $<$<NOT:$<OR:$<CONFIG:Debug>,$<CONFIG:Release>>>:${MSVC_RUNTIME_LIBRARY_DEFAULT}>
 		  )
-	  elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
+      elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
 		  string(CONCAT "MSVC_RUNTIME_LIBRARY_STR"
 			  $<$<CONFIG:Debug>:
 				  MultiThreadedDebug
@@ -302,8 +303,8 @@ if (MSVC)
 			  >
 			  $<$<NOT:$<OR:$<CONFIG:Debug>,$<CONFIG:Release>>>:${MSVC_RUNTIME_LIBRARY_DEFAULT}>
 		  )
-	  endif()
-	  set_target_properties(${PROJECT_NAME} PROPERTIES MSVC_RUNTIME_LIBRARY ${MSVC_RUNTIME_LIBRARY_STR})
+      endif()
+      set_target_properties(${PROJECT_NAME} PROPERTIES MSVC_RUNTIME_LIBRARY ${MSVC_RUNTIME_LIBRARY_STR})
   endif()
 endif()
 
@@ -316,7 +317,7 @@ include_directories(${SSE2NEON_DIR})
 FetchContent_Declare(
     dr_libs
     GIT_REPOSITORY https://github.com/mackron/dr_libs.git
-	GIT_TAG da35f9d6c7374a95353fd1df1d394d44ab66cf01
+    GIT_TAG da35f9d6c7374a95353fd1df1d394d44ab66cf01
 )
 FetchContent_MakeAvailable(dr_libs)
 
@@ -370,7 +371,7 @@ if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
         "_SILENCE_ALL_MS_EXT_DEPRECATION_WARNINGS;"
     )
     add_compile_definitions(STORMLIB_NO_AUTO_LINK)
-	set(STORMLIB_NO_AUTO_LINK ON)
+    set(STORMLIB_NO_AUTO_LINK ON)
 elseif (CMAKE_SYSTEM_NAME STREQUAL "CafeOS")
 	target_compile_definitions(${PROJECT_NAME} PRIVATE
 		"$<$<CONFIG:Debug>:"
@@ -408,7 +409,7 @@ if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
 
     find_package(Vorbis CONFIG REQUIRED)
     link_libraries(Vorbis::vorbisfile)
-	set(ADDITIONAL_LIBRARY_DEPENDENCIES
+    set(ADDITIONAL_LIBRARY_DEPENDENCIES
         "$<$<BOOL:${USE_NETWORKING}>:SDL2_net::SDL2_net-static>"
         "Ogg::ogg"
         "Vorbis::vorbis"
