@@ -77,12 +77,18 @@ set(YAML_CPP_STATIC_DEFINE ON)
 add_compile_definitions(YAML_CPP_STATIC_DEFINE)
 
 set(VENV_PATH "${CMAKE_CURRENT_BINARY_DIR}/venv")
-set(VENV_PYTHON "${VENV_PATH}/bin/python")
+
+if(WIN32)
+    set(VENV_PYTHON "${VENV_PATH}/Scripts/python.exe")
+else()
+    set(VENV_PYTHON "${VENV_PATH}/bin/python")
+endif()
 
 if(NOT EXISTS "${VENV_PYTHON}")
     message(STATUS "Creating Python virtual environment...")
+    find_package(Python3 COMPONENTS Interpreter REQUIRED)
     execute_process(
-        COMMAND python3 -m venv ${VENV_PATH}
+        COMMAND ${Python3_EXECUTABLE} -m venv ${VENV_PATH}
         RESULT_VARIABLE VENV_RET
     )
     if(NOT VENV_RET EQUAL 0)
