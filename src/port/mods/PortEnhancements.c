@@ -6,7 +6,7 @@
 #include "mods.h"
 #include "hud.h"
 #include "assets/ast_star_wolf.h"
-
+#include "port/api/UIWidgets_Bridge.h"
 #include "port/hooks/Events.h"
 
 bool gBackToMap = false;
@@ -462,6 +462,8 @@ void PortEnhancements_Register() {
     REGISTER_EVENT(DrawBossHealthHUDEvent);
     REGISTER_EVENT(DrawGlobalHUDPreEvent);
     REGISTER_EVENT(DrawGlobalHUDPostEvent);
+    REGISTER_EVENT(EngineRenderMenubarEvent);
+    REGISTER_EVENT(EngineRenderModsEvent);
 
     // Register item events
     REGISTER_EVENT(ItemDropEvent);

@@ -379,7 +379,7 @@ target_compile_definitions(cimgui
 )
 
 target_link_libraries(cimgui PUBLIC ImGui)
-target_link_libraries(${PROJECT_NAME} PRIVATE cimgui)
+target_link_libraries(${PROJECT_NAME} PRIVATE "$<LINK_LIBRARY:WHOLE_ARCHIVE,cimgui>")
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "iOS")
     get_property(IOS_TOOLCHAIN_FILE GLOBAL PROPERTY IOS_TOOLCHAIN_FILE)
