@@ -289,8 +289,8 @@ endif()
 ################################################################################
 if (MSVC)
   if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
-      get_property(MSVC_RUNTIME_LIBRARY_DEFAULT TARGET ${PROJECT_NAME} PROPERTY MSVC_RUNTIME_LIBRARY)
-      if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
+	  get_property(MSVC_RUNTIME_LIBRARY_DEFAULT TARGET ${PROJECT_NAME} PROPERTY MSVC_RUNTIME_LIBRARY)
+	  if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
 		  string(CONCAT "MSVC_RUNTIME_LIBRARY_STR"
 			  $<$<CONFIG:Debug>:
                 MultiThreadedDebug
@@ -300,7 +300,7 @@ if (MSVC)
 			  >
 			  $<$<NOT:$<OR:$<CONFIG:Debug>,$<CONFIG:Release>>>:${MSVC_RUNTIME_LIBRARY_DEFAULT}>
 		  )
-      elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
+	  elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
 		  string(CONCAT "MSVC_RUNTIME_LIBRARY_STR"
 			  $<$<CONFIG:Debug>:
 				  MultiThreadedDebug
@@ -310,8 +310,8 @@ if (MSVC)
 			  >
 			  $<$<NOT:$<OR:$<CONFIG:Debug>,$<CONFIG:Release>>>:${MSVC_RUNTIME_LIBRARY_DEFAULT}>
 		  )
-      endif()
-      set_target_properties(${PROJECT_NAME} PROPERTIES MSVC_RUNTIME_LIBRARY ${MSVC_RUNTIME_LIBRARY_STR})
+	  endif()
+	  set_target_properties(${PROJECT_NAME} PROPERTIES MSVC_RUNTIME_LIBRARY ${MSVC_RUNTIME_LIBRARY_STR})
   endif()
 endif()
 
@@ -352,7 +352,9 @@ include_directories(
 
 add_subdirectory(libultraship ${CMAKE_CURRENT_SOURCE_DIR}/libultraship)
 add_dependencies(${PROJECT_NAME} libultraship)
-target_link_libraries(${PROJECT_NAME} PRIVATE libultraship)
+target_link_libraries(${PROJECT_NAME} PRIVATE "$<LINK_LIBRARY:WHOLE_ARCHIVE,libultraship>")
+set_target_properties(${PROJECT_NAME} PROPERTIES ENABLE_EXPORTS TRUE)
+set_target_properties(${PROJECT_NAME} PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "iOS")
     get_property(IOS_TOOLCHAIN_FILE GLOBAL PROPERTY IOS_TOOLCHAIN_FILE)
@@ -378,7 +380,7 @@ if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
         "_SILENCE_ALL_MS_EXT_DEPRECATION_WARNINGS;"
     )
     add_compile_definitions(STORMLIB_NO_AUTO_LINK)
-    set(STORMLIB_NO_AUTO_LINK ON)
+	set(STORMLIB_NO_AUTO_LINK ON)
 elseif (CMAKE_SYSTEM_NAME STREQUAL "CafeOS")
 	target_compile_definitions(${PROJECT_NAME} PRIVATE
 		"$<$<CONFIG:Debug>:"
@@ -661,6 +663,43 @@ add_custom_command(
 	COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_SOURCE_DIR}/config.yml" "$<TARGET_FILE_DIR:Starship>/config.yml"
 	COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/assets/" "$<TARGET_FILE_DIR:Starship>/assets/"
 )
+
+if (MSVC)
+    add_custom_command(
+        TARGET ${PROJECT_NAME} POST_BUILD
+        COMMENT "Packaging all generated .lib files into Starship.sdk..."
+        COMMAND cmd /c "lib.exe /NOLOGO /OUT:\"$<TARGET_FILE_DIR:Starship>/Starship.sdk\" \"$<TARGET_FILE_DIR:Starship>/*.lib\""
+    )
+    add_custom_command(
+        TARGET ${PROJECT_NAME} POST_BUILD
+        COMMENT "DEBUG: Checking what is inside the tinycc-src lib folder..."
+        COMMAND cmd /c "dir \"${CMAKE_BINARY_DIR}/_deps/tinycc-src/win32/lib/\""
+        VERBATIM
+    )
+    add_custom_command(
+        TARGET ${PROJECT_NAME} POST_BUILD
+        COMMENT "DEBUG: Checking what is inside the tinycc-src lib folder..."
+        COMMAND cmd /c "dir \"${CMAKE_BINARY_DIR}/_deps/tinycc-src/win32/\""
+        VERBATIM
+    )
+    add_custom_command(
+        TARGET ${PROJECT_NAME} POST_BUILD
+        COMMENT "Copying libtcc headers and libs..."
+        COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:Starship>/.tcc/"
+        COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:Starship>/.tcc/lib/"
+        COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:Starship>/.tcc/include/"
+        COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_BINARY_DIR}/_deps/tinycc-src/include/" "$<TARGET_FILE_DIR:Starship>/.tcc/include/"
+        COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_BINARY_DIR}/_deps/tinycc-src/win32/include/" "$<TARGET_FILE_DIR:Starship>/.tcc/include/"
+        COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_BINARY_DIR}/_deps/tinycc-src/win32/lib/libtcc1.a" "$<TARGET_FILE_DIR:Starship>/.tcc/lib/libtcc1.a"
+        VERBATIM
+    )
+    add_custom_command(
+        TARGET ${PROJECT_NAME} POST_BUILD
+        COMMENT "Generating .def file..."
+        COMMAND "${CMAKE_BINARY_DIR}/_deps/tinycc-src/win32/tcc.exe" -impdef "$<TARGET_FILE:Starship>" -o "$<TARGET_FILE_DIR:Starship>/.tcc/lib/Starship.def"
+        VERBATIM
+    )
+endif()
 
 if(NOT CMAKE_SYSTEM_NAME STREQUAL "NintendoSwitch")
 include(ExternalProject)
