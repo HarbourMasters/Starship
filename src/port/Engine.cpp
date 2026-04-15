@@ -200,6 +200,7 @@ GameEngine::GameEngine() {
     this->context->InitFileDropMgr();
     this->context->InitCrashHandler();
 
+    constexpr int codeVersion = 1;
     std::unordered_map<std::string, std::string> defines = {
         { "VERSION_US", "1" },
         { "ENABLE_RUMBLE", "1" },
@@ -210,6 +211,28 @@ GameEngine::GameEngine() {
         { "NON_EQUIVALENT", "1" },
         { "AVOID_UB", "1" }
     };
+
+    std::vector<std::string> includePaths = {
+        Ship::Context::GetPathRelativeToAppDirectory(".tcc/include"),
+        Ship::Context::GetPathRelativeToAppDirectory(".tcc/include/tcc"),
+        Ship::Context::GetPathRelativeToAppDirectory(".tcc/include/winapi"),
+        Ship::Context::GetPathRelativeToAppDirectory(".tcc/include/sys"),
+        Ship::Context::GetPathRelativeToAppDirectory(".tcc/include/sec_api"),
+    };
+
+    std::vector<std::string> libraryPaths = {
+        Ship::Context::GetPathRelativeToAppDirectory(".tcc/lib"),
+    };
+    
+#ifdef _WIN32
+    std::vector<std::string> libraries = {
+        "Ghostship.def",
+    };
+
+    context->InitScriptLoader(defines, codeVersion, "-g -Wl", includePaths, libraryPaths, libraries);
+#else
+    context->InitScriptLoader(defines, codeVersion, "-g -Wl", includePaths, libraryPaths, {});
+#endif
 
     this->context->InitScriptLoader(defines, 1);
 

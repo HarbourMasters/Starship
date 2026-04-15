@@ -68,3 +68,4 @@ workspace/*
 workspace/template/output/*
 !workspace/template/output/manifest.json
 *.pem
+.tcc

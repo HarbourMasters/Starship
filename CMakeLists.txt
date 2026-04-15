@@ -678,11 +678,7 @@ if (MSVC)
         COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:Starship>/.tcc/include/"
         COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_BINARY_DIR}/_deps/tinycc-src/include/" "$<TARGET_FILE_DIR:Starship>/.tcc/include/"
         COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_BINARY_DIR}/_deps/tinycc-src/win32/include/" "$<TARGET_FILE_DIR:Starship>/.tcc/include/"
-        # Search the entire build directory for libtcc1.a and copy the first match
-        COMMAND ${CMAKE_COMMAND}
-            -DSEARCH_DIR="${CMAKE_BINARY_DIR}"
-            -DDEST_DIR="$<TARGET_FILE_DIR:Starship>/.tcc/lib/"
-            -P "${CMAKE_SOURCE_DIR}/cmake/find_and_copy_libtcc1.cmake"
+        COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE:libtcc1>" "$<TARGET_FILE_DIR:Starship>/.tcc/lib/libtcc1$<TARGET_FILE_SUFFIX:libtcc1>"
         VERBATIM
     )
     add_custom_command(
@@ -699,13 +695,18 @@ elseif (CMAKE_SYSTEM_NAME STREQUAL "Linux")
         COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:Starship>/.tcc/lib/"
         COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:Starship>/.tcc/include/"
         COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_BINARY_DIR}/_deps/tinycc-src/include/" "$<TARGET_FILE_DIR:Starship>/.tcc/include/"
-        # On Linux, libtcc1.a is built from source — search the whole build dir for it,
-        # and also fall back to the system-installed path (/usr/lib) if not found.
-        COMMAND ${CMAKE_COMMAND}
-            -DSEARCH_DIR="${CMAKE_BINARY_DIR}"
-            -DSYSTEM_FALLBACK_DIRS="/usr/lib;/usr/local/lib;/usr/lib/x86_64-linux-gnu;/usr/lib/aarch64-linux-gnu"
-            -DDEST_DIR="$<TARGET_FILE_DIR:Starship>/.tcc/lib/"
-            -P "${CMAKE_SOURCE_DIR}/cmake/find_and_copy_libtcc1.cmake"
+        COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE:libtcc1>" "$<TARGET_FILE_DIR:Starship>/.tcc/lib/libtcc1.a"
+        VERBATIM
+    )
+elseif (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+    add_custom_command(
+        TARGET ${PROJECT_NAME} POST_BUILD
+        COMMENT "Copying libtcc headers and libs..."
+        COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:Starship>/.tcc/"
+        COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:Starship>/.tcc/lib/"
+        COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:Starship>/.tcc/include/"
+        COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_BINARY_DIR}/libultraship/_deps/tinycc-src/include/" "$<TARGET_FILE_DIR:Starship>/.tcc/include/"
+        COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE:libtcc1>" "$<TARGET_FILE_DIR:Starship>/.tcc/lib/libtcc1.a"
         VERBATIM
     )
 endif()
