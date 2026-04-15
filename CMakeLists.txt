@@ -672,16 +672,26 @@ if (MSVC)
     )
     add_custom_command(
         TARGET ${PROJECT_NAME} POST_BUILD
-        COMMENT "DEBUG: Checking what is inside the tinycc-src lib folder..."
-        COMMAND cmd /c "dir \"${CMAKE_BINARY_DIR}/_deps/tinycc-src/win32/lib/\""
+        COMMENT "Copying libtcc headers and libs..."
+        COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:Starship>/.tcc/"
+        COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:Starship>/.tcc/lib/"
+        COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:Starship>/.tcc/include/"
+        COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_BINARY_DIR}/_deps/tinycc-src/include/" "$<TARGET_FILE_DIR:Starship>/.tcc/include/"
+        COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_BINARY_DIR}/_deps/tinycc-src/win32/include/" "$<TARGET_FILE_DIR:Starship>/.tcc/include/"
+        # Search the entire build directory for libtcc1.a and copy the first match
+        COMMAND ${CMAKE_COMMAND}
+            -DSEARCH_DIR="${CMAKE_BINARY_DIR}"
+            -DDEST_DIR="$<TARGET_FILE_DIR:Starship>/.tcc/lib/"
+            -P "${CMAKE_SOURCE_DIR}/cmake/find_and_copy_libtcc1.cmake"
         VERBATIM
     )
     add_custom_command(
         TARGET ${PROJECT_NAME} POST_BUILD
-        COMMENT "DEBUG: Checking what is inside the tinycc-src lib folder..."
-        COMMAND cmd /c "dir \"${CMAKE_BINARY_DIR}/_deps/tinycc-src/win32/\""
+        COMMENT "Generating .def file..."
+        COMMAND "${CMAKE_BINARY_DIR}/_deps/tinycc-src/win32/tcc.exe" -impdef "$<TARGET_FILE:Starship>" -o "$<TARGET_FILE_DIR:Starship>/.tcc/lib/Starship.def"
         VERBATIM
     )
+elseif (CMAKE_SYSTEM_NAME STREQUAL "Linux")
     add_custom_command(
         TARGET ${PROJECT_NAME} POST_BUILD
         COMMENT "Copying libtcc headers and libs..."
@@ -689,14 +699,13 @@ if (MSVC)
         COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:Starship>/.tcc/lib/"
         COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:Starship>/.tcc/include/"
         COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_BINARY_DIR}/_deps/tinycc-src/include/" "$<TARGET_FILE_DIR:Starship>/.tcc/include/"
-        COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_BINARY_DIR}/_deps/tinycc-src/win32/include/" "$<TARGET_FILE_DIR:Starship>/.tcc/include/"
-        COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_BINARY_DIR}/_deps/tinycc-src/win32/lib/libtcc1.a" "$<TARGET_FILE_DIR:Starship>/.tcc/lib/libtcc1.a"
-        VERBATIM
-    )
-    add_custom_command(
-        TARGET ${PROJECT_NAME} POST_BUILD
-        COMMENT "Generating .def file..."
-        COMMAND "${CMAKE_BINARY_DIR}/_deps/tinycc-src/win32/tcc.exe" -impdef "$<TARGET_FILE:Starship>" -o "$<TARGET_FILE_DIR:Starship>/.tcc/lib/Starship.def"
+        # On Linux, libtcc1.a is built from source — search the whole build dir for it,
+        # and also fall back to the system-installed path (/usr/lib) if not found.
+        COMMAND ${CMAKE_COMMAND}
+            -DSEARCH_DIR="${CMAKE_BINARY_DIR}"
+            -DSYSTEM_FALLBACK_DIRS="/usr/lib;/usr/local/lib;/usr/lib/x86_64-linux-gnu;/usr/lib/aarch64-linux-gnu"
+            -DDEST_DIR="$<TARGET_FILE_DIR:Starship>/.tcc/lib/"
+            -P "${CMAKE_SOURCE_DIR}/cmake/find_and_copy_libtcc1.cmake"
         VERBATIM
     )
 endif()
@@ -731,7 +740,7 @@ add_custom_target(
 )
 
 find_program(CURL NAMES curl DOC "Path to the curl program.  Used to download files.")
-execute_process(COMMAND ${CURL} -sSfL https://raw.githubusercontent.com/gabomdq/SDL_GameControllerDB/master/gamecontrollerdb.txt -o ${CMAKE_BINARY_DIR}/gamecontrollerdb.txt OUTPUT_VARIABLE RESULT)
+execute_process(COMMAND ${CURL} -sSfL https://raw.githubusercontent.com/gabomdq/SDL_GameControllerDB/master/gamecontrollerdb.txt -o ${CMAKE_BINARY_DIR}/gamecontrollerdb.txt OUTPUT_VARIABLE RESULT ERROR_QUIET)
 
 if("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux")
   install(FILES "${CMAKE_BINARY_DIR}/starship.o2r" DESTINATION . COMPONENT ${PROJECT_NAME})
