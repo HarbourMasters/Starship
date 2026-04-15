@@ -39,6 +39,8 @@ endif()
 
 set(Python3_EXECUTABLE ${VENV_PYTHON} CACHE FILEPATH "Path to venv python" FORCE)
 set(Python_EXECUTABLE ${VENV_PYTHON} CACHE FILEPATH "Path to venv python" FORCE)
+set(Python3_ROOT_DIR "${VENV_PATH}" CACHE PATH "Root dir of venv python" FORCE)
+set(Python3_FIND_VIRTUALENV FIRST CACHE STRING "Prefer venv python" FORCE)
 find_package(Python3 REQUIRED COMPONENTS Interpreter)
 
 message(STATUS "Using Python from venv: ${Python3_EXECUTABLE}")
