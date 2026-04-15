@@ -777,7 +777,7 @@ void DrawModsMenu() {
             GameEngine::LoadScripts();
         }
 
-        CALL_EVENT(EngineRenderMenubarEvent);
+        CALL_EVENT(EngineRenderModsEvent);
 
         ImGui::EndMenu();
     }
@@ -917,28 +917,30 @@ void DrawDebugMenu() {
 
 void GameMenuBar::DrawElement() {
     if(ImGui::BeginMenuBar()){
-        DrawMenuBarIcon();
-
-        DrawGameMenu();
-
-        ImGui::SetCursorPosY(0.0f);
-
-        DrawSettingsMenu();
-
-        ImGui::SetCursorPosY(0.0f);
-
-        DrawEnhancementsMenu();
-
-        ImGui::SetCursorPosY(0.0f);
-
-        DrawCheatsMenu();
-
-        ImGui::SetCursorPosY(0.0f);
-
-        ImGui::SetCursorPosY(0.0f);
-
-        DrawDebugMenu();
-
+        CALL_CANCELLABLE_EVENT(EngineRenderMenubarEvent) {
+            DrawMenuBarIcon();
+    
+            DrawGameMenu();
+    
+            ImGui::SetCursorPosY(0.0f);
+    
+            DrawSettingsMenu();
+    
+            ImGui::SetCursorPosY(0.0f);
+    
+            DrawEnhancementsMenu();
+    
+            ImGui::SetCursorPosY(0.0f);
+    
+            DrawCheatsMenu();
+    
+            ImGui::SetCursorPosY(0.0f);
+    
+            ImGui::SetCursorPosY(0.0f);
+    
+            DrawDebugMenu();
+            DrawModsMenu();
+        }
         ImGui::EndMenuBar();
     }
 }

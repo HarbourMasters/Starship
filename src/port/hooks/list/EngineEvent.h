@@ -30,3 +30,4 @@ DEFINE_EVENT(DrawGlobalHUDPreEvent);
 DEFINE_EVENT(DrawGlobalHUDPostEvent);
 
 DEFINE_EVENT(EngineRenderMenubarEvent);
+DEFINE_EVENT(EngineRenderModsEvent);
