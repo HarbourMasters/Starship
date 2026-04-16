@@ -113,7 +113,7 @@ jobs:
           path: ./build-cmake
       - name: Create Package
         run: |
-          cp -r .tcc build-cmake/.tcc
+          cp -r build-cmake/.tcc .tcc
           (cd build-cmake && cpack)
           mv _packages/*.dmg Starship.dmg
           mv README.md readme.txt
