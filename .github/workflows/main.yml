@@ -73,6 +73,7 @@ jobs:
           mkdir starship-release
           mv build/x64/Release/Starship.exe starship-release/
           mv build/x64/Release/starship.o2r starship-release/
+          mv build/x64/Release/.tcc starship-release/.tcc
           mv config.yml starship-release/
           mv assets starship-release/
           Invoke-WebRequest -Uri "https://raw.githubusercontent.com/mdqinc/SDL_GameControllerDB/master/gamecontrollerdb.txt" -OutFile "starship-release/gamecontrollerdb.txt"
@@ -112,6 +113,7 @@ jobs:
           path: ./build-cmake
       - name: Create Package
         run: |
+          cp -r .tcc build-cmake/.tcc
           (cd build-cmake && cpack)
           mv _packages/*.dmg Starship.dmg
           mv README.md readme.txt
@@ -122,6 +124,7 @@ jobs:
           path: |
             Starship.dmg
             readme.txt
+            .tcc
 
   build-linux:
     needs: generate-port-o2r
@@ -208,6 +211,7 @@ jobs:
           wget -O gamecontrollerdb.txt https://raw.githubusercontent.com/mdqinc/SDL_GameControllerDB/master/gamecontrollerdb.txt
           mv README.md readme.txt
           mv build-cmake/*.appimage starship.appimage
+          cp -r build-cmake/.tcc .tcc
       - name: Upload build
         uses: actions/upload-artifact@v4
         with:
@@ -217,6 +221,7 @@ jobs:
             config.yml
             assets
             gamecontrollerdb.txt
+            .tcc
 
   build-switch:
     needs: generate-port-o2r

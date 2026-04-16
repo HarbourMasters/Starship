@@ -772,11 +772,13 @@ if("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux")
   install(FILES "${CMAKE_BINARY_DIR}/starship.o2r" DESTINATION . COMPONENT ${PROJECT_NAME})
   install(DIRECTORY "${CMAKE_SOURCE_DIR}/assets/" DESTINATION ./assets COMPONENT ${PROJECT_NAME})
   install(FILES "${CMAKE_BINARY_DIR}/config.yml" DESTINATION . COMPONENT ${PROJECT_NAME})
+  install(DIRECTORY "$<TARGET_FILE_DIR:Starship>/.tcc/" DESTINATION ./.tcc COMPONENT ${PROJECT_NAME})
 endif()
 
 if ("${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
   install(FILES $<TARGET_PDB_FILE:${PROJECT_NAME}> DESTINATION ./debug COMPONENT ${PROJECT_NAME})
   install(FILES "${CMAKE_BINARY_DIR}/starship.o2r" DESTINATION . COMPONENT ${PROJECT_NAME})
+  install(DIRECTORY "$<TARGET_FILE_DIR:Starship>/.tcc/" DESTINATION ./.tcc COMPONENT ${PROJECT_NAME})
 endif()
 
 if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
@@ -804,10 +806,13 @@ add_custom_target(CreateOSXIcons
     INSTALL(FILES ${CMAKE_BINARY_DIR}/config.yml DESTINATION ../Resources COMPONENT Starship)
     INSTALL(DIRECTORY ${CMAKE_BINARY_DIR}/assets/ DESTINATION ../Resources/assets COMPONENT Starship)
 
+    INSTALL(FILES "$<TARGET_FILE:libtcc>" DESTINATION ../MacOS COMPONENT Starship)
+    INSTALL(DIRECTORY "$<TARGET_FILE_DIR:Starship>/.tcc/" DESTINATION ../Resources/.tcc COMPONENT Starship)
+
     # Fix bundle to include and relink all dependencies
     install(CODE "
         include(BundleUtilities)
-        fixup_bundle(\"\${CMAKE_INSTALL_PREFIX}/../MacOS/Starship\" \"\" \"${dirs}\")
+        fixup_bundle(\"\${CMAKE_INSTALL_PREFIX}/../MacOS/Starship\" \"\" \"${CMAKE_BINARY_DIR}\")
     ")
 endif()
 
