@@ -15,12 +15,14 @@ void OnFrameUpdate(IEvent* event) {
 
     RCP_SetupDL(&gMasterDisp, SETUPDL_83);
     gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 0, 255);
-    Graphics_DisplayLargeText(20, 20, 1.0f, 1.0f, "MOD HELLO");
+    if(CVarGetInteger("gSayHello", 0)) {
+        Graphics_DisplayLargeText(20, 20, 1.0f, 1.0f, "MOD HELLO");
+    }
 }
 
 void OnUIRender(IEvent* event) {
     if(UIWidgets_BeginMenu("Demo Menu", 10, 10, 200, 100)) {
-        UIWidgets_WrappedText("Test text", 1);
+        UIWidgets_CVarCheckbox("Demo Checkbox", "gSayHello", NULL);
         igEndMenu();
     }
 }
