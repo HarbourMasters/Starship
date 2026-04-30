@@ -115,6 +115,9 @@ static const char* filters[3] = {
 static const char* voiceLangs[] = {
     "Original", /*"Japanese",*/ "Lylat"
 };
+static const char* voiceLangsSPA[] = {
+    "Español", /*"Japanese",*/ "Lylat"
+};
 
 void DrawSpeakerPositionEditor() {
     static ImVec2 lastCanvasPos;
@@ -309,15 +312,26 @@ void DrawSettingsMenu(){
             UIWidgets::Spacer(0);
             if (UIWidgets::BeginMenu("Language")) {
                 ImGui::Dummy(ImVec2(150, 0.0f));
-                if (!GameEngine::HasVersion(SF64_VER_JP) && GameEngine::HasVersion(SF64_VER_EU)){
-                    //UIWidgets::Spacer(0);
-                    if (UIWidgets::CVarCombobox("Voices", "gVoiceLanguage", voiceLangs, 
-                    {
-                        .tooltip = "Changes the language of the voice acting in the game",
-                        .defaultIndex = 0,
-                    })) {
-                        Audio_SetVoiceLanguage(CVarGetInteger("gVoiceLanguage", 0));
-                    };
+                if (!GameEngine::HasVersion(SF64_VER_JP) && (GameEngine::HasVersion(SF64_VER_EU) || GameEngine::HasVersion(SF64_VER_EU_SPA))) {
+                    if (GameEngine::HasVersion(SF64_VER_EU_SPA)) {
+                        //UIWidgets::Spacer(0);
+                        if (UIWidgets::CVarCombobox("Voices", "gVoiceLanguage", voiceLangsSPA, 
+                            {
+                                .tooltip = "Changes the language of the voice acting in the game",
+                                .defaultIndex = 0,
+                            })) {
+                                Audio_SetVoiceLanguage(CVarGetInteger("gVoiceLanguage", 0));
+                            };
+                    } else {
+                        //UIWidgets::Spacer(0);
+                        if (UIWidgets::CVarCombobox("Voices", "gVoiceLanguage", voiceLangs, 
+                            {
+                                .tooltip = "Changes the language of the voice acting in the game",
+                                .defaultIndex = 0,
+                            })) {
+                                Audio_SetVoiceLanguage(CVarGetInteger("gVoiceLanguage", 0));
+                            };
+                    }
                 } else {
                     if (UIWidgets::Button("Install JP/EU Audio")) {
                         if (GameEngine::GenAssetFile(false)){
