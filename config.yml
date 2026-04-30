@@ -120,6 +120,27 @@ d064229a32cc05ab85e2381ce07744eb3ffaf530:
     #   - include/sf64event.h
     #   - include/sf64player.h
 
+# EU SPANISH ROMHACK (For audio extraction)
+e6dad7523ff8f83fad6fbdb59d472b4f76340c2b:
+  name: Star Fox 64 (EU) (SPANISH ROMHACK) (V1.0)
+  path: assets/yaml/eu/rev0
+  config:
+    gbi: F3DEX
+    sort: OFFSET
+    logging: INFO
+    output:
+      binary: ./mods/sf64eu.o2r
+      code: src/eu/assets
+      headers: include/assets
+      modding: src/eu/assets
+    # enums:
+    #   - include/sf64object.h
+    #   - include/sf64level.h
+    #   - include/sf64mesg.h
+    #   - include/sf64audio_external.h
+    #   - include/sf64event.h
+    #   - include/sf64player.h
+
 c8a10699dea52f4bb2e2311935c1376dfb352e7a:
   name: Star Fox 64 (CN) (V1.1) (Compressed)
   preprocess:
