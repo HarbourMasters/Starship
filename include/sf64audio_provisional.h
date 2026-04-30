@@ -1114,143 +1114,142 @@ bool AudioThread_ResetComplete(void);
 void AudioThread_ResetAudioHeap(s32);
 void AudioThread_Init(void);
 
-// extern AudioTable gSampleBankTableInit;
-// extern AudioTable gSeqTableInit;
-// extern AudioTable gSoundFontTableInit;
-// extern u8 gSeqFontTableInit[];
-
-extern AudioSpec gAudioSpecs[];
-extern s16 gSeqTicksPerBeat;
-extern s32 gAudioHeapSize;
-extern s32 gInitPoolSize;
-extern u32 gPermanentPoolSize;
-extern u16 gSequenceMedium;
-extern u16 gSoundFontMedium;
-extern u16 gSampleBankMedium;
-
-extern u64 gAudioContextStart[];
-extern SynthesisReverb gSynthReverbs[4];
-extern u8 sAudioContextPad10[0x10]; // 0x10
-extern u16 D_8014C1B0;
-extern s8 D_8014C1B2;
-extern s8 gNumSynthReverbs;
-extern s16 D_8014C1B4;
-extern NoteSubEu* gNoteSubsEu;
-// 0x4
-extern AudioAllocPool gSessionPool;
-extern AudioAllocPool gInitPool;
-extern AudioAllocPool gMiscPool;
-extern u8 gAudioContextPad20[0x20]; // 0x20
-extern AudioAllocPool gCachePool;
-extern AudioAllocPool gPersistentCommonPool;
-extern AudioAllocPool gTemporaryCommonPool;
-extern AudioCache gSeqCache;
-extern AudioCache gFontCache;
-extern AudioCache gSampleBankCache;
-extern PermanentCache gPermanentPool;
-extern AudioSampleCache gPersistentSampleCache;
-// 0x4
-extern AudioSampleCache gTemporarySampleCache;
-// 0x4
-extern AudioSessionPoolSplit gSessionPoolSplit;
-extern AudioCachePoolSplit gCachePoolSplit;
-extern AudioCommonPoolSplit gPersistentCommonPoolSplit;
-// 0x4
-extern AudioCommonPoolSplit gTemporaryCommonPoolSplit;
-// 0x4
-extern u8 gSampleFontLoadStatus[2048];
-extern u8 gFontLoadStatus[2048];
-extern u8 gSeqLoadStatus[2048];
-extern volatile u8 gAudioResetStep;
-extern u8 gAudioSpecId;
-extern s32 gResetFadeoutFramesLeft;
-extern u8 sAudioContextPad1000[0x1000]; // 0x1000 gap
-extern Note* gNotes;
-// 0x4
-extern SequencePlayer gSeqPlayers[4];
-extern SequenceChannel gSeqChannels[48];
-extern SequenceLayer gSeqLayers[64];
-extern SequenceChannel gSeqChannelNone;
-extern AudioListItem gLayerFreeList;
-extern NotePool gNoteFreeLists;
-extern Sample* gUsedSamples[2048];
-extern AudioPreloadReq gPreloadSampleStack[128];
-extern s32 gNumUsedSamples;
-extern s32 gPreloadSampleStackTop;
-extern AudioAsyncLoad gAsyncLoads[16];
-extern OSMesgQueue gExternalLoadQueue;
-extern OSMesg gExternalLoadMsg[16];
-extern OSMesgQueue gPreloadSampleQueue;
-extern OSMesg gPreloadSampleMsg[16];
-extern OSMesgQueue gCurAudioFrameDmaQueue;
-extern OSMesg gCurAudioFrameDmaMsg[64];
-extern OSIoMesg gCurAudioFrameDmaIoMsgBuf[64];
-extern OSMesgQueue gSyncDmaQueue;
-extern OSMesg gSyncDmaMsg[1];
-// 0x4
-extern OSIoMesg gSyncDmaIoMsg;
-extern SampleDma gSampleDmas[0x100];
-extern u32 gSampleDmaCount;
-extern u32 gSampleDmaListSize1;
-extern s32 D_80155A50;
-// 0x4
-extern u8 gSampleDmaReuseQueue1[0x100];
-extern u8 gSampleDmaReuseQueue2[0x100];
-extern u8 gSampleDmaReuseQueue1RdPos;
-extern u8 gSampleDmaReuseQueue2RdPos;
-extern u8 gSampleDmaReuseQueue1WrPos;
-extern u8 gSampleDmaReuseQueue2WrPos;
-extern AudioTable* gSequenceTable;
-extern AudioTable* gSoundFontTable;
-extern AudioTable* gSampleBankTable;
-extern u8* gSeqFontTable;
-extern s16 gNumSequences;
-extern SoundFont* gSoundFontList;
-// 0x4
-extern AudioBufferParameters gAudioBufferParams;
-extern s32 gSampleDmaBuffSize;
-extern s32 gMaxAudioCmds;
-extern s32 gNumNotes;
-extern s16 gMaxTempo;
-extern s8 gAudioSoundMode;
-extern volatile s32 gAudioTaskCountQ;
-extern s32 gCurAudioFrameDmaCount;
-extern s32 gAudioTaskIndexQ;
-extern s32 gCurAiBuffIndex;
-extern Acmd* gAbiCmdBuffs[2];
-extern Acmd* gCurAbiCmdBuffer;
-extern SPTask* gAudioCurTask;
-extern SPTask gAudioRspTasks[2];
-extern f32 gMaxTempoTvTypeFactors;
-extern s32 gRefreshRate;
-extern s16* gAiBuffers[3];
-extern s16 gAiBuffLengths[3];
-extern u32 gAudioRandom;
-extern u32 D_80155D88;
-extern volatile u32 gAudioResetTimer;
-
-extern u64 gAudioContextEnd[];
-
-// wave_samples
-extern s16* gWaveSamples[];
-
-// note_data
-extern f32 gBendPitchOneOctaveFrequencies[];
-extern f32 gBendPitchTwoSemitonesFrequencies[];
-extern f32 gPitchFrequencies[];
-extern u8 gDefaultShortNoteVelocityTable[];
-extern u8 gDefaultShortNoteGateTimeTable[];
-extern u16 gHaasEffectDelaySizes[64];
-extern EnvelopePoint gDefaultEnvelope[];
-extern NoteSubEu gZeroNoteSub;
-extern NoteSubEu gDefaultNoteSub;
-extern s16 gD_800DD200[];
-extern f32 gHeadsetPanVolume[128];
-extern f32 gStereoPanVolume[128];
-extern f32 gDefaultPanVolume[128];
-
 #ifdef __cplusplus
 }
 #endif
+// extern_s AudioTable gSampleBankTableInit;
+// extern_s AudioTable gSeqTableInit;
+// extern_s AudioTable gSoundFontTableInit;
+// extern_s u8 gSeqFontTableInit[];
+
+extern_s AudioSpec gAudioSpecs[];
+extern_s s16 gSeqTicksPerBeat;
+extern_s s32 gAudioHeapSize;
+extern_s s32 gInitPoolSize;
+extern_s u32 gPermanentPoolSize;
+extern_s u16 gSequenceMedium;
+extern_s u16 gSoundFontMedium;
+extern_s u16 gSampleBankMedium;
+
+extern_s u64 gAudioContextStart[];
+extern_s SynthesisReverb gSynthReverbs[4];
+extern_s u8 sAudioContextPad10[0x10]; // 0x10
+extern_s u16 D_8014C1B0;
+extern_s s8 D_8014C1B2;
+extern_s s8 gNumSynthReverbs;
+extern_s s16 D_8014C1B4;
+extern_s NoteSubEu* gNoteSubsEu;
+// 0x4
+extern_s AudioAllocPool gSessionPool;
+extern_s AudioAllocPool gInitPool;
+extern_s AudioAllocPool gMiscPool;
+extern_s u8 gAudioContextPad20[0x20]; // 0x20
+extern_s AudioAllocPool gCachePool;
+extern_s AudioAllocPool gPersistentCommonPool;
+extern_s AudioAllocPool gTemporaryCommonPool;
+extern_s AudioCache gSeqCache;
+extern_s AudioCache gFontCache;
+extern_s AudioCache gSampleBankCache;
+extern_s PermanentCache gPermanentPool;
+extern_s AudioSampleCache gPersistentSampleCache;
+// 0x4
+extern_s AudioSampleCache gTemporarySampleCache;
+// 0x4
+extern_s AudioSessionPoolSplit gSessionPoolSplit;
+extern_s AudioCachePoolSplit gCachePoolSplit;
+extern_s AudioCommonPoolSplit gPersistentCommonPoolSplit;
+// 0x4
+extern_s AudioCommonPoolSplit gTemporaryCommonPoolSplit;
+// 0x4
+extern_s u8 gSampleFontLoadStatus[2048];
+extern_s u8 gFontLoadStatus[2048];
+extern_s u8 gSeqLoadStatus[2048];
+extern_s volatile u8 gAudioResetStep;
+extern_s u8 gAudioSpecId;
+extern_s s32 gResetFadeoutFramesLeft;
+extern_s u8 sAudioContextPad1000[0x1000]; // 0x1000 gap
+extern_s Note* gNotes;
+// 0x4
+extern_s SequencePlayer gSeqPlayers[4];
+extern_s SequenceChannel gSeqChannels[48];
+extern_s SequenceLayer gSeqLayers[64];
+extern_s SequenceChannel gSeqChannelNone;
+extern_s AudioListItem gLayerFreeList;
+extern_s NotePool gNoteFreeLists;
+extern_s Sample* gUsedSamples[2048];
+extern_s AudioPreloadReq gPreloadSampleStack[128];
+extern_s s32 gNumUsedSamples;
+extern_s s32 gPreloadSampleStackTop;
+extern_s AudioAsyncLoad gAsyncLoads[16];
+extern_s OSMesgQueue gExternalLoadQueue;
+extern_s OSMesg gExternalLoadMsg[16];
+extern_s OSMesgQueue gPreloadSampleQueue;
+extern_s OSMesg gPreloadSampleMsg[16];
+extern_s OSMesgQueue gCurAudioFrameDmaQueue;
+extern_s OSMesg gCurAudioFrameDmaMsg[64];
+extern_s OSIoMesg gCurAudioFrameDmaIoMsgBuf[64];
+extern_s OSMesgQueue gSyncDmaQueue;
+extern_s OSMesg gSyncDmaMsg[1];
+// 0x4
+extern_s OSIoMesg gSyncDmaIoMsg;
+extern_s SampleDma gSampleDmas[0x100];
+extern_s u32 gSampleDmaCount;
+extern_s u32 gSampleDmaListSize1;
+extern_s s32 D_80155A50;
+// 0x4
+extern_s u8 gSampleDmaReuseQueue1[0x100];
+extern_s u8 gSampleDmaReuseQueue2[0x100];
+extern_s u8 gSampleDmaReuseQueue1RdPos;
+extern_s u8 gSampleDmaReuseQueue2RdPos;
+extern_s u8 gSampleDmaReuseQueue1WrPos;
+extern_s u8 gSampleDmaReuseQueue2WrPos;
+extern_s AudioTable* gSequenceTable;
+extern_s AudioTable* gSoundFontTable;
+extern_s AudioTable* gSampleBankTable;
+extern_s u8* gSeqFontTable;
+extern_s s16 gNumSequences;
+extern_s SoundFont* gSoundFontList;
+// 0x4
+extern_s AudioBufferParameters gAudioBufferParams;
+extern_s s32 gSampleDmaBuffSize;
+extern_s s32 gMaxAudioCmds;
+extern_s s32 gNumNotes;
+extern_s s16 gMaxTempo;
+extern_s s8 gAudioSoundMode;
+extern_s volatile s32 gAudioTaskCountQ;
+extern_s s32 gCurAudioFrameDmaCount;
+extern_s s32 gAudioTaskIndexQ;
+extern_s s32 gCurAiBuffIndex;
+extern_s Acmd* gAbiCmdBuffs[2];
+extern_s Acmd* gCurAbiCmdBuffer;
+extern_s SPTask* gAudioCurTask;
+extern_s SPTask gAudioRspTasks[2];
+extern_s f32 gMaxTempoTvTypeFactors;
+extern_s s32 gRefreshRate;
+extern_s s16* gAiBuffers[3];
+extern_s s16 gAiBuffLengths[3];
+extern_s u32 gAudioRandom;
+extern_s u32 D_80155D88;
+extern_s volatile u32 gAudioResetTimer;
+
+extern_s u64 gAudioContextEnd[];
+
+// wave_samples
+extern_s s16* gWaveSamples[];
+
+// note_data
+extern_s f32 gBendPitchOneOctaveFrequencies[];
+extern_s f32 gBendPitchTwoSemitonesFrequencies[];
+extern_s f32 gPitchFrequencies[];
+extern_s u8 gDefaultShortNoteVelocityTable[];
+extern_s u8 gDefaultShortNoteGateTimeTable[];
+extern_s u16 gHaasEffectDelaySizes[64];
+extern_s EnvelopePoint gDefaultEnvelope[];
+extern_s NoteSubEu gZeroNoteSub;
+extern_s NoteSubEu gDefaultNoteSub;
+extern_s s16 gD_800DD200[];
+extern_s f32 gHeadsetPanVolume[128];
+extern_s f32 gStereoPanVolume[128];
+extern_s f32 gDefaultPanVolume[128];
 
 #endif

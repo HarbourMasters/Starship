@@ -1,7 +1,6 @@
 #pragma once
 
 #include "sf64player.h"
-#include "port/hooks/impl/EventSystem.h"
 
 DEFINE_EVENT(PlayerActionBoostEvent, Player* player;);
 

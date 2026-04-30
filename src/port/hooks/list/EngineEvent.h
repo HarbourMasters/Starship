@@ -1,7 +1,6 @@
 #pragma once
 
 #include "global.h"
-#include "port/hooks/impl/EventSystem.h"
 
 DEFINE_EVENT(DisplayPreUpdateEvent);
 DEFINE_EVENT(DisplayPostUpdateEvent);
@@ -29,3 +28,6 @@ DEFINE_EVENT(DrawBossHealthHUDEvent);
 
 DEFINE_EVENT(DrawGlobalHUDPreEvent);
 DEFINE_EVENT(DrawGlobalHUDPostEvent);
+
+DEFINE_EVENT(EngineRenderMenubarEvent);
+DEFINE_EVENT(EngineRenderModsEvent);

@@ -1,10 +1,8 @@
 #include "Engine.h"
 #include "ui/ImguiUI.h"
-#include "StringHelper.h"
+#include <ship/utils/StringHelper.h>
 
 #include "extractor/GameExtractor.h"
-#include "libultraship/src/Context.h"
-#include "libultraship/src/controller/controldevice/controller/mapping/ControllerDefaultMappings.h"
 #include "resource/type/ResourceType.h"
 #include "resource/importers/AnimFactory.h"
 #include "resource/importers/ColPolyFactory.h"
@@ -31,21 +29,28 @@
 #include "resource/importers/audio/SoundFontFactory.h"
 
 #include "port/interpolation/FrameInterpolation.h"
-#include <Fast3D/Fast3dWindow.h>
-#include <DisplayListFactory.h>
-#include <TextureFactory.h>
-#include <MatrixFactory.h>
-#include <BlobFactory.h>
-#include <VertexFactory.h>
+#include <fast/Fast3dWindow.h>
+#include <fast/resource/factory/DisplayListFactory.h>
+#include <fast/resource/factory/TextureFactory.h>
+#include <fast/resource/factory/MatrixFactory.h>
+#include <fast/resource/factory/VertexFactory.h>
+#include <fast/resource/factory/LightFactory.h>
+#include <ship/resource/factory/BlobFactory.h>
+#include <ship/resource/factory/JsonFactory.h>
 #include "audio/GameAudio.h"
+#include "controller/controldeck/ControlDeck.h"
+#include "fast/resource/ResourceType.h"
 #include "port/patches/DisplayListPatch.h"
 #include "port/mods/PortEnhancements.h"
+#include "port/ui/cvar_prefixes.h"
+#include "port/build.h"
+#include <ship/scripting/ScriptLoader.h>
+#include "port/notification/notification.h"
 
-#include <Fast3D/interpreter.h>
 #include <filesystem>
 
 #ifdef __SWITCH__
-#include <port/switch/SwitchImpl.h>
+#include <ship/port/switch/SwitchImpl.h>
 #endif
 
 namespace fs = std::filesystem;
@@ -64,7 +69,7 @@ GameEngine* GameEngine::Instance;
 
 GameEngine::GameEngine() {
     // Initialize context properties early to recognize paths properly for non-portable builds
-    this->context = Ship::Context::CreateUninitializedInstance("Starship", "ship", "starship.cfg.json");
+    context = Ship::Context::CreateUninitializedInstance("Starship", "ship", "starship.cfg.json");
 
 #ifdef __SWITCH__
     Ship::Switch::Init(Ship::PreInitPhase);
@@ -104,8 +109,9 @@ GameEngine::GameEngine() {
         archiveFiles.push_back(assets_path);
     }
 
-    if (const std::string patches_path = Ship::Context::GetPathRelativeToAppDirectory("mods");
-        !patches_path.empty()) {
+    const std::string patches_path = Ship::Context::GetPathRelativeToAppDirectory("mods");
+
+    if (!patches_path.empty()) {
         if (!std::filesystem::exists(patches_path)) {
             std::filesystem::create_directories(patches_path);
         }
@@ -122,11 +128,18 @@ GameEngine::GameEngine() {
                     archiveFiles.push_back(p.path().generic_string());
                 }
             }
+
+            for (const auto& p : std::filesystem::directory_iterator(patches_path)) {
+                if (p.is_directory()) {
+                    SPDLOG_INFO("Found mod directory: {}", p.path().generic_string());
+                    archiveFiles.push_back(p.path().generic_string());
+                }
+            }
         }
     }
 
-    this->context->InitConfiguration();    // without this line InitConsoleVariables fails at Config::Reload()
-    this->context->InitConsoleVariables(); // without this line the controldeck constructor failes in
+    context->InitConfiguration();    // without this line InitConsoleVariables fails at Config::Reload()
+    context->InitConsoleVariables(); // without this line the controldeck constructor failes in
                                            // ShipDeviceIndexMappingManager::UpdateControllerNamesFromConfig()
 
     auto defaultMappings = std::make_shared<Ship::ControllerDefaultMappings>(
@@ -160,21 +173,113 @@ GameEngine::GameEngine() {
         // SDLAxisDirectionToAxisDirectionMappings - use built-in LUS defaults
         std::unordered_map<Ship::StickIndex, std::vector<std::pair<Ship::Direction, std::pair<SDL_GameControllerAxis, int32_t>>>>()
     );
-    auto controlDeck = std::make_shared<LUS::ControlDeck>(std::vector<CONTROLLERBUTTONS_T>(), defaultMappings);
+    std::unordered_map<CONTROLLERBUTTONS_T, std::string> names;
+    auto controlDeck = std::make_shared<LUS::ControlDeck>();
 
-    this->context->InitResourceManager(archiveFiles, {}, 3); // without this line InitWindow fails in Gui::Init()
-    this->context->InitConsole(); // without this line the GuiWindow constructor fails in ConsoleWindow::InitElement()
+    context->InitControlDeck(controlDeck);
+    context->InitResourceManager(archiveFiles, {}, 3);
+    context->InitConsole();
 
     auto window = std::make_shared<Fast::Fast3dWindow>(std::vector<std::shared_ptr<Ship::GuiWindow>>({}));
+    context->InitWindow(window);
+    context->InitEventSystem();
 
-    auto audioChannelsSetting = Ship::Context::GetInstance()->GetConfig()->GetCurrentAudioChannelsSetting();
-    this->context->Init(archiveFiles, {}, 3, { 32000, 1024, 1680, audioChannelsSetting }, window, controlDeck);
-
-#ifndef __SWITCH__
-    Ship::Context::GetInstance()->GetLogger()->set_level(
-        (spdlog::level::level_enum) CVarGetInteger("gDeveloperTools.LogLevel", 1));
-    Ship::Context::GetInstance()->GetLogger()->set_pattern("[%H:%M:%S.%e] [%s:%#] [%l] %v");
+#if (_DEBUG)
+    auto defaultLogLevel = spdlog::level::debug;
+#else
+    auto defaultLogLevel = spdlog::level::info;
 #endif
+    auto logLevel =
+        static_cast<spdlog::level::level_enum>(CVarGetInteger(CVAR_DEVELOPER_TOOLS("LogLevel"), defaultLogLevel));
+    context->InitLogging(logLevel, logLevel);
+    Ship::Context::GetInstance()->GetLogger()->set_pattern("[%H:%M:%S.%e] [%s:%#] [%l] %v");
+    SPDLOG_INFO("Starting Starship version {} (Branch: {} | Commit: {})", (char*)gBuildVersion, (char*)gGitBranch,
+                (char*)gGitCommitHash);
+
+    context->InitGfxDebugger();
+    context->InitFileDropMgr();
+    context->InitCrashHandler();
+
+    constexpr int codeVersion = 1;
+    std::unordered_map<std::string, std::string> defines = {
+        { "VERSION_US", "1" },
+        { "ENABLE_RUMBLE", "1" },
+        { "F3DEX_GBI", "1" },
+        { "_LANGUAGE_C", "1" },
+        { "_USE_MATH_DEFINES", "1" },
+        { "NON_MATCHING", "1" },
+        { "NON_EQUIVALENT", "1" },
+        { "AVOID_UB", "1" }
+    };
+
+    std::vector<std::string> includePaths = {
+        Ship::Context::GetPathRelativeToAppDirectory(".tcc/include"),
+        Ship::Context::GetPathRelativeToAppDirectory(".tcc/include/tcc"),
+        Ship::Context::GetPathRelativeToAppDirectory(".tcc/include/winapi"),
+        Ship::Context::GetPathRelativeToAppDirectory(".tcc/include/sys"),
+        Ship::Context::GetPathRelativeToAppDirectory(".tcc/include/sec_api"),
+    };
+
+    std::vector<std::string> libraryPaths = {
+        Ship::Context::GetPathRelativeToAppDirectory(".tcc/lib"),
+    };
+    
+#ifdef _WIN32
+    std::vector<std::string> libraries = {
+        "Ghostship.def",
+    };
+
+    context->InitScriptLoader(defines, codeVersion, "-g -Wl", includePaths, libraryPaths, libraries);
+#else
+    context->InitScriptLoader(defines, codeVersion, "-g -Wl", includePaths, libraryPaths, {});
+#endif
+
+    context->InitScriptLoader(defines, 1);
+
+    context->GetResourceManager()->GetArchiveManager()->SetUntrustedArchiveHandler(
+        [](Ship::Archive& archive, Ship::KeystoreEntry& key) {
+            const auto info = archive.GetManifest();
+
+            std::string message = "An archive from an unknown author was detected.\n\n";
+            message += "Mod Name: " + info.Name + "\n";
+            message += "Author: " + info.Author + "\n\n";
+            message += "Do you want to trust this author and load the mod?";
+
+            constexpr SDL_MessageBoxButtonData buttons[] = {
+                { SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 1, "Yes" },
+                { SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT, 0, "No" },
+            };
+
+            const SDL_MessageBoxColorScheme colorScheme = { {
+                /* [SDL_MESSAGEBOX_COLOR_BACKGROUND] */
+                { 35, 35, 35 }, // Dark Grey
+                /* [SDL_MESSAGEBOX_COLOR_TEXT] */
+                { 240, 240, 240 }, // Off-White
+                /* [SDL_MESSAGEBOX_COLOR_BUTTON_BORDER] */
+                { 255, 100, 100 }, // Warning Red/Orange
+                /* [SDL_MESSAGEBOX_COLOR_BUTTON_BACKGROUND] */
+                { 60, 60, 60 }, // Lighter Grey
+                /* [SDL_MESSAGEBOX_COLOR_BUTTON_SELECTED] */
+                { 200, 60, 60 } // Dark Red/Orange when hovered/selected
+            } };
+
+            const SDL_MessageBoxData messageboxdata = { SDL_MESSAGEBOX_WARNING,
+                                                        nullptr,
+                                                        "Security Warning: Untrusted Author",
+                                                        message.c_str(),
+                                                        SDL_arraysize(buttons),
+                                                        buttons,
+                                                        &colorScheme };
+
+            int buttonid;
+            if (SDL_ShowMessageBox(&messageboxdata, &buttonid) < 0) {
+                return false;
+            }
+
+            return buttonid == 1;
+        });
+
+    context->InitAudio({ .SampleRate = 32000, .SampleLength = 1024, .DesiredBuffered = 1680 });
 
     auto loader = context->GetResourceManager()->GetResourceLoader();
     loader->RegisterResourceFactory(std::make_shared<SF64::ResourceFactoryBinaryAnimV0>(), RESOURCE_FORMAT_BINARY,
@@ -292,6 +397,21 @@ bool GameEngine::GenAssetFile(bool exitOnFail) {
     return extractor->GenerateOTR();
 }
 
+void GameEngine::LoadScripts() {
+    auto scripting = Ship::Context::GetInstance()->GetScriptLoader();
+
+    try {
+        scripting->CompileAll();
+        scripting->LoadAll();
+        Notification::Emit({ .message = "Loaded all scripts", .remainingTime = 7.0f });
+    } catch (std::exception& e) {
+        SPDLOG_ERROR("Failed to load scripts: {}", e.what());
+        Notification::Emit({ .message = "Failed to load scripts, check log for details",
+                                .messageColor = ImVec4(1.0f, 0.5f, 0.5f, 1.0f),
+                                .remainingTime = 7.0f });
+    }
+}
+
 void GameEngine::Create() {
     const auto instance = Instance = new GameEngine();
     instance->AudioInit();
@@ -302,6 +422,7 @@ void GameEngine::Create() {
     osSetTime(0);
 #endif
     PortEnhancements_Init();
+    LoadScripts();
 }
 
 void GameEngine::Destroy() {
@@ -318,8 +439,8 @@ void GameEngine::Destroy() {
 
 void GameEngine::StartFrame() const {
     using Ship::KbScancode;
-    const int32_t dwScancode = this->context->GetWindow()->GetLastScancode();
-    this->context->GetWindow()->SetLastScancode(-1);
+    const int32_t dwScancode = context->GetWindow()->GetLastScancode();
+    context->GetWindow()->SetLastScancode(-1);
 
     switch (dwScancode) {
         case KbScancode::LUS_KB_TAB: {

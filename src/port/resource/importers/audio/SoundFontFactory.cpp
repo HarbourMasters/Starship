@@ -1,9 +1,9 @@
 #include "SoundFontFactory.h"
 #include "../ResourceUtil.h"
 #include "utils/StringHelper.h"
+#include <tinyxml2.h>
 #include <sf64audio_provisional.h>
 #include "port/resource/type/audio/SoundFont.h"
-#include <tinyxml2.h>
 
 namespace SF64 {
 std::shared_ptr<Ship::IResource> ResourceFactoryBinarySoundFontV0::ReadResource(std::shared_ptr<Ship::File> file,

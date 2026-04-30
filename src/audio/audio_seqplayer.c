@@ -1,6 +1,6 @@
 #include "sys.h"
 #include "sf64audio_provisional.h"
-#include "endianness.h"
+#include <ship/utils/binarytools/endianness.h>
 #include "port/Engine.h"
 
 #define PORTAMENTO_IS_SPECIAL(x) ((x).mode & 0x80)

@@ -7,12 +7,12 @@
 #include "sf64player.h"
 #include "sf64mesg.h"
 
-extern Gfx* D_VE1_8019A008[];
-extern f32 aVe1GolemechHitbox[];
+extern_s Gfx* D_VE1_8019A008[];
+extern_s f32 aVe1GolemechHitbox[];
 
-extern void Corneria_LevelStart(Player*);
-extern void Corneria_LevelComplete1(Player*);
-extern void Venom1_LevelStart(Player*);
+extern_s void Corneria_LevelStart(Player*);
+extern_s void Corneria_LevelComplete1(Player*);
+extern_s void Venom1_LevelStart(Player*);
 
 void Corneria_CoSmoke_Update(Sprite*);
 void Corneria_CoGranga_Update(CoGranga*);

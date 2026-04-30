@@ -7,7 +7,7 @@
 #include "sf64player.h"
 #include "sf64mesg.h"
 
-extern f32 D_AQ_801C4188;
+extern_s f32 D_AQ_801C4188;
 
 void Aquas_CsAqFishGroup_Update(Actor*);
 

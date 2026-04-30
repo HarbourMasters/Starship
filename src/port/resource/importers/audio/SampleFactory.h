@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Resource.h"
-#include "ResourceFactoryXML.h"
-#include "ResourceFactoryBinary.h"
+#include <ship/resource/Resource.h>
+#include <ship/resource/ResourceFactoryXML.h>
+#include <ship/resource/ResourceFactoryBinary.h>
 
 namespace SF64 {
 struct OggFileData {
