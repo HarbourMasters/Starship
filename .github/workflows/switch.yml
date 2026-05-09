@@ -20,7 +20,7 @@ jobs:
           sudo apt-get remove -y cmake
           git -C libultraship remote add nx https://github.com/Net64DD/libultraship.git
           git -C libultraship fetch nx
-          git -C libultraship checkout 2623c6bad4e2e7d2e6191816439f7a3f6e5ccb21
+          git -C libultraship checkout 09dfab5fb2a9a047a6e268dc9db2daad9b2ce5f0
           wget https://github.com/Kitware/CMake/releases/download/v3.28.3/cmake-3.28.3-linux-x86_64.sh -O /tmp/cmake.sh
           sudo sh /tmp/cmake.sh --prefix=/usr/local/ --exclude-subdir
           cmake -H. -Bbuild-switch -GNinja -DCMAKE_TOOLCHAIN_FILE=/opt/devkitpro/cmake/Switch.cmake
