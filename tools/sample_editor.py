@@ -175,8 +175,15 @@ def _res_type(data: bytes) -> int:
     return struct.unpack_from("<I", data, 4)[0]
 
 
+def _res_version(data: bytes) -> int:
+    """Read the version field from an OTR header (bytes 8-11 LE)."""
+    if len(data) < 12:
+        return 0
+    return struct.unpack_from("<I", data, 8)[0]
+
+
 def is_sample_entry(data: bytes) -> bool:
-    if len(data) < BODY_OFFSET + 23:
+    if len(data) < BODY_OFFSET + 8:
         return False
     if data[0:1] == b"<":
         return False
@@ -184,6 +191,28 @@ def is_sample_entry(data: bytes) -> bool:
 
 
 def parse_sample_binary(data: bytes) -> dict | None:
+    """Parse a Sample binary entry.
+
+    Handles two on-disk versions:
+      v1 — full entry: codec, medium, unk, size, loop_hash, book_hash, raw[size]
+      v2 — redirect:   canonical_hash (u64) only; audio data lives in the canonical entry
+    """
+    if len(data) < BODY_OFFSET + 8:
+        return None
+
+    version = _res_version(data)
+
+    if version == 2:
+        canonical_hash = struct.unpack_from("<Q", data, BODY_OFFSET)[0]
+        return dict(
+            is_redirect=True, canonical_hash=canonical_hash, canonical_path=None,
+            codec=0, medium=0, unk=0, size=0,
+            loop_hash=0, book_hash=0, has_loop=False, has_book=False,
+            adpcm_frames=0, pcm_samples=0, raw=b"",
+            loop_data=None, book_data=None,
+        )
+
+    # Version 1: full entry
     if len(data) < BODY_OFFSET + 23:
         return None
     off    = BODY_OFFSET
@@ -208,6 +237,7 @@ def parse_sample_binary(data: bytes) -> dict | None:
         pcm_samples  = 0
 
     return dict(
+        is_redirect=False, canonical_hash=None, canonical_path=None,
         codec=codec, medium=medium, unk=unk, size=size,
         loop_hash=loop_h, book_hash=book_h,
         has_loop=loop_h != 0, has_book=book_h != 0,
@@ -463,12 +493,19 @@ def list_samples(archive_path: str,
                     pitch_roles.setdefault(pair[0], set()).add("drum")
 
     results = []
+    pending_redirects: list[tuple[str, dict]] = []  # (name, partial_info)
+
     for name, data in raw_samples:
         if name_filter and name_filter.lower() not in name.lower():
             continue
         info = parse_sample_binary(data)
         if info is None:
             continue
+
+        if info["is_redirect"]:
+            pending_redirects.append((name, info))
+            continue
+
         if codec_filter >= 0 and info["codec"] != codec_filter:
             continue
         h                 = crc64_hash(name)
@@ -496,6 +533,42 @@ def list_samples(archive_path: str,
 
         results.append(info)
 
+    # Resolve v2 redirects: copy canonical's audio fields, override path-specific ones.
+    canonical_by_hash = {s["hash"]: s for s in results}
+    for name, rinfo in pending_redirects:
+        canonical = canonical_by_hash.get(rinfo["canonical_hash"])
+        if canonical is None:
+            continue
+        if codec_filter >= 0 and canonical["codec"] != codec_filter:
+            continue
+        h              = crc64_hash(name)
+        info           = dict(canonical)
+        info["path"]   = name
+        info["hash"]   = h
+        info["is_redirect"]    = True
+        info["canonical_hash"] = rinfo["canonical_hash"]
+        info["canonical_path"] = canonical["path"]
+        addr, addr_str = _extract_path_addr(name)
+        info["addr"]   = addr
+        info["addr_str"] = addr_str
+        # Instruments/drums now reference the canonical hash directly, so the
+        # redirect's own hash is unreferenced.  Use whatever pitch_roles the
+        # redirect itself has (old archives where instruments still pointed here),
+        # falling back to the canonical's roles for freshly-extracted archives.
+        own_roles = pitch_roles.get(h, set())
+        if own_roles:
+            info["pitch_roles"] = sorted(
+                own_roles,
+                key=lambda r: _PITCH_ORDER.index(r) if r in _PITCH_ORDER else 99)
+        # else: keep canonical's pitch_roles (already copied via dict(canonical))
+        all_t = tuning_lists.get(h, [])
+        if all_t:
+            info["tuning"]      = min(all_t, key=lambda t: abs(t - 1.0))
+            info["all_tunings"] = sorted(set(all_t))
+            info["sample_rate"] = round(info["tuning"] * AUDIO_REF_HZ)
+        # else: keep canonical's tuning (already copied via dict(canonical))
+        results.append(info)
+
     results.sort(key=lambda x: x["path"])
     return results
 
@@ -511,7 +584,10 @@ def read_sample(archive_path: str, asset_path: str) -> tuple[dict | None, bytes 
 
 def read_sample_full(archive_path: str,
                      asset_path: str) -> tuple[dict | None, dict | None, dict | None]:
-    """Read one sample plus its loop, book, and tuning by scanning the same archive."""
+    """Read one sample plus its loop, book, and tuning by scanning the same archive.
+
+    Transparently follows v2 redirect entries to their canonical sample.
+    """
     target_hash = crc64_hash(asset_path)
 
     with zipfile.ZipFile(archive_path, "r") as z:
@@ -521,6 +597,23 @@ def read_sample_full(archive_path: str,
         info = parse_sample_binary(data)
         if info is None:
             return None, None, None
+
+        # Follow redirect: find canonical entry by CRC64 hash
+        if info.get("is_redirect"):
+            canonical_hash = info["canonical_hash"]
+            for name in z.namelist():
+                if crc64_hash(name) == canonical_hash:
+                    cdata = z.read(name)
+                    cinfo = parse_sample_binary(cdata)
+                    if cinfo and not cinfo.get("is_redirect"):
+                        cinfo["canonical_path"] = name
+                        info = cinfo
+                        info["is_redirect"]    = True
+                        info["canonical_hash"] = canonical_hash
+                        info["canonical_path"] = name
+                    break
+            if info.get("is_redirect") and not info.get("canonical_path"):
+                return None, None, None
 
         loop: dict | None = None
         book: dict | None = None
@@ -678,7 +771,7 @@ def _do_replace(archive_path: str, asset_path: str,
 # ─── alias store ──────────────────────────────────────────────────────────────
 
 def _aliases_path(archive_path: str) -> str:
-    return os.path.splitext(archive_path)[0] + ".aliases.json"
+    return os.path.splitext(archive_path)[0] + "_aliases.json"
 
 
 def load_aliases(archive_path: str) -> dict[str, str]:
@@ -1184,6 +1277,7 @@ def cmd_gui(args):
             vsb = ttk.Scrollbar(list_frame, orient="vertical",
                                 command=self._tree.yview)
             self._tree.configure(yscrollcommand=vsb.set)
+            self._tree.tag_configure("redirect", foreground=FG_DIM)
             self._tree.grid(row=0, column=0, sticky="nsew")
             vsb.grid(row=0, column=1, sticky="ns")
 
@@ -1204,16 +1298,17 @@ def cmd_gui(args):
 
             self._detail_labels: dict[str, tk.StringVar] = {}
             detail_rows = [
-                ("Path",     "path"),
-                ("Addr",     "addr"),
-                ("Hash",     "hash"),
-                ("Pitch",    "pitch"),
-                ("Codec",    "codec"),
-                ("Medium",   "medium"),
-                ("Size",     "size"),
-                ("Duration", "duration"),
-                ("Loop",     "loop"),
-                ("Book",     "book"),
+                ("Path",      "path"),
+                ("Canonical", "canonical"),
+                ("Addr",      "addr"),
+                ("Hash",      "hash"),
+                ("Pitch",     "pitch"),
+                ("Codec",     "codec"),
+                ("Medium",    "medium"),
+                ("Size",      "size"),
+                ("Duration",  "duration"),
+                ("Loop",      "loop"),
+                ("Book",      "book"),
             ]
             for i, (label, key) in enumerate(detail_rows, start=1):
                 ttk.Label(detail, text=label, foreground=FG_DIM,
@@ -1341,23 +1436,29 @@ def cmd_gui(args):
         def _refresh_tree(self):
             self._tree.delete(*self._tree.get_children())
             for s in self._filtered:
-                dur  = _fmt_duration(s["pcm_samples"]) if s["pcm_samples"] else "—"
-                fmap = self._batch_mapping.get(s["path"], "")
-                self._tree.insert("", "end", iid=s["path"], values=(
-                    self._aliases.get(s["path"], ""),
-                    s["path"],
-                    s.get("addr_str", ""),
-                    os.path.basename(fmap) if fmap else "",
-                    CODEC_NAMES.get(s["codec"], f"?({s['codec']})"),
-                    _fmt_size(s["size"]),
-                    dur,
-                    "✓" if s["has_loop"] else "",
-                    "✓" if s["has_book"] else "",
-                    _fmt_pitch_short(s.get("pitch_roles", [])),
-                ))
+                dur    = _fmt_duration(s["pcm_samples"]) if s["pcm_samples"] else "—"
+                fmap   = self._batch_mapping.get(s["path"], "")
+                is_redir = s.get("is_redirect", False)
+                codec_cell = ("→ " if is_redir else "") + CODEC_NAMES.get(s["codec"], f"?({s['codec']})")
+                self._tree.insert("", "end", iid=s["path"],
+                    tags=("redirect",) if is_redir else (),
+                    values=(
+                        self._aliases.get(s["path"], ""),
+                        s["path"],
+                        s.get("addr_str", ""),
+                        os.path.basename(fmap) if fmap else "",
+                        codec_cell,
+                        _fmt_size(s["size"]),
+                        dur,
+                        "✓" if s["has_loop"] else "",
+                        "✓" if s["has_book"] else "",
+                        _fmt_pitch_short(s.get("pitch_roles", [])),
+                    ))
             n = len(self._filtered);  total = len(self._samples)
+            redir = sum(1 for s in self._filtered if s.get("is_redirect"))
+            note  = f"  ({redir} redirects)" if redir else ""
             self._status_var.set(
-                f"{n} shown / {total} total" if n != total else f"{n} samples")
+                f"{n} shown / {total} total{note}" if n != total else f"{n} samples{note}")
 
         # ── sort context menu ─────────────────────────────────────────────────
         def _on_heading_menu(self, event):
@@ -1437,13 +1538,17 @@ def cmd_gui(args):
             self._alias_entry.state(["!disabled"])
 
             self._detail_labels["path"].set(s["path"])
+            self._detail_labels["canonical"].set(
+                s.get("canonical_path") or "—")
             self._detail_labels["addr"].set(s.get("addr_str") or "—")
             self._detail_labels["hash"].set(
                 f"0x{s['hash']:016X}" if s.get("hash") is not None else "—")
             self._detail_labels["pitch"].set(
                 _fmt_pitch_long(s.get("pitch_roles", [])))
-            self._detail_labels["codec"].set(
-                CODEC_NAMES.get(s["codec"], f"?({s['codec']})"))
+            codec_str = CODEC_NAMES.get(s["codec"], f"?({s['codec']})")
+            if s.get("is_redirect"):
+                codec_str = "→ " + codec_str
+            self._detail_labels["codec"].set(codec_str)
             self._detail_labels["medium"].set(
                 f"{MEDIUM_NAMES.get(s['medium'], '?')}  ({s['medium']})")
             self._detail_labels["size"].set(f"{s['size']:,} bytes")
