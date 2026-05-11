@@ -713,7 +713,14 @@ def _probe_audio(path: str) -> tuple[int, int]:
     raise RuntimeError("Cannot detect audio metadata — install ffprobe.")
 
 
-def _make_xml(audio_arch_path: str, fmt: str, tuning: float, unk: int) -> str:
+def _make_xml(audio_arch_path: str, fmt: str, tuning: float, unk: int,
+              loop: dict | None = None) -> str:
+    """Build the XML descriptor for a custom-format sample replacement.
+
+    loop — optional dict with keys start, end, count (already scaled to the
+            new file's sample rate).  Omit predictor states: they are ADPCM-only
+            and ignored by the engine for S16 PCM replacements.
+    """
     root = ET.Element("Sample")
     root.set("Version",      "0")
     root.set("Codec",        "S16")
@@ -724,6 +731,11 @@ def _make_xml(audio_arch_path: str, fmt: str, tuning: float, unk: int) -> str:
     root.set("Relocated",    "0")
     root.set("Path",         audio_arch_path)
     root.set("CustomFormat", fmt)
+    if loop is not None:
+        lel = ET.SubElement(root, "ADPCMLoop")
+        lel.set("Start", str(loop["start"]))
+        lel.set("End",   str(loop["end"]))
+        lel.set("Count", str(loop["count"]))
     raw = ET.tostring(root, encoding="unicode")
     dom = xml.dom.minidom.parseString(raw)
     return dom.toprettyxml(indent="  ").replace('<?xml version="1.0" ?>\n', "")
@@ -744,16 +756,33 @@ def _upsert_mod_o2r(mod_path: str,
             z.writestr(name, data)
 
 
+def _scale_loop(loop_data: dict, orig_rate: int, new_rate: int) -> dict | None:
+    """Return loop points scaled from orig_rate to new_rate, or None if not looping."""
+    if loop_data is None:
+        return None
+    scale = new_rate / orig_rate
+    return dict(
+        start=round(loop_data["start"] * scale),
+        end=round(loop_data["end"]   * scale),
+        count=loop_data["count"],
+    )
+
+
 def _do_replace(archive_path: str, asset_path: str,
                 audio_path: str, out_dir: str) -> dict:
     sample_rate, channels = _probe_audio(audio_path)
-    tuning  = (sample_rate * channels) / AUDIO_REF_HZ
-    info, _ = read_sample(archive_path, asset_path)
-    unk     = info["unk"] if info else 0
+    tuning = (sample_rate * channels) / AUDIO_REF_HZ
+
+    # Use full scan to get loop data and original sample rate.
+    info, loop, _book = read_sample_full(archive_path, asset_path)
+    unk      = info["unk"]  if info else 0
+    orig_rate = _effective_rate(info) if info else MIXER_RATE_HZ
+
+    scaled_loop = _scale_loop(loop, orig_rate, sample_rate) if loop else None
 
     ext         = os.path.splitext(audio_path)[1].lower().lstrip(".")
     audio_arch  = asset_path + "." + ext
-    xml_content = _make_xml(audio_arch, ext, tuning, unk)
+    xml_content = _make_xml(audio_arch, ext, tuning, unk, loop=scaled_loop)
 
     mod_name = os.path.splitext(os.path.basename(archive_path))[0]
     mod_o2r  = os.path.join(out_dir, f"{mod_name}_audio_replacements.o2r")
@@ -765,7 +794,8 @@ def _do_replace(archive_path: str, asset_path: str,
                     asset_path,  xml_content.encode(),
                     audio_arch,  audio_bytes)
     return dict(sample_rate=sample_rate, channels=channels,
-                tuning=tuning, mod_o2r=mod_o2r)
+                tuning=tuning, mod_o2r=mod_o2r,
+                loop=scaled_loop, orig_rate=orig_rate)
 
 
 # ─── alias store ──────────────────────────────────────────────────────────────
@@ -1001,6 +1031,13 @@ def cmd_replace(args):
     os.makedirs(out_dir, exist_ok=True)
     r = _do_replace(args.archive, args.asset, args.input, out_dir)
     print(f"Sample rate : {r['sample_rate']} Hz | Channels: {r['channels']} | Tuning: {r['tuning']:.4f}")
+    if r.get("loop"):
+        lp = r["loop"]
+        cnt = "∞" if lp["count"] == LOOP_INFINITE else str(lp["count"])
+        print(f"Loop        : start={lp['start']}  end={lp['end']}  count={cnt}"
+              f"  (scaled from {r['orig_rate']} Hz → {r['sample_rate']} Hz)")
+    else:
+        print("Loop        : none")
     print(f"Mod archive : {r['mod_o2r']}")
     print(f"Place {os.path.basename(r['mod_o2r'])} in the mods/ folder to apply.")
 
