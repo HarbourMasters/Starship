@@ -44,6 +44,26 @@ std::shared_ptr<Ship::IResource> ResourceFactoryBinarySampleV1::ReadResource(std
     return sample;
 }
 
+std::shared_ptr<Ship::IResource> ResourceFactoryBinarySampleV2::ReadResource(std::shared_ptr<Ship::File> file,
+                                                                             std::shared_ptr<Ship::ResourceInitData> initData) {
+    if (!FileHasValidFormatAndReader(file, initData)) {
+        return nullptr;
+    }
+
+    auto reader = std::get<std::shared_ptr<Ship::BinaryReader>>(file->Reader);
+    uint64_t canonical_hash = reader->ReadUInt64();
+
+    SampleData* canonical = LoadChild<SampleData*>(canonical_hash);
+    if (canonical == nullptr) {
+        return nullptr;
+    }
+
+    auto sample = std::make_shared<Sample>(initData);
+    sample->mSample = *canonical;
+    sample->mSample.isRelocated = 1;
+    return sample;
+}
+
 static size_t VorbisReadCallback(void* out, size_t size, size_t elems, void* src) {
     OggFileData* data = static_cast<OggFileData*>(src);
     size_t toRead = size * elems;
@@ -111,6 +131,9 @@ static void Mp3DecoderWorker(std::shared_ptr<Sample> sample, std::shared_ptr<Shi
     sample->mSample.size = numFrames * channels * 2;
     sample->mSample.sampleAddr = new uint8_t[sample->mSample.size];
     drmp3_read_pcm_frames_s16(&mp3, numFrames, (int16_t*)sample->mSample.sampleAddr);
+    sample->mSample.codec = CODEC_S16;
+    sample->mSample.medium = MEDIUM_RAM;
+    sample->mSample.isRelocated = 1;
 }
 
 static void OggDecoderWorker(std::shared_ptr<Sample> sample, std::shared_ptr<Ship::File> sampleFile) {
@@ -134,6 +157,7 @@ static void OggDecoderWorker(std::shared_ptr<Sample> sample, std::shared_ptr<Shi
     int bitStream = 0;
     size_t toRead = numFrames * numChannels * 2;
     sample->mSample.sampleAddr = new uint8_t[toRead];
+    sample->mSample.size = toRead;
     sample->mSample.tuning = (float)(sampleRate * numChannels) / 32000.0f;
     do {
         read = ov_read(&vf, dataBuff, 4096, 0, 2, 1, &bitStream);
@@ -141,6 +165,9 @@ static void OggDecoderWorker(std::shared_ptr<Sample> sample, std::shared_ptr<Shi
         pos += read;
     } while (read != 0);
     ov_clear(&vf);
+    sample->mSample.codec = CODEC_S16;
+    sample->mSample.medium = MEDIUM_RAM;
+    sample->mSample.isRelocated = 1;
 }
 
 std::shared_ptr<Ship::IResource> ResourceFactoryXMLSampleV0::ReadResource(std::shared_ptr<Ship::File> file,
@@ -195,6 +222,8 @@ std::shared_ptr<Ship::IResource> ResourceFactoryXMLSampleV0::ReadResource(std::s
     if (customFormatStr != nullptr) {
         // Compressed files can take a really long time to decode (~250ms per).
         // This worked when we tested it (09/04/2024) (Works on my machine)
+        sample->mSample.codec = CODEC_S16;
+        sample->mSample.medium = MEDIUM_RAM;
         if (strcmp(customFormatStr, "wav") == 0) {
             drwav wav;
             drwav_uint64 numFrames;
@@ -209,6 +238,7 @@ std::shared_ptr<Ship::IResource> ResourceFactoryXMLSampleV0::ReadResource(std::s
             sample->mSample.sampleAddr = new uint8_t[sample->mSample.size];
 
             drwav_read_pcm_frames_s16(&wav, numFrames, (int16_t*)sample->mSample.sampleAddr);
+            sample->mSample.isRelocated = 1;
             return sample;
         } else if (strcmp(customFormatStr, "ogg") == 0) {
             std::thread fileDecoderThread = std::thread(OggDecoderWorker, sample, sampleFile);

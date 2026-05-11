@@ -17,6 +17,14 @@ class ResourceFactoryBinarySampleV1 : public Ship::ResourceFactoryBinary {
                                                   std::shared_ptr<Ship::ResourceInitData> initData) override;
 };
 
+// V2: redirect entry — shares audio data from a canonical V1 sample identified
+// by its CRC64 hash. The body is a single uint64 (canonical_hash); no raw bytes.
+class ResourceFactoryBinarySampleV2 : public Ship::ResourceFactoryBinary {
+  public:
+    std::shared_ptr<Ship::IResource> ReadResource(std::shared_ptr<Ship::File> file,
+                                                  std::shared_ptr<Ship::ResourceInitData> initData) override;
+};
+
 class ResourceFactoryXMLSampleV0 : public Ship::ResourceFactoryXML {
   public:
     std::shared_ptr<Ship::IResource> ReadResource(std::shared_ptr<Ship::File> file,
