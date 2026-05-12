@@ -29,3 +29,7851 @@ audio_soundfont_table:
 
 audio_seq_font_table:
   { type: ARRAY, count: 283, array_type: u8, offset: 0xC48B0, symbol: gSeqFontTableInit }
+
+a6_caiman_caiman_here:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x98A0
+  parent: 0x96A0
+  sampleBankId: 2
+  symbol: a6_caiman_caiman_here
+
+a6_caiman_do_you_copy:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x9970
+  parent: 0x96A0
+  sampleBankId: 2
+  symbol: a6_caiman_do_you_copy
+
+a6_caiman_emergency_maneuvers:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x9990
+  parent: 0x96A0
+  sampleBankId: 2
+  symbol: a6_caiman_emergency_maneuvers
+
+a6_caiman_no_problems:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x9950
+  parent: 0x96A0
+  sampleBankId: 2
+  symbol: a6_caiman_no_problems
+
+a6_caiman_not_yet_sir:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x9B30
+  parent: 0x96A0
+  sampleBankId: 2
+  symbol: a6_caiman_not_yet_sir
+
+a6_caiman_the_last_line_has_been_breached:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x9EB0
+  parent: 0x96A0
+  sampleBankId: 2
+  symbol: a6_caiman_the_last_line_has_been_breached
+
+a6_caiman_theyre_through_the_second_line:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x9E10
+  parent: 0x96A0
+  sampleBankId: 2
+  symbol: a6_caiman_theyre_through_the_second_line
+
+a6_caiman_theyve_broken_through_the_first_line:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x9DF0
+  parent: 0x96A0
+  sampleBankId: 2
+  symbol: a6_caiman_theyve_broken_through_the_first_line
+
+a6_commander_are_crazy:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x9E50
+  parent: 0x96A0
+  sampleBankId: 2
+  symbol: a6_commander_are_crazy
+
+a6_commander_dang:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x9E70
+  parent: 0x96A0
+  sampleBankId: 2
+  symbol: a6_commander_dang
+
+a6_commander_deploy_it_now:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x9E90
+  parent: 0x96A0
+  sampleBankId: 2
+  symbol: a6_commander_deploy_it_now
+
+a6_commander_did_we_get_em:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x9B10
+  parent: 0x96A0
+  sampleBankId: 2
+  symbol: a6_commander_did_we_get_em
+
+a6_commander_dont_let_em_through:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x9DD0
+  parent: 0x96A0
+  sampleBankId: 2
+  symbol: a6_commander_dont_let_em_through
+
+a6_commander_fire:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x9D90
+  parent: 0x96A0
+  sampleBankId: 2
+  symbol: a6_commander_fire
+
+a6_commander_these_guys:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x9E30
+  parent: 0x96A0
+  sampleBankId: 2
+  symbol: a6_commander_these_guys
+
+a6_falco_am_i_getting_slow:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x9C30
+  parent: 0x96A0
+  sampleBankId: 2
+  symbol: a6_falco_am_i_getting_slow
+
+a6_falco_and_let_me_shoot_you:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x9A90
+  parent: 0x96A0
+  sampleBankId: 2
+  symbol: a6_falco_and_let_me_shoot_you
+
+a6_falco_bogey_behind_me:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x9C10
+  parent: 0x96A0
+  sampleBankId: 2
+  symbol: a6_falco_bogey_behind_me
+
+a6_falco_crud:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x9BD0
+  parent: 0x96A0
+  sampleBankId: 2
+  symbol: a6_falco_crud
+
+a6_falco_game_over_pal:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x99F0
+  parent: 0x96A0
+  sampleBankId: 2
+  symbol: a6_falco_game_over_pal
+
+a6_falco_hold_still:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x9A70
+  parent: 0x96A0
+  sampleBankId: 2
+  symbol: a6_falco_hold_still
+
+a6_falco_scream:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x14650
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: a6_falco_scream
+
+a6_falco_too_late:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x99B0
+  parent: 0x96A0
+  sampleBankId: 2
+  symbol: a6_falco_too_late
+
+a6_falco_we_were_so_close_to_venom:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x9BF0
+  parent: 0x96A0
+  sampleBankId: 2
+  symbol: a6_falco_we_were_so_close_to_venom
+
+a6_fox_entering_venom_air_defence_zone:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x9A10
+  parent: 0x96A0
+  sampleBankId: 2
+  symbol: a6_fox_entering_venom_air_defence_zone
+
+a6_fox_hold_on:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x9D50
+  parent: 0x96A0
+  sampleBankId: 2
+  symbol: a6_fox_hold_on
+
+a6_fox_were_entering_venom_air_space:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x9D70
+  parent: 0x96A0
+  sampleBankId: 2
+  symbol: a6_fox_were_entering_venom_air_space
+
+a6_peppy_destroy_all_3_energy_balls:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x9CB0
+  parent: 0x96A0
+  sampleBankId: 2
+  symbol: a6_peppy_destroy_all_3_energy_balls
+
+a6_peppy_scream:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x14690
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: a6_peppy_scream
+
+a6_peppy_shoot_em_down_were_being_marked:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x9AF0
+  parent: 0x96A0
+  sampleBankId: 2
+  symbol: a6_peppy_shoot_em_down_were_being_marked
+
+a6_peppy_shoot_the_tentacles_to_open_the_core:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x9C90
+  parent: 0x96A0
+  sampleBankId: 2
+  symbol: a6_peppy_shoot_the_tentacles_to_open_the_core
+
+a6_peppy_the_shield_is_gone_shoot_the_core:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x9D30
+  parent: 0x96A0
+  sampleBankId: 2
+  symbol: a6_peppy_the_shield_is_gone_shoot_the_core
+
+a6_rob_great_fox_will_cover_you:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x9B50
+  parent: 0x96A0
+  sampleBankId: 2
+  symbol: a6_rob_great_fox_will_cover_you
+
+a6_slippy_different:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x9BB0
+  parent: 0x96A0
+  sampleBankId: 2
+  symbol: a6_slippy_different
+
+a6_slippy_enemy_ahead:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x9B70
+  parent: 0x96A0
+  sampleBankId: 2
+  symbol: a6_slippy_enemy_ahead
+
+a6_slippy_incoming_enemy_missile:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x9AD0
+  parent: 0x96A0
+  sampleBankId: 2
+  symbol: a6_slippy_incoming_enemy_missile
+
+a6_slippy_scream:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x14670
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: a6_slippy_scream
+
+a6_slippy_space_mines_ahead:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x9A50
+  parent: 0x96A0
+  sampleBankId: 2
+  symbol: a6_slippy_space_mines_ahead
+
+a6_slippy_this_ones:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x9B90
+  parent: 0x96A0
+  sampleBankId: 2
+  symbol: a6_slippy_this_ones
+
+a6_slippy_venoms_right_there:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x9C70
+  parent: 0x96A0
+  sampleBankId: 2
+  symbol: a6_slippy_venoms_right_there
+
+aq_falco_ill_take_the_sky_any_day:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xF110
+  parent: 0xEBA0
+  sampleBankId: 2
+  symbol: aq_falco_ill_take_the_sky_any_day
+
+aq_falco_shoot_a_torpedo_to_help_you_see:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xF170
+  parent: 0xEBA0
+  sampleBankId: 2
+  symbol: aq_falco_shoot_a_torpedo_to_help_you_see
+
+aq_falco_thing_will_never_hold_together:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xEF30
+  parent: 0xEBA0
+  sampleBankId: 2
+  symbol: aq_falco_thing_will_never_hold_together
+
+aq_falco_this:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xEF10
+  parent: 0xEBA0
+  sampleBankId: 2
+  symbol: aq_falco_this
+
+aq_fox_blue_marine_came_through:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xF270
+  parent: 0xEBA0
+  sampleBankId: 2
+  symbol: aq_fox_blue_marine_came_through
+
+aq_fox_i_found_the_bio_weapon:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xEFD0
+  parent: 0xEBA0
+  sampleBankId: 2
+  symbol: aq_fox_i_found_the_bio_weapon
+
+aq_fox_im_gonna_check_out_the_bio_weapon:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xEDA0
+  parent: 0xEBA0
+  sampleBankId: 2
+  symbol: aq_fox_im_gonna_check_out_the_bio_weapon
+
+aq_fox_im_sending_the_data_to_you_guys:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xEE50
+  parent: 0xEBA0
+  sampleBankId: 2
+  symbol: aq_fox_im_sending_the_data_to_you_guys
+
+aq_fox_thanks_slip:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xF250
+  parent: 0xEBA0
+  sampleBankId: 2
+  symbol: aq_fox_thanks_slip
+
+aq_fox_were_preparing_to_dock:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xF090
+  parent: 0xEBA0
+  sampleBankId: 2
+  symbol: aq_fox_were_preparing_to_dock
+
+aq_peppy_aim_for_the_two_columns:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xEFF0
+  parent: 0xEBA0
+  sampleBankId: 2
+  symbol: aq_peppy_aim_for_the_two_columns
+
+aq_peppy_go_for_the_eyes:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xF070
+  parent: 0xEBA0
+  sampleBankId: 2
+  symbol: aq_peppy_go_for_the_eyes
+
+aq_peppy_its_a_good_thing_you_prepared_slip:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xEEF0
+  parent: 0xEBA0
+  sampleBankId: 2
+  symbol: aq_peppy_its_a_good_thing_you_prepared_slip
+
+aq_peppy_looks_like_the_pollution_has_started:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xEE70
+  parent: 0xEBA0
+  sampleBankId: 2
+  symbol: aq_peppy_looks_like_the_pollution_has_started
+
+aq_peppy_slippys_not_such_a_screw_up_after_all:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xF0B0
+  parent: 0xEBA0
+  sampleBankId: 2
+  symbol: aq_peppy_slippys_not_such_a_screw_up_after_all
+
+aq_peppy_youre_the_best_slippy:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xEF90
+  parent: 0xEBA0
+  sampleBankId: 2
+  symbol: aq_peppy_youre_the_best_slippy
+
+aq_slippy_awful:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xEEB0
+  parent: 0xEBA0
+  sampleBankId: 2
+  symbol: aq_slippy_awful
+
+aq_slippy_fire_a_homing_torpedo:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xF010
+  parent: 0xEBA0
+  sampleBankId: 2
+  symbol: aq_slippy_fire_a_homing_torpedo
+
+aq_slippy_hows_the_blue_marine_fox:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xEED0
+  parent: 0xEBA0
+  sampleBankId: 2
+  symbol: aq_slippy_hows_the_blue_marine_fox
+
+aq_slippy_its:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xEE90
+  parent: 0xEBA0
+  sampleBankId: 2
+  symbol: aq_slippy_its
+
+aq_slippy_its_beautiful:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xF1D0
+  parent: 0xEBA0
+  sampleBankId: 2
+  symbol: aq_slippy_its_beautiful
+
+aq_slippy_keep_shooting:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xEF50
+  parent: 0xEBA0
+  sampleBankId: 2
+  symbol: aq_slippy_keep_shooting
+
+aq_slippy_look_at_that:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xF1B0
+  parent: 0xEBA0
+  sampleBankId: 2
+  symbol: aq_slippy_look_at_that
+
+aq_slippy_peppy:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xF0F0
+  parent: 0xEBA0
+  sampleBankId: 2
+  symbol: aq_slippy_peppy
+
+aq_slippy_sheesh_falco:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xF130
+  parent: 0xEBA0
+  sampleBankId: 2
+  symbol: aq_slippy_sheesh_falco
+
+aq_slippy_thanks_alot:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xF0D0
+  parent: 0xEBA0
+  sampleBankId: 2
+  symbol: aq_slippy_thanks_alot
+
+aq_slippy_thanks_peppy:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xEFB0
+  parent: 0xEBA0
+  sampleBankId: 2
+  symbol: aq_slippy_thanks_peppy
+
+aq_slippy_weve_got_lots_of_torpedos:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xEF70
+  parent: 0xEBA0
+  sampleBankId: 2
+  symbol: aq_slippy_weve_got_lots_of_torpedos
+
+aq_slippy_wow:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xF190
+  parent: 0xEBA0
+  sampleBankId: 2
+  symbol: aq_slippy_wow
+
+aq_slippy_you_too:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xF150
+  parent: 0xEBA0
+  sampleBankId: 2
+  symbol: aq_slippy_you_too
+
+bo_andrew_youll_be_sorry_you_crossed_us:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xD850
+  parent: 0xD440
+  sampleBankId: 2
+  symbol: bo_andrew_youll_be_sorry_you_crossed_us
+
+bo_falco_ill_cover_you_fox:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xD730
+  parent: 0xD440
+  sampleBankId: 2
+  symbol: bo_falco_ill_cover_you_fox
+
+bo_falco_takin_him_down_today:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xD910
+  parent: 0xD440
+  sampleBankId: 2
+  symbol: bo_falco_takin_him_down_today
+
+bo_falco_you_are_not:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xD8F0
+  parent: 0xD440
+  sampleBankId: 2
+  symbol: bo_falco_you_are_not
+
+bo_fox_destroy_all_barriers:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xD6F0
+  parent: 0xD440
+  sampleBankId: 2
+  symbol: bo_fox_destroy_all_barriers
+
+bo_fox_hey:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xD770
+  parent: 0xD440
+  sampleBankId: 2
+  symbol: bo_fox_hey
+
+bo_fox_okay_guys:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xD640
+  parent: 0xD440
+  sampleBankId: 2
+  symbol: bo_fox_okay_guys
+
+bo_fox_star_wolf_again:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xD9D0
+  parent: 0xD440
+  sampleBankId: 2
+  symbol: bo_fox_star_wolf_again
+
+bo_fox_the_force_field_is_disappearing:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xD790
+  parent: 0xD440
+  sampleBankId: 2
+  symbol: bo_fox_the_force_field_is_disappearing
+
+bo_fox_venom_here_we_come:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xD8B0
+  parent: 0xD440
+  sampleBankId: 2
+  symbol: bo_fox_venom_here_we_come
+
+bo_fox_why_now:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xD9F0
+  parent: 0xD440
+  sampleBankId: 2
+  symbol: bo_fox_why_now
+
+bo_leon_i_think_ill_torture_you_for_a_while:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xD810
+  parent: 0xD440
+  sampleBankId: 2
+  symbol: bo_leon_i_think_ill_torture_you_for_a_while
+
+bo_peppy_aim_for_the_6_energy_towers:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xD710
+  parent: 0xD440
+  sampleBankId: 2
+  symbol: bo_peppy_aim_for_the_6_energy_towers
+
+bo_peppy_destroy_the_satellite_core:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xD890
+  parent: 0xD440
+  sampleBankId: 2
+  symbol: bo_peppy_destroy_the_satellite_core
+
+bo_peppy_good_i_see_the_enemy_core:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xD870
+  parent: 0xD440
+  sampleBankId: 2
+  symbol: bo_peppy_good_i_see_the_enemy_core
+
+bo_peppy_whats_takin_so_long_fox:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xD930
+  parent: 0xD440
+  sampleBankId: 2
+  symbol: bo_peppy_whats_takin_so_long_fox
+
+bo_pigma_daddy_screamed_real_good_before_he_died:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xD830
+  parent: 0xD440
+  sampleBankId: 2
+  symbol: bo_pigma_daddy_screamed_real_good_before_he_died
+
+bo_slippy_give_up:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xD970
+  parent: 0xD440
+  sampleBankId: 2
+  symbol: bo_slippy_give_up
+
+bo_slippy_they_dont:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xD950
+  parent: 0xD440
+  sampleBankId: 2
+  symbol: bo_slippy_they_dont
+
+bo_slippy_those_ships_are_shielded_too:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xD8D0
+  parent: 0xD440
+  sampleBankId: 2
+  symbol: bo_slippy_those_ships_are_shielded_too
+
+bo_slippy_your_carcass_is_mine:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xD750
+  parent: 0xD440
+  sampleBankId: 2
+  symbol: bo_slippy_your_carcass_is_mine
+
+bo_wolf_play_time_is_over_star_fox:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xD7F0
+  parent: 0xD440
+  sampleBankId: 2
+  symbol: bo_wolf_play_time_is_over_star_fox
+
+co_attack_carrier_ahhh_someone_wants_to_play:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x4EB0
+  parent: 0x4520
+  sampleBankId: 2
+  symbol: co_attack_carrier_ahhh_someone_wants_to_play
+
+co_attack_carrier_charge:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x4EF0
+  parent: 0x4520
+  sampleBankId: 2
+  symbol: co_attack_carrier_charge
+
+co_attack_carrier_deploy_all_units:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x4ED0
+  parent: 0x4520
+  sampleBankId: 2
+  symbol: co_attack_carrier_deploy_all_units
+
+co_attack_carrier_go:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x4F30
+  parent: 0x4520
+  sampleBankId: 2
+  symbol: co_attack_carrier_go
+
+co_attack_carrier_ive_got_a_present_for_ya:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x4F10
+  parent: 0x4520
+  sampleBankId: 2
+  symbol: co_attack_carrier_ive_got_a_present_for_ya
+
+co_attack_carrier_who_are_you_guys:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x4F50
+  parent: 0x4520
+  sampleBankId: 2
+  symbol: co_attack_carrier_who_are_you_guys
+
+co_attack_carrier_youll_never_defeat_andross:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x4F90
+  parent: 0x4520
+  sampleBankId: 2
+  symbol: co_attack_carrier_youll_never_defeat_andross
+
+co_falco_back_off:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x49F0
+  parent: 0x4520
+  sampleBankId: 2
+  symbol: co_falco_back_off
+
+co_falco_falco_here:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x47F0
+  parent: 0x4520
+  sampleBankId: 2
+  symbol: co_falco_falco_here
+
+co_falco_fine:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x4830
+  parent: 0x4520
+  sampleBankId: 2
+  symbol: co_falco_fine
+
+co_falco_follow_me:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x4B70
+  parent: 0x4520
+  sampleBankId: 2
+  symbol: co_falco_follow_me
+
+co_falco_fox:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x4A10
+  parent: 0x4520
+  sampleBankId: 2
+  symbol: co_falco_fox
+
+co_falco_get_the_one_behind_me:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x4AF0
+  parent: 0x4520
+  sampleBankId: 2
+  symbol: co_falco_get_the_one_behind_me
+
+co_falco_go:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x4C90
+  parent: 0x4520
+  sampleBankId: 2
+  symbol: co_falco_go
+
+co_falco_gotcha:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x49D0
+  parent: 0x4520
+  sampleBankId: 2
+  symbol: co_falco_gotcha
+
+co_falco_i_could_use_some_help_here_fox:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x4B10
+  parent: 0x4520
+  sampleBankId: 2
+  symbol: co_falco_i_could_use_some_help_here_fox
+
+co_falco_i_found_the_target:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x4BF0
+  parent: 0x4520
+  sampleBankId: 2
+  symbol: co_falco_i_found_the_target
+
+co_falco_ill_take_this_one:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x4AB0
+  parent: 0x4520
+  sampleBankId: 2
+  symbol: co_falco_ill_take_this_one
+
+co_falco_im:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x4810
+  parent: 0x4520
+  sampleBankId: 2
+  symbol: co_falco_im
+
+co_falco_lets:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x4C70
+  parent: 0x4520
+  sampleBankId: 2
+  symbol: co_falco_lets
+
+co_falco_pretty_smooth_flyin_fox:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x4B50
+  parent: 0x4520
+  sampleBankId: 2
+  symbol: co_falco_pretty_smooth_flyin_fox
+
+co_falco_somethings_wrong_with_the_g_diffuser:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x4B30
+  parent: 0x4520
+  sampleBankId: 2
+  symbol: co_falco_somethings_wrong_with_the_g_diffuser
+
+co_falco_this_is_horrible:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x4910
+  parent: 0x4520
+  sampleBankId: 2
+  symbol: co_falco_this_is_horrible
+
+co_falco_try_to_keep_up:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x4C10
+  parent: 0x4520
+  sampleBankId: 2
+  symbol: co_falco_try_to_keep_up
+
+co_falco_you_okay_over_there_fox:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x50D0
+  parent: 0x4520
+  sampleBankId: 2
+  symbol: co_falco_you_okay_over_there_fox
+
+co_fox_all_aircraft_report:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x5110
+  parent: 0x4520
+  sampleBankId: 2
+  symbol: co_fox_all_aircraft_report
+
+co_fox_check_your_g_diffuser_system:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x47D0
+  parent: 0x4520
+  sampleBankId: 2
+  symbol: co_fox_check_your_g_diffuser_system
+
+co_fox_falco:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x4BB0
+  parent: 0x4520
+  sampleBankId: 2
+  symbol: co_fox_falco
+
+co_fox_i_see_em_up_ahead:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x48B0
+  parent: 0x4520
+  sampleBankId: 2
+  symbol: co_fox_i_see_em_up_ahead
+
+co_fox_lets_rock_and_roll:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x48D0
+  parent: 0x4520
+  sampleBankId: 2
+  symbol: co_fox_lets_rock_and_roll
+
+co_fox_open_the_wings:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x4720
+  parent: 0x4520
+  sampleBankId: 2
+  symbol: co_fox_open_the_wings
+
+co_fox_were_entering_corneria_city_now:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x48F0
+  parent: 0x4520
+  sampleBankId: 2
+  symbol: co_fox_were_entering_corneria_city_now
+
+co_fox_were_heading_out:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x50F0
+  parent: 0x4520
+  sampleBankId: 2
+  symbol: co_fox_were_heading_out
+
+co_fox_were_star_fox:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x4F70
+  parent: 0x4520
+  sampleBankId: 2
+  symbol: co_fox_were_star_fox
+
+co_fox_where_ya_goin:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x4BD0
+  parent: 0x4520
+  sampleBankId: 2
+  symbol: co_fox_where_ya_goin
+
+co_granga_ah_so_this_is_star_fox:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x4D70
+  parent: 0x4520
+  sampleBankId: 2
+  symbol: co_granga_ah_so_this_is_star_fox
+
+co_granga_failed_you:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x4E70
+  parent: 0x4520
+  sampleBankId: 2
+  symbol: co_granga_failed_you
+
+co_granga_i_will_not_be_defeated_by_this_worm:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x4E30
+  parent: 0x4520
+  sampleBankId: 2
+  symbol: co_granga_i_will_not_be_defeated_by_this_worm
+
+co_granga_im_going_to_crush_you:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x4D90
+  parent: 0x4520
+  sampleBankId: 2
+  symbol: co_granga_im_going_to_crush_you
+
+co_granga_my_emperor_ive:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x4E50
+  parent: 0x4520
+  sampleBankId: 2
+  symbol: co_granga_my_emperor_ive
+
+co_granga_no:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x4E10
+  parent: 0x4520
+  sampleBankId: 2
+  symbol: co_granga_no
+
+co_granga_stop_moving_so_i_can_squash_you:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x4DD0
+  parent: 0x4520
+  sampleBankId: 2
+  symbol: co_granga_stop_moving_so_i_can_squash_you
+
+co_granga_those_who_cross_andross_will_die:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x4DB0
+  parent: 0x4520
+  sampleBankId: 2
+  symbol: co_granga_those_who_cross_andross_will_die
+
+co_granga_you_annoying_little_flies:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x4CB0
+  parent: 0x4520
+  sampleBankId: 2
+  symbol: co_granga_you_annoying_little_flies
+
+co_granga_you_are_starting_to_annoy_me:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x4DF0
+  parent: 0x4520
+  sampleBankId: 2
+  symbol: co_granga_you_are_starting_to_annoy_me
+
+co_peppy_aim_for_his_back:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x4D10
+  parent: 0x4520
+  sampleBankId: 2
+  symbol: co_peppy_aim_for_his_back
+
+co_peppy_aim_for_the_open_spot:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x4FF0
+  parent: 0x4520
+  sampleBankId: 2
+  symbol: co_peppy_aim_for_the_open_spot
+
+co_peppy_bogey_on_your_tail:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x4950
+  parent: 0x4520
+  sampleBankId: 2
+  symbol: co_peppy_bogey_on_your_tail
+
+co_peppy_drop_altitude:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x4FD0
+  parent: 0x4520
+  sampleBankId: 2
+  symbol: co_peppy_drop_altitude
+
+co_peppy_incoming_enemy_from_the_rear:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x4FB0
+  parent: 0x4520
+  sampleBankId: 2
+  symbol: co_peppy_incoming_enemy_from_the_rear
+
+co_peppy_quit_screwin_around_do_something:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x4E90
+  parent: 0x4520
+  sampleBankId: 2
+  symbol: co_peppy_quit_screwin_around_do_something
+
+co_peppy_slippy_watch_out:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x4930
+  parent: 0x4520
+  sampleBankId: 2
+  symbol: co_peppy_slippy_watch_out
+
+co_peppy_this_is_peppy_all_systems_go:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x4850
+  parent: 0x4520
+  sampleBankId: 2
+  symbol: co_peppy_this_is_peppy_all_systems_go
+
+co_peppy_use_the_boost_to_chase:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x13C10
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: co_peppy_use_the_boost_to_chase
+
+co_peppy_youre_becoming_more_like_your_father:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x5070
+  parent: 0x4520
+  sampleBankId: 2
+  symbol: co_peppy_youre_becoming_more_like_your_father
+
+co_slippy_dead_ahead:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x4C50
+  parent: 0x4520
+  sampleBankId: 2
+  symbol: co_slippy_dead_ahead
+
+co_slippy_enemy_robot:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x4C30
+  parent: 0x4520
+  sampleBankId: 2
+  symbol: co_slippy_enemy_robot
+
+co_slippy_help_me:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x4990
+  parent: 0x4520
+  sampleBankId: 2
+  symbol: co_slippy_help_me
+
+co_slippy_i_thought_they_had_me:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x5170
+  parent: 0x4520
+  sampleBankId: 2
+  symbol: co_slippy_i_thought_they_had_me
+
+co_slippy_i_was_worried_for_a_moment:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x5030
+  parent: 0x4520
+  sampleBankId: 2
+  symbol: co_slippy_i_was_worried_for_a_moment
+
+co_slippy_im_okay:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x4890
+  parent: 0x4520
+  sampleBankId: 2
+  symbol: co_slippy_im_okay
+
+co_slippy_slippy_here:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x4870
+  parent: 0x4520
+  sampleBankId: 2
+  symbol: co_slippy_slippy_here
+
+co_slippy_thanks_fox:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x5130
+  parent: 0x4520
+  sampleBankId: 2
+  symbol: co_slippy_thanks_fox
+
+co_slippy_woah:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x4970
+  parent: 0x4520
+  sampleBankId: 2
+  symbol: co_slippy_woah
+
+co_slippy_you_did_it:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x5010
+  parent: 0x4520
+  sampleBankId: 2
+  symbol: co_slippy_you_did_it
+
+cr_fox_its_time_for_us_to_go_now:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x15DD0
+  parent: 0x15A20
+  sampleBankId: 2
+  symbol: cr_fox_its_time_for_us_to_go_now
+
+cr_fox_oh_no_sir:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x15D50
+  parent: 0x15A20
+  sampleBankId: 2
+  symbol: cr_fox_oh_no_sir
+
+cr_fox_we_prefer_doing_things_our_own_way:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x15D70
+  parent: 0x15A20
+  sampleBankId: 2
+  symbol: cr_fox_we_prefer_doing_things_our_own_way
+
+cr_pepper_honoured_to_have_you_as:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x15D10
+  parent: 0x15A20
+  sampleBankId: 2
+  symbol: cr_pepper_honoured_to_have_you_as
+
+cr_pepper_i_would_be:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x15CF0
+  parent: 0x15A20
+  sampleBankId: 2
+  symbol: cr_pepper_i_would_be
+
+cr_pepper_part_of_the_cornerian_army:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x15D30
+  parent: 0x15A20
+  sampleBankId: 2
+  symbol: cr_pepper_part_of_the_cornerian_army
+
+cr_pepper_star_fox_we_are_in_your_debt:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x15C20
+  parent: 0x15A20
+  sampleBankId: 2
+  symbol: cr_pepper_star_fox_we_are_in_your_debt
+
+cr_pepper_this_is_one_steep_bill_but_its_worth_it:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x24E0
+  parent: 0x0
+  sampleBankId: 0
+  symbol: cr_pepper_this_is_one_steep_bill_but_its_worth_it
+
+cr_pepper_what:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x2550
+  parent: 0x0
+  sampleBankId: 0
+  symbol: cr_pepper_what
+
+cr_rob_great_fox:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x15D90
+  parent: 0x15A20
+  sampleBankId: 2
+  symbol: cr_rob_great_fox
+
+cr_rob_is_ready_to_go:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x15DB0
+  parent: 0x15A20
+  sampleBankId: 2
+  symbol: cr_rob_is_ready_to_go
+
+fo_andrew_andross:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xB9D0
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: fo_andrew_andross
+
+fo_andrew_andross_enemy_is_my_enemy:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xB8B0
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: fo_andrew_andross_enemy_is_my_enemy
+
+fo_andrew_bow_before_the_great:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xB9B0
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: fo_andrew_bow_before_the_great
+
+fo_andrew_im_not_afraid_of_you:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xBB10
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: fo_andrew_im_not_afraid_of_you
+
+fo_andrew_score_one_for_andross:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xBF10
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: fo_andrew_score_one_for_andross
+
+fo_andrew_stick_to_the_pond_froggy:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xBA70
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: fo_andrew_stick_to_the_pond_froggy
+
+fo_andrew_uncle_andross:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xBBB0
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: fo_andrew_uncle_andross
+
+fo_falco_so_thats_star_wolf:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xBDD0
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: fo_falco_so_thats_star_wolf
+
+fo_falco_that_was_a_close_call_fox:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xBE50
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: fo_falco_that_was_a_close_call_fox
+
+fo_fox_and_take_it_to_em:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xB3B0
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: fo_fox_and_take_it_to_em
+
+fo_fox_can_anyone_take_care_of_it:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xBC30
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: fo_fox_can_anyone_take_care_of_it
+
+fo_fox_emergency_maneuvers:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xBD50
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: fo_fox_emergency_maneuvers
+
+fo_fox_geez:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xBC10
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: fo_fox_geez
+
+fo_fox_get_out_of_there:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xBD70
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: fo_fox_get_out_of_there
+
+fo_fox_ill_take_care_of_the_bomb_now:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xBD30
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: fo_fox_ill_take_care_of_the_bomb_now
+
+fo_fox_just_what_i_need_to_see:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xB8D0
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: fo_fox_just_what_i_need_to_see
+
+fo_fox_lets_take_care_of_these_guys_first:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xBC50
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: fo_fox_lets_take_care_of_these_guys_first
+
+fo_fox_split_up:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xB300
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: fo_fox_split_up
+
+fo_fox_star_wolf:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xB8F0
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: fo_fox_star_wolf
+
+fo_leon_andross_has_ordered_us_to_take_you_down:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xB850
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: fo_leon_andross_has_ordered_us_to_take_you_down
+
+fo_leon_annoying_bird:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xBA10
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: fo_leon_annoying_bird
+
+fo_leon_close_but_no_cigar_hahaha:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xBE90
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: fo_leon_close_but_no_cigar_hahaha
+
+fo_leon_i_am_the_great_leon:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xBA30
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: fo_leon_i_am_the_great_leon
+
+fo_leon_shoot_me_down_if_you_can:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xBAB0
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: fo_leon_shoot_me_down_if_you_can
+
+fo_leon_this_cant_be_happening:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xBB70
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: fo_leon_this_cant_be_happening
+
+fo_leon_youre_not_as_tough_as_i_thought:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xB970
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: fo_leon_youre_not_as_tough_as_i_thought
+
+fo_peppy_fox_take_it_easy:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xBE30
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: fo_peppy_fox_take_it_easy
+
+fo_peppy_im_not_too_crazy_about_those_guys:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xBDB0
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: fo_peppy_im_not_too_crazy_about_those_guys
+
+fo_pigma_come_on_little_man:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xBAD0
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: fo_pigma_come_on_little_man
+
+fo_pigma_hehehe_were_gettin_paid_a_lot_of_cash_for_this:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xB870
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: fo_pigma_hehehe_were_gettin_paid_a_lot_of_cash_for_this
+
+fo_pigma_ill_do_you_fast_peppy_old_pal:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xBA50
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: fo_pigma_ill_do_you_fast_peppy_old_pal
+
+fo_pigma_ive_got_two_words_for_you:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xBEB0
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: fo_pigma_ive_got_two_words_for_you
+
+fo_pigma_lo:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xBED0
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: fo_pigma_lo
+
+fo_pigma_my_beautiful_reward_ahahaharrrgh:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xBB90
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: fo_pigma_my_beautiful_reward_ahahaharrrgh
+
+fo_pigma_peppy_long_time_no_see:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xB890
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: fo_pigma_peppy_long_time_no_see
+
+fo_pigma_ser:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xBEF0
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: fo_pigma_ser
+
+fo_pigma_shoot_me:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xBAF0
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: fo_pigma_shoot_me
+
+fo_pigma_that_rewards_as_good_as_mine:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xB990
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: fo_pigma_that_rewards_as_good_as_mine
+
+fo_rob_15_seconds_to_explosion:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xBCD0
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: fo_rob_15_seconds_to_explosion
+
+fo_rob_30_seconds_to_explosion:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xBCB0
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: fo_rob_30_seconds_to_explosion
+
+fo_rob_a_bomb_has_been_planted_at_the_base:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xBBF0
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: fo_rob_a_bomb_has_been_planted_at_the_base
+
+fo_rob_bomb_explotiong:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xBCF0
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: fo_rob_bomb_explotiong
+
+fo_rob_danger:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xBC70
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: fo_rob_danger
+
+fo_rob_keep_clear:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xBD10
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: fo_rob_keep_clear
+
+fo_rob_one_minute_to_explosion:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xBC90
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: fo_rob_one_minute_to_explosion
+
+fo_slippy_hey_we_made_it:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xBE10
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: fo_slippy_hey_we_made_it
+
+fo_slippy_they_almost_got_us:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xBD90
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: fo_slippy_they_almost_got_us
+
+fo_slippy_why_are_ships_coming_out_of_the_base:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xB3D0
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: fo_slippy_why_are_ships_coming_out_of_the_base
+
+fo_wolf_cant_let_you_do_that_star_fox:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xB810
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: fo_wolf_cant_let_you_do_that_star_fox
+
+fo_wolf_cant_lose:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xBB50
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: fo_wolf_cant_lose
+
+fo_wolf_i:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xBB30
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: fo_wolf_i
+
+fo_wolf_looks_like_we_win_today_star_fox:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xBE70
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: fo_wolf_looks_like_we_win_today_star_fox
+
+fo_wolf_what_the_heck:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xBBD0
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: fo_wolf_what_the_heck
+
+fo_wolf_youll_be_seing_your_dad_soon_fox:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xB910
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: fo_wolf_youll_be_seing_your_dad_soon_fox
+
+fo_wolf_youre_going_down:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xB950
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: fo_wolf_youre_going_down
+
+fo_wolf_youre_in_my_sights:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xB930
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: fo_wolf_youre_in_my_sights
+
+fo_wolf_youre_not_so_tough:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xB9F0
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: fo_wolf_youre_not_so_tough
+
+gen_andross_ahhh_the_son_of_james_mccloud:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x13F30
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_andross_ahhh_the_son_of_james_mccloud
+
+gen_andross_ha_ha_ha_you_can_never_defeat_me:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x13F90
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_andross_ha_ha_ha_you_can_never_defeat_me
+
+gen_andross_ill_make_those_fools_pay:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x13F50
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_andross_ill_make_those_fools_pay
+
+gen_andross_im_looking_forward_to_this:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x13F10
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_andross_im_looking_forward_to_this
+
+gen_andross_those:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x13CD0
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_andross_those
+
+gen_andross_those_tin_cans_are_no_match_for_me:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x13F70
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_andross_those_tin_cans_are_no_match_for_me
+
+gen_andross_tin_cans_are_no_match_for_me:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x13CF0
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_andross_tin_cans_are_no_match_for_me
+
+gen_bill_heres_something_for_ya_fox:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x11D90
+  parent: 0x115E0
+  sampleBankId: 2
+  symbol: gen_bill_heres_something_for_ya_fox
+
+gen_bill_hey:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x139B0
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_bill_hey
+
+gen_bill_see_if_i_help_you_again:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x139D0
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_bill_see_if_i_help_you_again
+
+gen_bill_take_it_easy_fox_dont_let_us_down:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x7A10
+  parent: 0x7460
+  sampleBankId: 2
+  symbol: gen_bill_take_it_easy_fox_dont_let_us_down
+
+gen_falco_ah:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x13810
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_falco_ah
+
+gen_falco_all_right:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x9ED0
+  parent: 0x96A0
+  sampleBankId: 2
+  symbol: gen_falco_all_right
+
+gen_falco_clean_up_this_mess:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x14330
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_falco_clean_up_this_mess
+
+gen_falco_come_on:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x14230
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_falco_come_on
+
+gen_falco_company:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xD7D0
+  parent: 0xD440
+  sampleBankId: 2
+  symbol: gen_falco_company
+
+gen_falco_crud:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x144B0
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_falco_crud
+
+gen_falco_dang:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xB510
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: gen_falco_dang
+
+gen_falco_dead_meat:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xB6F0
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: gen_falco_dead_meat
+
+gen_falco_does_it_look_okay_to_you:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x14390
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_falco_does_it_look_okay_to_you
+
+gen_falco_dont_worry_about_me_fox:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x14030
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_falco_dont_worry_about_me_fox
+
+gen_falco_fox:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xF050
+  parent: 0xEBA0
+  sampleBankId: 2
+  symbol: gen_falco_fox
+
+gen_falco_fox_hes_right_behind_you:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x4D50
+  parent: 0x4520
+  sampleBankId: 2
+  symbol: gen_falco_fox_hes_right_behind_you
+
+gen_falco_fox_how_swell:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xB5F0
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: gen_falco_fox_how_swell
+
+gen_falco_gee_ive_been_saved_by:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xB5D0
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: gen_falco_gee_ive_been_saved_by
+
+gen_falco_geez_laweeze_what:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xA8B0
+  parent: 0xA4E0
+  sampleBankId: 2
+  symbol: gen_falco_geez_laweeze_what
+
+gen_falco_geez_quit_movin_around:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xE3D0
+  parent: 0xDE40
+  sampleBankId: 2
+  symbol: gen_falco_geez_quit_movin_around
+
+gen_falco_get_outta_my_way:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x13B50
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_falco_get_outta_my_way
+
+gen_falco_go_find_your_own_target:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x13A90
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_falco_go_find_your_own_target
+
+gen_falco_here_they_come:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x11AD0
+  parent: 0x115E0
+  sampleBankId: 2
+  symbol: gen_falco_here_they_come
+
+gen_falco_hes_right_behind_me:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xB410
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: gen_falco_hes_right_behind_me
+
+gen_falco_hey_einstein_im_on_your_side:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x13930
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_falco_hey_einstein_im_on_your_side
+
+gen_falco_hold_together:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x14430
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_falco_hold_together
+
+gen_falco_i_cant_shake_this_guy:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xB470
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: gen_falco_i_cant_shake_this_guy
+
+gen_falco_i_got_the_last_one:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xBF70
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: gen_falco_i_got_the_last_one
+
+gen_falco_i_guess_i_should_be_thankful:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x5190
+  parent: 0x4520
+  sampleBankId: 2
+  symbol: gen_falco_i_guess_i_should_be_thankful
+
+gen_falco_i_guess_youre_good_for_somethin:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x13D50
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_falco_i_guess_youre_good_for_somethin
+
+gen_falco_im_going_down:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x15FD0
+  parent: 0x15A20
+  sampleBankId: 2
+  symbol: gen_falco_im_going_down
+
+gen_falco_im_going_left:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x15F70
+  parent: 0x15A20
+  sampleBankId: 2
+  symbol: gen_falco_im_going_left
+
+gen_falco_im_going_right:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x15F30
+  parent: 0x15A20
+  sampleBankId: 2
+  symbol: gen_falco_im_going_right
+
+gen_falco_im_going_up:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x15FB0
+  parent: 0x15A20
+  sampleBankId: 2
+  symbol: gen_falco_im_going_up
+
+gen_falco_im_hit:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xB530
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: gen_falco_im_hit
+
+gen_falco_is_that:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xA8D0
+  parent: 0xA4E0
+  sampleBankId: 2
+  symbol: gen_falco_is_that
+
+gen_falco_its_working:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x9CF0
+  parent: 0x96A0
+  sampleBankId: 2
+  symbol: gen_falco_its_working
+
+gen_falco_lets:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x14310
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_falco_lets
+
+gen_falco_lets_kick_some_tail:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x14270
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_falco_lets_kick_some_tail
+
+gen_falco_looks_like_weve_got:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xD7B0
+  parent: 0xD440
+  sampleBankId: 2
+  symbol: gen_falco_looks_like_weve_got
+
+gen_falco_move_it:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x4D30
+  parent: 0x4520
+  sampleBankId: 2
+  symbol: gen_falco_move_it
+
+gen_falco_nooo:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x139F0
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_falco_nooo
+
+gen_falco_oh_man_im_gonna_have_to_back_off:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x13B70
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_falco_oh_man_im_gonna_have_to_back_off
+
+gen_falco_pal:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xB710
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: gen_falco_pal
+
+gen_falco_scratch_one_bogey:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xB790
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: gen_falco_scratch_one_bogey
+
+gen_falco_see_my_ship:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x14370
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_falco_see_my_ship
+
+gen_falco_shoot:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xB3F0
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: gen_falco_shoot
+
+gen_falco_shoot_ive_taken_damage:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x138D0
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_falco_shoot_ive_taken_damage
+
+gen_falco_thats_it:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xF030
+  parent: 0xEBA0
+  sampleBankId: 2
+  symbol: gen_falco_thats_it
+
+gen_falco_these_guys_dont_quit:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x8BB0
+  parent: 0x8660
+  sampleBankId: 2
+  symbol: gen_falco_these_guys_dont_quit
+
+gen_falco_time_for_a_little_payback:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xB670
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: gen_falco_time_for_a_little_payback
+
+gen_falco_watch_out_fox:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x145B0
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_falco_watch_out_fox
+
+gen_falco_yeah:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x9CD0
+  parent: 0x96A0
+  sampleBankId: 2
+  symbol: gen_falco_yeah
+
+gen_falco_you_are_so_lucky:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x13850
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_falco_you_are_so_lucky
+
+gen_falco_you_worry_about_your_own_hide:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x13890
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_falco_you_worry_about_your_own_hide
+
+gen_falco_youre:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xB6D0
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: gen_falco_youre
+
+gen_falco_youre_gettin_better_fox:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x13830
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_falco_youre_gettin_better_fox
+
+gen_falco_youre_not_leavin_yet:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x14490
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_falco_youre_not_leavin_yet
+
+gen_fox_all_aircraft_report:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x136A0
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_fox_all_aircraft_report
+
+gen_fox_all_range_mode:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x13AD0
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_fox_all_range_mode
+
+gen_fox_death_scream:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x14630
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_fox_death_scream
+
+gen_fox_theres_one_more_to_go:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x12CF0
+  parent: 0x12400
+  sampleBankId: 2
+  symbol: gen_fox_theres_one_more_to_go
+
+gen_fox_were_gonna_break_through_that_fleet:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x9AB0
+  parent: 0x96A0
+  sampleBankId: 2
+  symbol: gen_fox_were_gonna_break_through_that_fleet
+
+gen_katt_beautiful_i_could_kiss_you_for_that:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xFD90
+  parent: 0xF7C0
+  sampleBankId: 2
+  symbol: gen_katt_beautiful_i_could_kiss_you_for_that
+
+gen_katt_is_that_any_way_to_greet_a_girl:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x8A90
+  parent: 0x8660
+  sampleBankId: 2
+  symbol: gen_katt_is_that_any_way_to_greet_a_girl
+
+gen_katt_katt:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xFD70
+  parent: 0xF7C0
+  sampleBankId: 2
+  symbol: gen_katt_katt
+
+gen_katt_make_way_for:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xFD50
+  parent: 0xF7C0
+  sampleBankId: 2
+  symbol: gen_katt_make_way_for
+
+gen_katt_you_tryin_to_damage_my_pretty_face:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x13990
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_katt_you_tryin_to_damage_my_pretty_face
+
+gen_leon_ill_take_care_of_you:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x12A30
+  parent: 0x12400
+  sampleBankId: 2
+  symbol: gen_leon_ill_take_care_of_you
+
+gen_leon_not_yet:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x12AF0
+  parent: 0x12400
+  sampleBankId: 2
+  symbol: gen_leon_not_yet
+
+gen_leon_the_partys_just_begun:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x12B10
+  parent: 0x12400
+  sampleBankId: 2
+  symbol: gen_leon_the_partys_just_begun
+
+gen_peppy_brace_yourselves:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xCCF0
+  parent: 0xCA20
+  sampleBankId: 2
+  symbol: gen_peppy_brace_yourselves
+
+gen_peppy_come_on_fox_you_can_do_it:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x141F0
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_peppy_come_on_fox_you_can_do_it
+
+gen_peppy_dang_im_hit:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x138F0
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_peppy_dang_im_hit
+
+gen_peppy_do:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x144F0
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_peppy_do
+
+gen_peppy_do_a_barrel_roll:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x4A30
+  parent: 0x4520
+  sampleBankId: 2
+  symbol: gen_peppy_do_a_barrel_roll
+
+gen_peppy_dont_go_dyin_on_me_fox:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x14290
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_peppy_dont_go_dyin_on_me_fox
+
+gen_peppy_dont_mess_up_that_arwing:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x5E10
+  parent: 0x5A80
+  sampleBankId: 2
+  symbol: gen_peppy_dont_mess_up_that_arwing
+
+gen_peppy_everybody_stay_alert:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x9A30
+  parent: 0x96A0
+  sampleBankId: 2
+  symbol: gen_peppy_everybody_stay_alert
+
+gen_peppy_everything_okay:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x14450
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_peppy_everything_okay
+
+gen_peppy_everythings_a_okay:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x13770
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_peppy_everythings_a_okay
+
+gen_peppy_ggone_it:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x14510
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_peppy_ggone_it
+
+gen_peppy_good_goin_fox:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x10B50
+  parent: 0x106C0
+  sampleBankId: 2
+  symbol: gen_peppy_good_goin_fox
+
+gen_peppy_got_me:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xB5B0
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: gen_peppy_got_me
+
+gen_peppy_hes_quick_be_careful:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xE370
+  parent: 0xDE40
+  sampleBankId: 2
+  symbol: gen_peppy_hes_quick_be_careful
+
+gen_peppy_i_got_the_last_one:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xBF50
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: gen_peppy_i_got_the_last_one
+
+gen_peppy_i_saw_my_life_flash_before_my_eyes:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x137F0
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_peppy_i_saw_my_life_flash_before_my_eyes
+
+gen_peppy_i_see_your_father_in_you_fox:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x14050
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_peppy_i_see_your_father_in_you_fox
+
+gen_peppy_i_wont_let_you_get_away_from_me:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xB6B0
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: gen_peppy_i_wont_let_you_get_away_from_me
+
+gen_peppy_im_going_down:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x15E50
+  parent: 0x15A20
+  sampleBankId: 2
+  symbol: gen_peppy_im_going_down
+
+gen_peppy_im_going_left:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x15E10
+  parent: 0x15A20
+  sampleBankId: 2
+  symbol: gen_peppy_im_going_left
+
+gen_peppy_im_going_right:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x15DF0
+  parent: 0x15A20
+  sampleBankId: 2
+  symbol: gen_peppy_im_going_right
+
+gen_peppy_im_going_up:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x15E30
+  parent: 0x15A20
+  sampleBankId: 2
+  symbol: gen_peppy_im_going_up
+
+gen_peppy_ive_got_a_bad_feeling_about_this_fox:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xA9B0
+  parent: 0xA4E0
+  sampleBankId: 2
+  symbol: gen_peppy_ive_got_a_bad_feeling_about_this_fox
+
+gen_peppy_ive_taken_a_few_hits_but_im_okay:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x137B0
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_peppy_ive_taken_a_few_hits_but_im_okay
+
+gen_peppy_just_shoot_it_fox:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x5DF0
+  parent: 0x5A80
+  sampleBankId: 2
+  symbol: gen_peppy_just_shoot_it_fox
+
+gen_peppy_knock_it_off_fox:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x13950
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_peppy_knock_it_off_fox
+
+gen_peppy_lock_on_the_enemy:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x14090
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_peppy_lock_on_the_enemy
+
+gen_peppy_never_give_up:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x143B0
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_peppy_never_give_up
+
+gen_peppy_nooo:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x13A10
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_peppy_nooo
+
+gen_peppy_shoot_theyve:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xB590
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: gen_peppy_shoot_theyve
+
+gen_peppy_slippy_get_back_here:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x13E10
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_peppy_slippy_get_back_here
+
+gen_peppy_sorry_guys_ive_gotta_sit_this_one_out:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x13B90
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_peppy_sorry_guys_ive_gotta_sit_this_one_out
+
+gen_peppy_take_care_of_the_guy_behind_me_fox:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xB450
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: gen_peppy_take_care_of_the_guy_behind_me_fox
+
+gen_peppy_thanks_fox:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x78D0
+  parent: 0x7460
+  sampleBankId: 2
+  symbol: gen_peppy_thanks_fox
+
+gen_peppy_the_enemys_coming_from_behind:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x5E70
+  parent: 0x5A80
+  sampleBankId: 2
+  symbol: gen_peppy_the_enemys_coming_from_behind
+
+gen_peppy_theres_one_down:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xB7F0
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: gen_peppy_theres_one_down
+
+gen_peppy_theyre_on_me_im_gettin_careless:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x9C50
+  parent: 0x96A0
+  sampleBankId: 2
+  symbol: gen_peppy_theyre_on_me_im_gettin_careless
+
+gen_peppy_to_barrel_roll_press_z_or_r_twice:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x14170
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_peppy_to_barrel_roll_press_z_or_r_twice
+
+gen_peppy_trust_your_instincts:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x143D0
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_peppy_trust_your_instincts
+
+gen_peppy_try_a_sommersault:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x13C30
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_peppy_try_a_sommersault
+
+gen_peppy_try_a_u_turn:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x13C50
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_peppy_try_a_u_turn
+
+gen_peppy_try_hovering:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x6A70
+  parent: 0x6680
+  sampleBankId: 2
+  symbol: gen_peppy_try_hovering
+
+gen_peppy_use_bombs_wisely:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x13C70
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_peppy_use_bombs_wisely
+
+gen_peppy_use_the_boost_to_get_thru:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x13C90
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_peppy_use_the_boost_to_get_thru
+
+gen_peppy_use_the_brake:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x4A70
+  parent: 0x4520
+  sampleBankId: 2
+  symbol: gen_peppy_use_the_brake
+
+gen_peppy_watch_out_fox:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x14610
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_peppy_watch_out_fox
+
+gen_peppy_watch_the_radar_carefully_fox:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xE3F0
+  parent: 0xDE40
+  sampleBankId: 2
+  symbol: gen_peppy_watch_the_radar_carefully_fox
+
+gen_peppy_watch_where_yer_flyin:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x13B30
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_peppy_watch_where_yer_flyin
+
+gen_peppy_whats_taking_you_so_long_fox:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xB4F0
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: gen_peppy_whats_taking_you_so_long_fox
+
+gen_peppy_whats_the_big_idea_fox:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x13A70
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_peppy_whats_the_big_idea_fox
+
+gen_peppy_you_can_also_lock_on_to_enemies_this_way:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x14590
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_peppy_you_can_also_lock_on_to_enemies_this_way
+
+gen_peppy_your_father_helped_me_like_that_too:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xB650
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: gen_peppy_your_father_helped_me_like_that_too
+
+gen_peppy_your_skills_have_improved_fox:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x13D30
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_peppy_your_skills_have_improved_fox
+
+gen_peppy_youre_mine:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xB770
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: gen_peppy_youre_mine
+
+gen_peppy_youve_got_an_enemy_on_your_tail:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x4A50
+  parent: 0x4520
+  sampleBankId: 2
+  symbol: gen_peppy_youve_got_an_enemy_on_your_tail
+
+gen_pigma_im_gonna_bust_you_up_real_good:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x12A50
+  parent: 0x12400
+  sampleBankId: 2
+  symbol: gen_pigma_im_gonna_bust_you_up_real_good
+
+gen_rob_falcos_ship_is_in_the_docking_bay:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x14850
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_rob_falcos_ship_is_in_the_docking_bay
+
+gen_rob_falcos_ship_is_under_maintenance:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x147F0
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_rob_falcos_ship_is_under_maintenance
+
+gen_rob_good_luck_fox:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x13FB0
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_rob_good_luck_fox
+
+gen_rob_is_in_the_docking_bay:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x148D0
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_rob_is_in_the_docking_bay
+
+gen_rob_location_confirmed:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x13BD0
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_rob_location_confirmed
+
+gen_rob_maintenance_complete_on_falcos_ship:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x148F0
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_rob_maintenance_complete_on_falcos_ship
+
+gen_rob_on_falcos_ship:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x14930
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_rob_on_falcos_ship
+
+gen_rob_on_peppys_ship:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x14970
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_rob_on_peppys_ship
+
+gen_rob_on_slippys_ship:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x149B0
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_rob_on_slippys_ship
+
+gen_rob_peppys_ship_is_in_for_repairs:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x14810
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_rob_peppys_ship_is_in_for_repairs
+
+gen_rob_peppys_ship_is_in_the_docking_bay:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x14870
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_rob_peppys_ship_is_in_the_docking_bay
+
+gen_rob_repairs_complete:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x14910
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_rob_repairs_complete
+
+gen_rob_sending_supplies:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x13BF0
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_rob_sending_supplies
+
+gen_rob_ship:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x148B0
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_rob_ship
+
+gen_rob_slippys:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x14890
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_rob_slippys
+
+gen_rob_slippys_ship_is_in_for_repairs:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x14830
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_rob_slippys_ship_is_in_for_repairs
+
+gen_slippy_a:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x14550
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_slippy_a
+
+gen_slippy_ahhh:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xB550
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: gen_slippy_ahhh
+
+gen_slippy_are_you_okay:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x14210
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_slippy_are_you_okay
+
+gen_slippy_data_analysis_complete:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x6BB0
+  parent: 0x6680
+  sampleBankId: 2
+  symbol: gen_slippy_data_analysis_complete
+
+gen_slippy_did_it:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xF230
+  parent: 0xEBA0
+  sampleBankId: 2
+  symbol: gen_slippy_did_it
+
+gen_slippy_enemy_shield_analyzed:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x4CD0
+  parent: 0x4520
+  sampleBankId: 2
+  symbol: gen_slippy_enemy_shield_analyzed
+
+gen_slippy_fox:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x13B10
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_slippy_fox
+
+gen_slippy_fox_get_this_guy_off_me:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xB430
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: gen_slippy_fox_get_this_guy_off_me
+
+gen_slippy_got_one:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xB7D0
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: gen_slippy_got_one
+
+gen_slippy_got_you_now:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xB750
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: gen_slippy_got_you_now
+
+gen_slippy_here_it_comes:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x6BD0
+  parent: 0x6680
+  sampleBankId: 2
+  symbol: gen_slippy_here_it_comes
+
+gen_slippy_hey_he_was_mine:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x13A50
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_slippy_hey_he_was_mine
+
+gen_slippy_hey_whats_the_big_idea:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x13970
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_slippy_hey_whats_the_big_idea
+
+gen_slippy_hold:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x14530
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_slippy_hold
+
+gen_slippy_hows_the_arwing_doing_fox:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x14070
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_slippy_hows_the_arwing_doing_fox
+
+gen_slippy_i_got_the_last_one:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xBF30
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: gen_slippy_i_got_the_last_one
+
+gen_slippy_i_thought_i_was_a_goner:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x137D0
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_slippy_i_thought_i_was_a_goner
+
+gen_slippy_im_fine_im_fine:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x13750
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_slippy_im_fine_im_fine
+
+gen_slippy_im_going_down:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x15F10
+  parent: 0x15A20
+  sampleBankId: 2
+  symbol: gen_slippy_im_going_down
+
+gen_slippy_im_going_left:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x15E90
+  parent: 0x15A20
+  sampleBankId: 2
+  symbol: gen_slippy_im_going_left
+
+gen_slippy_im_going_right:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x15E70
+  parent: 0x15A20
+  sampleBankId: 2
+  symbol: gen_slippy_im_going_right
+
+gen_slippy_im_going_up:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x15ED0
+  parent: 0x15A20
+  sampleBankId: 2
+  symbol: gen_slippy_im_going_up
+
+gen_slippy_im_having_some_trouble_here:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x13790
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_slippy_im_having_some_trouble_here
+
+gen_slippy_im_hit:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xB570
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: gen_slippy_im_hit
+
+gen_slippy_im_monkey_food_if_i_dont_leave:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x13BB0
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_slippy_im_monkey_food_if_i_dont_leave
+
+gen_slippy_ive:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xB730
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: gen_slippy_ive
+
+gen_slippy_look_out_behind_you:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x14350
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_slippy_look_out_behind_you
+
+gen_slippy_nooo:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x13A30
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_slippy_nooo
+
+gen_slippy_oh_no:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x144D0
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_slippy_oh_no
+
+gen_slippy_slippys_hit:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x13910
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_slippy_slippys_hit
+
+gen_slippy_that_was_too_close:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xB630
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: gen_slippy_that_was_too_close
+
+gen_slippy_there_ya_go:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x5050
+  parent: 0x4520
+  sampleBankId: 2
+  symbol: gen_slippy_there_ya_go
+
+gen_slippy_this_is_really_starting_to:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xB490
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: gen_slippy_this_is_really_starting_to
+
+gen_slippy_tick_me_off:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xB4B0
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: gen_slippy_tick_me_off
+
+gen_slippy_to_charge_your_laser:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x14570
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_slippy_to_charge_your_laser
+
+gen_slippy_watch_out:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x145D0
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_slippy_watch_out
+
+gen_slippy_what_do_you_think_youre_doing:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x13AF0
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_slippy_what_do_you_think_youre_doing
+
+gen_slippy_whew:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xB610
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: gen_slippy_whew
+
+gen_slippy_whew_youre_alright:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x14470
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: gen_slippy_whew_youre_alright
+
+gen_slippy_yeah_yeah:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x9D10
+  parent: 0x96A0
+  sampleBankId: 2
+  symbol: gen_slippy_yeah_yeah
+
+gen_slippy_yippee:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xF1F0
+  parent: 0xEBA0
+  sampleBankId: 2
+  symbol: gen_slippy_yippee
+
+gen_slippy_you:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xF210
+  parent: 0xEBA0
+  sampleBankId: 2
+  symbol: gen_slippy_you
+
+gen_slippy_youre_not_gettin_away_that_easy:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xB690
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: gen_slippy_youre_not_gettin_away_that_easy
+
+gen_wolf_is_that_all_youve_got:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x12A10
+  parent: 0x12400
+  sampleBankId: 2
+  symbol: gen_wolf_is_that_all_youve_got
+
+gen_wolf_what:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x129F0
+  parent: 0x12400
+  sampleBankId: 2
+  symbol: gen_wolf_what
+
+ka_bill_all_units_report:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x11A50
+  parent: 0x115E0
+  sampleBankId: 2
+  symbol: ka_bill_all_units_report
+
+ka_bill_bulldog_unit:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x11A10
+  parent: 0x115E0
+  sampleBankId: 2
+  symbol: ka_bill_bulldog_unit
+
+ka_bill_care_fox:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x11CD0
+  parent: 0x115E0
+  sampleBankId: 2
+  symbol: ka_bill_care_fox
+
+ka_bill_cover_the_base:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x119F0
+  parent: 0x115E0
+  sampleBankId: 2
+  symbol: ka_bill_cover_the_base
+
+ka_bill_dont_let_anything_through:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x11A30
+  parent: 0x115E0
+  sampleBankId: 2
+  symbol: ka_bill_dont_let_anything_through
+
+ka_bill_enemy_mothership_approaching:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x11A90
+  parent: 0x115E0
+  sampleBankId: 2
+  symbol: ka_bill_enemy_mothership_approaching
+
+ka_bill_fox:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x11C10
+  parent: 0x115E0
+  sampleBankId: 2
+  symbol: ka_bill_fox
+
+ka_bill_fox_thats_one_of_ours:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x119B0
+  parent: 0x115E0
+  sampleBankId: 2
+  symbol: ka_bill_fox_thats_one_of_ours
+
+ka_bill_fox_you_made_it:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x118B0
+  parent: 0x115E0
+  sampleBankId: 2
+  symbol: ka_bill_fox_you_made_it
+
+ka_bill_get_outta_here_now:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x11C30
+  parent: 0x115E0
+  sampleBankId: 2
+  symbol: ka_bill_get_outta_here_now
+
+ka_bill_go_for_the_four_hatches_on_the_underside:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x11AF0
+  parent: 0x115E0
+  sampleBankId: 2
+  symbol: ka_bill_go_for_the_four_hatches_on_the_underside
+
+ka_bill_hang_on_guys:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x117E0
+  parent: 0x115E0
+  sampleBankId: 2
+  symbol: ka_bill_hang_on_guys
+
+ka_bill_help_is_on_the_way:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x11890
+  parent: 0x115E0
+  sampleBankId: 2
+  symbol: ka_bill_help_is_on_the_way
+
+ka_bill_hurry:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x11BD0
+  parent: 0x115E0
+  sampleBankId: 2
+  symbol: ka_bill_hurry
+
+ka_bill_hurry_up_and_take_out_that_core:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x11B90
+  parent: 0x115E0
+  sampleBankId: 2
+  symbol: ka_bill_hurry_up_and_take_out_that_core
+
+ka_bill_husky_unit:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x119D0
+  parent: 0x115E0
+  sampleBankId: 2
+  symbol: ka_bill_husky_unit
+
+ka_bill_im_glad_were_on_the_same_team_fox:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x11D10
+  parent: 0x115E0
+  sampleBankId: 2
+  symbol: ka_bill_im_glad_were_on_the_same_team_fox
+
+ka_bill_just_like_old_times_eh_fox:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x11D50
+  parent: 0x115E0
+  sampleBankId: 2
+  symbol: ka_bill_just_like_old_times_eh_fox
+
+ka_bill_stand_by_to_attack:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x11B70
+  parent: 0x115E0
+  sampleBankId: 2
+  symbol: ka_bill_stand_by_to_attack
+
+ka_bill_stick_around_for_a_while:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x11D70
+  parent: 0x115E0
+  sampleBankId: 2
+  symbol: ka_bill_stick_around_for_a_while
+
+ka_bill_take:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x11CB0
+  parent: 0x115E0
+  sampleBankId: 2
+  symbol: ka_bill_take
+
+ka_bill_the_core_has_appeared:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x11B50
+  parent: 0x115E0
+  sampleBankId: 2
+  symbol: ka_bill_the_core_has_appeared
+
+ka_bill_the_hatches_are_open:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x11B10
+  parent: 0x115E0
+  sampleBankId: 2
+  symbol: ka_bill_the_hatches_are_open
+
+ka_bill_theres_not_much_time_left:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x11BB0
+  parent: 0x115E0
+  sampleBankId: 2
+  symbol: ka_bill_theres_not_much_time_left
+
+ka_bill_theres_some_sort_of_energy_reaction:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x11B30
+  parent: 0x115E0
+  sampleBankId: 2
+  symbol: ka_bill_theres_some_sort_of_energy_reaction
+
+ka_bill_try_shooting_the_bad_guys_fox:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x11990
+  parent: 0x115E0
+  sampleBankId: 2
+  symbol: ka_bill_try_shooting_the_bad_guys_fox
+
+ka_bill_we_can_catch_up_later_fox:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x11930
+  parent: 0x115E0
+  sampleBankId: 2
+  symbol: ka_bill_we_can_catch_up_later_fox
+
+ka_bill_yeehaw_you_did_it:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x11BF0
+  parent: 0x115E0
+  sampleBankId: 2
+  symbol: ka_bill_yeehaw_you_did_it
+
+ka_bill_youve_become_quite_a_pilot:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x11AB0
+  parent: 0x115E0
+  sampleBankId: 2
+  symbol: ka_bill_youve_become_quite_a_pilot
+
+ka_falco_man_theres_just_no_end_to_these_guys:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x11A70
+  parent: 0x115E0
+  sampleBankId: 2
+  symbol: ka_falco_man_theres_just_no_end_to_these_guys
+
+ka_fox_all_aircraft_break_away:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x11C50
+  parent: 0x115E0
+  sampleBankId: 2
+  symbol: ka_fox_all_aircraft_break_away
+
+ka_fox_bill:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x118D0
+  parent: 0x115E0
+  sampleBankId: 2
+  symbol: ka_fox_bill
+
+ka_fox_dang:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x11C70
+  parent: 0x115E0
+  sampleBankId: 2
+  symbol: ka_fox_dang
+
+ka_fox_i_cant_believe_it:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x11910
+  parent: 0x115E0
+  sampleBankId: 2
+  symbol: ka_fox_i_cant_believe_it
+
+ka_fox_is_that_you:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x118F0
+  parent: 0x115E0
+  sampleBankId: 2
+  symbol: ka_fox_is_that_you
+
+ka_fox_you_owe_me_one:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x11D30
+  parent: 0x115E0
+  sampleBankId: 2
+  symbol: ka_fox_you_owe_me_one
+
+ka_fox_you_too_bill:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x11CF0
+  parent: 0x115E0
+  sampleBankId: 2
+  symbol: ka_fox_you_too_bill
+
+ka_peppy_dont_get_so_down_fox:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x11C90
+  parent: 0x115E0
+  sampleBankId: 2
+  symbol: ka_peppy_dont_get_so_down_fox
+
+ka_peppy_enemy_down:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x11DB0
+  parent: 0x115E0
+  sampleBankId: 2
+  symbol: ka_peppy_enemy_down
+
+ka_peppy_wait_that_was_one_of_ours:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x11DD0
+  parent: 0x115E0
+  sampleBankId: 2
+  symbol: ka_peppy_wait_that_was_one_of_ours
+
+ka_slippy_from_the_bad:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x11970
+  parent: 0x115E0
+  sampleBankId: 2
+  symbol: ka_slippy_from_the_bad
+
+ka_slippy_hard_to_tell_the_good_guys:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x11950
+  parent: 0x115E0
+  sampleBankId: 2
+  symbol: ka_slippy_hard_to_tell_the_good_guys
+
+ma_falco_full_up_here:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x109B0
+  parent: 0x106C0
+  sampleBankId: 2
+  symbol: ma_falco_full_up_here
+
+ma_falco_hey_ive_got_my_hands:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x10990
+  parent: 0x106C0
+  sampleBankId: 2
+  symbol: ma_falco_hey_ive_got_my_hands
+
+ma_falco_i_see_the_fuel_bunker_on_the_right_side:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x109F0
+  parent: 0x106C0
+  sampleBankId: 2
+  symbol: ma_falco_i_see_the_fuel_bunker_on_the_right_side
+
+ma_falco_im_here_to_rescue_you:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x13CB0
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: ma_falco_im_here_to_rescue_you
+
+ma_falco_katt:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x10AB0
+  parent: 0x106C0
+  sampleBankId: 2
+  symbol: ma_falco_katt
+
+ma_falco_not_you_again:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x10AD0
+  parent: 0x106C0
+  sampleBankId: 2
+  symbol: ma_falco_not_you_again
+
+ma_falco_now_its_our_turn_to_kick_some_tail:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x10C10
+  parent: 0x106C0
+  sampleBankId: 2
+  symbol: ma_falco_now_its_our_turn_to_kick_some_tail
+
+ma_fox_i_spot_the_train:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x108C0
+  parent: 0x106C0
+  sampleBankId: 2
+  symbol: ma_fox_i_spot_the_train
+
+ma_fox_im_taking_it_out:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x10970
+  parent: 0x106C0
+  sampleBankId: 2
+  symbol: ma_fox_im_taking_it_out
+
+ma_katt_boys:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x10A70
+  parent: 0x106C0
+  sampleBankId: 2
+  symbol: ma_katt_boys
+
+ma_katt_im_crushed:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x10A90
+  parent: 0x106C0
+  sampleBankId: 2
+  symbol: ma_katt_im_crushed
+
+ma_katt_im_outta_here:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x10C50
+  parent: 0x106C0
+  sampleBankId: 2
+  symbol: ma_katt_im_outta_here
+
+ma_katt_ive_got_the_left:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x10AF0
+  parent: 0x106C0
+  sampleBankId: 2
+  symbol: ma_katt_ive_got_the_left
+
+ma_katt_see_you_again:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x10BD0
+  parent: 0x106C0
+  sampleBankId: 2
+  symbol: ma_katt_see_you_again
+
+ma_katt_startin_without_me:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x10A50
+  parent: 0x106C0
+  sampleBankId: 2
+  symbol: ma_katt_startin_without_me
+
+ma_katt_take_care_falco:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x10C70
+  parent: 0x106C0
+  sampleBankId: 2
+  symbol: ma_katt_take_care_falco
+
+ma_katt_you_take_the_right_hon:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x10B10
+  parent: 0x106C0
+  sampleBankId: 2
+  symbol: ma_katt_you_take_the_right_hon
+
+ma_katt_youre_pretty_good_tiger:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x10B90
+  parent: 0x106C0
+  sampleBankId: 2
+  symbol: ma_katt_youre_pretty_good_tiger
+
+ma_mechbeth_come_a_little_closer:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x10D10
+  parent: 0x106C0
+  sampleBankId: 2
+  symbol: ma_mechbeth_come_a_little_closer
+
+ma_mechbeth_dang:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x10CB0
+  parent: 0x106C0
+  sampleBankId: 2
+  symbol: ma_mechbeth_dang
+
+ma_mechbeth_detatch_the_rear_vehicle:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x10CD0
+  parent: 0x106C0
+  sampleBankId: 2
+  symbol: ma_mechbeth_detatch_the_rear_vehicle
+
+ma_mechbeth_get_away:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x10E10
+  parent: 0x106C0
+  sampleBankId: 2
+  symbol: ma_mechbeth_get_away
+
+ma_mechbeth_heh_heh_heh_whats_wrong:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x10E30
+  parent: 0x106C0
+  sampleBankId: 2
+  symbol: ma_mechbeth_heh_heh_heh_whats_wrong
+
+ma_mechbeth_here_come_the_little_hyenas_now:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x10C90
+  parent: 0x106C0
+  sampleBankId: 2
+  symbol: ma_mechbeth_here_come_the_little_hyenas_now
+
+ma_mechbeth_here_ya_go:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x10D30
+  parent: 0x106C0
+  sampleBankId: 2
+  symbol: ma_mechbeth_here_ya_go
+
+ma_mechbeth_hit_the_brakes:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x10E90
+  parent: 0x106C0
+  sampleBankId: 2
+  symbol: ma_mechbeth_hit_the_brakes
+
+ma_mechbeth_i_cant:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x10EB0
+  parent: 0x106C0
+  sampleBankId: 2
+  symbol: ma_mechbeth_i_cant
+
+ma_mechbeth_i_didnt_expect_to_have_to_use_this:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x10D90
+  parent: 0x106C0
+  sampleBankId: 2
+  symbol: ma_mechbeth_i_didnt_expect_to_have_to_use_this
+
+ma_mechbeth_ill_lure_these_guys_to_the_front:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x10D70
+  parent: 0x106C0
+  sampleBankId: 2
+  symbol: ma_mechbeth_ill_lure_these_guys_to_the_front
+
+ma_mechbeth_no:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x10DF0
+  parent: 0x106C0
+  sampleBankId: 2
+  symbol: ma_mechbeth_no
+
+ma_mechbeth_no_2:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x10E70
+  parent: 0x106C0
+  sampleBankId: 2
+  symbol: ma_mechbeth_no_2
+
+ma_mechbeth_step_on_the_gas:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x10EF0
+  parent: 0x106C0
+  sampleBankId: 2
+  symbol: ma_mechbeth_step_on_the_gas
+
+ma_mechbeth_stop_it:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x10ED0
+  parent: 0x106C0
+  sampleBankId: 2
+  symbol: ma_mechbeth_stop_it
+
+ma_mechbeth_take_this:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x10F70
+  parent: 0x106C0
+  sampleBankId: 2
+  symbol: ma_mechbeth_take_this
+
+ma_mechbeth_theyre_not_takin_me_seriously:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x10D50
+  parent: 0x106C0
+  sampleBankId: 2
+  symbol: ma_mechbeth_theyre_not_takin_me_seriously
+
+ma_mechbeth_time_to_end_this:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x10F50
+  parent: 0x106C0
+  sampleBankId: 2
+  symbol: ma_mechbeth_time_to_end_this
+
+ma_mechbeth_try_this:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x10E50
+  parent: 0x106C0
+  sampleBankId: 2
+  symbol: ma_mechbeth_try_this
+
+ma_mechbeth_whats_wrong:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x10CF0
+  parent: 0x106C0
+  sampleBankId: 2
+  symbol: ma_mechbeth_whats_wrong
+
+ma_mechbeth_whoooa:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x10DD0
+  parent: 0x106C0
+  sampleBankId: 2
+  symbol: ma_mechbeth_whoooa
+
+ma_mechbeth_youre_too_slow:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x10F30
+  parent: 0x106C0
+  sampleBankId: 2
+  symbol: ma_mechbeth_youre_too_slow
+
+ma_mechbeth_youre_very_lucky:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x10DB0
+  parent: 0x106C0
+  sampleBankId: 2
+  symbol: ma_mechbeth_youre_very_lucky
+
+ma_peppy_change_the_switch_ahead:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x10A10
+  parent: 0x106C0
+  sampleBankId: 2
+  symbol: ma_peppy_change_the_switch_ahead
+
+ma_peppy_dont_let_em_get_to_the_supply_depot:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x109D0
+  parent: 0x106C0
+  sampleBankId: 2
+  symbol: ma_peppy_dont_let_em_get_to_the_supply_depot
+
+ma_peppy_im_sure_we_hurt_em_this_time:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x10BF0
+  parent: 0x106C0
+  sampleBankId: 2
+  symbol: ma_peppy_im_sure_we_hurt_em_this_time
+
+ma_peppy_okay_now_shoot_the_switcher:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x10B30
+  parent: 0x106C0
+  sampleBankId: 2
+  symbol: ma_peppy_okay_now_shoot_the_switcher
+
+ma_peppy_shoot_the_8_switches_to_open_the_lock:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x10A30
+  parent: 0x106C0
+  sampleBankId: 2
+  symbol: ma_peppy_shoot_the_8_switches_to_open_the_lock
+
+ma_peppy_well_at_least_we_can_take_this_boss_out:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x10B70
+  parent: 0x106C0
+  sampleBankId: 2
+  symbol: ma_peppy_well_at_least_we_can_take_this_boss_out
+
+ma_slippy_hows_the_landmaster_fox:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x10F10
+  parent: 0x106C0
+  sampleBankId: 2
+  symbol: ma_slippy_hows_the_landmaster_fox
+
+ma_slippy_i_can_see_the_look_on_their_stupid_faces:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x10C30
+  parent: 0x106C0
+  sampleBankId: 2
+  symbol: ma_slippy_i_can_see_the_look_on_their_stupid_faces
+
+map_fox_affirmative_general:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x3670
+  parent: 0x2F00
+  sampleBankId: 1
+  symbol: map_fox_affirmative_general
+
+map_fox_andross_wont_have_his_way_with_me:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x3390
+  parent: 0x2F00
+  sampleBankId: 1
+  symbol: map_fox_andross_wont_have_his_way_with_me
+
+map_fox_deploy_the_blue_marine:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x36F0
+  parent: 0x2F00
+  sampleBankId: 1
+  symbol: map_fox_deploy_the_blue_marine
+
+map_fox_dont_worry_sir:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x3790
+  parent: 0x2F00
+  sampleBankId: 1
+  symbol: map_fox_dont_worry_sir
+
+map_fox_i_cant_leave_slippy_hangin:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x3450
+  parent: 0x2F00
+  sampleBankId: 1
+  symbol: map_fox_i_cant_leave_slippy_hangin
+
+map_fox_i_wont_let_you_down_sir:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x33F0
+  parent: 0x2F00
+  sampleBankId: 1
+  symbol: map_fox_i_wont_let_you_down_sir
+
+map_fox_ill_be_careful:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x3890
+  parent: 0x2F00
+  sampleBankId: 1
+  symbol: map_fox_ill_be_careful
+
+map_fox_ill_check_it_out:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x3490
+  parent: 0x2F00
+  sampleBankId: 1
+  symbol: map_fox_ill_check_it_out
+
+map_fox_ill_do_my_best:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x3370
+  parent: 0x2F00
+  sampleBankId: 1
+  symbol: map_fox_ill_do_my_best
+
+map_fox_im_on_it:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x3530
+  parent: 0x2F00
+  sampleBankId: 1
+  symbol: map_fox_im_on_it
+
+map_fox_im_on_my_way:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x3810
+  parent: 0x2F00
+  sampleBankId: 1
+  symbol: map_fox_im_on_my_way
+
+map_fox_itll_be_a_piece_of_cake_general:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x3610
+  parent: 0x2F00
+  sampleBankId: 1
+  symbol: map_fox_itll_be_a_piece_of_cake_general
+
+map_fox_roger_general:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x34D0
+  parent: 0x2F00
+  sampleBankId: 1
+  symbol: map_fox_roger_general
+
+map_fox_will_do_general:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x35B0
+  parent: 0x2F00
+  sampleBankId: 1
+  symbol: map_fox_will_do_general
+
+map_fox_yes_sir:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x36D0
+  parent: 0x2F00
+  sampleBankId: 1
+  symbol: map_fox_yes_sir
+
+map_narrator_a_few_years_have_passed:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x3270
+  parent: 0x2F00
+  sampleBankId: 1
+  symbol: map_narrator_a_few_years_have_passed
+
+map_narrator_and_free_the_lylat_system:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x32D0
+  parent: 0x2F00
+  sampleBankId: 1
+  symbol: map_narrator_and_free_the_lylat_system
+
+map_narrator_and_returned_home_to_tell_james_son_fox_about_his_fathers_fate:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x3250
+  parent: 0x2F00
+  sampleBankId: 1
+  symbol: map_narrator_and_returned_home_to_tell_james_son_fox_about_his_fathers_fate
+
+map_narrator_andross_has_again_invaded_the_lylat_system:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x3290
+  parent: 0x2F00
+  sampleBankId: 1
+  symbol: map_narrator_andross_has_again_invaded_the_lylat_system
+
+map_narrator_corneria_fourth_planet_of_the_lylat_system_the_evil_andross_turned_this_once_thriving_system:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x3100
+  parent: 0x2F00
+  sampleBankId: 1
+  symbol: map_narrator_corneria_fourth_planet_of_the_lylat_system_the_evil_andross_turned_this_once_thriving_system
+
+map_narrator_five_years_later_general_pepper_noticed_strange_activity_coming_from_venom_james_mccloud_pigma_dengar_and_peppy_hare_of_the_star_fox_team_were_sent_to_investigate:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x31F0
+  parent: 0x2F00
+  sampleBankId: 1
+  symbol: map_narrator_five_years_later_general_pepper_noticed_strange_activity_coming_from_venom_james_mccloud_pigma_dengar_and_peppy_hare_of_the_star_fox_team_were_sent_to_investigate
+
+map_narrator_general_pepper_has_turned_to_a_new_star_fox_team_headed_by_fox_mccloud_to_save_corneria:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x32B0
+  parent: 0x2F00
+  sampleBankId: 1
+  symbol: map_narrator_general_pepper_has_turned_to_a_new_star_fox_team_headed_by_fox_mccloud_to_save_corneria
+
+map_narrator_general_pepper_of_the_cornerian_army_was_successful_in_exiling_this_maniacle_scientist_to_the_barren_deserted_planet_venom:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x31D0
+  parent: 0x2F00
+  sampleBankId: 1
+  symbol: map_narrator_general_pepper_of_the_cornerian_army_was_successful_in_exiling_this_maniacle_scientist_to_the_barren_deserted_planet_venom
+
+map_narrator_into_a_wasteland_of_near_extinction:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x31B0
+  parent: 0x2F00
+  sampleBankId: 1
+  symbol: map_narrator_into_a_wasteland_of_near_extinction
+
+map_narrator_once_again:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x32F0
+  parent: 0x2F00
+  sampleBankId: 1
+  symbol: map_narrator_once_again
+
+map_narrator_peppy_barely_escaped_venom:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x3230
+  parent: 0x2F00
+  sampleBankId: 1
+  symbol: map_narrator_peppy_barely_escaped_venom
+
+map_narrator_upon_their_arrival_pigma_betrayed_the_team_and_james_and_peppy_were_captured_by_andross:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x3210
+  parent: 0x2F00
+  sampleBankId: 1
+  symbol: map_narrator_upon_their_arrival_pigma_betrayed_the_team_and_james_and_peppy_were_captured_by_andross
+
+map_pepper_be_careful:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x3770
+  parent: 0x2F00
+  sampleBankId: 1
+  symbol: map_pepper_be_careful
+
+map_pepper_be_careful_fox:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x3510
+  parent: 0x2F00
+  sampleBankId: 1
+  symbol: map_pepper_be_careful_fox
+
+map_pepper_be_reasonable_fox:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x3870
+  parent: 0x2F00
+  sampleBankId: 1
+  symbol: map_pepper_be_reasonable_fox
+
+map_pepper_come_back_in_one_piece_fox:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x3590
+  parent: 0x2F00
+  sampleBankId: 1
+  symbol: map_pepper_come_back_in_one_piece_fox
+
+map_pepper_dont_go_burning_that_arwing:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x3850
+  parent: 0x2F00
+  sampleBankId: 1
+  symbol: map_pepper_dont_go_burning_that_arwing
+
+map_pepper_fox:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x37B0
+  parent: 0x2F00
+  sampleBankId: 1
+  symbol: map_pepper_fox
+
+map_pepper_great_idea_fox:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x35F0
+  parent: 0x2F00
+  sampleBankId: 1
+  symbol: map_pepper_great_idea_fox
+
+map_pepper_help_us_out_here:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x37F0
+  parent: 0x2F00
+  sampleBankId: 1
+  symbol: map_pepper_help_us_out_here
+
+map_pepper_i_want_you_to_take_out_the_enemy_bio_weapon:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x36B0
+  parent: 0x2F00
+  sampleBankId: 1
+  symbol: map_pepper_i_want_you_to_take_out_the_enemy_bio_weapon
+
+map_pepper_if_you_destroy_the_satellite_we_can_go_straight_for_venom:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x34F0
+  parent: 0x2F00
+  sampleBankId: 1
+  symbol: map_pepper_if_you_destroy_the_satellite_we_can_go_straight_for_venom
+
+map_pepper_impressive_star_fox:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x33B0
+  parent: 0x2F00
+  sampleBankId: 1
+  symbol: map_pepper_impressive_star_fox
+
+map_pepper_its_about:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x3310
+  parent: 0x2F00
+  sampleBankId: 1
+  symbol: map_pepper_its_about
+
+map_pepper_its_almost_over:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x3550
+  parent: 0x2F00
+  sampleBankId: 1
+  symbol: map_pepper_its_almost_over
+
+map_pepper_its_too_dangerous_there:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x3430
+  parent: 0x2F00
+  sampleBankId: 1
+  symbol: map_pepper_its_too_dangerous_there
+
+map_pepper_katina_is_battling_the_enemy:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x3630
+  parent: 0x2F00
+  sampleBankId: 1
+  symbol: map_pepper_katina_is_battling_the_enemy
+
+map_pepper_now_watch_out_for_enemies_in_the_asteroid_field:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x33D0
+  parent: 0x2F00
+  sampleBankId: 1
+  symbol: map_pepper_now_watch_out_for_enemies_in_the_asteroid_field
+
+map_pepper_recover_our_base_from_the_enemy_army:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x34B0
+  parent: 0x2F00
+  sampleBankId: 1
+  symbol: map_pepper_recover_our_base_from_the_enemy_army
+
+map_pepper_reports_indicate_that_andross_is_working_on_some_secret_weapon:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x3470
+  parent: 0x2F00
+  sampleBankId: 1
+  symbol: map_pepper_reports_indicate_that_andross_is_working_on_some_secret_weapon
+
+map_pepper_so_youre_going_to_attack_the_enemy_base:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x35D0
+  parent: 0x2F00
+  sampleBankId: 1
+  symbol: map_pepper_so_youre_going_to_attack_the_enemy_base
+
+map_pepper_star_fox:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x3690
+  parent: 0x2F00
+  sampleBankId: 1
+  symbol: map_pepper_star_fox
+
+map_pepper_that_areas_an_oven:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x3830
+  parent: 0x2F00
+  sampleBankId: 1
+  symbol: map_pepper_that_areas_an_oven
+
+map_pepper_the_enemy_army_is_gunning_for_you:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x3750
+  parent: 0x2F00
+  sampleBankId: 1
+  symbol: map_pepper_the_enemy_army_is_gunning_for_you
+
+map_pepper_theres_an_enemy_base_there:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x3710
+  parent: 0x2F00
+  sampleBankId: 1
+  symbol: map_pepper_theres_an_enemy_base_there
+
+map_pepper_time_you_showed_up_fox:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x3330
+  parent: 0x2F00
+  sampleBankId: 1
+  symbol: map_pepper_time_you_showed_up_fox
+
+map_pepper_were_in_your_debt:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x3570
+  parent: 0x2F00
+  sampleBankId: 1
+  symbol: map_pepper_were_in_your_debt
+
+map_pepper_were_under_attack:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x37D0
+  parent: 0x2F00
+  sampleBankId: 1
+  symbol: map_pepper_were_under_attack
+
+map_pepper_what_are_you_doing:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x3410
+  parent: 0x2F00
+  sampleBankId: 1
+  symbol: map_pepper_what_are_you_doing
+
+map_pepper_will_you_help_em_out:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x3650
+  parent: 0x2F00
+  sampleBankId: 1
+  symbol: map_pepper_will_you_help_em_out
+
+map_pepper_youre_the_only_hope_for_our_world:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x3350
+  parent: 0x2F00
+  sampleBankId: 1
+  symbol: map_pepper_youre_the_only_hope_for_our_world
+
+me_falco_are_you_gonna_listen_to_that_monkey:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x6010
+  parent: 0x5A80
+  sampleBankId: 2
+  symbol: me_falco_are_you_gonna_listen_to_that_monkey
+
+me_falco_i_guess_its_your_turn_to_be_thankful:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x5E90
+  parent: 0x5A80
+  sampleBankId: 2
+  symbol: me_falco_i_guess_its_your_turn_to_be_thankful
+
+me_fox_but_im_in_a_hurry:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x60D0
+  parent: 0x5A80
+  sampleBankId: 2
+  symbol: me_fox_but_im_in_a_hurry
+
+me_fox_sorry_to_jet:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x60B0
+  parent: 0x5A80
+  sampleBankId: 2
+  symbol: me_fox_sorry_to_jet
+
+me_fox_were_heading_into_the_asteroids:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x5D50
+  parent: 0x5A80
+  sampleBankId: 2
+  symbol: me_fox_were_heading_into_the_asteroids
+
+me_meteo_crusher_defeat:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x5FF0
+  parent: 0x5A80
+  sampleBankId: 2
+  symbol: me_meteo_crusher_defeat
+
+me_meteo_crusher_does_not_work:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x6090
+  parent: 0x5A80
+  sampleBankId: 2
+  symbol: me_meteo_crusher_does_not_work
+
+me_meteo_crusher_hah_youre_not_as:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x6030
+  parent: 0x5A80
+  sampleBankId: 2
+  symbol: me_meteo_crusher_hah_youre_not_as
+
+me_meteo_crusher_how_about:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x5F70
+  parent: 0x5A80
+  sampleBankId: 2
+  symbol: me_meteo_crusher_how_about
+
+me_meteo_crusher_i_admit:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x5FD0
+  parent: 0x5A80
+  sampleBankId: 2
+  symbol: me_meteo_crusher_i_admit
+
+me_meteo_crusher_i_cannot_allow_you_to_go_any_further:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x5EF0
+  parent: 0x5A80
+  sampleBankId: 2
+  symbol: me_meteo_crusher_i_cannot_allow_you_to_go_any_further
+
+me_meteo_crusher_i_cant_believe_i_lost_to_this:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x60F0
+  parent: 0x5A80
+  sampleBankId: 2
+  symbol: me_meteo_crusher_i_cant_believe_i_lost_to_this
+
+me_meteo_crusher_if_this:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x6070
+  parent: 0x5A80
+  sampleBankId: 2
+  symbol: me_meteo_crusher_if_this
+
+me_meteo_crusher_im_no_match_for_you:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x5FB0
+  parent: 0x5A80
+  sampleBankId: 2
+  symbol: me_meteo_crusher_im_no_match_for_you
+
+me_meteo_crusher_ive_underestimated_you:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x5F50
+  parent: 0x5A80
+  sampleBankId: 2
+  symbol: me_meteo_crusher_ive_underestimated_you
+
+me_meteo_crusher_lets_see_what_youve_got:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x5F10
+  parent: 0x5A80
+  sampleBankId: 2
+  symbol: me_meteo_crusher_lets_see_what_youve_got
+
+me_meteo_crusher_scum:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x6110
+  parent: 0x5A80
+  sampleBankId: 2
+  symbol: me_meteo_crusher_scum
+
+me_meteo_crusher_stupid_as_you_look:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x6050
+  parent: 0x5A80
+  sampleBankId: 2
+  symbol: me_meteo_crusher_stupid_as_you_look
+
+me_meteo_crusher_this:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x5F90
+  parent: 0x5A80
+  sampleBankId: 2
+  symbol: me_meteo_crusher_this
+
+me_meteo_crusher_youre_more_cunning_than_i_thought:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x6130
+  parent: 0x5A80
+  sampleBankId: 2
+  symbol: me_meteo_crusher_youre_more_cunning_than_i_thought
+
+me_peppy_be_careful_its_a_trap:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x5DD0
+  parent: 0x5A80
+  sampleBankId: 2
+  symbol: me_peppy_be_careful_its_a_trap
+
+me_peppy_incoming_message_from_rob64:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x13E90
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: me_peppy_incoming_message_from_rob64
+
+me_peppy_its_quiet:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x5D90
+  parent: 0x5A80
+  sampleBankId: 2
+  symbol: me_peppy_its_quiet
+
+me_peppy_quit_dinkin_around_slip:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x5D30
+  parent: 0x5A80
+  sampleBankId: 2
+  symbol: me_peppy_quit_dinkin_around_slip
+
+me_peppy_that_shields_absorbing_the_laser:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x5F30
+  parent: 0x5A80
+  sampleBankId: 2
+  symbol: me_peppy_that_shields_absorbing_the_laser
+
+me_peppy_too_quiet:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x5DB0
+  parent: 0x5A80
+  sampleBankId: 2
+  symbol: me_peppy_too_quiet
+
+me_slippy_can_you_make_it:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x5E50
+  parent: 0x5A80
+  sampleBankId: 2
+  symbol: me_slippy_can_you_make_it
+
+me_slippy_here_comes_a_big_one:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x5D70
+  parent: 0x5A80
+  sampleBankId: 2
+  symbol: me_slippy_here_comes_a_big_one
+
+me_slippy_take_that:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x5ED0
+  parent: 0x5A80
+  sampleBankId: 2
+  symbol: me_slippy_take_that
+
+me_slippy_things_are_starting_to_heat_up:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x5C80
+  parent: 0x5A80
+  sampleBankId: 2
+  symbol: me_slippy_things_are_starting_to_heat_up
+
+me_slippy_woah:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x5E30
+  parent: 0x5A80
+  sampleBankId: 2
+  symbol: me_slippy_woah
+
+me_slippy_you_want_a_piece_of_me:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x5EB0
+  parent: 0x5A80
+  sampleBankId: 2
+  symbol: me_slippy_you_want_a_piece_of_me
+
+ms_:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x16D40
+  parent: 0x16400
+  sampleBankId: 3
+  symbol: ms_
+
+ms_bass_drum:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x16A00
+  parent: 0x16400
+  sampleBankId: 3
+  symbol: ms_bass_drum
+
+ms_bass_drum_2:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x17BE0
+  parent: 0x177A0
+  sampleBankId: 3
+  symbol: ms_bass_drum_2
+
+ms_bass_drum_3:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x17DA0
+  parent: 0x177A0
+  sampleBankId: 3
+  symbol: ms_bass_drum_3
+
+ms_cymbal:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x16990
+  parent: 0x16400
+  sampleBankId: 3
+  symbol: ms_cymbal
+
+ms_cymbal_2:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x17D30
+  parent: 0x177A0
+  sampleBankId: 3
+  symbol: ms_cymbal_2
+
+ms_cymbal_3:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x18DD0
+  parent: 0x18960
+  sampleBankId: 3
+  symbol: ms_cymbal_3
+
+ms_cymbal_4:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x197A0
+  parent: 0x192A0
+  sampleBankId: 3
+  symbol: ms_cymbal_4
+
+ms_cymbal_5:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x1A0F0
+  parent: 0x19C80
+  sampleBankId: 3
+  symbol: ms_cymbal_5
+
+ms_cymbal_6:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x1AAA0
+  parent: 0x1A5A0
+  sampleBankId: 3
+  symbol: ms_cymbal_6
+
+ms_digital_drum:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x16E20
+  parent: 0x16400
+  sampleBankId: 3
+  symbol: ms_digital_drum
+
+ms_digital_organ:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x19D40
+  parent: 0x19C80
+  sampleBankId: 3
+  symbol: ms_digital_organ
+
+ms_digital_organ_2:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x1B040
+  parent: 0x1AF80
+  sampleBankId: 3
+  symbol: ms_digital_organ_2
+
+ms_digital_tom:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x1BCF0
+  parent: 0x1B960
+  sampleBankId: 3
+  symbol: ms_digital_tom
+
+ms_digital_tom_drum:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x18BD0
+  parent: 0x18960
+  sampleBankId: 3
+  symbol: ms_digital_tom_drum
+
+ms_digital_tom_drum_2:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x195A0
+  parent: 0x192A0
+  sampleBankId: 3
+  symbol: ms_digital_tom_drum_2
+
+ms_digital_tom_drum_3:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x1B280
+  parent: 0x1AF80
+  sampleBankId: 3
+  symbol: ms_digital_tom_drum_3
+
+ms_discordant_string_hit:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x1D9C0
+  parent: 0x1D750
+  sampleBankId: 3
+  symbol: ms_discordant_string_hit
+
+ms_electric_organ:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x17E30
+  parent: 0x177A0
+  sampleBankId: 3
+  symbol: ms_electric_organ
+
+ms_gregorian_vocals:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x18050
+  parent: 0x177A0
+  sampleBankId: 3
+  symbol: ms_gregorian_vocals
+
+ms_gregorian_vocals_2:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x180E0
+  parent: 0x177A0
+  sampleBankId: 3
+  symbol: ms_gregorian_vocals_2
+
+ms_hammer_hit:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x16C40
+  parent: 0x16400
+  sampleBankId: 3
+  symbol: ms_hammer_hit
+
+ms_hammer_hit_2:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x16C0
+  parent: 0x0
+  sampleBankId: 0
+  symbol: ms_hammer_hit_2
+
+ms_horn:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x16690
+  parent: 0x16400
+  sampleBankId: 3
+  symbol: ms_horn
+
+ms_horn_2:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x17910
+  parent: 0x177A0
+  sampleBankId: 3
+  symbol: ms_horn_2
+
+ms_horn_3:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x19360
+  parent: 0x192A0
+  sampleBankId: 3
+  symbol: ms_horn_3
+
+ms_horn_4:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x1A660
+  parent: 0x1A5A0
+  sampleBankId: 3
+  symbol: ms_horn_4
+
+ms_low_flute:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x176C0
+  parent: 0x17620
+  sampleBankId: 3
+  symbol: ms_low_flute
+
+ms_oboe:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x17880
+  parent: 0x177A0
+  sampleBankId: 3
+  symbol: ms_oboe
+
+ms_pan_flute:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x164E0
+  parent: 0x16400
+  sampleBankId: 3
+  symbol: ms_pan_flute
+
+ms_plucked_strings:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x17FE0
+  parent: 0x177A0
+  sampleBankId: 3
+  symbol: ms_plucked_strings
+
+ms_reverse_strings:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x1C5E0
+  parent: 0x1C370
+  sampleBankId: 3
+  symbol: ms_reverse_strings
+
+ms_sawtooth_hit:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x19510
+  parent: 0x192A0
+  sampleBankId: 3
+  symbol: ms_sawtooth_hit
+
+ms_sawtooth_hit_2:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x19EF0
+  parent: 0x19C80
+  sampleBankId: 3
+  symbol: ms_sawtooth_hit_2
+
+ms_sawtooth_hit_3:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x1A8A0
+  parent: 0x1A5A0
+  sampleBankId: 3
+  symbol: ms_sawtooth_hit_3
+
+ms_sawtooth_hit_4:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x1B1F0
+  parent: 0x1AF80
+  sampleBankId: 3
+  symbol: ms_sawtooth_hit_4
+
+ms_sawtooth_synth:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x16A90
+  parent: 0x16400
+  sampleBankId: 3
+  symbol: ms_sawtooth_synth
+
+ms_sawtooth_synth_2:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x18B40
+  parent: 0x18960
+  sampleBankId: 3
+  symbol: ms_sawtooth_synth_2
+
+ms_sine_wave:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x16CB0
+  parent: 0x16400
+  sampleBankId: 3
+  symbol: ms_sine_wave
+
+ms_sine_wave_2:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x177F0
+  parent: 0x177A0
+  sampleBankId: 3
+  symbol: ms_sine_wave_2
+
+ms_sine_wave_3:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x18170
+  parent: 0x177A0
+  sampleBankId: 3
+  symbol: ms_sine_wave_3
+
+ms_snare_drum:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x168B0
+  parent: 0x16400
+  sampleBankId: 3
+  symbol: ms_snare_drum
+
+ms_snare_drum_2:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x16920
+  parent: 0x16400
+  sampleBankId: 3
+  symbol: ms_snare_drum_2
+
+ms_snare_drum_3:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x17C50
+  parent: 0x177A0
+  sampleBankId: 3
+  symbol: ms_snare_drum_3
+
+ms_snare_drum_4:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x17CC0
+  parent: 0x177A0
+  sampleBankId: 3
+  symbol: ms_snare_drum_4
+
+ms_snare_drum_5:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x18D60
+  parent: 0x18960
+  sampleBankId: 3
+  symbol: ms_snare_drum_5
+
+ms_snare_drum_6:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x1AA30
+  parent: 0x1A5A0
+  sampleBankId: 3
+  symbol: ms_snare_drum_6
+
+ms_snare_drum_roll:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x18C60
+  parent: 0x18960
+  sampleBankId: 3
+  symbol: ms_snare_drum_roll
+
+ms_snare_drum_roll_2:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x19630
+  parent: 0x192A0
+  sampleBankId: 3
+  symbol: ms_snare_drum_roll_2
+
+ms_snare_drum_roll_3:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x19F80
+  parent: 0x19C80
+  sampleBankId: 3
+  symbol: ms_snare_drum_roll_3
+
+ms_snare_drum_roll_4:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x1A930
+  parent: 0x1A5A0
+  sampleBankId: 3
+  symbol: ms_snare_drum_roll_4
+
+ms_snare_drum_roll_5:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x1B310
+  parent: 0x1AF80
+  sampleBankId: 3
+  symbol: ms_snare_drum_roll_5
+
+ms_strings:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x16B20
+  parent: 0x16400
+  sampleBankId: 3
+  symbol: ms_strings
+
+ms_strings_10:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x19E60
+  parent: 0x19C80
+  sampleBankId: 3
+  symbol: ms_strings_10
+
+ms_strings_11:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x1A780
+  parent: 0x1A5A0
+  sampleBankId: 3
+  symbol: ms_strings_11
+
+ms_strings_12:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x1A810
+  parent: 0x1A5A0
+  sampleBankId: 3
+  symbol: ms_strings_12
+
+ms_strings_13:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x1B0D0
+  parent: 0x1AF80
+  sampleBankId: 3
+  symbol: ms_strings_13
+
+ms_strings_14:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x1B160
+  parent: 0x1AF80
+  sampleBankId: 3
+  symbol: ms_strings_14
+
+ms_strings_2:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x16BB0
+  parent: 0x16400
+  sampleBankId: 3
+  symbol: ms_strings_2
+
+ms_strings_3:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x17EC0
+  parent: 0x177A0
+  sampleBankId: 3
+  symbol: ms_strings_3
+
+ms_strings_4:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x17F50
+  parent: 0x177A0
+  sampleBankId: 3
+  symbol: ms_strings_4
+
+ms_strings_5:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x18A20
+  parent: 0x18960
+  sampleBankId: 3
+  symbol: ms_strings_5
+
+ms_strings_6:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x18AB0
+  parent: 0x18960
+  sampleBankId: 3
+  symbol: ms_strings_6
+
+ms_strings_7:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x193F0
+  parent: 0x192A0
+  sampleBankId: 3
+  symbol: ms_strings_7
+
+ms_strings_8:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x19480
+  parent: 0x192A0
+  sampleBankId: 3
+  symbol: ms_strings_8
+
+ms_strings_9:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x19DD0
+  parent: 0x19C80
+  sampleBankId: 3
+  symbol: ms_strings_9
+
+ms_timpani:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x16840
+  parent: 0x16400
+  sampleBankId: 3
+  symbol: ms_timpani
+
+ms_timpani_3:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x18CF0
+  parent: 0x18960
+  sampleBankId: 3
+  symbol: ms_timpani_3
+
+ms_timpani_4:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x196C0
+  parent: 0x192A0
+  sampleBankId: 3
+  symbol: ms_timpani_4
+
+ms_timpani_5:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x1A010
+  parent: 0x19C80
+  sampleBankId: 3
+  symbol: ms_timpani_5
+
+ms_timpani_6:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x1A9C0
+  parent: 0x1A5A0
+  sampleBankId: 3
+  symbol: ms_timpani_6
+
+ms_triangle:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x167B0
+  parent: 0x16400
+  sampleBankId: 3
+  symbol: ms_triangle
+
+ms_triangle_2:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x17B50
+  parent: 0x177A0
+  sampleBankId: 3
+  symbol: ms_triangle_2
+
+ms_triangle_wave:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x1C550
+  parent: 0x1C370
+  sampleBankId: 3
+  symbol: ms_triangle_wave
+
+ms_trumpet:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x16570
+  parent: 0x16400
+  sampleBankId: 3
+  symbol: ms_trumpet
+
+ms_trumpet_10:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x1A5D0
+  parent: 0x1A5A0
+  sampleBankId: 3
+  symbol: ms_trumpet_10
+
+ms_trumpet_11:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x1AFB0
+  parent: 0x1AF80
+  sampleBankId: 3
+  symbol: ms_trumpet_11
+
+ms_trumpet_2:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x16600
+  parent: 0x16400
+  sampleBankId: 3
+  symbol: ms_trumpet_2
+
+ms_trumpet_3:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x16720
+  parent: 0x16400
+  sampleBankId: 3
+  symbol: ms_trumpet_3
+
+ms_trumpet_4:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x179A0
+  parent: 0x177A0
+  sampleBankId: 3
+  symbol: ms_trumpet_4
+
+ms_trumpet_5:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x17A30
+  parent: 0x177A0
+  sampleBankId: 3
+  symbol: ms_trumpet_5
+
+ms_trumpet_6:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x17AC0
+  parent: 0x177A0
+  sampleBankId: 3
+  symbol: ms_trumpet_6
+
+ms_trumpet_7:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x18990
+  parent: 0x18960
+  sampleBankId: 3
+  symbol: ms_trumpet_7
+
+ms_trumpet_8:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x192D0
+  parent: 0x192A0
+  sampleBankId: 3
+  symbol: ms_trumpet_8
+
+ms_trumpet_9:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x19CB0
+  parent: 0x19C80
+  sampleBankId: 3
+  symbol: ms_trumpet_9
+
+op_pepper_and_is_trying_to_take_over_corneria:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x41D0
+  parent: 0x3EE0
+  sampleBankId: 2
+  symbol: op_pepper_and_is_trying_to_take_over_corneria
+
+op_pepper_andross_has_declared_war:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x4190
+  parent: 0x3EE0
+  sampleBankId: 2
+  symbol: op_pepper_andross_has_declared_war
+
+op_pepper_hes_invaded_the_lylat_system:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x41B0
+  parent: 0x3EE0
+  sampleBankId: 2
+  symbol: op_pepper_hes_invaded_the_lylat_system
+
+op_pepper_hurry_star_fox:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x4210
+  parent: 0x3EE0
+  sampleBankId: 2
+  symbol: op_pepper_hurry_star_fox
+
+op_pepper_our_army_alone_cant_do_the_job:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x41F0
+  parent: 0x3EE0
+  sampleBankId: 2
+  symbol: op_pepper_our_army_alone_cant_do_the_job
+
+op_pepper_we_need_your_help_star_fox:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x40E0
+  parent: 0x3EE0
+  sampleBankId: 2
+  symbol: op_pepper_we_need_your_help_star_fox
+
+op_rob_message_from_general_pepper:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x4230
+  parent: 0x3EE0
+  sampleBankId: 2
+  symbol: op_rob_message_from_general_pepper
+
+op_rob_priority_one:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x4250
+  parent: 0x3EE0
+  sampleBankId: 2
+  symbol: op_rob_priority_one
+
+se_:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x1A70
+  parent: 0x0
+  sampleBankId: 0
+  symbol: se_
+
+se_air_whoosh:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x1C90
+  parent: 0x0
+  sampleBankId: 0
+  symbol: se_air_whoosh
+
+se_andross_grunt_1:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x2140
+  parent: 0x0
+  sampleBankId: 0
+  symbol: se_andross_grunt_1
+
+se_andross_grunt_2:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x2290
+  parent: 0x0
+  sampleBankId: 0
+  symbol: se_andross_grunt_2
+
+se_andross_laugh:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x2300
+  parent: 0x0
+  sampleBankId: 0
+  symbol: se_andross_laugh
+
+se_andross_pain_grunt:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x21B0
+  parent: 0x0
+  sampleBankId: 0
+  symbol: se_andross_pain_grunt
+
+se_andross_pain_grunt_2:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x2220
+  parent: 0x0
+  sampleBankId: 0
+  symbol: se_andross_pain_grunt_2
+
+se_andross_pain_grunt_3:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x2370
+  parent: 0x0
+  sampleBankId: 0
+  symbol: se_andross_pain_grunt_3
+
+se_andross_pain_scream:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x23E0
+  parent: 0x0
+  sampleBankId: 0
+  symbol: se_andross_pain_scream
+
+se_animal_squeal:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x12C0
+  parent: 0x0
+  sampleBankId: 0
+  symbol: se_animal_squeal
+
+se_bio_weapon_roar:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xDC0
+  parent: 0x0
+  sampleBankId: 0
+  symbol: se_bio_weapon_roar
+
+se_bioweapon_roar:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x11E0
+  parent: 0x0
+  sampleBankId: 0
+  symbol: se_bioweapon_roar
+
+se_bubbling:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x1530
+  parent: 0x0
+  sampleBankId: 0
+  symbol: se_bubbling
+
+se_bubbling_water:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x2020
+  parent: 0x0
+  sampleBankId: 0
+  symbol: se_bubbling_water
+
+se_digital_noise:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x20B0
+  parent: 0x0
+  sampleBankId: 0
+  symbol: se_digital_noise
+
+se_ding:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x1F00
+  parent: 0x0
+  sampleBankId: 0
+  symbol: se_ding
+
+se_doppler_jet:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x15C0
+  parent: 0x0
+  sampleBankId: 0
+  symbol: se_doppler_jet
+
+se_electric_noise:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x17E0
+  parent: 0x0
+  sampleBankId: 0
+  symbol: se_electric_noise
+
+se_electrical_burst:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x270
+  parent: 0x0
+  sampleBankId: 0
+  symbol: se_electrical_burst
+
+se_electrical_pulse:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x1F90
+  parent: 0x0
+  sampleBankId: 0
+  symbol: se_electrical_pulse
+
+se_enemy_engine:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xFC0
+  parent: 0x0
+  sampleBankId: 0
+  symbol: se_enemy_engine
+
+se_enemy_laser:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x7B0
+  parent: 0x0
+  sampleBankId: 0
+  symbol: se_enemy_laser
+
+se_enemy_laser_fire:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x1870
+  parent: 0x0
+  sampleBankId: 0
+  symbol: se_enemy_laser_fire
+
+se_energy_pulse:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x13C0
+  parent: 0x0
+  sampleBankId: 0
+  symbol: se_energy_pulse
+
+se_explosion:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xCA0
+  parent: 0x0
+  sampleBankId: 0
+  symbol: se_explosion
+
+se_explosion_1:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x2E0
+  parent: 0x0
+  sampleBankId: 0
+  symbol: se_explosion_1
+
+se_explosion_low:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x920
+  parent: 0x0
+  sampleBankId: 0
+  symbol: se_explosion_low
+
+se_explosion_low_boom:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xA00
+  parent: 0x0
+  sampleBankId: 0
+  symbol: se_explosion_low_boom
+
+se_explosion_sharp:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x1450
+  parent: 0x0
+  sampleBankId: 0
+  symbol: se_explosion_sharp
+
+se_feedback:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x16450
+  parent: 0x16400
+  sampleBankId: 3
+  symbol: se_feedback
+
+se_good_luck:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x1D90
+  parent: 0x0
+  sampleBankId: 0
+  symbol: se_good_luck
+
+se_gorgon_warp:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x18E0
+  parent: 0x0
+  sampleBankId: 0
+  symbol: se_gorgon_warp
+
+se_heavy_impact:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x1970
+  parent: 0x0
+  sampleBankId: 0
+  symbol: se_heavy_impact
+
+se_hovering_ship:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x1D00
+  parent: 0x0
+  sampleBankId: 0
+  symbol: se_hovering_ship
+
+se_hum:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x1330
+  parent: 0x0
+  sampleBankId: 0
+  symbol: se_hum
+
+se_hum_harsh:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x1050
+  parent: 0x0
+  sampleBankId: 0
+  symbol: se_hum_harsh
+
+se_hyper_laser:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xBC0
+  parent: 0x0
+  sampleBankId: 0
+  symbol: se_hyper_laser
+
+se_jet_engine:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x1B70
+  parent: 0x0
+  sampleBankId: 0
+  symbol: se_jet_engine
+
+se_jet_engine_high_pitch:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x350
+  parent: 0x0
+  sampleBankId: 0
+  symbol: se_jet_engine_high_pitch
+
+se_jet_engine_high_pitched:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x890
+  parent: 0x0
+  sampleBankId: 0
+  symbol: se_jet_engine_high_pitched
+
+se_landmaster_treads:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x3E0
+  parent: 0x0
+  sampleBankId: 0
+  symbol: se_landmaster_treads
+
+se_laser:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x1250
+  parent: 0x0
+  sampleBankId: 0
+  symbol: se_laser
+
+se_laser_2:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x200
+  parent: 0x0
+  sampleBankId: 0
+  symbol: se_laser_2
+
+se_laser_blast:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xE30
+  parent: 0x0
+  sampleBankId: 0
+  symbol: se_laser_blast
+
+se_laser_blast_high_pitch:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x990
+  parent: 0x0
+  sampleBankId: 0
+  symbol: se_laser_blast_high_pitch
+
+se_laser_reflect:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x620
+  parent: 0x0
+  sampleBankId: 0
+  symbol: se_laser_reflect
+
+se_laser_wave:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xEA0
+  parent: 0x0
+  sampleBankId: 0
+  symbol: se_laser_wave
+
+se_mechanical_reposition:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x2450
+  parent: 0x0
+  sampleBankId: 0
+  symbol: se_mechanical_reposition
+
+se_metal_chain:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x1E70
+  parent: 0x0
+  sampleBankId: 0
+  symbol: se_metal_chain
+
+se_metal_clang:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x10E0
+  parent: 0x0
+  sampleBankId: 0
+  symbol: se_metal_clang
+
+se_metal_scraping:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x1AE0
+  parent: 0x0
+  sampleBankId: 0
+  symbol: se_metal_scraping
+
+se_metallic_thud:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x14C0
+  parent: 0x0
+  sampleBankId: 0
+  symbol: se_metallic_thud
+
+se_missile_launch:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x500
+  parent: 0x0
+  sampleBankId: 0
+  symbol: se_missile_launch
+
+se_radio_close:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x1150
+  parent: 0x0
+  sampleBankId: 0
+  symbol: se_radio_close
+
+se_radio_open:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x38B0
+  parent: 0x2F00
+  sampleBankId: 1
+  symbol: se_radio_open
+
+se_sand_noise:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x690
+  parent: 0x0
+  sampleBankId: 0
+  symbol: se_sand_noise
+
+se_train_rolling:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x19E0
+  parent: 0x0
+  sampleBankId: 0
+  symbol: se_train_rolling
+
+se_twin_laser:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xA70
+  parent: 0x0
+  sampleBankId: 0
+  symbol: se_twin_laser
+
+se_unknown_1:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x720
+  parent: 0x0
+  sampleBankId: 0
+  symbol: se_unknown_1
+
+se_unknown_2:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xF30
+  parent: 0x0
+  sampleBankId: 0
+  symbol: se_unknown_2
+
+se_water_splash:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x1E00
+  parent: 0x0
+  sampleBankId: 0
+  symbol: se_water_splash
+
+se_wind:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x1C00
+  parent: 0x0
+  sampleBankId: 0
+  symbol: se_wind
+
+se_wind_noise:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x590
+  parent: 0x0
+  sampleBankId: 0
+  symbol: se_wind_noise
+
+se_wing_movement:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x470
+  parent: 0x0
+  sampleBankId: 0
+  symbol: se_wing_movement
+
+silent:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x10170
+  parent: 0xF7C0
+  sampleBankId: 2
+  symbol: silent
+
+so_bill_dont_get_too_excited:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xCDF0
+  parent: 0xCA20
+  sampleBankId: 2
+  symbol: so_bill_dont_get_too_excited
+
+so_bill_here_we_go:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xCE10
+  parent: 0xCA20
+  sampleBankId: 2
+  symbol: so_bill_here_we_go
+
+so_bill_looks_like_you_could_use_some_help_fox:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xCDB0
+  parent: 0xCA20
+  sampleBankId: 2
+  symbol: so_bill_looks_like_you_could_use_some_help_fox
+
+so_bill_watch_yourself_fox:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xCE30
+  parent: 0xCA20
+  sampleBankId: 2
+  symbol: so_bill_watch_yourself_fox
+
+so_falco_andross_is_an_insane:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xCE90
+  parent: 0xCA20
+  sampleBankId: 2
+  symbol: so_falco_andross_is_an_insane
+
+so_falco_burned:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xCF70
+  parent: 0xCA20
+  sampleBankId: 2
+  symbol: so_falco_burned
+
+so_falco_fool:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xCEB0
+  parent: 0xCA20
+  sampleBankId: 2
+  symbol: so_falco_fool
+
+so_falco_good_riddance:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xCF30
+  parent: 0xCA20
+  sampleBankId: 2
+  symbol: so_falco_good_riddance
+
+so_falco_i_aint_your_buddy_go_away:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xCF10
+  parent: 0xCA20
+  sampleBankId: 2
+  symbol: so_falco_i_aint_your_buddy_go_away
+
+so_falco_i_almost_got:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xCF50
+  parent: 0xCA20
+  sampleBankId: 2
+  symbol: so_falco_i_almost_got
+
+so_falco_the_arwing_might_not_make_it:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xCCD0
+  parent: 0xCA20
+  sampleBankId: 2
+  symbol: so_falco_the_arwing_might_not_make_it
+
+so_fox_bill:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xCDD0
+  parent: 0xCA20
+  sampleBankId: 2
+  symbol: so_fox_bill
+
+so_fox_keep_an_eye_on_your_shield_gauge:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xCC20
+  parent: 0xCA20
+  sampleBankId: 2
+  symbol: so_fox_keep_an_eye_on_your_shield_gauge
+
+so_peppy_aim_for_the_arm:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xCEF0
+  parent: 0xCA20
+  sampleBankId: 2
+  symbol: so_peppy_aim_for_the_arm
+
+so_peppy_dont_fly_too_low_your_ship_cant_take_it:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xCFD0
+  parent: 0xCA20
+  sampleBankId: 2
+  symbol: so_peppy_dont_fly_too_low_your_ship_cant_take_it
+
+so_peppy_maybe_its_an_arm:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xCED0
+  parent: 0xCA20
+  sampleBankId: 2
+  symbol: so_peppy_maybe_its_an_arm
+
+so_peppy_shoot_the_rocks:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xCD10
+  parent: 0xCA20
+  sampleBankId: 2
+  symbol: so_peppy_shoot_the_rocks
+
+so_peppy_theyre_attacking_in_groups:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xCE50
+  parent: 0xCA20
+  sampleBankId: 2
+  symbol: so_peppy_theyre_attacking_in_groups
+
+so_peppy_this_is_the_enemy_bio_weapon:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xCE70
+  parent: 0xCA20
+  sampleBankId: 2
+  symbol: so_peppy_this_is_the_enemy_bio_weapon
+
+so_slippy_i_cant_take_it_anymore:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xCFB0
+  parent: 0xCA20
+  sampleBankId: 2
+  symbol: so_slippy_i_cant_take_it_anymore
+
+so_slippy_its_now_at_8000:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xCD70
+  parent: 0xCA20
+  sampleBankId: 2
+  symbol: so_slippy_its_now_at_8000
+
+so_slippy_its_too_hot:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xCF90
+  parent: 0xCA20
+  sampleBankId: 2
+  symbol: so_slippy_its_too_hot
+
+so_slippy_oh_no:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xCD90
+  parent: 0xCA20
+  sampleBankId: 2
+  symbol: so_slippy_oh_no
+
+so_slippy_temperature_is_6000_and_climbing:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xCD50
+  parent: 0xCA20
+  sampleBankId: 2
+  symbol: so_slippy_temperature_is_6000_and_climbing
+
+so_slippy_this_baby_can_take_temperatures_of_up_to_9000_degrees:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xCD30
+  parent: 0xCA20
+  sampleBankId: 2
+  symbol: so_slippy_this_baby_can_take_temperatures_of_up_to_9000_degrees
+
+sx_bill_back_me_up:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x7970
+  parent: 0x7460
+  sampleBankId: 2
+  symbol: sx_bill_back_me_up
+
+sx_bill_im_gonna_open_the_gate:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x7950
+  parent: 0x7460
+  sampleBankId: 2
+  symbol: sx_bill_im_gonna_open_the_gate
+
+sx_bill_im_here_to_help:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x79F0
+  parent: 0x7460
+  sampleBankId: 2
+  symbol: sx_bill_im_here_to_help
+
+sx_bill_of_course:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x79D0
+  parent: 0x7460
+  sampleBankId: 2
+  symbol: sx_bill_of_course
+
+sx_falco_destroy_what:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x7BF0
+  parent: 0x7460
+  sampleBankId: 2
+  symbol: sx_falco_destroy_what
+
+sx_falco_enemy_group_behind_us:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x7750
+  parent: 0x7460
+  sampleBankId: 2
+  symbol: sx_falco_enemy_group_behind_us
+
+sx_falco_fast:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x7790
+  parent: 0x7460
+  sampleBankId: 2
+  symbol: sx_falco_fast
+
+sx_falco_fox_look_behind_you:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x7BB0
+  parent: 0x7460
+  sampleBankId: 2
+  symbol: sx_falco_fox_look_behind_you
+
+sx_falco_fun:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x7730
+  parent: 0x7460
+  sampleBankId: 2
+  symbol: sx_falco_fun
+
+sx_falco_hes_crazy:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x7C10
+  parent: 0x7460
+  sampleBankId: 2
+  symbol: sx_falco_hes_crazy
+
+sx_falco_hurry_up_or_youre_toast:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x7A90
+  parent: 0x7460
+  sampleBankId: 2
+  symbol: sx_falco_hurry_up_or_youre_toast
+
+sx_falco_i_cant_wait_to_thsee_this_secret_weapon:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x78F0
+  parent: 0x7460
+  sampleBankId: 2
+  symbol: sx_falco_i_cant_wait_to_thsee_this_secret_weapon
+
+sx_falco_i_found_the_gate:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x7910
+  parent: 0x7460
+  sampleBankId: 2
+  symbol: sx_falco_i_found_the_gate
+
+sx_falco_is_that:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x7870
+  parent: 0x7460
+  sampleBankId: 2
+  symbol: sx_falco_is_that
+
+sx_falco_its_all_gone:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x7810
+  parent: 0x7460
+  sampleBankId: 2
+  symbol: sx_falco_its_all_gone
+
+sx_falco_just_one_more:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x7EB0
+  parent: 0x7460
+  sampleBankId: 2
+  symbol: sx_falco_just_one_more
+
+sx_falco_lets_have_a_little:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x7710
+  parent: 0x7460
+  sampleBankId: 2
+  symbol: sx_falco_lets_have_a_little
+
+sx_falco_looks_like_a_warp:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x7930
+  parent: 0x7460
+  sampleBankId: 2
+  symbol: sx_falco_looks_like_a_warp
+
+sx_falco_man_theyre:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x7770
+  parent: 0x7460
+  sampleBankId: 2
+  symbol: sx_falco_man_theyre
+
+sx_falco_slippy_can_be_such_a_headache:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x7E10
+  parent: 0x7460
+  sampleBankId: 2
+  symbol: sx_falco_slippy_can_be_such_a_headache
+
+sx_falco_some:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x7A30
+  parent: 0x7460
+  sampleBankId: 2
+  symbol: sx_falco_some
+
+sx_falco_somebody_beat_us_here:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x77F0
+  parent: 0x7460
+  sampleBankId: 2
+  symbol: sx_falco_somebody_beat_us_here
+
+sx_falco_the_heck:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x7850
+  parent: 0x7460
+  sampleBankId: 2
+  symbol: sx_falco_the_heck
+
+sx_falco_thins_not_right_here:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x7A50
+  parent: 0x7460
+  sampleBankId: 2
+  symbol: sx_falco_thins_not_right_here
+
+sx_falco_what:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x7830
+  parent: 0x7460
+  sampleBankId: 2
+  symbol: sx_falco_what
+
+sx_falco_what_the_heck:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x7B90
+  parent: 0x7460
+  sampleBankId: 2
+  symbol: sx_falco_what_the_heck
+
+sx_falco_who_took_this_base_out:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x7A70
+  parent: 0x7460
+  sampleBankId: 2
+  symbol: sx_falco_who_took_this_base_out
+
+sx_falco_yeah:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x7E70
+  parent: 0x7460
+  sampleBankId: 2
+  symbol: sx_falco_yeah
+
+sx_fox_bill:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x7990
+  parent: 0x7460
+  sampleBankId: 2
+  symbol: sx_fox_bill
+
+sx_fox_can_you_confirm_slippys_location:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x7DD0
+  parent: 0x7460
+  sampleBankId: 2
+  symbol: sx_fox_can_you_confirm_slippys_location
+
+sx_fox_huh:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x126D0
+  parent: 0x12400
+  sampleBankId: 2
+  symbol: sx_fox_huh
+
+sx_fox_is_everything_okay:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x7EF0
+  parent: 0x7460
+  sampleBankId: 2
+  symbol: sx_fox_is_everything_okay
+
+sx_fox_lets_take_out_that_weapon_boys:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x7660
+  parent: 0x7460
+  sampleBankId: 2
+  symbol: sx_fox_lets_take_out_that_weapon_boys
+
+sx_fox_rob:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x7DB0
+  parent: 0x7460
+  sampleBankId: 2
+  symbol: sx_fox_rob
+
+sx_fox_slippy:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x7ED0
+  parent: 0x7460
+  sampleBankId: 2
+  symbol: sx_fox_slippy
+
+sx_fox_so_this_is_the_secret_weapon:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x7BD0
+  parent: 0x7460
+  sampleBankId: 2
+  symbol: sx_fox_so_this_is_the_secret_weapon
+
+sx_fox_what:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x126F0
+  parent: 0x12400
+  sampleBankId: 2
+  symbol: sx_fox_what
+
+sx_fox_whats_he_saying:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x7CF0
+  parent: 0x7460
+  sampleBankId: 2
+  symbol: sx_fox_whats_he_saying
+
+sx_fox_youre_okay:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x79B0
+  parent: 0x7460
+  sampleBankId: 2
+  symbol: sx_fox_youre_okay
+
+sx_peppy_ears_are_still_ringing:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x78B0
+  parent: 0x7460
+  sampleBankId: 2
+  symbol: sx_peppy_ears_are_still_ringing
+
+sx_peppy_i_got_tagged_my:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x7890
+  parent: 0x7460
+  sampleBankId: 2
+  symbol: sx_peppy_i_got_tagged_my
+
+sx_peppy_ill_attack_from_the_outside:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x7AB0
+  parent: 0x7460
+  sampleBankId: 2
+  symbol: sx_peppy_ill_attack_from_the_outside
+
+sx_peppy_im_going_ahead_back_me_up_fox:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x7B50
+  parent: 0x7460
+  sampleBankId: 2
+  symbol: sx_peppy_im_going_ahead_back_me_up_fox
+
+sx_peppy_looks_like_hes_on_titania:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x7DF0
+  parent: 0x7460
+  sampleBankId: 2
+  symbol: sx_peppy_looks_like_hes_on_titania
+
+sx_peppy_theyre_everywhere:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x7B10
+  parent: 0x7460
+  sampleBankId: 2
+  symbol: sx_peppy_theyre_everywhere
+
+sx_peppy_were_getting_close_to_the_base:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x77D0
+  parent: 0x7460
+  sampleBankId: 2
+  symbol: sx_peppy_were_getting_close_to_the_base
+
+sx_peppy_where_is_the_secret_weapon:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x7B30
+  parent: 0x7460
+  sampleBankId: 2
+  symbol: sx_peppy_where_is_the_secret_weapon
+
+sx_rob_coming_from_titania:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x7E50
+  parent: 0x7460
+  sampleBankId: 2
+  symbol: sx_rob_coming_from_titania
+
+sx_rob_distress_signal:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x7E30
+  parent: 0x7460
+  sampleBankId: 2
+  symbol: sx_rob_distress_signal
+
+sx_slippy_dead_ahead:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x7AF0
+  parent: 0x7460
+  sampleBankId: 2
+  symbol: sx_slippy_dead_ahead
+
+sx_slippy_dont_forget_me:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x13D10
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: sx_slippy_dont_forget_me
+
+sx_slippy_interceptor_system:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x7AD0
+  parent: 0x7460
+  sampleBankId: 2
+  symbol: sx_slippy_interceptor_system
+
+sx_slippy_let_me_handle_this:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x7C30
+  parent: 0x7460
+  sampleBankId: 2
+  symbol: sx_slippy_let_me_handle_this
+
+sx_slippy_yeah_yeah_no_problem:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x7F10
+  parent: 0x7460
+  sampleBankId: 2
+  symbol: sx_slippy_yeah_yeah_no_problem
+
+sx_spyborg_destroy:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x7C50
+  parent: 0x7460
+  sampleBankId: 2
+  symbol: sx_spyborg_destroy
+
+sx_spyborg_i_must_be_complete:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x7D90
+  parent: 0x7460
+  sampleBankId: 2
+  symbol: sx_spyborg_i_must_be_complete
+
+sx_spyborg_i_will_terminate_all_enemies:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x7C90
+  parent: 0x7460
+  sampleBankId: 2
+  symbol: sx_spyborg_i_will_terminate_all_enemies
+
+sx_spyborg_is_clear:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x7D50
+  parent: 0x7460
+  sampleBankId: 2
+  symbol: sx_spyborg_is_clear
+
+sx_spyborg_the:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x7D10
+  parent: 0x7460
+  sampleBankId: 2
+  symbol: sx_spyborg_the
+
+sx_spyborg_view:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x7D30
+  parent: 0x7460
+  sampleBankId: 2
+  symbol: sx_spyborg_view
+
+sx_spyborg_where_is_the_creator:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x7CD0
+  parent: 0x7460
+  sampleBankId: 2
+  symbol: sx_spyborg_where_is_the_creator
+
+sx_spyborg_where_is_the_enemy:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x7D70
+  parent: 0x7460
+  sampleBankId: 2
+  symbol: sx_spyborg_where_is_the_enemy
+
+sx_spyborg_you_are_an_enemy:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x7CB0
+  parent: 0x7460
+  sampleBankId: 2
+  symbol: sx_spyborg_you_are_an_enemy
+
+sy_falco_fox:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xE190
+  parent: 0xDE40
+  sampleBankId: 2
+  symbol: sy_falco_fox
+
+sy_falco_is_that_the_best_you_can_do:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xE1F0
+  parent: 0xDE40
+  sampleBankId: 2
+  symbol: sy_falco_is_that_the_best_you_can_do
+
+sy_falco_ive_got_everything_above:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xE270
+  parent: 0xDE40
+  sampleBankId: 2
+  symbol: sy_falco_ive_got_everything_above
+
+sy_falco_somebodys_gonna_pay_for_all_this:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xE0F0
+  parent: 0xDE40
+  sampleBankId: 2
+  symbol: sy_falco_somebodys_gonna_pay_for_all_this
+
+sy_falco_take_em_down_with_one_shot:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xE350
+  parent: 0xDE40
+  sampleBankId: 2
+  symbol: sy_falco_take_em_down_with_one_shot
+
+sy_falco_youre_supposed_to_shoot_em_all:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xE1B0
+  parent: 0xDE40
+  sampleBankId: 2
+  symbol: sy_falco_youre_supposed_to_shoot_em_all
+
+sy_fox_lets_back_up_the_squadron:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xE040
+  parent: 0xDE40
+  sampleBankId: 2
+  symbol: sy_fox_lets_back_up_the_squadron
+
+sy_fox_report_in:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xE5D0
+  parent: 0xDE40
+  sampleBankId: 2
+  symbol: sy_fox_report_in
+
+sy_fox_were_headin_for_aquas:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xE5B0
+  parent: 0xDE40
+  sampleBankId: 2
+  symbol: sy_fox_were_headin_for_aquas
+
+sy_peppy_dont_let_any_of_them_through:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xE110
+  parent: 0xDE40
+  sampleBankId: 2
+  symbol: sy_peppy_dont_let_any_of_them_through
+
+sy_peppy_good_job_keep_up_the_good_work:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xE470
+  parent: 0xDE40
+  sampleBankId: 2
+  symbol: sy_peppy_good_job_keep_up_the_good_work
+
+sy_peppy_good_job_keep_up_the_pace:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xE1D0
+  parent: 0xDE40
+  sampleBankId: 2
+  symbol: sy_peppy_good_job_keep_up_the_pace
+
+sy_peppy_hold_em_theyre_trying_to_get_through:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xE170
+  parent: 0xDE40
+  sampleBankId: 2
+  symbol: sy_peppy_hold_em_theyre_trying_to_get_through
+
+sy_peppy_ill_take_care_of_everything_below:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xE250
+  parent: 0xDE40
+  sampleBankId: 2
+  symbol: sy_peppy_ill_take_care_of_everything_below
+
+sy_peppy_surprise_attack_coming_from_above:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xE230
+  parent: 0xDE40
+  sampleBankId: 2
+  symbol: sy_peppy_surprise_attack_coming_from_above
+
+sy_peppy_youre_becoming_a_better_pilot:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xE210
+  parent: 0xDE40
+  sampleBankId: 2
+  symbol: sy_peppy_youre_becoming_a_better_pilot
+
+sy_shogun_cocky_little_freaks:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xE570
+  parent: 0xDE40
+  sampleBankId: 2
+  symbol: sy_shogun_cocky_little_freaks
+
+sy_shogun_death_scream:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xE590
+  parent: 0xDE40
+  sampleBankId: 2
+  symbol: sy_shogun_death_scream
+
+sy_shogun_dont_party_just_yet:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xE490
+  parent: 0xDE40
+  sampleBankId: 2
+  symbol: sy_shogun_dont_party_just_yet
+
+sy_shogun_ill_take_you_guys_out_from_the_ship:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xE550
+  parent: 0xDE40
+  sampleBankId: 2
+  symbol: sy_shogun_ill_take_you_guys_out_from_the_ship
+
+sy_shogun_im_coming_for_ya:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xE530
+  parent: 0xDE40
+  sampleBankId: 2
+  symbol: sy_shogun_im_coming_for_ya
+
+sy_shogun_is_that_it:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xE510
+  parent: 0xDE40
+  sampleBankId: 2
+  symbol: sy_shogun_is_that_it
+
+sy_shogun_its_time_to_try_our_new_weapon:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xE4D0
+  parent: 0xDE40
+  sampleBankId: 2
+  symbol: sy_shogun_its_time_to_try_our_new_weapon
+
+sy_shogun_whats_wrong:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xE4F0
+  parent: 0xDE40
+  sampleBankId: 2
+  symbol: sy_shogun_whats_wrong
+
+sy_slippy_a_hah:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xE290
+  parent: 0xDE40
+  sampleBankId: 2
+  symbol: sy_slippy_a_hah
+
+sy_slippy_escaping:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xE2D0
+  parent: 0xDE40
+  sampleBankId: 2
+  symbol: sy_slippy_escaping
+
+sy_slippy_hey:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xE310
+  parent: 0xDE40
+  sampleBankId: 2
+  symbol: sy_slippy_hey
+
+sy_slippy_i_dont_see_anything:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xE150
+  parent: 0xDE40
+  sampleBankId: 2
+  symbol: sy_slippy_i_dont_see_anything
+
+sy_slippy_i_dont_think_so:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xE2F0
+  parent: 0xDE40
+  sampleBankId: 2
+  symbol: sy_slippy_i_dont_think_so
+
+sy_slippy_leave_me_alone:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xE330
+  parent: 0xDE40
+  sampleBankId: 2
+  symbol: sy_slippy_leave_me_alone
+
+sy_slippy_looks_different:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xE3B0
+  parent: 0xDE40
+  sampleBankId: 2
+  symbol: sy_slippy_looks_different
+
+sy_slippy_somethings_up_ahead:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xE390
+  parent: 0xDE40
+  sampleBankId: 2
+  symbol: sy_slippy_somethings_up_ahead
+
+sy_slippy_somethings_wrong:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xE130
+  parent: 0xDE40
+  sampleBankId: 2
+  symbol: sy_slippy_somethings_wrong
+
+sy_slippy_these_guys_are:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xE410
+  parent: 0xDE40
+  sampleBankId: 2
+  symbol: sy_slippy_these_guys_are
+
+sy_slippy_thought_you_could_hide_from_me_eh:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xE2B0
+  parent: 0xDE40
+  sampleBankId: 2
+  symbol: sy_slippy_thought_you_could_hide_from_me_eh
+
+sy_slippy_tough:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xE430
+  parent: 0xDE40
+  sampleBankId: 2
+  symbol: sy_slippy_tough
+
+sz_falco_cant_you_go_bother_someone_else:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xFCF0
+  parent: 0xF7C0
+  sampleBankId: 2
+  symbol: sz_falco_cant_you_go_bother_someone_else
+
+sz_falco_dang_now_theyve:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xFF30
+  parent: 0xF7C0
+  sampleBankId: 2
+  symbol: sz_falco_dang_now_theyve
+
+sz_falco_done_it:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xFF50
+  parent: 0xF7C0
+  sampleBankId: 2
+  symbol: sz_falco_done_it
+
+sz_falco_im_heading_for_the_missile_now:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xFAB0
+  parent: 0xF7C0
+  sampleBankId: 2
+  symbol: sz_falco_im_heading_for_the_missile_now
+
+sz_falco_katt:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xFCD0
+  parent: 0xF7C0
+  sampleBankId: 2
+  symbol: sz_falco_katt
+
+sz_falco_nice_welcome:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xFA90
+  parent: 0xF7C0
+  sampleBankId: 2
+  symbol: sz_falco_nice_welcome
+
+sz_falco_one_missile_down:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xFE50
+  parent: 0xF7C0
+  sampleBankId: 2
+  symbol: sz_falco_one_missile_down
+
+sz_falco_that_was_a_close_call:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xFFF0
+  parent: 0xF7C0
+  sampleBankId: 2
+  symbol: sz_falco_that_was_a_close_call
+
+sz_fox_here_it_comes:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xFB50
+  parent: 0xF7C0
+  sampleBankId: 2
+  symbol: sz_fox_here_it_comes
+
+sz_fox_is_everything_okay:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xFEF0
+  parent: 0xF7C0
+  sampleBankId: 2
+  symbol: sz_fox_is_everything_okay
+
+sz_fox_rob:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xFED0
+  parent: 0xF7C0
+  sampleBankId: 2
+  symbol: sz_fox_rob
+
+sz_fox_well_gladly_take_this_one:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xFA70
+  parent: 0xF7C0
+  sampleBankId: 2
+  symbol: sz_fox_well_gladly_take_this_one
+
+sz_katt_are_you_gonna_hog_all_the_fun:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xFCB0
+  parent: 0xF7C0
+  sampleBankId: 2
+  symbol: sz_katt_are_you_gonna_hog_all_the_fun
+
+sz_katt_falco:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xFDD0
+  parent: 0xF7C0
+  sampleBankId: 2
+  symbol: sz_katt_falco
+
+sz_katt_good_luck_little_man:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xFE10
+  parent: 0xF7C0
+  sampleBankId: 2
+  symbol: sz_katt_good_luck_little_man
+
+sz_katt_i_took_care_of_a_missile_for_you:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xFEB0
+  parent: 0xF7C0
+  sampleBankId: 2
+  symbol: sz_katt_i_took_care_of_a_missile_for_you
+
+sz_katt_let_me_help_you_out:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xFD10
+  parent: 0xF7C0
+  sampleBankId: 2
+  symbol: sz_katt_let_me_help_you_out
+
+sz_katt_too_bad_little_man:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xFE30
+  parent: 0xF7C0
+  sampleBankId: 2
+  symbol: sz_katt_too_bad_little_man
+
+sz_katt_you_owe_me:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xFDB0
+  parent: 0xF7C0
+  sampleBankId: 2
+  symbol: sz_katt_you_owe_me
+
+sz_katt_youre_on_your_own:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xFDF0
+  parent: 0xF7C0
+  sampleBankId: 2
+  symbol: sz_katt_youre_on_your_own
+
+sz_peppy_im_goin_for_the_missile:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xFAD0
+  parent: 0xF7C0
+  sampleBankId: 2
+  symbol: sz_peppy_im_goin_for_the_missile
+
+sz_peppy_it_could_be_difficult_to_attack_venom:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xFF70
+  parent: 0xF7C0
+  sampleBankId: 2
+  symbol: sz_peppy_it_could_be_difficult_to_attack_venom
+
+sz_peppy_one_missile_destroyed:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xFE70
+  parent: 0xF7C0
+  sampleBankId: 2
+  symbol: sz_peppy_one_missile_destroyed
+
+sz_peppy_weve_got_the_bad_guys_on_the_run:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x10010
+  parent: 0xF7C0
+  sampleBankId: 2
+  symbol: sz_peppy_weve_got_the_bad_guys_on_the_run
+
+sz_rob_20:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xFC10
+  parent: 0xF7C0
+  sampleBankId: 2
+  symbol: sz_rob_20
+
+sz_rob_50:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xFBB0
+  parent: 0xF7C0
+  sampleBankId: 2
+  symbol: sz_rob_50
+
+sz_rob_damage_to_rear_left_section_of_the_ship:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xFF10
+  parent: 0xF7C0
+  sampleBankId: 2
+  symbol: sz_rob_damage_to_rear_left_section_of_the_ship
+
+sz_rob_distance:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xFB90
+  parent: 0xF7C0
+  sampleBankId: 2
+  symbol: sz_rob_distance
+
+sz_rob_distance_10:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xFC30
+  parent: 0xF7C0
+  sampleBankId: 2
+  symbol: sz_rob_distance_10
+
+sz_rob_enemy_approaching_from_the_left:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xF9C0
+  parent: 0xF7C0
+  sampleBankId: 2
+  symbol: sz_rob_enemy_approaching_from_the_left
+
+sz_rob_great_fox_is_okay:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xFFD0
+  parent: 0xF7C0
+  sampleBankId: 2
+  symbol: sz_rob_great_fox_is_okay
+
+sz_rob_missile_approaching:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xFB70
+  parent: 0xF7C0
+  sampleBankId: 2
+  symbol: sz_rob_missile_approaching
+
+sz_rob_missile_one_is_heading_for_great_fox:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xFB30
+  parent: 0xF7C0
+  sampleBankId: 2
+  symbol: sz_rob_missile_one_is_heading_for_great_fox
+
+sz_rob_missiles_four_five_and_six_approaching:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xFC90
+  parent: 0xF7C0
+  sampleBankId: 2
+  symbol: sz_rob_missiles_four_five_and_six_approaching
+
+sz_rob_missiles_two_and_three_approaching:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xFC70
+  parent: 0xF7C0
+  sampleBankId: 2
+  symbol: sz_rob_missiles_two_and_three_approaching
+
+sz_rob_six_missiles_coming_from_the_left:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xFB10
+  parent: 0xF7C0
+  sampleBankId: 2
+  symbol: sz_rob_six_missiles_coming_from_the_left
+
+sz_rob_unable_to_evade:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xFC50
+  parent: 0xF7C0
+  sampleBankId: 2
+  symbol: sz_rob_unable_to_evade
+
+sz_slippy_dog:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xFF90
+  parent: 0xF7C0
+  sampleBankId: 2
+  symbol: sz_slippy_dog
+
+sz_slippy_dont_worry:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x10030
+  parent: 0xF7C0
+  sampleBankId: 2
+  symbol: sz_slippy_dont_worry
+
+sz_slippy_gone_it:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xFFB0
+  parent: 0xF7C0
+  sampleBankId: 2
+  symbol: sz_slippy_gone_it
+
+sz_slippy_im_heading_for_the_missile_now:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xFAF0
+  parent: 0xF7C0
+  sampleBankId: 2
+  symbol: sz_slippy_im_heading_for_the_missile_now
+
+sz_slippy_scratch_one_missile:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xFE90
+  parent: 0xF7C0
+  sampleBankId: 2
+  symbol: sz_slippy_scratch_one_missile
+
+sz_slippy_slippys_here:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x10050
+  parent: 0xF7C0
+  sampleBankId: 2
+  symbol: sz_slippy_slippys_here
+
+ti_falco_a_magnetic_storm:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x6970
+  parent: 0x6680
+  sampleBankId: 2
+  symbol: ti_falco_a_magnetic_storm
+
+ti_falco_down_slippy_just_hold_on:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x6C70
+  parent: 0x6680
+  sampleBankId: 2
+  symbol: ti_falco_down_slippy_just_hold_on
+
+ti_falco_enemy_fighters_coming_at_ya_fox:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x6A90
+  parent: 0x6680
+  sampleBankId: 2
+  symbol: ti_falco_enemy_fighters_coming_at_ya_fox
+
+ti_falco_fox:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x6A30
+  parent: 0x6680
+  sampleBankId: 2
+  symbol: ti_falco_fox
+
+ti_falco_he_can_sure_be_a_pain_in_the_neck:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x69D0
+  parent: 0x6680
+  sampleBankId: 2
+  symbol: ti_falco_he_can_sure_be_a_pain_in_the_neck
+
+ti_falco_i_think_you_look_better_in_a_tank:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x69B0
+  parent: 0x6680
+  sampleBankId: 2
+  symbol: ti_falco_i_think_you_look_better_in_a_tank
+
+ti_falco_ill_be_there_soon:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x6B70
+  parent: 0x6680
+  sampleBankId: 2
+  symbol: ti_falco_ill_be_there_soon
+
+ti_falco_ill_pass:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x6A10
+  parent: 0x6680
+  sampleBankId: 2
+  symbol: ti_falco_ill_pass
+
+ti_falco_let_me_get_a_piece_of_that_action_fox:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x6C10
+  parent: 0x6680
+  sampleBankId: 2
+  symbol: ti_falco_let_me_get_a_piece_of_that_action_fox
+
+ti_falco_pipe:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x6C50
+  parent: 0x6680
+  sampleBankId: 2
+  symbol: ti_falco_pipe
+
+ti_falco_slippy_what_are_ya_doin_hurry_up:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x6C90
+  parent: 0x6680
+  sampleBankId: 2
+  symbol: ti_falco_slippy_what_are_ya_doin_hurry_up
+
+ti_falco_well_search_here:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x6990
+  parent: 0x6680
+  sampleBankId: 2
+  symbol: ti_falco_well_search_here
+
+ti_falco_were_always_savin_your_hide_slip:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x6D10
+  parent: 0x6680
+  sampleBankId: 2
+  symbol: ti_falco_were_always_savin_your_hide_slip
+
+ti_falco_you_sure_you_can_handle_it_fox:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x6CD0
+  parent: 0x6680
+  sampleBankId: 2
+  symbol: ti_falco_you_sure_you_can_handle_it_fox
+
+ti_fox_deploy_the_landmaster:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x6E10
+  parent: 0x6680
+  sampleBankId: 2
+  symbol: ti_fox_deploy_the_landmaster
+
+ti_fox_give_me_slippys_location_rob:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x6880
+  parent: 0x6680
+  sampleBankId: 2
+  symbol: ti_fox_give_me_slippys_location_rob
+
+ti_fox_is_that_you_slippy:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x6B50
+  parent: 0x6680
+  sampleBankId: 2
+  symbol: ti_fox_is_that_you_slippy
+
+ti_fox_slippy:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x141D0
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: ti_fox_slippy
+
+ti_fox_well_head_to_venom:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x6D70
+  parent: 0x6680
+  sampleBankId: 2
+  symbol: ti_fox_well_head_to_venom
+
+ti_fox_when_we_get_back:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x6D50
+  parent: 0x6680
+  sampleBankId: 2
+  symbol: ti_fox_when_we_get_back
+
+ti_fox_why_dont_you_come_down_here_falco:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x69F0
+  parent: 0x6680
+  sampleBankId: 2
+  symbol: ti_fox_why_dont_you_come_down_here_falco
+
+ti_peppy_are_ya_okay:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x6AB0
+  parent: 0x6680
+  sampleBankId: 2
+  symbol: ti_peppy_are_ya_okay
+
+ti_peppy_dont_be_dead_slip:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x6AD0
+  parent: 0x6680
+  sampleBankId: 2
+  symbol: ti_peppy_dont_be_dead_slip
+
+ti_peppy_dont_go_to_fast_falco:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x6A50
+  parent: 0x6680
+  sampleBankId: 2
+  symbol: ti_peppy_dont_go_to_fast_falco
+
+ti_peppy_go_for_the_chest:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x6B90
+  parent: 0x6680
+  sampleBankId: 2
+  symbol: ti_peppy_go_for_the_chest
+
+ti_peppy_hold_together_its_just_a_bit_further:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x6B30
+  parent: 0x6680
+  sampleBankId: 2
+  symbol: ti_peppy_hold_together_its_just_a_bit_further
+
+ti_peppy_im_sure_hes_learned_his_lesson:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x6D30
+  parent: 0x6680
+  sampleBankId: 2
+  symbol: ti_peppy_im_sure_hes_learned_his_lesson
+
+ti_peppy_incoming:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x6AF0
+  parent: 0x6680
+  sampleBankId: 2
+  symbol: ti_peppy_incoming
+
+ti_peppy_take_out_his_arms_fox:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x6C30
+  parent: 0x6680
+  sampleBankId: 2
+  symbol: ti_peppy_take_out_his_arms_fox
+
+ti_peppy_theres_rocky_terrain_dead_ahead:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x6950
+  parent: 0x6680
+  sampleBankId: 2
+  symbol: ti_peppy_theres_rocky_terrain_dead_ahead
+
+ti_peppy_ya_okay:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x6B10
+  parent: 0x6680
+  sampleBankId: 2
+  symbol: ti_peppy_ya_okay
+
+ti_rob_life_form_indicated_at_12_o_clock:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x6930
+  parent: 0x6680
+  sampleBankId: 2
+  symbol: ti_rob_life_form_indicated_at_12_o_clock
+
+ti_slippy_do_something:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x6BF0
+  parent: 0x6680
+  sampleBankId: 2
+  symbol: ti_slippy_do_something
+
+ti_slippy_fox:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x6DD0
+  parent: 0x6680
+  sampleBankId: 2
+  symbol: ti_slippy_fox
+
+ti_slippy_i_knew_youd_come_help_me:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x6DF0
+  parent: 0x6680
+  sampleBankId: 2
+  symbol: ti_slippy_i_knew_youd_come_help_me
+
+ti_slippy_i_made_it:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x6D90
+  parent: 0x6680
+  sampleBankId: 2
+  symbol: ti_slippy_i_made_it
+
+ti_slippy_i_thought_i_was_a_goner:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x6CF0
+  parent: 0x6680
+  sampleBankId: 2
+  symbol: ti_slippy_i_thought_i_was_a_goner
+
+ti_slippy_ill_analyze_right_away:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x6DB0
+  parent: 0x6680
+  sampleBankId: 2
+  symbol: ti_slippy_ill_analyze_right_away
+
+ti_slippy_its_impossible_this_way:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x6CB0
+  parent: 0x6680
+  sampleBankId: 2
+  symbol: ti_slippy_its_impossible_this_way
+
+tm_rob_64:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x14770
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: tm_rob_64
+
+tm_rob_good:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x14710
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: tm_rob_good
+
+tm_rob_great:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x147B0
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: tm_rob_great
+
+tm_rob_job:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x14730
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: tm_rob_job
+
+tm_rob_keep_up_the_good_work:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x14790
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: tm_rob_keep_up_the_good_work
+
+tm_rob_lets_practice:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x146D0
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: tm_rob_lets_practice
+
+tm_rob_now_lets_get_back_to_the_game:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x147D0
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: tm_rob_now_lets_get_back_to_the_game
+
+tm_rob_the_basics:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x146F0
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: tm_rob_the_basics
+
+tm_rob_this_is_rob:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x14750
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: tm_rob_this_is_rob
+
+tm_rob_welcome_to_training_mode:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x146B0
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: tm_rob_welcome_to_training_mode
+
+unused_andross_hurry_fox_im_waiting_for_you:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x12D50
+  parent: 0x12400
+  sampleBankId: 2
+  symbol: unused_andross_hurry_fox_im_waiting_for_you
+
+unused_fox_are_you_okay:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x138B0
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: unused_fox_are_you_okay
+
+unused_fox_falco:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x13DD0
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: unused_fox_falco
+
+unused_fox_peppy:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x13DB0
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: unused_fox_peppy
+
+unused_peppy_dont_be_doing_anything_foolish:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x49B0
+  parent: 0x4520
+  sampleBankId: 2
+  symbol: unused_peppy_dont_be_doing_anything_foolish
+
+unused_peppy_enemy_behind_descend:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xF290
+  parent: 0xEBA0
+  sampleBankId: 2
+  symbol: unused_peppy_enemy_behind_descend
+
+unused_peppy_for_a_u_turn_press_down_and_c_down:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x14130
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: unused_peppy_for_a_u_turn_press_down_and_c_down
+
+unused_peppy_hold_a_to_lock_on_to_the_enemy:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x140B0
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: unused_peppy_hold_a_to_lock_on_to_the_enemy
+
+unused_peppy_incoming:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x13EB0
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: unused_peppy_incoming
+
+unused_peppy_press_b_to_bomb:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x14150
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: unused_peppy_press_b_to_bomb
+
+unused_peppy_press_c_down_to_brake:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x14190
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: unused_peppy_press_c_down_to_brake
+
+unused_peppy_press_c_left_to_boost:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x140F0
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: unused_peppy_press_c_left_to_boost
+
+unused_peppy_press_down_and_c_left_to_do_a_sommersault:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x14110
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: unused_peppy_press_down_and_c_left_to_do_a_sommersault
+
+unused_peppy_to_get_rid_of_the_aim_pause_and_press_r:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x140D0
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: unused_peppy_to_get_rid_of_the_aim_pause_and_press_r
+
+unused_peppy_to_hover_press_z_and_r:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x141B0
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: unused_peppy_to_hover_press_z_and_r
+
+unused_rob_everything:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x13FF0
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: unused_rob_everything
+
+unused_rob_okay:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x14010
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: unused_rob_okay
+
+unused_slippy_fox:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x13D90
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: unused_slippy_fox
+
+unused_slippy_great:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x13D70
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: unused_slippy_great
+
+unused_slippy_ha_ha:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x13E30
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: unused_slippy_ha_ha
+
+unused_slippy_im_beaten_up_pretty_bad:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xA890
+  parent: 0xA4E0
+  sampleBankId: 2
+  symbol: unused_slippy_im_beaten_up_pretty_bad
+
+unused_slippy_somethings_not_right:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x77B0
+  parent: 0x7460
+  sampleBankId: 2
+  symbol: unused_slippy_somethings_not_right
+
+unused_slippy_stop_me:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x13E70
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: unused_slippy_stop_me
+
+unused_slippy_try_and:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x13E50
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: unused_slippy_try_and
+
+unused_wolf_i_will_not_be_defeated_by_this_trash:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xBA90
+  parent: 0xB100
+  sampleBankId: 2
+  symbol: unused_wolf_i_will_not_be_defeated_by_this_trash
+
+ve2_andrew_ahhhhhhhh:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x12C50
+  parent: 0x12400
+  sampleBankId: 2
+  symbol: ve2_andrew_ahhhhhhhh
+
+ve2_andrew_give_it_up:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x12B70
+  parent: 0x12400
+  sampleBankId: 2
+  symbol: ve2_andrew_give_it_up
+
+ve2_andrew_well_make_sure_you_never_reach_andross:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x12770
+  parent: 0x12400
+  sampleBankId: 2
+  symbol: ve2_andrew_well_make_sure_you_never_reach_andross
+
+ve2_andrew_you_cant_win:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x12B90
+  parent: 0x12400
+  sampleBankId: 2
+  symbol: ve2_andrew_you_cant_win
+
+ve2_andrew_youre_not_welcome_here:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x12A90
+  parent: 0x12400
+  sampleBankId: 2
+  symbol: ve2_andrew_youre_not_welcome_here
+
+ve2_andross_i_have_the_brains_to_rule_lylat:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x12810
+  parent: 0x12400
+  sampleBankId: 2
+  symbol: ve2_andross_i_have_the_brains_to_rule_lylat
+
+ve2_andross_if_i_go_down_im_taking_you_with_me:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x12830
+  parent: 0x12400
+  sampleBankId: 2
+  symbol: ve2_andross_if_i_go_down_im_taking_you_with_me
+
+ve2_andross_only:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x127F0
+  parent: 0x12400
+  sampleBankId: 2
+  symbol: ve2_andross_only
+
+ve2_falco_i_see_youve_got_new_ships:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x12C70
+  parent: 0x12400
+  sampleBankId: 2
+  symbol: ve2_falco_i_see_youve_got_new_ships
+
+ve2_falco_thats_our_leader:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x12970
+  parent: 0x12400
+  sampleBankId: 2
+  symbol: ve2_falco_thats_our_leader
+
+ve2_falco_you_guys_dont_give_up:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x127B0
+  parent: 0x12400
+  sampleBankId: 2
+  symbol: ve2_falco_you_guys_dont_give_up
+
+ve2_fox_father:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x12870
+  parent: 0x12400
+  sampleBankId: 2
+  symbol: ve2_fox_father
+
+ve2_fox_nothing:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x129B0
+  parent: 0x12400
+  sampleBankId: 2
+  symbol: ve2_fox_nothing
+
+ve2_fox_nothings_wrong:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x129D0
+  parent: 0x12400
+  sampleBankId: 2
+  symbol: ve2_fox_nothings_wrong
+
+ve2_fox_say_your_prayers_andross:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x12600
+  parent: 0x12400
+  sampleBankId: 2
+  symbol: ve2_fox_say_your_prayers_andross
+
+ve2_fox_so_andross:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x12D10
+  parent: 0x12400
+  sampleBankId: 2
+  symbol: ve2_fox_so_andross
+
+ve2_fox_well_just_see_about_that_star_wolf:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x12790
+  parent: 0x12400
+  sampleBankId: 2
+  symbol: ve2_fox_well_just_see_about_that_star_wolf
+
+ve2_fox_you_show_your_true_form:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x12D30
+  parent: 0x12400
+  sampleBankId: 2
+  symbol: ve2_fox_you_show_your_true_form
+
+ve2_james_dont:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x12D70
+  parent: 0x12400
+  sampleBankId: 2
+  symbol: ve2_james_dont
+
+ve2_james_ever_give_up_my_son:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x12D90
+  parent: 0x12400
+  sampleBankId: 2
+  symbol: ve2_james_ever_give_up_my_son
+
+ve2_james_follow_me_fox:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x12850
+  parent: 0x12400
+  sampleBankId: 2
+  symbol: ve2_james_follow_me_fox
+
+ve2_james_never_give_up:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x128B0
+  parent: 0x12400
+  sampleBankId: 2
+  symbol: ve2_james_never_give_up
+
+ve2_james_this_way_fox:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x12890
+  parent: 0x12400
+  sampleBankId: 2
+  symbol: ve2_james_this_way_fox
+
+ve2_james_trust_your_instincts:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x128D0
+  parent: 0x12400
+  sampleBankId: 2
+  symbol: ve2_james_trust_your_instincts
+
+ve2_james_youve_become_so_strong_fox:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x128F0
+  parent: 0x12400
+  sampleBankId: 2
+  symbol: ve2_james_youve_become_so_strong_fox
+
+ve2_leon_hes:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x12BF0
+  parent: 0x12400
+  sampleBankId: 2
+  symbol: ve2_leon_hes
+
+ve2_leon_lets_see_how_you_handle_our_new_ships:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x12710
+  parent: 0x12400
+  sampleBankId: 2
+  symbol: ve2_leon_lets_see_how_you_handle_our_new_ships
+
+ve2_leon_too_strong:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x12C10
+  parent: 0x12400
+  sampleBankId: 2
+  symbol: ve2_leon_too_strong
+
+ve2_peppy_fox_youre_okay:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x12910
+  parent: 0x12400
+  sampleBankId: 2
+  symbol: ve2_peppy_fox_youre_okay
+
+ve2_peppy_i_cant_break_free:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x12CD0
+  parent: 0x12400
+  sampleBankId: 2
+  symbol: ve2_peppy_i_cant_break_free
+
+ve2_peppy_whats_wrong_fox:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x12990
+  parent: 0x12400
+  sampleBankId: 2
+  symbol: ve2_peppy_whats_wrong_fox
+
+ve2_pigma_fail:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x12750
+  parent: 0x12400
+  sampleBankId: 2
+  symbol: ve2_pigma_fail
+
+ve2_pigma_ive_got_a_better_ship:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x12B50
+  parent: 0x12400
+  sampleBankId: 2
+  symbol: ve2_pigma_ive_got_a_better_ship
+
+ve2_pigma_this_cant_be_happening:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x12C30
+  parent: 0x12400
+  sampleBankId: 2
+  symbol: ve2_pigma_this_cant_be_happening
+
+ve2_pigma_too_bad_dads_not_here_to_see_ya:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x12730
+  parent: 0x12400
+  sampleBankId: 2
+  symbol: ve2_pigma_too_bad_dads_not_here_to_see_ya
+
+ve2_pigma_you_cant_beat_me:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x12B30
+  parent: 0x12400
+  sampleBankId: 2
+  symbol: ve2_pigma_you_cant_beat_me
+
+ve2_slippy_go_fox:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x12950
+  parent: 0x12400
+  sampleBankId: 2
+  symbol: ve2_slippy_go_fox
+
+ve2_slippy_hey:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x12C90
+  parent: 0x12400
+  sampleBankId: 2
+  symbol: ve2_slippy_hey
+
+ve2_slippy_nice_aircraft_guys:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x12CB0
+  parent: 0x12400
+  sampleBankId: 2
+  symbol: ve2_slippy_nice_aircraft_guys
+
+ve2_slippy_way_to:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x12930
+  parent: 0x12400
+  sampleBankId: 2
+  symbol: ve2_slippy_way_to
+
+ve2_wolf_but_im_better:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x12AD0
+  parent: 0x12400
+  sampleBankId: 2
+  symbol: ve2_wolf_but_im_better
+
+ve2_wolf_dont_get_too_cocky_star_fox:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x126B0
+  parent: 0x12400
+  sampleBankId: 2
+  symbol: ve2_wolf_dont_get_too_cocky_star_fox
+
+ve2_wolf_i_dont_believe_it:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x12BD0
+  parent: 0x12400
+  sampleBankId: 2
+  symbol: ve2_wolf_i_dont_believe_it
+
+ve2_wolf_no_way:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x12BB0
+  parent: 0x12400
+  sampleBankId: 2
+  symbol: ve2_wolf_no_way
+
+ve2_wolf_youre_good:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x12AB0
+  parent: 0x12400
+  sampleBankId: 2
+  symbol: ve2_wolf_youre_good
+
+ve_andross_its_foolish_to_come_against_me:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xAAD0
+  parent: 0xA4E0
+  sampleBankId: 2
+  symbol: ve_andross_its_foolish_to_come_against_me
+
+ve_andross_ive_been_waiting_for_you_star_fox:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xAA90
+  parent: 0xA4E0
+  sampleBankId: 2
+  symbol: ve_andross_ive_been_waiting_for_you_star_fox
+
+ve_andross_now_you_will_feel_true_pain:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x127D0
+  parent: 0x12400
+  sampleBankId: 2
+  symbol: ve_andross_now_you_will_feel_true_pain
+
+ve_andross_you_know_that_i_control_the_galaxy:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xAAB0
+  parent: 0xA4E0
+  sampleBankId: 2
+  symbol: ve_andross_you_know_that_i_control_the_galaxy
+
+ve_andross_you_will_die_just_like_your_father:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xAAF0
+  parent: 0xA4E0
+  sampleBankId: 2
+  symbol: ve_andross_you_will_die_just_like_your_father
+
+ve_falco_dont_get_too_close:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xA950
+  parent: 0xA4E0
+  sampleBankId: 2
+  symbol: ve_falco_dont_get_too_close
+
+ve_falco_dont_go_dyin_on_me:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xA830
+  parent: 0xA4E0
+  sampleBankId: 2
+  symbol: ve_falco_dont_go_dyin_on_me
+
+ve_falco_fox:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xA970
+  parent: 0xA4E0
+  sampleBankId: 2
+  symbol: ve_falco_fox
+
+ve_falco_ill_take_the_left:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xA850
+  parent: 0xA4E0
+  sampleBankId: 2
+  symbol: ve_falco_ill_take_the_left
+
+ve_falco_okay_ill_admit_it:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xAB70
+  parent: 0xA4E0
+  sampleBankId: 2
+  symbol: ve_falco_okay_ill_admit_it
+
+ve_falco_these_guys_just_keep_coming:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xA810
+  parent: 0xA4E0
+  sampleBankId: 2
+  symbol: ve_falco_these_guys_just_keep_coming
+
+ve_falco_time_to_show_the_monkeys_whos_boss:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xA7B0
+  parent: 0xA4E0
+  sampleBankId: 2
+  symbol: ve_falco_time_to_show_the_monkeys_whos_boss
+
+ve_falco_you_did_good_fox:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xAB90
+  parent: 0xA4E0
+  sampleBankId: 2
+  symbol: ve_falco_you_did_good_fox
+
+ve_fox_dont_relax:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xA6E0
+  parent: 0xA4E0
+  sampleBankId: 2
+  symbol: ve_fox_dont_relax
+
+ve_fox_ill_go_it_alone_from_here:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xA9D0
+  parent: 0xA4E0
+  sampleBankId: 2
+  symbol: ve_fox_ill_go_it_alone_from_here
+
+ve_fox_its_all_coming_down_to_this:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xA990
+  parent: 0xA4E0
+  sampleBankId: 2
+  symbol: ve_fox_its_all_coming_down_to_this
+
+ve_fox_were_not_done_yet:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xA790
+  parent: 0xA4E0
+  sampleBankId: 2
+  symbol: ve_fox_were_not_done_yet
+
+ve_peppy_fox:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xA9F0
+  parent: 0xA4E0
+  sampleBankId: 2
+  symbol: ve_peppy_fox
+
+ve_peppy_fox_are_you_okay:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xAB10
+  parent: 0xA4E0
+  sampleBankId: 2
+  symbol: ve_peppy_fox_are_you_okay
+
+ve_peppy_ive_got_the_right:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xA870
+  parent: 0xA4E0
+  sampleBankId: 2
+  symbol: ve_peppy_ive_got_the_right
+
+ve_peppy_stay_alert:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xA930
+  parent: 0xA4E0
+  sampleBankId: 2
+  symbol: ve_peppy_stay_alert
+
+ve_peppy_this_brings_back_memories_of_your_dad:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xA7D0
+  parent: 0xA4E0
+  sampleBankId: 2
+  symbol: ve_peppy_this_brings_back_memories_of_your_dad
+
+ve_slippy_fox:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xAA30
+  parent: 0xA4E0
+  sampleBankId: 2
+  symbol: ve_slippy_fox
+
+ve_slippy_incoming:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x13EF0
+  parent: 0x134A0
+  sampleBankId: 2
+  symbol: ve_slippy_incoming
+
+ve_slippy_that_temple_gives_me_the_creeps:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xA8F0
+  parent: 0xA4E0
+  sampleBankId: 2
+  symbol: ve_slippy_that_temple_gives_me_the_creeps
+
+ve_slippy_whats_going_on_hes_running_away:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xA910
+  parent: 0xA4E0
+  sampleBankId: 2
+  symbol: ve_slippy_whats_going_on_hes_running_away
+
+ve_slippy_yes:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xAB30
+  parent: 0xA4E0
+  sampleBankId: 2
+  symbol: ve_slippy_yes
+
+ve_slippy_you_did_it:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xAB50
+  parent: 0xA4E0
+  sampleBankId: 2
+  symbol: ve_slippy_you_did_it
+
+ve_slippy_youll_be_sorry_punks:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0xA7F0
+  parent: 0xA4E0
+  sampleBankId: 2
+  symbol: ve_slippy_youll_be_sorry_punks
+
+zo_falco_enemy_fighters_spotted:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x8B70
+  parent: 0x8660
+  sampleBankId: 2
+  symbol: zo_falco_enemy_fighters_spotted
+
+zo_falco_i_cant_believe_they_did_this:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x8970
+  parent: 0x8660
+  sampleBankId: 2
+  symbol: zo_falco_i_cant_believe_they_did_this
+
+zo_falco_i_hear_ya_slippy:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x8990
+  parent: 0x8660
+  sampleBankId: 2
+  symbol: zo_falco_i_hear_ya_slippy
+
+zo_falco_katt:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x8A50
+  parent: 0x8660
+  sampleBankId: 2
+  symbol: zo_falco_katt
+
+zo_falco_lets_take_em_all_out:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x89D0
+  parent: 0x8660
+  sampleBankId: 2
+  symbol: zo_falco_lets_take_em_all_out
+
+zo_falco_shoot:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x8BD0
+  parent: 0x8660
+  sampleBankId: 2
+  symbol: zo_falco_shoot
+
+zo_falco_take_em_down:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x8B90
+  parent: 0x8660
+  sampleBankId: 2
+  symbol: zo_falco_take_em_down
+
+zo_falco_what_are_you_doing_here:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x8A70
+  parent: 0x8660
+  sampleBankId: 2
+  symbol: zo_falco_what_are_you_doing_here
+
+zo_falco_whered_you_go:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x8F90
+  parent: 0x8660
+  sampleBankId: 2
+  symbol: zo_falco_whered_you_go
+
+zo_fox_have_we_been_spotted:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x8A10
+  parent: 0x8660
+  sampleBankId: 2
+  symbol: zo_fox_have_we_been_spotted
+
+zo_fox_lets_sneak_in_low_and_surprise_em:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x8860
+  parent: 0x8660
+  sampleBankId: 2
+  symbol: zo_fox_lets_sneak_in_low_and_surprise_em
+
+zo_fox_uh_oh:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x89F0
+  parent: 0x8660
+  sampleBankId: 2
+  symbol: zo_fox_uh_oh
+
+zo_katt_ive_got_somebody_on_my_tail:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x8B30
+  parent: 0x8660
+  sampleBankId: 2
+  symbol: zo_katt_ive_got_somebody_on_my_tail
+
+zo_katt_mess_with_me_and_youll_get_scratched:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x8B50
+  parent: 0x8660
+  sampleBankId: 2
+  symbol: zo_katt_mess_with_me_and_youll_get_scratched
+
+zo_katt_take_the_right_light_boy_i_have_the_left:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x8AD0
+  parent: 0x8660
+  sampleBankId: 2
+  symbol: zo_katt_take_the_right_light_boy_i_have_the_left
+
+zo_katt_were_closing_in_on_them_falco:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x8A30
+  parent: 0x8660
+  sampleBankId: 2
+  symbol: zo_katt_were_closing_in_on_them_falco
+
+zo_peppy_aim_for_the_rudder_fox:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x8B10
+  parent: 0x8660
+  sampleBankId: 2
+  symbol: zo_peppy_aim_for_the_rudder_fox
+
+zo_peppy_be_careful_it_might_be_a_trap:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x8C30
+  parent: 0x8660
+  sampleBankId: 2
+  symbol: zo_peppy_be_careful_it_might_be_a_trap
+
+zo_peppy_destroy_the_crane:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x8F10
+  parent: 0x8660
+  sampleBankId: 2
+  symbol: zo_peppy_destroy_the_crane
+
+zo_peppy_destroy_the_two_exhaust_pipes:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x8ED0
+  parent: 0x8660
+  sampleBankId: 2
+  symbol: zo_peppy_destroy_the_two_exhaust_pipes
+
+zo_peppy_enemy_tanker:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x8AF0
+  parent: 0x8660
+  sampleBankId: 2
+  symbol: zo_peppy_enemy_tanker
+
+zo_peppy_follow_your_fathers_example_fox:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x4A90
+  parent: 0x4520
+  sampleBankId: 2
+  symbol: zo_peppy_follow_your_fathers_example_fox
+
+zo_peppy_his_armors_tough_use_bombs_wisely:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x8EB0
+  parent: 0x8660
+  sampleBankId: 2
+  symbol: zo_peppy_his_armors_tough_use_bombs_wisely
+
+zo_peppy_looks_like_were_headin_for_macbeth:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x8F50
+  parent: 0x8660
+  sampleBankId: 2
+  symbol: zo_peppy_looks_like_were_headin_for_macbeth
+
+zo_peppy_quick:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x8EF0
+  parent: 0x8660
+  sampleBankId: 2
+  symbol: zo_peppy_quick
+
+zo_peppy_this_is_zoness:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x8910
+  parent: 0x8660
+  sampleBankId: 2
+  symbol: zo_peppy_this_is_zoness
+
+zo_sarumarine_adjust_10_degrees_right:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x8D30
+  parent: 0x8660
+  sampleBankId: 2
+  symbol: zo_sarumarine_adjust_10_degrees_right
+
+zo_sarumarine_all_sections_ready:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x8CD0
+  parent: 0x8660
+  sampleBankId: 2
+  symbol: zo_sarumarine_all_sections_ready
+
+zo_sarumarine_angle_okay:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x8D90
+  parent: 0x8660
+  sampleBankId: 2
+  symbol: zo_sarumarine_angle_okay
+
+zo_sarumarine_arrr:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x8DD0
+  parent: 0x8660
+  sampleBankId: 2
+  symbol: zo_sarumarine_arrr
+
+zo_sarumarine_arrrrrrrrggghhhhh:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x8E90
+  parent: 0x8660
+  sampleBankId: 2
+  symbol: zo_sarumarine_arrrrrrrrggghhhhh
+
+zo_sarumarine_disrespectful_little_whelps:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x8C90
+  parent: 0x8660
+  sampleBankId: 2
+  symbol: zo_sarumarine_disrespectful_little_whelps
+
+zo_sarumarine_drop_the_crane_now:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x8DF0
+  parent: 0x8660
+  sampleBankId: 2
+  symbol: zo_sarumarine_drop_the_crane_now
+
+zo_sarumarine_engage:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x8CF0
+  parent: 0x8660
+  sampleBankId: 2
+  symbol: zo_sarumarine_engage
+
+zo_sarumarine_fire:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x8D50
+  parent: 0x8660
+  sampleBankId: 2
+  symbol: zo_sarumarine_fire
+
+zo_sarumarine_fire_anyway:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x8E30
+  parent: 0x8660
+  sampleBankId: 2
+  symbol: zo_sarumarine_fire_anyway
+
+zo_sarumarine_fire_torpedo:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x8DB0
+  parent: 0x8660
+  sampleBankId: 2
+  symbol: zo_sarumarine_fire_torpedo
+
+zo_sarumarine_i_cant_see_anything:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x8E10
+  parent: 0x8660
+  sampleBankId: 2
+  symbol: zo_sarumarine_i_cant_see_anything
+
+zo_sarumarine_ill_teach_ye_some_respect:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x8CB0
+  parent: 0x8660
+  sampleBankId: 2
+  symbol: zo_sarumarine_ill_teach_ye_some_respect
+
+zo_sarumarine_oh_shoot:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x8F30
+  parent: 0x8660
+  sampleBankId: 2
+  symbol: zo_sarumarine_oh_shoot
+
+zo_sarumarine_prepare_to_surface:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x8D10
+  parent: 0x8660
+  sampleBankId: 2
+  symbol: zo_sarumarine_prepare_to_surface
+
+zo_sarumarine_pressure:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x8D70
+  parent: 0x8660
+  sampleBankId: 2
+  symbol: zo_sarumarine_pressure
+
+zo_sarumarine_yahahahahahar:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x8C70
+  parent: 0x8660
+  sampleBankId: 2
+  symbol: zo_sarumarine_yahahahahahar
+
+zo_slippy_here_i_go:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x8AB0
+  parent: 0x8660
+  sampleBankId: 2
+  symbol: zo_slippy_here_i_go
+
+zo_slippy_somethings_coming_from_the_sea:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x8C50
+  parent: 0x8660
+  sampleBankId: 2
+  symbol: zo_slippy_somethings_coming_from_the_sea
+
+zo_slippy_watch_out:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x8C10
+  parent: 0x8660
+  sampleBankId: 2
+  symbol: zo_slippy_watch_out
+
+zo_slippy_watch_out_for_the_search_light:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x89B0
+  parent: 0x8660
+  sampleBankId: 2
+  symbol: zo_slippy_watch_out_for_the_search_light
+
+zo_slippy_what_a_dump:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x8930
+  parent: 0x8660
+  sampleBankId: 2
+  symbol: zo_slippy_what_a_dump
+
+zo_slippy_woah:
+  type: NAUDIO:V1:SAMPLE
+  offset: 0x8BF0
+  parent: 0x8660
+  sampleBankId: 2
+  symbol: zo_slippy_woah
+

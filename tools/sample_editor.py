@@ -40,6 +40,7 @@ LOOP_RES_TYPE   = 0x4150434C   # Torch::ResourceType::AdpcmLoop   (APCL)
 BOOK_RES_TYPE   = 0x41504342   # Torch::ResourceType::AdpcmBook   (APCB)
 INST_RES_TYPE   = 0x494E5354   # Torch::ResourceType::Instrument  (INST)
 DRUM_RES_TYPE   = 0x4452554D   # Torch::ResourceType::Drum        (DRUM)
+FONT_RES_TYPE   = 0x53464E54   # Torch::ResourceType::SoundFont   (SFNT)
 
 CODEC_NAMES  = {0: "ADPCM", 1: "S8", 2: "S16MEM", 3: "SMALL_ADPCM", 4: "REVERB", 5: "S16"}
 MEDIUM_NAMES = {0: "Ram",   1: "Unk", 2: "Cart",   3: "Disk",        5: "RamUnloaded"}
@@ -355,6 +356,39 @@ def parse_drum_tuning(data: bytes) -> tuple[int, float] | None:
     return None
 
 
+def parse_soundfont_binary(data: bytes) -> dict | None:
+    """Parse a SoundFont binary entry.
+
+    Layout (all LE, after 64-byte OTR header):
+      numInstruments  u8
+      numDrums        u8
+      sampleBankId1   u8
+      sampleBankId2   u8
+      inst_crcs[]     u64 × numInstruments   — CRC64 of each instrument archive path
+      drum_crcs[]     u64 × numDrums         — CRC64 of each drum archive path
+    """
+    off = BODY_OFFSET
+    if len(data) < off + 4:
+        return None
+    num_inst  = data[off]
+    num_drums = data[off + 1]
+    bank_id1  = data[off + 2]
+    off += 4
+    inst_crcs, drum_crcs = [], []
+    for _ in range(num_inst):
+        if len(data) < off + 8:
+            break
+        inst_crcs.append(struct.unpack_from("<Q", data, off)[0])
+        off += 8
+    for _ in range(num_drums):
+        if len(data) < off + 8:
+            break
+        drum_crcs.append(struct.unpack_from("<Q", data, off)[0])
+        off += 8
+    return dict(num_inst=num_inst, num_drums=num_drums, bank_id1=bank_id1,
+                inst_crcs=inst_crcs, drum_crcs=drum_crcs)
+
+
 # ─── VADPCM decoder ───────────────────────────────────────────────────────────
 # Ported from tools/aifc_decode.c (my_decodeframe / readaifccodebook).
 # Decodes Nintendo N64 VADPCM (4:1 ADPCM): 9 bytes → 16 S16 samples per frame.
@@ -454,14 +488,20 @@ def vadpcm_to_pcm(raw: bytes, book: dict) -> bytes:
 
 def list_samples(archive_path: str,
                  name_filter: str = "",
-                 codec_filter: int = -1) -> list[dict]:
-    """Single-pass scan: collect samples, loops, books, instruments, and drums;
-    cross-link everything by CRC-64 hash to infer per-sample tuning."""
-    loop_by_hash:  dict[int, dict]        = {}
-    book_by_hash:  dict[int, dict]        = {}
-    tuning_lists:  dict[int, list[float]] = {}
-    pitch_roles:   dict[int, set[str]]    = {}
-    raw_samples:   list[tuple[str, bytes]] = []
+                 codec_filter: int = -1,
+                 bank_filter: str = "") -> list[dict]:
+    """Single-pass scan: collect samples, loops, books, instruments, drums, and
+    soundfonts; cross-link everything by CRC-64 hash to infer per-sample tuning,
+    bank membership, and instrument usage."""
+    loop_by_hash:       dict[int, dict]                    = {}
+    book_by_hash:       dict[int, dict]                    = {}
+    tuning_lists:       dict[int, list[float]]             = {}
+    pitch_roles:        dict[int, set[str]]                = {}
+    font_by_inst_crc:   dict[int, str]                              = {}  # inst_crc64 → font_path
+    font_by_drum_crc:   dict[int, str]                              = {}  # drum_crc64 → font_path
+    inst_slot_data:     dict[int, list[tuple[str, str, float]]]     = {}  # hash → [(inst_path, slot, tuning)]
+    drum_slot_data:     dict[int, list[tuple[str, float]]]          = {}  # hash → [(drum_path, tuning)]
+    raw_samples:        list[tuple[str, bytes]]            = []
 
     def _add_tuning(sample_hash: int, tuning: float):
         tuning_lists.setdefault(sample_hash, []).append(tuning)
@@ -482,15 +522,26 @@ def list_samples(archive_path: str,
                 parsed = parse_book_binary(data)
                 if parsed is not None:
                     book_by_hash[crc64_hash(name)] = parsed
+            elif rt == FONT_RES_TYPE:
+                parsed = parse_soundfont_binary(data)
+                if parsed:
+                    for crc in parsed["inst_crcs"]:
+                        if crc:
+                            font_by_inst_crc[crc] = name
+                    for crc in parsed["drum_crcs"]:
+                        if crc:
+                            font_by_drum_crc[crc] = name
             elif rt == INST_RES_TYPE:
                 for h, t, slot in parse_instrument_tunings(data):
                     _add_tuning(h, t)
                     pitch_roles.setdefault(h, set()).add(slot)
+                    inst_slot_data.setdefault(h, []).append((name, slot, t))
             elif rt == DRUM_RES_TYPE:
                 pair = parse_drum_tuning(data)
                 if pair:
                     _add_tuning(pair[0], pair[1])
                     pitch_roles.setdefault(pair[0], set()).add("drum")
+                    drum_slot_data.setdefault(pair[0], []).append((name, pair[1]))
 
     results = []
     pending_redirects: list[tuple[str, dict]] = []  # (name, partial_info)
@@ -531,6 +582,33 @@ def list_samples(archive_path: str,
             info["all_tunings"] = []
             info["sample_rate"] = None
 
+        # Bank + instrument provenance
+        banks: set[str] = set()
+        used_by: list[str] = []
+        provenance: list[dict] = []
+        slot_tunings: dict[str, float] = {}
+        for ipath, slot, t in inst_slot_data.get(h, []):
+            font = font_by_inst_crc.get(crc64_hash(ipath), "")
+            if font:
+                banks.add(font)
+            used_by.append(f"{_font_short(font) if font else '?'}:{_path_tail(ipath)}({slot[0].upper()})")
+            provenance.append({"font": font, "inst_path": ipath, "slot": slot, "tuning": t})
+            slot_tunings.setdefault(slot, t)
+        for dpath, t in drum_slot_data.get(h, []):
+            font = font_by_drum_crc.get(crc64_hash(dpath), "")
+            if font:
+                banks.add(font)
+            used_by.append(f"{_font_short(font) if font else '?'}:{_path_tail(dpath)}(D)")
+            provenance.append({"font": font, "inst_path": dpath, "slot": "drum", "tuning": t})
+            slot_tunings.setdefault("drum", t)
+        info["banks"]       = sorted(banks)
+        info["used_by"]     = sorted(used_by)
+        info["provenance"]  = provenance
+        info["slot_tunings"] = slot_tunings
+
+        if bank_filter and bank_filter not in banks:
+            continue
+
         results.append(info)
 
     # Resolve v2 redirects: copy canonical's audio fields, override path-specific ones.
@@ -567,6 +645,33 @@ def list_samples(archive_path: str,
             info["all_tunings"] = sorted(set(all_t))
             info["sample_rate"] = round(info["tuning"] * AUDIO_REF_HZ)
         # else: keep canonical's tuning (already copied via dict(canonical))
+        # Provenance for redirects: check if this redirect path is referenced by its own
+        # instruments/drums (older archives), otherwise inherit canonical's provenance.
+        own_banks: set[str] = set()
+        own_used: list[str] = []
+        own_prov: list[dict] = []
+        own_slot_t: dict[str, float] = {}
+        for ipath, slot, t in inst_slot_data.get(h, []):
+            font = font_by_inst_crc.get(crc64_hash(ipath), "")
+            if font:
+                own_banks.add(font)
+            own_used.append(f"{_font_short(font) if font else '?'}:{_path_tail(ipath)}({slot[0].upper()})")
+            own_prov.append({"font": font, "inst_path": ipath, "slot": slot, "tuning": t})
+            own_slot_t.setdefault(slot, t)
+        for dpath, t in drum_slot_data.get(h, []):
+            font = font_by_drum_crc.get(crc64_hash(dpath), "")
+            if font:
+                own_banks.add(font)
+            own_used.append(f"{_font_short(font) if font else '?'}:{_path_tail(dpath)}(D)")
+            own_prov.append({"font": font, "inst_path": dpath, "slot": "drum", "tuning": t})
+            own_slot_t.setdefault("drum", t)
+        if own_banks:
+            info["banks"]        = sorted(own_banks)
+            info["used_by"]      = sorted(own_used)
+            info["provenance"]   = own_prov
+            info["slot_tunings"] = own_slot_t
+        if bank_filter and bank_filter not in info.get("banks", []):
+            continue
         results.append(info)
 
     results.sort(key=lambda x: x["path"])
@@ -677,6 +782,20 @@ def _fmt_pitch_long(roles: list[str]) -> str:
     if not roles:
         return "—"
     return ", ".join(r.capitalize() for r in roles)
+
+
+def _font_short(path: str) -> str:
+    """Extract the hex-address suffix from a SoundFont archive path for display."""
+    m = re.search(r"sound_font[_/]?([0-9A-Fa-f]+)$", path, re.IGNORECASE)
+    if m:
+        return m.group(1)
+    last = path.rsplit("/", 1)[-1]
+    return last[-10:] if last else path
+
+
+def _path_tail(path: str) -> str:
+    """Return the last path component."""
+    return path.rsplit("/", 1)[-1]
 
 
 def _fmt_duration(pcm_samples: int, rate: int = MIXER_RATE_HZ) -> str:
@@ -855,10 +974,15 @@ def _effective_rate(info: dict) -> int:
     return sr if sr else MIXER_RATE_HZ
 
 
-def _decode_sample(info: dict) -> tuple[bytes, int] | None:
-    """Return (S16 LE PCM, sample_rate) for a sample, or None if not playable."""
+def _decode_sample(info: dict,
+                   slot_tuning: float | None = None) -> tuple[bytes, int] | None:
+    """Return (S16 LE PCM, sample_rate) for a sample, or None if not playable.
+
+    slot_tuning — when provided, overrides the default tuning so the sample plays
+    back at the pitch for a specific instrument slot (Low/Normal/High/Drum).
+    """
     codec = info.get("codec")
-    rate  = _effective_rate(info)
+    rate  = round(slot_tuning * AUDIO_REF_HZ) if slot_tuning else _effective_rate(info)
     if codec == 5:
         return info["raw"], rate
     if codec == 0:
@@ -1166,6 +1290,8 @@ def cmd_gui(args):
             self._aliases:             dict[str, str]  = {}
             self._alias_current_path:  str             = ""
             self._batch_mapping:       dict[str, str]  = {}
+            self._node_map:            dict[str, dict] = {}  # iid → {sample, slot, tuning, leaf}
+            self._iids_by_path:        dict[str, list[str]] = {}  # path → [leaf iids]
 
             self._build_styles()
             self._build_ui()
@@ -1254,6 +1380,13 @@ def cmd_gui(args):
                 values=["All"] + [f"{v} ({k})" for k, v in sorted(CODEC_NAMES.items())])
             codec_box.pack(side="left", padx=(6, 10))
             codec_box.bind("<<ComboboxSelected>>", lambda _: self._on_filter_change())
+            ttk.Label(fbar, text="Bank", foreground=FG_DIM).pack(side="left")
+            self._bank_var = tk.StringVar(value="All")
+            self._bank_box = ttk.Combobox(
+                fbar, textvariable=self._bank_var, width=14,
+                state="readonly", values=["All"])
+            self._bank_box.pack(side="left", padx=(6, 10))
+            self._bank_box.bind("<<ComboboxSelected>>", lambda _: self._on_filter_change())
             self._btn_scan = ttk.Button(fbar, text="Scan Folder…",
                                         command=self._action_scan_folder)
             self._btn_scan.pack(side="left", padx=(0, 6))
@@ -1282,7 +1415,7 @@ def cmd_gui(args):
 
             cols = ("alias", "path", "addr", "file", "codec", "size", "dur", "loop", "book", "pitch")
             self._tree = ttk.Treeview(list_frame, columns=cols,
-                                      show="headings", selectmode="browse")
+                                      show="tree headings", selectmode="browse")
             self._tree.heading("alias", text="Alias",
                                command=lambda: self._sort_by("alias"))
             self._tree.heading("path",  text="Asset path",
@@ -1300,10 +1433,11 @@ def cmd_gui(args):
             self._tree.heading("book",  text="Book")
             self._tree.heading("pitch", text="Pitch",
                                command=lambda: self._sort_by("pitch"))
-            self._tree.column("alias", width=90,  stretch=False)
-            self._tree.column("path",  width=200, stretch=True)
+            self._tree.column("#0",    width=200, stretch=True)   # tree label column
+            self._tree.column("alias", width=0,   stretch=False)  # hidden, kept for compat
+            self._tree.column("path",  width=0,   stretch=False)  # hidden, kept for compat
             self._tree.column("addr",  width=72,  stretch=False, anchor="e")
-            self._tree.column("file",  width=126, stretch=False)
+            self._tree.column("file",  width=110, stretch=False)
             self._tree.column("codec", width=76,  stretch=False, anchor="center")
             self._tree.column("size",  width=64,  stretch=False, anchor="e")
             self._tree.column("dur",   width=60,  stretch=False, anchor="e")
@@ -1340,6 +1474,8 @@ def cmd_gui(args):
                 ("Addr",      "addr"),
                 ("Hash",      "hash"),
                 ("Pitch",     "pitch"),
+                ("Banks",     "banks"),
+                ("Used by",   "used_by"),
                 ("Codec",     "codec"),
                 ("Medium",    "medium"),
                 ("Size",      "size"),
@@ -1427,6 +1563,8 @@ def cmd_gui(args):
             self._btn_scan.state(["disabled"])
             self._btn_replace_all.state(["disabled"])
             self._btn_export_aliases.state(["disabled"])
+            self._bank_var.set("All")
+            self._bank_box.configure(values=["All"])
             self._status_var.set("Loading…")
             self._loading = True
             threading.Thread(target=self._load_thread, daemon=True).start()
@@ -1447,55 +1585,143 @@ def cmd_gui(args):
             self._aliases = load_aliases(self._archive_path)
             self._btn_scan.state(["!disabled"])
             self._btn_export_aliases.state(["!disabled"])
+            all_banks = sorted({b for s in samples for b in s.get("banks", [])},
+                               key=lambda p: _font_short(p))
+            self._bank_box.configure(values=["All"] + all_banks)
+            self._bank_var.set("All")
             self._apply_filter()
 
         # ── filtering ─────────────────────────────────────────────────────────
         def _on_filter_change(self, *_):
             self._apply_filter()
 
-        def _apply_filter(self):
-            text      = self._filter_var.get().lower()
-            codec_sel = self._codec_var.get()
-            codec_num = -1
-            if codec_sel != "All":
+        def _get_codec_num(self) -> int:
+            sel = self._codec_var.get()
+            if sel != "All":
                 try:
-                    codec_num = int(codec_sel.split("(")[1].rstrip(")"))
+                    return int(sel.split("(")[1].rstrip(")"))
                 except Exception:
                     pass
-            self._filtered = [
-                s for s in self._samples
-                if (not text or text in s["path"].lower()
-                    or text in self._aliases.get(s["path"], "").lower())
-                and (codec_num < 0 or s["codec"] == codec_num)
-            ]
+            return -1
+
+        def _apply_filter(self, *_):
             self._refresh_tree()
 
         def _refresh_tree(self):
             self._tree.delete(*self._tree.get_children())
-            for s in self._filtered:
-                dur    = _fmt_duration(s["pcm_samples"]) if s["pcm_samples"] else "—"
-                fmap   = self._batch_mapping.get(s["path"], "")
+            self._node_map.clear()
+            self._iids_by_path.clear()
+
+            text      = self._filter_var.get().lower()
+            codec_num = self._get_codec_num()
+            bank_sel  = self._bank_var.get()
+
+            def _matches(s: dict) -> bool:
+                if codec_num >= 0 and s["codec"] != codec_num:
+                    return False
+                if text:
+                    alias = self._aliases.get(s["path"], "").lower()
+                    path  = s["path"].lower()
+                    if text not in path and text not in alias:
+                        return False
+                return True
+
+            # Build tree: font_path → inst_path → [(sample, slot, tuning)]
+            font_inst: dict[str, dict[str, list]] = {}
+            unassigned: list[dict] = []
+
+            for s in self._samples:
+                if not _matches(s):
+                    continue
+                prov = s.get("provenance", [])
+                placed = False
+                for p in prov:
+                    if bank_sel != "All" and p["font"] != bank_sel:
+                        continue
+                    f = p["font"]
+                    i = p["inst_path"]
+                    font_inst.setdefault(f, {}).setdefault(i, []).append(
+                        (s, p["slot"], p["tuning"]))
+                    placed = True
+                if not placed and bank_sel == "All":
+                    unassigned.append(s)
+
+            leaf_counter = [0]
+            leaf_total   = [0]
+
+            def _insert_leaf(parent: str, s: dict, slot: str | None, tuning: float | None):
+                iid  = f"leaf:{leaf_counter[0]}"
+                leaf_counter[0] += 1
+                leaf_total[0]   += 1
+                alias    = self._aliases.get(s["path"], "")
+                label    = alias or os.path.basename(s["path"])
+                slot_tag = f" [{slot[0].upper()}]" if slot else ""
+                fmap     = self._batch_mapping.get(s["path"], "")
+                dur      = _fmt_duration(s["pcm_samples"]) if s["pcm_samples"] else "—"
                 is_redir = s.get("is_redirect", False)
-                codec_cell = ("→ " if is_redir else "") + CODEC_NAMES.get(s["codec"], f"?({s['codec']})")
-                self._tree.insert("", "end", iid=s["path"],
+                codec_c  = ("→ " if is_redir else "") + CODEC_NAMES.get(s["codec"], f"?({s['codec']})")
+                eff_rate = round(tuning * AUDIO_REF_HZ) if tuning else _effective_rate(s)
+                rate_str = f"~{eff_rate} Hz" if tuning else ""
+                self._tree.insert(parent, "end", iid=iid,
+                    text=label + slot_tag,
                     tags=("redirect",) if is_redir else (),
                     values=(
-                        self._aliases.get(s["path"], ""),
+                        alias,
                         s["path"],
                         s.get("addr_str", ""),
                         os.path.basename(fmap) if fmap else "",
-                        codec_cell,
+                        codec_c,
                         _fmt_size(s["size"]),
                         dur,
                         "✓" if s["has_loop"] else "",
                         "✓" if s["has_book"] else "",
-                        _fmt_pitch_short(s.get("pitch_roles", [])),
+                        _fmt_pitch_short([slot] if slot else s.get("pitch_roles", [])),
                     ))
-            n = len(self._filtered);  total = len(self._samples)
-            redir = sum(1 for s in self._filtered if s.get("is_redirect"))
-            note  = f"  ({redir} redirects)" if redir else ""
+                self._node_map[iid] = {
+                    "leaf": True, "sample": s, "slot": slot, "tuning": tuning}
+                self._iids_by_path.setdefault(s["path"], []).append(iid)
+
+            _SLOT_ORDER = {"low": 0, "normal": 1, "high": 2, "drum": 3}
+
+            for font_path in sorted(font_inst, key=_font_short):
+                font_iid = f"font:{font_path}"
+                self._tree.insert("", "end", iid=font_iid, open=True,
+                    text=f"Bank  {_font_short(font_path)}")
+                self._node_map[font_iid] = {"leaf": False}
+
+                for inst_path in sorted(font_inst[font_path]):
+                    inst_iid = f"inst:{font_path}:{inst_path}"
+                    self._tree.insert(font_iid, "end", iid=inst_iid, open=True,
+                        text=_path_tail(inst_path))
+                    self._node_map[inst_iid] = {"leaf": False}
+
+                    entries = font_inst[font_path][inst_path]
+                    entries.sort(key=lambda e: _SLOT_ORDER.get(e[1], 99))
+                    for s, slot, tuning in entries:
+                        _insert_leaf(inst_iid, s, slot, tuning)
+
+            if unassigned:
+                u_iid = "__unassigned__"
+                self._tree.insert("", "end", iid=u_iid, open=not text,
+                    text="Unassigned")
+                self._node_map[u_iid] = {"leaf": False}
+                for s in sorted(unassigned, key=lambda x: x["path"]):
+                    _insert_leaf(u_iid, s, None, None)
+
+            # Collect unique samples visible in the tree (for batch scan / replace)
+            seen: set[str] = set()
+            self._filtered = []
+            for nd in self._node_map.values():
+                if nd.get("leaf"):
+                    p = nd["sample"]["path"]
+                    if p not in seen:
+                        seen.add(p)
+                        self._filtered.append(nd["sample"])
+
+            n     = leaf_total[0]
+            total = len(self._samples)
             self._status_var.set(
-                f"{n} shown / {total} total{note}" if n != total else f"{n} samples{note}")
+                f"{n} shown / {total} total" if n != total else f"{n} samples")
 
         # ── sort context menu ─────────────────────────────────────────────────
         def _on_heading_menu(self, event):
@@ -1511,6 +1737,7 @@ def cmd_gui(args):
                 ("Sort by Address  (↑)",         "addr"),
                 ("Sort by CRC64 Hash  (↑)",      "hash"),
                 ("Sort by Pitch  (L → N → H → D)", "pitch"),
+                ("Sort by Bank",                 "bank"),
                 ("Sort by Codec",                "codec"),
                 ("Sort by Size",                 "size"),
                 ("Sort by Duration",             "pcm_samples"),
@@ -1548,6 +1775,10 @@ def cmd_gui(args):
                          for r in s.get("pitch_roles", [])] or [99]
                     ),
                     reverse=not self._sort_asc)
+            elif col == "bank":
+                self._filtered.sort(
+                    key=lambda s: sorted(_font_short(b) for b in s.get("banks", [])) or [""],
+                    reverse=not self._sort_asc)
             else:
                 key_map = {"path": "path", "codec": "codec",
                            "size": "size", "pcm_samples": "pcm_samples"}
@@ -1556,16 +1787,24 @@ def cmd_gui(args):
             self._refresh_tree()
 
         # ── selection ─────────────────────────────────────────────────────────
-        def _selected_sample(self) -> dict | None:
+        def _selected_sample(self) -> tuple[dict | None, str | None, float | None]:
+            """Return (sample, slot, slot_tuning) for the selected leaf, or (None, None, None)."""
             sel = self._tree.selection()
             if not sel:
-                return None
-            path = sel[0]
-            return next((s for s in self._filtered if s["path"] == path), None)
+                return None, None, None
+            nd = self._node_map.get(sel[0])
+            if nd and nd.get("leaf"):
+                s     = nd["sample"]
+                slot  = nd["slot"]
+                t     = nd["tuning"]
+                if t is None:
+                    t = _effective_rate(s) / AUDIO_REF_HZ if s.get("tuning") else None
+                return s, slot, t
+            return None, None, None
 
         def _on_select(self, _event):
             self._commit_alias()
-            s = self._selected_sample()
+            s, slot, slot_tuning = self._selected_sample()
             if s is None:
                 self._clear_detail()
                 return
@@ -1580,8 +1819,15 @@ def cmd_gui(args):
             self._detail_labels["addr"].set(s.get("addr_str") or "—")
             self._detail_labels["hash"].set(
                 f"0x{s['hash']:016X}" if s.get("hash") is not None else "—")
-            self._detail_labels["pitch"].set(
-                _fmt_pitch_long(s.get("pitch_roles", [])))
+            pitch_label = slot.capitalize() if slot else _fmt_pitch_long(s.get("pitch_roles", []))
+            self._detail_labels["pitch"].set(pitch_label)
+            banks = s.get("banks", [])
+            self._detail_labels["banks"].set(
+                "\n".join(_font_short(b) for b in banks) if banks else "—")
+            used_by = s.get("used_by", [])
+            self._detail_labels["used_by"].set(
+                "\n".join(used_by[:8]) + ("\n…" if len(used_by) > 8 else "")
+                if used_by else "—")
             codec_str = CODEC_NAMES.get(s["codec"], f"?({s['codec']})")
             if s.get("is_redirect"):
                 codec_str = "→ " + codec_str
@@ -1590,11 +1836,13 @@ def cmd_gui(args):
                 f"{MEDIUM_NAMES.get(s['medium'], '?')}  ({s['medium']})")
             self._detail_labels["size"].set(f"{s['size']:,} bytes")
 
-            # Duration + sample rate
-            rate = _effective_rate(s)
+            # Duration + sample rate — use slot-specific tuning when available
+            rate = round(slot_tuning * AUDIO_REF_HZ) if slot_tuning else _effective_rate(s)
             if s["pcm_samples"]:
                 prefix = f"{s['adpcm_frames']:,} frames × 16 = " if s["adpcm_frames"] else ""
-                if s.get("tuning") is not None:
+                if slot_tuning is not None:
+                    rate_note = f"~{rate} Hz  [{slot or 'normal'}]"
+                elif s.get("tuning") is not None:
                     rate_note = f"~{rate} Hz"
                     if len(s.get("all_tunings", [])) > 1:
                         rate_note += f"  ({len(s['all_tunings'])} tunings)"
@@ -1646,7 +1894,7 @@ def cmd_gui(args):
                 self._btn_play.state(["disabled"])
 
         def _on_double_click(self, _event):
-            s = self._selected_sample()
+            s, _slot, _t = self._selected_sample()
             if s:
                 self._assign_audio_to(s)
 
@@ -1673,10 +1921,17 @@ def cmd_gui(args):
             else:
                 self._aliases.pop(path, None)
             save_aliases(self._archive_path, self._aliases)
-            try:
-                self._tree.set(path, "alias", alias)
-            except Exception:
-                pass
+            # Update tree node text for all leaves of this path
+            for iid in self._iids_by_path.get(path, []):
+                try:
+                    nd   = self._node_map.get(iid, {})
+                    slot = nd.get("slot")
+                    label = alias or os.path.basename(path)
+                    slot_tag = f" [{slot[0].upper()}]" if slot else ""
+                    self._tree.item(iid, text=label + slot_tag)
+                    self._tree.set(iid, "alias", alias)
+                except Exception:
+                    pass
 
         def _save_alias(self):
             self._commit_alias()
@@ -1704,10 +1959,10 @@ def cmd_gui(args):
 
         # ── actions ───────────────────────────────────────────────────────────
         def _action_play(self):
-            s = self._selected_sample()
+            s, slot, slot_tuning = self._selected_sample()
             if s is None:
                 return
-            result = _decode_sample(s)
+            result = _decode_sample(s, slot_tuning)
             if result is None:
                 messagebox.showinfo(
                     "Cannot play",
@@ -1738,11 +1993,14 @@ def cmd_gui(args):
             threading.Thread(target=_run, daemon=True).start()
 
         def _action_export(self):
-            s = self._selected_sample()
+            s, slot, slot_tuning = self._selected_sample()
             if not s:
                 return
 
             codec = s["codec"]
+
+            eff_rate = round(slot_tuning * AUDIO_REF_HZ) if slot_tuning else _effective_rate(s)
+            slot_note = f" [{slot}]" if slot and slot != "normal" else ""
 
             if codec == 5:
                 out = filedialog.asksaveasfilename(
@@ -1750,8 +2008,9 @@ def cmd_gui(args):
                     initialfile=os.path.basename(s["path"]) + ".wav",
                     filetypes=[("WAV", "*.wav"), ("All", "*")])
                 if out:
-                    _write_wav(s["raw"], out)
-                    messagebox.showinfo("Exported", f"Saved WAV to:\n{out}")
+                    _write_wav(s["raw"], out, rate=eff_rate)
+                    messagebox.showinfo("Exported",
+                        f"Saved WAV to:\n{out}\n\nRate: {eff_rate} Hz{slot_note}")
 
             elif codec == 0:
                 choice = filedialog.asksaveasfilename(
@@ -1770,10 +2029,9 @@ def cmd_gui(args):
                     self._status_var.set("Decoding ADPCM…")
                     self.update_idletasks()
                     pcm  = vadpcm_to_pcm(s["raw"], s["book_data"])
-                    rate = _effective_rate(s)
-                    _write_wav(pcm, choice, rate=rate)
+                    _write_wav(pcm, choice, rate=eff_rate)
                     self._status_var.set(f"{len(self._filtered)} samples")
-                    rate_note = f"{rate} Hz" if s.get("tuning") else f"{rate} Hz (tuning unknown)"
+                    rate_note = f"{eff_rate} Hz{slot_note}"
                     messagebox.showinfo("Exported",
                         f"Decoded WAV saved to:\n{choice}\n\nSample rate: {rate_note}")
                 else:
@@ -1812,14 +2070,15 @@ def cmd_gui(args):
                            ("MP3", "*.mp3"), ("All", "*")])
             if audio:
                 self._batch_mapping[path] = audio
-                try:
-                    self._tree.set(path, "file", os.path.basename(audio))
-                except Exception:
-                    pass
+                for iid in self._iids_by_path.get(path, []):
+                    try:
+                        self._tree.set(iid, "file", os.path.basename(audio))
+                    except Exception:
+                        pass
                 self._update_replace_all_btn()
 
         def _assign_audio(self):
-            s = self._selected_sample()
+            s, _slot, _t = self._selected_sample()
             if s:
                 self._assign_audio_to(s)
 
@@ -1852,10 +2111,11 @@ def cmd_gui(args):
                     alias_key and audio_map.get(alias_key))
                 if hit:
                     self._batch_mapping[p] = hit
-                    try:
-                        self._tree.set(p, "file", os.path.basename(hit))
-                    except Exception:
-                        pass
+                    for iid in self._iids_by_path.get(p, []):
+                        try:
+                            self._tree.set(iid, "file", os.path.basename(hit))
+                        except Exception:
+                            pass
                     matched += 1
 
             self._update_replace_all_btn()
@@ -1881,13 +2141,18 @@ def cmd_gui(args):
                                f"Replacing {i + 1} / {n}…")
                     try:
                         _do_replace(self._archive_path, sp, ap, out_dir)
-                        self.after(0, lambda p=sp, a=ap:
-                                   self._tree.set(p, "file",
-                                                  "✓ " + os.path.basename(a)))
+                        def _mark_ok(p=sp, a=ap):
+                            for iid in self._iids_by_path.get(p, []):
+                                try: self._tree.set(iid, "file", "✓ " + os.path.basename(a))
+                                except Exception: pass
+                        self.after(0, _mark_ok)
                     except Exception as e:
                         errors.append(f"{os.path.basename(sp)}: {e}")
-                        self.after(0, lambda p=sp:
-                                   self._tree.set(p, "file", "✗"))
+                        def _mark_err(p=sp):
+                            for iid in self._iids_by_path.get(p, []):
+                                try: self._tree.set(iid, "file", "✗")
+                                except Exception: pass
+                        self.after(0, _mark_err)
                 self.after(0, self._replace_all_done,
                            n - len(errors), errors, out_dir)
 
