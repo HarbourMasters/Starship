@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import argparse
 import array
+import atexit
 import json
 import re
 import os
@@ -951,13 +952,20 @@ def _do_replace(archive_path: str, asset_path: str,
 
 # ─── project store ────────────────────────────────────────────────────────────
 
+BUNDLE_EXT = ".ssproj"
+
+
 def _project_default_path(archive_path: str) -> str:
-    return os.path.splitext(archive_path)[0] + "_project.json"
+    return os.path.splitext(archive_path)[0] + "_project" + BUNDLE_EXT
 
 
 def load_project(project_path: str) -> dict:
-    """Load a project file. Returns dict with keys: archive, out_dir, replacements.
-    All paths are resolved to absolute paths relative to the project file location."""
+    """Load a project file (JSON) or bundle (.ssproj ZIP).
+    Returns dict: archive, out_dir, replacements — all absolute paths.
+    For bundles, audio is extracted to a temp dir that is cleaned up on exit."""
+    if zipfile.is_zipfile(project_path):
+        return _load_bundle(project_path)
+
     with open(project_path, encoding="utf-8") as f:
         data = json.load(f)
     base = os.path.dirname(os.path.abspath(project_path))
@@ -971,26 +979,73 @@ def load_project(project_path: str) -> dict:
     return dict(archive=archive, out_dir=out_dir, replacements=replacements)
 
 
-def save_project(project_path: str, archive: str, out_dir: str,
-                 replacements: dict[str, str]) -> None:
-    """Save a project file. Paths are stored relative to the project file."""
-    base = os.path.dirname(os.path.abspath(project_path))
+def _load_bundle(bundle_path: str) -> dict:
+    """Load a .ssproj bundle ZIP. All files are extracted to a temp directory."""
+    with zipfile.ZipFile(bundle_path, "r") as z:
+        data = json.loads(z.read("project.json").decode("utf-8"))
+        tmp = tempfile.mkdtemp(prefix="ssproj_")
+        atexit.register(shutil.rmtree, tmp, ignore_errors=True)
+        z.extractall(tmp)
 
-    def _rel(p: str) -> str:
-        try:
-            r = os.path.relpath(os.path.abspath(p), base)
-            return r if not r.startswith(os.sep * 2) else p
-        except ValueError:
-            return p
+    base = os.path.dirname(os.path.abspath(bundle_path))
 
-    data = {
-        "version": 1,
-        "archive": _rel(archive),
-        "out_dir": _rel(out_dir) if out_dir else ".",
-        "replacements": {asset: _rel(audio) for asset, audio in replacements.items()},
+    # Archive: prefer the embedded copy; fall back to a path next to the bundle
+    archive_internal = data.get("archive", "")
+    embedded = os.path.join(tmp, archive_internal)
+    if os.path.isfile(embedded):
+        archive = embedded
+    else:
+        candidate = os.path.normpath(os.path.join(base, archive_internal))
+        archive = candidate if os.path.isfile(candidate) else os.path.abspath(archive_internal)
+
+    out_dir = data.get("out_dir", ".")
+    if not os.path.isabs(out_dir):
+        out_dir = os.path.normpath(os.path.join(base, out_dir))
+
+    replacements = {}
+    for asset, internal in data.get("replacements", {}).items():
+        replacements[asset] = os.path.join(tmp, internal)
+
+    return dict(archive=archive, out_dir=out_dir, replacements=replacements)
+
+
+
+def save_project_bundle(bundle_path: str, archive: str, out_dir: str,
+                        replacements: dict[str, str]) -> int:
+    """Save a fully self-contained .ssproj bundle (ZIP).
+    Embeds the base archive and all replacement audio files.
+    Returns the number of audio files embedded."""
+
+    # Build a deduplicated internal path mapping (asset → audio/<filename>)
+    audio_map: dict[str, str] = {}
+    used: set[str] = set()
+    for asset, audio_abs in replacements.items():
+        fname = os.path.basename(audio_abs)
+        stem, ext = os.path.splitext(fname)
+        candidate = fname
+        n = 1
+        while candidate in used:
+            candidate = f"{stem}_{n}{ext}"
+            n += 1
+        used.add(candidate)
+        audio_map[asset] = f"audio/{candidate}"
+
+    archive_internal = os.path.basename(archive)
+
+    metadata = {
+        "version": 2,
+        "archive": archive_internal,
+        "out_dir": out_dir or ".",
+        "replacements": audio_map,
     }
-    with open(project_path, "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=2)
+
+    with zipfile.ZipFile(bundle_path, "w", compression=zipfile.ZIP_DEFLATED) as z:
+        z.writestr("project.json", json.dumps(metadata, indent=2))
+        z.write(archive, archive_internal)
+        for asset, audio_abs in replacements.items():
+            z.write(audio_abs, audio_map[asset])
+
+    return len(replacements)
 
 
 # ─── alias store ──────────────────────────────────────────────────────────────
@@ -1186,7 +1241,7 @@ def cmd_info(args):
 
 
 def cmd_export(args):
-    info, loop, book = read_sample_full(args.archive, args.asset)
+    info, _, book = read_sample_full(args.archive, args.asset)
     if info is None:
         sys.exit(f"error: sample '{args.asset}' not found.")
 
@@ -1219,7 +1274,7 @@ def cmd_export(args):
 def cmd_play(args):
     if not shutil.which("ffplay"):
         sys.exit("error: ffplay not found — install ffmpeg.")
-    info, loop, book = read_sample_full(args.archive, args.asset)
+    info, _, book = read_sample_full(args.archive, args.asset)
     if info is None:
         sys.exit(f"error: sample '{args.asset}' not found.")
 
@@ -1334,21 +1389,26 @@ def cmd_batch_replace(args):
 
 
 def cmd_save_project(args):
-    """Add or update a replacement entry in a project file."""
+    """Add or update a replacement entry in a project bundle."""
     proj = args.project or _project_default_path(args.archive)
+
+    # Load existing project state to merge replacements
     replacements: dict[str, str] = {}
-    archive  = args.archive
+    archive  = os.path.abspath(args.archive)
     out_dir  = args.out_dir or ""
     if os.path.isfile(proj):
-        existing = load_project(proj)
-        replacements = existing["replacements"]
-        archive  = existing["archive"] or archive
-        out_dir  = existing["out_dir"] or out_dir
+        try:
+            existing = load_project(proj)
+            replacements = existing["replacements"]
+            out_dir  = out_dir or existing["out_dir"] or ""
+        except Exception:
+            pass
+
     replacements[args.asset] = os.path.abspath(args.input)
-    save_project(proj, archive, out_dir, replacements)
+    n = save_project_bundle(proj, archive, out_dir, replacements)
     print(f"Project     : {proj}")
     print(f"  {args.asset}  →  {args.input}")
-    print(f"  ({len(replacements)} replacement(s) total)")
+    print(f"  ({n} audio file(s) + base archive embedded)")
 
 
 def cmd_apply_project(args):
@@ -1443,7 +1503,6 @@ def cmd_gui(args):
     FG       = "#cdd6f4"
     FG_DIM   = "#6c7086"
     ACCENT   = "#89b4fa"
-    ACCENT2  = "#a6e3a1"
     WARN     = "#f38ba8"
     SEL_BG   = "#45475a"
     FONT     = ("Helvetica", 11)
@@ -1861,7 +1920,6 @@ def cmd_gui(args):
                 is_redir = s.get("is_redirect", False)
                 codec_c  = ("→ " if is_redir else "") + CODEC_NAMES.get(s["codec"], f"?({s['codec']})")
                 eff_rate = round(tuning * AUDIO_REF_HZ) if tuning else _effective_rate(s)
-                rate_str = f"~{eff_rate} Hz" if tuning else ""
                 self._tree.insert(parent, "end", iid=iid,
                     text=label + slot_tag,
                     tags=("redirect",) if is_redir else (),
@@ -2160,7 +2218,7 @@ def cmd_gui(args):
 
         # ── actions ───────────────────────────────────────────────────────────
         def _action_play(self):
-            s, slot, slot_tuning = self._selected_sample()
+            s, _slot, slot_tuning = self._selected_sample()
             if s is None:
                 return
             result = _decode_sample(s, slot_tuning)
@@ -2387,7 +2445,8 @@ def cmd_gui(args):
         def _action_open_project(self):
             path = filedialog.askopenfilename(
                 title="Open Project",
-                filetypes=[("Sample editor project", "*.json"), ("All files", "*.*")],
+                filetypes=[(f"Sample editor project (*{BUNDLE_EXT}, *.json)",
+                            f"*{BUNDLE_EXT} *.json"), ("All files", "*.*")],
                 parent=self)
             if not path:
                 return
@@ -2433,24 +2492,25 @@ def cmd_gui(args):
             init = self._project_path or _project_default_path(self._archive_path)
             path = filedialog.asksaveasfilename(
                 title="Save Project",
-                initialfile=os.path.basename(init),
+                initialfile=os.path.splitext(os.path.basename(init))[0],
                 initialdir=os.path.dirname(init),
-                defaultextension=".json",
-                filetypes=[("Sample editor project", "*.json"), ("All files", "*.*")],
+                defaultextension=BUNDLE_EXT,
+                filetypes=[(f"Sample editor project (*{BUNDLE_EXT})", f"*{BUNDLE_EXT}"),
+                           ("All files", "*.*")],
                 parent=self)
             if not path:
                 return
             out_dir = self._outdir_var.get().strip() or os.path.dirname(
                 os.path.abspath(self._archive_path))
             try:
-                save_project(path, self._archive_path, out_dir, self._batch_mapping)
+                n = save_project_bundle(path, self._archive_path, out_dir, self._batch_mapping)
             except Exception as e:
                 messagebox.showerror("Error", f"Could not save project:\n{e}", parent=self)
                 return
             self._project_path = path
             self.title(f"Starship Sample Editor — {os.path.basename(path)}")
             self._status_var.set(
-                f"Project saved: {len(self._batch_mapping)} replacement(s)  →  {os.path.basename(path)}")
+                f"Project saved: {n} replacement(s)  →  {os.path.basename(path)}")
 
     App().mainloop()
 
@@ -2507,8 +2567,8 @@ def main():
     p_sproj.add_argument("asset", metavar="ASSET_PATH")
     p_sproj.add_argument("--input",   required=True, metavar="AUDIO_FILE",
                          help="Replacement audio file to record in the project.")
-    p_sproj.add_argument("--project", metavar="JSON_FILE",
-                         help="Project file to write (default: <archive>_project.json).")
+    p_sproj.add_argument("--project", metavar="FILE",
+                         help=f"Project file to write (default: <archive>_project{BUNDLE_EXT}).")
     p_sproj.add_argument("--out-dir", metavar="DIR",
                          help="Output directory to store in the project.")
 
