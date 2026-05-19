@@ -1059,8 +1059,9 @@ Acmd* AudioSynth_ProcessNote(s32 noteIndex, NoteSubEu* noteSub, NoteSynthesisSta
                             // Guard against underflow: decoder may not be ready yet (size==0)
                             // or loop end exceeds actual buffer length.
                             size_t bytePos = (size_t)synthState->samplePosInt * 2;
-                            if (bookSample->size == 0 || bytePos >= bookSample->size) {
-                                // Decoder not ready or past end — aClearBuffer already zeroed DMEM.
+                            if (sampleAddr == 0 || bookSample->size == 0 || bytePos >= bookSample->size) {
+                                // Decoder not ready (sampleAddr/size not yet set) or past end.
+                                // aClearBuffer already zeroed DMEM, so we produce silence.
                                 goto skip;
                             }
                             if (bytePos + (size_t)(numSamplesToLoadAdj * SAMPLE_SIZE) < bookSample->size) {
