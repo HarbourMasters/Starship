@@ -858,6 +858,27 @@ def _probe_audio(path: str) -> tuple[int, int]:
     raise RuntimeError("Cannot detect audio metadata — install ffprobe.")
 
 
+def _resample_audio(audio_path: str, target_rate: int) -> str:
+    """Relabel audio to target_rate Hz using ffmpeg (speed-change, not pitch-preserving).
+
+    Uses asetrate so the PCM samples are kept as-is but the WAV header reports
+    target_rate.  The engine then reads source samples at (target_rate/32000)×32000
+    positions per second, which lowers the pitch by that same ratio — matching the
+    original N64 instrument tuning convention.
+    """
+    tmp = tempfile.NamedTemporaryFile(suffix=".wav", delete=False)
+    tmp.close()
+    atexit.register(os.unlink, tmp.name)
+    subprocess.run(
+        ["ffmpeg", "-y", "-i", audio_path,
+         "-af", f"asetrate={target_rate}", tmp.name],
+        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+        check=True,
+    )
+    print(f"Relabeled audio to {target_rate} Hz (speed-change) at {tmp.name}")
+    return tmp.name
+
+
 def _make_xml(audio_arch_path: str, fmt: str, tuning: float, unk: int,
               loop: dict | None = None) -> str:
     """Build the XML descriptor for a custom-format sample replacement.
@@ -916,12 +937,21 @@ def _scale_loop(loop_data: dict, orig_rate: int, new_rate: int) -> dict | None:
 def _do_replace(archive_path: str, asset_path: str,
                 audio_path: str, out_dir: str) -> dict:
     sample_rate, channels = _probe_audio(audio_path)
-    tuning = (sample_rate * channels) / AUDIO_REF_HZ
 
     # Use full scan to get loop data and original sample rate.
     info, loop, _book = read_sample_full(archive_path, asset_path)
     unk       = info["unk"]  if info else 0
     orig_rate = _effective_rate(info) if info else MIXER_RATE_HZ
+
+    # Speed-change to orig_rate: relabels the audio so mSample.tuning = orig_rate/32000.
+    # This replicates the N64 convention where the engine slows the sample by that
+    # ratio to reach the correct in-game pitch (pitch-preserving resample would undo
+    # the effect of the tuning and produce the wrong pitch).
+    if orig_rate and orig_rate != sample_rate and shutil.which("ffmpeg"):
+        audio_path = _resample_audio(audio_path, orig_rate)
+        sample_rate, channels = _probe_audio(audio_path)
+
+    tuning = (sample_rate * channels) / AUDIO_REF_HZ
 
     orig_frames = info["pcm_samples"] if info else 0
     new_frames  = _count_frames(audio_path, sample_rate)
@@ -929,7 +959,23 @@ def _do_replace(archive_path: str, asset_path: str,
     new_dur     = new_frames  / sample_rate if sample_rate and new_frames else 0.0
     shorter     = orig_dur > 0.0 and new_dur > 0.0 and new_dur < orig_dur
 
-    scaled_loop = _scale_loop(loop, orig_rate, sample_rate) if loop else None
+    # Scale loop points by the actual frame-count ratio rather than the rate
+    # ratio.  After asetrate, sample_rate == orig_rate so the rate ratio is 1.0
+    # (wrong); the frame-count ratio correctly maps original sample positions
+    # into the new (relabeled) buffer.
+    if loop and orig_frames > 0 and new_frames > 0:
+        effective_rate = round(new_frames * orig_rate / orig_frames)
+        scaled_loop = _scale_loop(loop, orig_rate, effective_rate)
+    elif loop:
+        scaled_loop = _scale_loop(loop, orig_rate, sample_rate)
+    else:
+        scaled_loop = None
+
+    # Clamp loop end so that endPos * 2 never exceeds bookSample->size.
+    if scaled_loop is not None and new_frames > 0:
+        max_end = new_frames * channels
+        if scaled_loop["end"] > max_end:
+            scaled_loop["end"] = max_end
 
     ext         = os.path.splitext(audio_path)[1].lower().lstrip(".")
     audio_arch  = asset_path + "." + ext

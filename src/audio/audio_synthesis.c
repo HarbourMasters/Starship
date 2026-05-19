@@ -1054,14 +1054,23 @@ Acmd* AudioSynth_ProcessNote(s32 noteIndex, NoteSubEu* noteSub, NoteSynthesisSta
                         numSamplesProcessed += numSamplesToLoadAdj;
                         dmemUncompressedAddrOffset1 = numSamplesToLoadAdj;
 
-                        if (((synthState->samplePosInt * 2) + (numSamplesToLoadAdj) *SAMPLE_SIZE) < bookSample->size) {
-                            bytesToRead = (numSamplesToLoadAdj + 16) * SAMPLE_SIZE;
-                        } else {
-                            bytesToRead = bookSample->size - (synthState->samplePosInt * 2);
+                        {
+                            // 2S2H [Port] [Custom audio] Handle decoding OPUS data
+                            // Guard against underflow: decoder may not be ready yet (size==0)
+                            // or loop end exceeds actual buffer length.
+                            size_t bytePos = (size_t)synthState->samplePosInt * 2;
+                            if (bookSample->size == 0 || bytePos >= bookSample->size) {
+                                // Decoder not ready or past end — aClearBuffer already zeroed DMEM.
+                                goto skip;
+                            }
+                            if (bytePos + (size_t)(numSamplesToLoadAdj * SAMPLE_SIZE) < bookSample->size) {
+                                bytesToRead = (numSamplesToLoadAdj + 16) * SAMPLE_SIZE;
+                            } else {
+                                bytesToRead = bookSample->size - bytePos;
+                            }
+                            aLoadBuffer(aList++, OS_K0_TO_PHYSICAL(sampleAddr + bytePos), DMEM_UNCOMPRESSED_NOTE,
+                                        bytesToRead);
                         }
-                        // 2S2H [Port] [Custom audio] Handle decoding OPUS data
-                        aLoadBuffer(cmd++, sampleAddr + (synthState->samplePosInt * 2), DMEM_UNCOMPRESSED_NOTE,
-                                    bytesToRead);
 
                         goto skip;
                 }

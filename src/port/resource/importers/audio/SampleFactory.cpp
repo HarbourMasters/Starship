@@ -241,10 +241,29 @@ std::shared_ptr<Ship::IResource> ResourceFactoryXMLSampleV0::ReadResource(std::s
             sample->mSample.isRelocated = 1;
             return sample;
         } else if (strcmp(customFormatStr, "ogg") == 0) {
+            // Read OGG header synchronously so mSample.tuning is set before SoundFontFactory
+            // checks it (async thread sets it too late — tuning stays 0 → wrong pitch).
+            OggFileData headerFileData = {
+                .data = sampleFile->Buffer->data(),
+                .pos  = 0,
+                .size = sampleFile->Buffer->size(),
+            };
+            OggVorbis_File vf_hdr;
+            if (ov_open_callbacks(&headerFileData, &vf_hdr, nullptr, 0, vorbisCallbacks) == 0) {
+                vorbis_info* vi = ov_info(&vf_hdr, -1);
+                sample->mSample.tuning = (float)(vi->rate * vi->channels) / 32000.0f;
+                ov_clear(&vf_hdr);
+            }
             std::thread fileDecoderThread = std::thread(OggDecoderWorker, sample, sampleFile);
             fileDecoderThread.detach();
             return sample;
         } else if (strcmp(customFormatStr, "mp3") == 0) {
+            // Read MP3 header synchronously for the same reason.
+            drmp3 mp3_hdr;
+            if (drmp3_init_memory(&mp3_hdr, sampleFile->Buffer->data(), sampleFile->Buffer->size(), nullptr)) {
+                sample->mSample.tuning = (float)(mp3_hdr.sampleRate * mp3_hdr.channels) / 32000.0f;
+                drmp3_uninit(&mp3_hdr);
+            }
             std::thread fileDecoderThread = std::thread(Mp3DecoderWorker, sample, sampleFile);
             fileDecoderThread.detach();
             return sample;
