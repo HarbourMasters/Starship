@@ -1064,10 +1064,24 @@ Acmd* AudioSynth_ProcessNote(s32 noteIndex, NoteSubEu* noteSub, NoteSynthesisSta
                                 // aClearBuffer already zeroed DMEM, so we produce silence.
                                 goto skip;
                             }
-                            if (bytePos + (size_t)(numSamplesToLoadAdj * SAMPLE_SIZE) < bookSample->size) {
+                            size_t availBytes = bookSample->size - bytePos;
+                            // When looping, cap the load at the loop end so we don't feed
+                            // post-loop audio into this frame's DMEM buffer. The loopToPoint
+                            // flag (set above) will reset samplePosInt to loopInfo->start for
+                            // the next frame; aClearBuffer already zeroed the tail.
+                            if (loopInfo->count != 0 && (u32)synthState->samplePosInt < endPos) {
+                                size_t loopAvail = ((size_t)endPos - (size_t)synthState->samplePosInt) * 2;
+                                if (loopAvail < availBytes) {
+                                    availBytes = loopAvail;
+                                }
+                            }
+                            if ((size_t)(numSamplesToLoadAdj * SAMPLE_SIZE) < availBytes) {
                                 bytesToRead = (numSamplesToLoadAdj + 16) * SAMPLE_SIZE;
+                                if (bytesToRead > availBytes) {
+                                    bytesToRead = availBytes;
+                                }
                             } else {
-                                bytesToRead = bookSample->size - bytePos;
+                                bytesToRead = availBytes;
                             }
                             aLoadBuffer(aList++, OS_K0_TO_PHYSICAL(sampleAddr + bytePos), DMEM_UNCOMPRESSED_NOTE,
                                         bytesToRead);
