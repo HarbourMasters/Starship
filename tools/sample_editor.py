@@ -959,19 +959,26 @@ def _do_replace(archive_path: str, asset_path: str,
     new_dur     = new_frames  / sample_rate if sample_rate and new_frames else 0.0
     shorter     = orig_dur > 0.0 and new_dur > 0.0 and new_dur < orig_dur
 
-    # Scale loop points by the actual frame-count ratio rather than the rate
-    # ratio.  After asetrate, sample_rate == orig_rate so the rate ratio is 1.0
-    # (wrong); the frame-count ratio correctly maps original sample positions
-    # into the new (relabeled) buffer.
+    # Scale loop points into channel-sample units (the unit samplePosInt uses
+    # in audio_synthesis.c: bytePos = samplePosInt * 2).
+    #
+    # orig_end / orig_frames gives the fractional position in the original mono
+    # ADPCM stream.  The new file has new_frames frames-per-channel, so the
+    # same fraction maps to new_frames * channels channel samples.
+    # Multiply effective_rate by channels so _scale_loop's scale factor becomes
+    # new_frames * channels / orig_frames instead of new_frames / orig_frames.
     if loop and orig_frames > 0 and new_frames > 0:
-        effective_rate = round(new_frames * orig_rate / orig_frames)
+        effective_rate = round(new_frames * channels * orig_rate / orig_frames)
         scaled_loop = _scale_loop(loop, orig_rate, effective_rate)
     elif loop:
-        scaled_loop = _scale_loop(loop, orig_rate, sample_rate)
+        # Fallback when frame counts are unavailable: preserve absolute time by
+        # scaling only by channels (so endPos lands in channel-sample units).
+        scaled_loop = _scale_loop(loop, orig_rate, sample_rate * channels)
     else:
         scaled_loop = None
 
-    # Clamp loop end so that endPos * 2 never exceeds bookSample->size.
+    # Clamp loop end so that endPos * 2 (= bytePos) never exceeds bookSample->size.
+    # max_end is already in channel-sample units.
     if scaled_loop is not None and new_frames > 0:
         max_end = new_frames * channels
         if scaled_loop["end"] > max_end:
