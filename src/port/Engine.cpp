@@ -364,7 +364,7 @@ extern "C" unsigned short samples_low = SAMPLES_LOW;
 
 void GameEngine::HandleAudioThread() {
 #ifdef PIPE_DEBUG
-    std::ofstream outfile("audio.bin", std::ios::binary | std::ios::app);
+    std::ofstream outfile("audio.bin", std::ios::binary | std::ios::trunc);
 #endif
     while (audio.running) {
         {
