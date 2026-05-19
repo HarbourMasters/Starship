@@ -1064,27 +1064,48 @@ Acmd* AudioSynth_ProcessNote(s32 noteIndex, NoteSubEu* noteSub, NoteSynthesisSta
                                 // aClearBuffer already zeroed DMEM, so we produce silence.
                                 goto skip;
                             }
-                            size_t availBytes = bookSample->size - bytePos;
-                            // When looping, cap the load at the loop end so we don't feed
-                            // post-loop audio into this frame's DMEM buffer. The loopToPoint
-                            // flag (set above) will reset samplePosInt to loopInfo->start for
-                            // the next frame; aClearBuffer already zeroed the tail.
-                            if (loopInfo->count != 0 && (u32)synthState->samplePosInt < endPos) {
-                                size_t loopAvail = ((size_t)endPos - (size_t)synthState->samplePosInt) * 2;
-                                if (loopAvail < availBytes) {
-                                    availBytes = loopAvail;
+
+                            if (loopToPoint && loopInfo->count != 0 &&
+                                (u32)synthState->samplePosInt < endPos) {
+                                // Loop boundary crossing: load up to endPos, then stitch in
+                                // samples from loopInfo->start to fill the rest of the DMEM
+                                // buffer.  Without stitching the tail is silence and the loop
+                                // sounds like it ends before restarting.
+                                size_t bytesBeforeLoop = ((size_t)endPos - (size_t)synthState->samplePosInt) * 2;
+                                // aLoadBuffer requires 16-byte alignment; round down.
+                                bytesBeforeLoop &= ~15u;
+                                if (bytesBeforeLoop > 0) {
+                                    aLoadBuffer(aList++, OS_K0_TO_PHYSICAL(sampleAddr + bytePos),
+                                                DMEM_UNCOMPRESSED_NOTE, bytesBeforeLoop);
                                 }
-                            }
-                            if ((size_t)(numSamplesToLoadAdj * SAMPLE_SIZE) < availBytes) {
-                                bytesToRead = (numSamplesToLoadAdj + 16) * SAMPLE_SIZE;
-                                if (bytesToRead > availBytes) {
-                                    bytesToRead = availBytes;
+                                // Fill the tail from the loop-start position.
+                                size_t loopStartBytePos = (size_t)loopInfo->start * 2;
+                                if (loopStartBytePos < bookSample->size) {
+                                    size_t tailNeeded = ((size_t)(numSamplesToLoadAdj + 16) * SAMPLE_SIZE)
+                                                        - bytesBeforeLoop;
+                                    size_t tailAvail  = bookSample->size - loopStartBytePos;
+                                    bytesToRead = (tailNeeded < tailAvail ? tailNeeded : tailAvail) & ~15u;
+                                    if (bytesToRead > 0) {
+                                        aLoadBuffer(aList++,
+                                                    OS_K0_TO_PHYSICAL(sampleAddr + loopStartBytePos),
+                                                    DMEM_UNCOMPRESSED_NOTE + bytesBeforeLoop,
+                                                    bytesToRead);
+                                    }
                                 }
                             } else {
-                                bytesToRead = availBytes;
+                                // Normal load (no loop crossing in this frame).
+                                size_t availBytes = bookSample->size - bytePos;
+                                if ((size_t)(numSamplesToLoadAdj * SAMPLE_SIZE) < availBytes) {
+                                    bytesToRead = (numSamplesToLoadAdj + 16) * SAMPLE_SIZE;
+                                    if (bytesToRead > availBytes) {
+                                        bytesToRead = availBytes;
+                                    }
+                                } else {
+                                    bytesToRead = availBytes;
+                                }
+                                aLoadBuffer(aList++, OS_K0_TO_PHYSICAL(sampleAddr + bytePos),
+                                            DMEM_UNCOMPRESSED_NOTE, bytesToRead);
                             }
-                            aLoadBuffer(aList++, OS_K0_TO_PHYSICAL(sampleAddr + bytePos), DMEM_UNCOMPRESSED_NOTE,
-                                        bytesToRead);
                         }
 
                         goto skip;

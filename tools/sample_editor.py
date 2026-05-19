@@ -1814,13 +1814,18 @@ def cmd_gui(args):
             self._btn_assign.grid(row=btn_row+2, column=0, columnspan=2,
                                   sticky="ew", pady=2)
 
+            self._btn_clear = ttk.Button(detail, text="✕  Clear Assigned Audio",
+                                         command=self._clear_audio)
+            self._btn_clear.grid(row=btn_row+3, column=0, columnspan=2,
+                                 sticky="ew", pady=2)
+
             self._btn_export_aliases = ttk.Button(detail, text="⬆  Export Aliases…",
                                                    command=self._action_export_aliases)
-            self._btn_export_aliases.grid(row=btn_row+3, column=0, columnspan=2,
+            self._btn_export_aliases.grid(row=btn_row+4, column=0, columnspan=2,
                                           sticky="ew", pady=(10, 2))
 
             for btn in (self._btn_play, self._btn_export, self._btn_assign,
-                        self._btn_export_aliases):
+                        self._btn_clear, self._btn_export_aliases):
                 btn.state(["disabled"])
 
         # ── loading ───────────────────────────────────────────────────────────
@@ -2196,6 +2201,10 @@ def cmd_gui(args):
                 self._btn_play.state(["!disabled"])
             else:
                 self._btn_play.state(["disabled"])
+            if s["path"] in self._batch_mapping:
+                self._btn_clear.state(["!disabled"])
+            else:
+                self._btn_clear.state(["disabled"])
 
         def _on_double_click(self, _event):
             s, _slot, _t = self._selected_sample()
@@ -2208,7 +2217,7 @@ def cmd_gui(args):
             self._alias_var.set("")
             self._alias_current_path = ""
             self._alias_entry.state(["disabled"])
-            for btn in (self._btn_play, self._btn_export, self._btn_assign):
+            for btn in (self._btn_play, self._btn_export, self._btn_assign, self._btn_clear):
                 btn.state(["disabled"])
 
         # ── alias helpers ─────────────────────────────────────────────────────
@@ -2380,12 +2389,28 @@ def cmd_gui(args):
                         self._tree.set(iid, "file", os.path.basename(audio))
                     except Exception:
                         pass
+                self._btn_clear.state(["!disabled"])
                 self._update_replace_all_btn()
 
         def _assign_audio(self):
             s, _slot, _t = self._selected_sample()
             if s:
                 self._assign_audio_to(s)
+                self._btn_clear.state(["!disabled"])
+
+        def _clear_audio(self):
+            s, _slot, _t = self._selected_sample()
+            if s is None:
+                return
+            path = s["path"]
+            self._batch_mapping.pop(path, None)
+            for iid in self._iids_by_path.get(path, []):
+                try:
+                    self._tree.set(iid, "file", "")
+                except Exception:
+                    pass
+            self._btn_clear.state(["disabled"])
+            self._update_replace_all_btn()
 
         def _update_replace_all_btn(self):
             n = len(self._batch_mapping)
