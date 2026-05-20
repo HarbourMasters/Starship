@@ -986,6 +986,7 @@ Acmd* AudioSynth_ProcessNote(s32 noteIndex, NoteSubEu* noteSub, NoteSynthesisSta
             while (numSamplesProcessed != numSamplesToLoadAdj) {
                 sampleFinished = false;
                 loopToPoint = false;
+                size_t s16LoopStartAdvance = 0;
 
                 samplesRemaining = endPos - synthState->samplePosInt;
                 nSamplesToProcess = numSamplesToLoadAdj - numSamplesProcessed;
@@ -1075,6 +1076,9 @@ Acmd* AudioSynth_ProcessNote(s32 noteIndex, NoteSubEu* noteSub, NoteSynthesisSta
                                 size_t bytesBeforeLoop = ((size_t)endPos - (size_t)synthState->samplePosInt) * 2;
                                 // aLoadBuffer requires 16-byte alignment; round down.
                                 bytesBeforeLoop &= ~15u;
+                                // How many of numSamplesToLoadAdj came from loopInfo->start.
+                                // samplePosInt must skip past them or the next frame re-plays them.
+                                s16LoopStartAdvance = (size_t)numSamplesToLoadAdj - (bytesBeforeLoop >> 1);
                                 if (bytesBeforeLoop > 0) {
                                     aLoadBuffer(aList++, OS_K0_TO_PHYSICAL(sampleAddr + bytePos),
                                                 DMEM_UNCOMPRESSED_NOTE, bytesBeforeLoop);
@@ -1219,7 +1223,7 @@ Acmd* AudioSynth_ProcessNote(s32 noteIndex, NoteSubEu* noteSub, NoteSynthesisSta
 
                 if (loopToPoint) {
                     synthState->restart = true;
-                    synthState->samplePosInt = loopInfo->start;
+                    synthState->samplePosInt = loopInfo->start + s16LoopStartAdvance;
                 } else {
                     synthState->samplePosInt += nSamplesToProcess;
                 }
