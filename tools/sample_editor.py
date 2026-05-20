@@ -984,6 +984,13 @@ def _do_replace(archive_path: str, asset_path: str,
         if scaled_loop["end"] > max_end:
             scaled_loop["end"] = max_end
 
+    # CODEC_S16 synthesis always dereferences loopInfo — guard against null.
+    # If the original had no loop data, emit a non-looping sentinel (count=0)
+    # so mSample.loop is never nullptr when the engine calls AudioSynth_ProcessNote.
+    if scaled_loop is None and new_frames > 0:
+        scaled_loop = dict(start=0, end=new_frames * channels, count=0,
+                           predictor_state=[0] * 16)
+
     ext         = os.path.splitext(audio_path)[1].lower().lstrip(".")
     audio_arch  = asset_path + "." + ext
     xml_content = _make_xml(audio_arch, ext, tuning, unk, loop=scaled_loop)

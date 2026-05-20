@@ -1045,6 +1045,7 @@ Acmd* AudioSynth_ProcessNote(s32 noteIndex, NoteSubEu* noteSub, NoteSynthesisSta
                         goto skip;
 
                     case CODEC_S16:
+                        synthState->restart = 0;
                         aClearBuffer(aList++, DMEM_UNCOMPRESSED_NOTE,
                                      (numSamplesToLoadAdj + SAMPLES_PER_FRAME) * SAMPLE_SIZE);
 
