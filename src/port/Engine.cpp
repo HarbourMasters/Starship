@@ -1,6 +1,7 @@
 #include "Engine.h"
 #include "ui/ImguiUI.h"
 #include "StringHelper.h"
+#include "audio/AudioDebug.h"
 
 #include "extractor/GameExtractor.h"
 #include "libultraship/src/Context.h"
@@ -362,10 +363,14 @@ extern "C" int countermin = 0;
 extern "C" unsigned short samples_high = SAMPLES_HIGH;
 extern "C" unsigned short samples_low = SAMPLES_LOW;
 
+#define AUDIO_FRAMES_PER_UPDATE (gVIsPerFrame > 0 ? gVIsPerFrame : 1)
+#define MAX_AUDIO_FRAMES_PER_UPDATE 5 // Compile-time constant with max value of gVIsPerFrame
+
 void GameEngine::HandleAudioThread() {
-#ifdef PIPE_DEBUG
-    std::ofstream outfile("audio.bin", std::ios::binary | std::ios::trunc);
-#endif
+    // Runtime PCM capture state — lives entirely on the audio thread.
+    std::ofstream recFile;
+    uint64_t      recBytes = 0;
+
     while (audio.running) {
         {
             std::unique_lock<std::mutex> Lock(audio.mutex);
@@ -376,11 +381,6 @@ void GameEngine::HandleAudioThread() {
                 break;
             }
         }
-
-        // gVIsPerFrame = 2;
-
-#define AUDIO_FRAMES_PER_UPDATE (gVIsPerFrame > 0 ? gVIsPerFrame : 1)
-#define MAX_AUDIO_FRAMES_PER_UPDATE 5 // Compile-time constant with max value of gVIsPerFrame
 
         std::unique_lock<std::mutex> Lock(audio.mutex);
         int samples_left = AudioPlayerBuffered();
@@ -395,25 +395,92 @@ void GameEngine::HandleAudioThread() {
         const int32_t num_audio_channels = GetNumAudioChannels();
 
         s16 audio_buffer[SAMPLES_HIGH * MAX_NUM_AUDIO_CHANNELS * MAX_AUDIO_FRAMES_PER_UPDATE] = { 0 };
-        for (int i = 0; i < AUDIO_FRAMES_PER_UPDATE; i++) {
-            AudioThread_CreateNextAudioBuffer(audio_buffer + i * (num_audio_samples * num_audio_channels),
-                                              num_audio_samples);
+
+        // ── Frame-step gate ───────────────────────────────────────────────────
+        // When step mode is active, skip synthesis (buffer stays silent zeros).
+        // gAudioStepOnce fires one frame; gAudioStepN drains across frames.
+        // The main thread is never blocked.
+        bool doSynth = true;
+        if (SF64::gAudioStepMode.load(std::memory_order_acquire)) {
+            doSynth = false;
+            // Check single-step token
+            bool expected = true;
+            if (SF64::gAudioStepOnce.compare_exchange_strong(
+                    expected, false, std::memory_order_acq_rel)) {
+                doSynth = true;
+            }
+            // Check N-step counter (decrement if positive)
+            if (!doSynth) {
+                int n = SF64::gAudioStepN.load(std::memory_order_acquire);
+                while (n > 0) {
+                    if (SF64::gAudioStepN.compare_exchange_weak(
+                            n, n - 1, std::memory_order_acq_rel)) {
+                        doSynth = true;
+                        break;
+                    }
+                }
+            }
+            if (doSynth)
+                SF64::gAudioFrameCount.fetch_add(1, std::memory_order_relaxed);
         }
-#ifdef PIPE_DEBUG
-        if (outfile.is_open()) {
-            outfile.write(reinterpret_cast<char*>(audio_buffer),
-                          num_audio_samples * (sizeof(int16_t) * num_audio_channels * AUDIO_FRAMES_PER_UPDATE));
+        // ─────────────────────────────────────────────────────────────────────
+
+        if (doSynth) {
+            for (int i = 0; i < AUDIO_FRAMES_PER_UPDATE; i++) {
+                AudioThread_CreateNextAudioBuffer(audio_buffer + i * (num_audio_samples * num_audio_channels),
+                                                  num_audio_samples);
+            }
         }
-#endif
+
+        // ── Runtime PCM capture ───────────────────────────────────────────────
+        const size_t frameBytes = num_audio_samples *
+                                  (sizeof(int16_t) * num_audio_channels * AUDIO_FRAMES_PER_UPDATE);
+
+        // Open file on first recording frame
+        if (SF64::gAudioRecording.load(std::memory_order_acquire) && !recFile.is_open()) {
+            std::string path;
+            { std::lock_guard<std::mutex> lk(SF64::gAudioRecordMutex); path = SF64::gAudioRecordPath; }
+            recFile.open(path, std::ios::binary | std::ios::trunc);
+            recBytes = 0;
+            SF64::gAudioRecordBytes.store(0, std::memory_order_relaxed);
+        }
+
+        // Write this frame if recording and not paused
+        if (recFile.is_open() &&
+            SF64::gAudioRecording.load(std::memory_order_acquire) &&
+            !SF64::gAudioRecordPaused.load(std::memory_order_acquire)) {
+            recFile.write(reinterpret_cast<char*>(audio_buffer), frameBytes);
+            recBytes += frameBytes;
+            SF64::gAudioRecordBytes.store(recBytes, std::memory_order_relaxed);
+        }
+
+        // Save-and-stop: flush, close, clear flags
+        if (SF64::gAudioSaveAndStop.load(std::memory_order_acquire)) {
+            if (recFile.is_open()) { recFile.flush(); recFile.close(); }
+            recBytes = 0;
+            SF64::gAudioRecordBytes.store(0, std::memory_order_relaxed);
+            SF64::gAudioRecording.store(false, std::memory_order_release);
+            SF64::gAudioRecordPaused.store(false, std::memory_order_release);
+            SF64::gAudioSaveAndStop.store(false, std::memory_order_release);
+        }
+
+        // Also close if recording was stopped without save
+        if (!SF64::gAudioRecording.load(std::memory_order_acquire) && recFile.is_open()) {
+            recFile.close();
+            recBytes = 0;
+            SF64::gAudioRecordBytes.store(0, std::memory_order_relaxed);
+        }
+        // ─────────────────────────────────────────────────────────────────────
+
         AudioPlayerPlayFrame((u8*) audio_buffer,
                              num_audio_samples * (sizeof(int16_t) * num_audio_channels * AUDIO_FRAMES_PER_UPDATE));
-        
+
         audio.processing = false;
         audio.cv_from_thread.notify_one();
     }
-#ifdef PIPE_DEBUG
-    outfile.close();
-#endif
+
+    // Ensure file is closed if thread exits while recording
+    if (recFile.is_open()) { recFile.flush(); recFile.close(); }
 }
 
 void GameEngine::StartAudioFrame() {

@@ -12,6 +12,20 @@ std::atomic<bool>  gSnapshotReady{ false };
 // All channels unmuted by default.
 std::atomic<bool> gMutedChannels[kNumSeqChannels] = {};
 
+// Frame-step controls — all inactive by default.
+std::atomic<bool>      gAudioStepMode{ false };
+std::atomic<bool>      gAudioStepOnce{ false };
+std::atomic<int>       gAudioStepN{ 0 };
+std::atomic<uint64_t>  gAudioFrameCount{ 0 };
+
+// Capture / record controls.
+std::atomic<bool>     gAudioRecording{ false };
+std::atomic<bool>     gAudioRecordPaused{ false };
+std::atomic<bool>     gAudioSaveAndStop{ false };
+std::atomic<uint64_t> gAudioRecordBytes{ 0 };
+std::string           gAudioRecordPath;
+std::mutex            gAudioRecordMutex;
+
 void AudioDebug_RegisterSample(SampleData* sample, const std::string& path) {
     if (sample == nullptr) return;
     std::lock_guard<std::mutex> lk(gSamplePathMapMutex);
