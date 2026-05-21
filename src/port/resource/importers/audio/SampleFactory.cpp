@@ -1,7 +1,9 @@
 #include "SampleFactory.h"
 #include "../ResourceUtil.h"
 #include "port/resource/type/audio/Sample.h"
+#include "port/audio/AudioDebug.h"
 #include "sf64audio_provisional.h"
+#include "spdlog/spdlog.h"
 #define DR_WAV_IMPLEMENTATION
 #include <dr_wav.h>
 #include <tinyxml2.h>
@@ -41,6 +43,7 @@ std::shared_ptr<Ship::IResource> ResourceFactoryBinarySampleV1::ReadResource(std
 
     sample->mSample.isRelocated = 1;
 
+    AudioDebug_RegisterSample(&sample->mSample, initData->Path);
     return sample;
 }
 
@@ -61,6 +64,7 @@ std::shared_ptr<Ship::IResource> ResourceFactoryBinarySampleV2::ReadResource(std
     auto sample = std::make_shared<Sample>(initData);
     sample->mSample = *canonical;
     sample->mSample.isRelocated = 1;
+    AudioDebug_RegisterSample(&sample->mSample, initData->Path);
     return sample;
 }
 
@@ -192,6 +196,11 @@ std::shared_ptr<Ship::IResource> ResourceFactoryXMLSampleV0::ReadResource(std::s
         sample->mSample.loop->start = loopRoot->UnsignedAttribute("Start");
         sample->mSample.loop->end = loopRoot->UnsignedAttribute("End");
         sample->mSample.loop->count = loopRoot->UnsignedAttribute("Count");
+        SPDLOG_INFO("[SampleFactory] {} loop start={} end={} count={}",
+                    initData->Path,
+                    sample->mSample.loop->start,
+                    sample->mSample.loop->end,
+                    sample->mSample.loop->count);
         tinyxml2::XMLElement* predictor = loopRoot->FirstChildElement("Predictor");
         while (predictor != nullptr) {
             sample->mSample.loop->predictorState[i++] = predictor->IntAttribute("State");
@@ -239,6 +248,7 @@ std::shared_ptr<Ship::IResource> ResourceFactoryXMLSampleV0::ReadResource(std::s
 
             drwav_read_pcm_frames_s16(&wav, numFrames, (int16_t*)sample->mSample.sampleAddr);
             sample->mSample.isRelocated = 1;
+            AudioDebug_RegisterSample(&sample->mSample, initData->Path);
             return sample;
         } else if (strcmp(customFormatStr, "ogg") == 0) {
             // Read OGG header synchronously so mSample.tuning is set before SoundFontFactory
@@ -256,6 +266,7 @@ std::shared_ptr<Ship::IResource> ResourceFactoryXMLSampleV0::ReadResource(std::s
             }
             std::thread fileDecoderThread = std::thread(OggDecoderWorker, sample, sampleFile);
             fileDecoderThread.detach();
+            AudioDebug_RegisterSample(&sample->mSample, initData->Path);
             return sample;
         } else if (strcmp(customFormatStr, "mp3") == 0) {
             // Read MP3 header synchronously for the same reason.
@@ -266,6 +277,7 @@ std::shared_ptr<Ship::IResource> ResourceFactoryXMLSampleV0::ReadResource(std::s
             }
             std::thread fileDecoderThread = std::thread(Mp3DecoderWorker, sample, sampleFile);
             fileDecoderThread.detach();
+            AudioDebug_RegisterSample(&sample->mSample, initData->Path);
             return sample;
         }
     }
@@ -278,6 +290,7 @@ std::shared_ptr<Ship::IResource> ResourceFactoryXMLSampleV0::ReadResource(std::s
 
     sample->mSample.isRelocated = 1;
 
+    AudioDebug_RegisterSample(&sample->mSample, initData->Path);
     return sample;
 }
 

@@ -1517,6 +1517,7 @@ void AudioSeq_SequencePlayerProcessSequence(SequencePlayer* seqPlayer) {
         }
     }
     for (i = 0; i < SEQ_NUM_CHANNELS; i++) {
+        if(i != 3) continue;
         if (IS_SEQUENCE_CHANNEL_VALID(seqPlayer->channels[i]) == 1) {
             AudioSeq_SequenceChannelProcessScript(seqPlayer->channels[i]);
         }

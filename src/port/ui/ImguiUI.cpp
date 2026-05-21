@@ -1,6 +1,7 @@
 #include "ImguiUI.h"
 #include "UIWidgets.h"
 #include "ResolutionEditor.h"
+#include "AudioDebugWindow.h"
 
 #include <spdlog/spdlog.h>
 #include <imgui.h>
@@ -13,6 +14,7 @@
 #include "port/Engine.h"
 #include "port/notification/notification.h"
 #include "utils/StringHelper.h"
+#include "port/audio/AudioDebug.h"
 
 #ifdef __SWITCH__
 #include <port/switch/SwitchImpl.h>
@@ -31,6 +33,7 @@ std::shared_ptr<Ship::GuiWindow> mConsoleWindow;
 std::shared_ptr<Ship::GuiWindow> mStatsWindow;
 std::shared_ptr<Ship::GuiWindow> mInputEditorWindow;
 std::shared_ptr<Ship::GuiWindow> mGfxDebuggerWindow;
+std::shared_ptr<Ship::GuiWindow> mAudioDebugWindow;
 std::shared_ptr<Notification::Window> mNotificationWindow;
 std::shared_ptr<AdvancedResolutionSettings::AdvancedResolutionSettingsWindow> mAdvancedResolutionSettingsWindow;
 
@@ -79,6 +82,8 @@ void SetupGuiElements() {
     mNotificationWindow = std::make_shared<Notification::Window>("gNotifications", "Notifications Window");
     gui->AddGuiWindow(mNotificationWindow);
     mNotificationWindow->Show();
+    mAudioDebugWindow = std::make_shared<SF64::AudioDebugWindow>("gAudioDebugEnabled", "Audio Debug");
+    gui->AddGuiWindow(mAudioDebugWindow);
 }
 
 void Destroy() {
@@ -823,6 +828,10 @@ void DrawDebugMenu() {
 
         UIWidgets::CVarCheckbox("SFX Jukebox", "gSfxJukebox", {
             .tooltip = "Press L in the Expert Sound options to play sound effects from the game"
+        });
+
+        UIWidgets::WindowButton("Audio Debug", "gAudioDebugEnabled", GameUI::mAudioDebugWindow, {
+            .tooltip = "Shows the last triggered sample and all registered samples"
         });
 
         UIWidgets::CVarCheckbox("Disable Starfield interpolation", "gDisableStarsInterpolation", {

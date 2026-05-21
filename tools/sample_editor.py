@@ -831,7 +831,10 @@ def _count_frames(path: str, sample_rate: int) -> int:
             if s.get("nb_samples") not in (None, "N/A", ""):
                 return int(s["nb_samples"])
             if s.get("duration"):
-                return int(float(s["duration"]) * sample_rate)
+                # Use the stream's own declared sample_rate for the conversion, not the
+                # caller-supplied sample_rate, which may have been relabeled by asetrate.
+                actual_rate = int(s.get("sample_rate") or sample_rate)
+                return int(float(s["duration"]) * actual_rate)
         except Exception:
             pass
     return 0
@@ -934,8 +937,130 @@ def _scale_loop(loop_data: dict, orig_rate: int, new_rate: int) -> dict | None:
     )
 
 
+def _snap_loop_to_zero_crossings(wav_bytes: bytes, loop_start: int, loop_end: int,
+                                  search_sec: float = 0.005) -> tuple[int, int]:
+    """Adjust loop_start / loop_end for a click-free loop splice.
+
+    For S16 PCM the engine splices sample[loop_end-1] directly to
+    sample[loop_start] on every loop iteration.  A click-free splice requires:
+      1. Value continuity  — samples[loop_end-1] ≈ samples[loop_start]
+      2. Slope continuity  — derivative direction matches at both points
+                             (both rising or both falling)
+
+    Strategy (in order of preference):
+      A. Zero-crossing pairs with matching slope — both amplitude and slope
+         are near-optimal; search ±search_sec around each point.
+      B. Amplitude+slope search — if no zero-crossing pair satisfies both
+         constraints, scan the full ±search_sec window for the pair with
+         minimum |samples[end-1] - samples[start]| and matching slope sign.
+         This catches cases where the best splice point is not near zero.
+      C. Original positions — returned unchanged if nothing better is found.
+
+    Audio data is never modified.  loop_start / loop_end are in
+    channel-sample units.
+    """
+    import io as _io, wave as _wave, array as _array
+
+    try:
+        with _wave.open(_io.BytesIO(wav_bytes)) as w:
+            n    = w.getnframes()
+            ch   = w.getnchannels()
+            sw   = w.getsampwidth()
+            rate = w.getframerate()
+            raw  = w.readframes(n)
+    except Exception:
+        return loop_start, loop_end
+
+    if sw != 2:
+        return loop_start, loop_end
+
+    samples = _array.array('h', raw)
+    total   = len(samples)
+
+    loop_start = max(1, min(loop_start, total - 2))
+    loop_end   = max(loop_start + 2, min(loop_end, total - 1))
+
+    window = max(2, round(rate * ch * search_sec))
+
+    def _find_crossings(center: int, backward: bool) -> list[tuple[int, str]]:
+        """Return zero-crossing positions near center, sorted by distance."""
+        seen: set[int] = set()
+        results: list[tuple[int, str, int]] = []
+        for dist in range(window + 1):
+            for direction in ((-1 if backward else 1), (1 if backward else -1)):
+                idx = center + direction * dist
+                if idx < ch or idx >= total or idx in seen:
+                    continue
+                seen.add(idx)
+                prev, cur = samples[idx - ch], samples[idx]
+                if prev < 0 and cur >= 0:
+                    results.append((idx, 'rising', dist))
+                elif prev >= 0 and cur < 0:
+                    results.append((idx, 'falling', dist))
+        results.sort(key=lambda x: x[2])
+        return [(i, s) for i, s, _ in results]
+
+    # ── Strategy A: zero-crossing pairs with matching slope ──────────────────
+    # loop_end crossing: samples[loop_end-1] is the last pre-loop sample.
+    # A zero crossing AT loop_end means samples[loop_end-1] is near zero.
+    end_crossings   = _find_crossings(loop_end,   backward=True)
+    start_crossings = _find_crossings(loop_start, backward=False)
+
+    best_A: tuple[int, int] | None = None
+    best_score_A = float('inf')
+
+    for end_idx, end_slope in end_crossings:
+        for start_idx, start_slope in start_crossings:
+            if end_slope != start_slope or start_idx >= end_idx:
+                continue
+            diff  = abs(int(samples[end_idx - 1]) - int(samples[start_idx]))
+            score = diff + abs(end_idx - loop_end) + abs(start_idx - loop_start)
+            if score < best_score_A:
+                best_score_A = score
+                best_A = (start_idx, end_idx)
+
+    if best_A and best_score_A < 200:
+        # Good zero-crossing pair found — use it directly.
+        return best_A
+
+    # ── Strategy B: amplitude + slope search over full window ────────────────
+    # Scan every position in the search window; score = amplitude jump with a
+    # heavy penalty for slope direction mismatch.  This finds the globally best
+    # splice even when neither endpoint is near zero.
+    best_B: tuple[int, int] | None = None
+    best_score_B = float('inf')
+
+    s_lo = max(ch, loop_start - window)
+    s_hi = min(total - 2, loop_start + window)
+    e_lo = max(ch + 1, loop_end - window)
+    e_hi = min(total - 1, loop_end + window)
+
+    for ps in range(s_lo, s_hi + 1):
+        slope_s = samples[ps + ch] - samples[ps]
+        val_s   = samples[ps]
+        for pe in range(max(e_lo, ps + 2), e_hi + 1):
+            slope_e = samples[pe - 1] - samples[pe - 1 - ch]
+            amp     = abs(int(samples[pe - 1]) - int(val_s))
+            penalty = 0 if (slope_s * slope_e > 0) else 4000
+            score   = amp + penalty
+            if score < best_score_B:
+                best_score_B = score
+                best_B = (ps, pe)
+
+    # Prefer strategy A if it found anything at all; otherwise use B.
+    if best_A and best_B:
+        return best_A if best_score_A <= best_score_B else best_B
+    if best_B:
+        return best_B
+    if best_A:
+        return best_A
+
+    return loop_start, loop_end
+
+
 def _do_replace(archive_path: str, asset_path: str,
-                audio_path: str, out_dir: str) -> dict:
+                audio_path: str, out_dir: str,
+                loop_override: dict | None = None) -> dict:
     sample_rate, channels = _probe_audio(audio_path)
 
     # Use full scan to get loop data and original sample rate.
@@ -944,9 +1069,6 @@ def _do_replace(archive_path: str, asset_path: str,
     orig_rate = _effective_rate(info) if info else MIXER_RATE_HZ
 
     # Speed-change to orig_rate: relabels the audio so mSample.tuning = orig_rate/32000.
-    # This replicates the N64 convention where the engine slows the sample by that
-    # ratio to reach the correct in-game pitch (pitch-preserving resample would undo
-    # the effect of the tuning and produce the wrong pitch).
     if orig_rate and orig_rate != sample_rate and shutil.which("ffmpeg"):
         audio_path = _resample_audio(audio_path, orig_rate)
         sample_rate, channels = _probe_audio(audio_path)
@@ -959,23 +1081,36 @@ def _do_replace(archive_path: str, asset_path: str,
     new_dur     = new_frames  / sample_rate if sample_rate and new_frames else 0.0
     shorter     = orig_dur > 0.0 and new_dur > 0.0 and new_dur < orig_dur
 
-    # Scale loop points into channel-sample units (the unit samplePosInt uses
-    # in audio_synthesis.c: bytePos = samplePosInt * 2).
-    #
-    # orig_end / orig_frames gives the fractional position in the original mono
-    # ADPCM stream.  The new file has new_frames frames-per-channel, so the
-    # same fraction maps to new_frames * channels channel samples.
-    # Multiply effective_rate by channels so _scale_loop's scale factor becomes
-    # new_frames * channels / orig_frames instead of new_frames / orig_frames.
-    if loop and orig_frames > 0 and new_frames > 0:
-        effective_rate = round(new_frames * channels * orig_rate / orig_frames)
-        scaled_loop = _scale_loop(loop, orig_rate, effective_rate)
-    elif loop:
-        # Fallback when frame counts are unavailable: preserve absolute time by
-        # scaling only by channels (so endPos lands in channel-sample units).
-        scaled_loop = _scale_loop(loop, orig_rate, sample_rate * channels)
+    # If the caller has manually edited the loop in the GUI, use that instead.
+    # The override values are in mono decoded-PCM sample indices (the unit the
+    # loop editor uses, which matches the original archive loop_data units).
+    # The engine's samplePosInt advances through *channel-sample* units, so for
+    # a stereo replacement each mono sample index must be multiplied by channels.
+    if loop_override is not None:
+        if channels > 1:
+            scaled_loop = dict(loop_override,
+                               start=loop_override["start"] * channels,
+                               end=loop_override["end"]   * channels)
+        else:
+            scaled_loop = dict(loop_override)
     else:
-        scaled_loop = None
+        # Scale loop points into channel-sample units (the unit samplePosInt uses
+        # in audio_synthesis.c: bytePos = samplePosInt * 2).
+        #
+        # orig_end / orig_frames gives the fractional position in the original mono
+        # ADPCM stream.  The new file has new_frames frames-per-channel, so the
+        # same fraction maps to new_frames * channels channel samples.
+        # Multiply effective_rate by channels so _scale_loop's scale factor becomes
+        # new_frames * channels / orig_frames instead of new_frames / orig_frames.
+        if loop and orig_frames > 0 and new_frames > 0:
+            effective_rate = round(new_frames * channels * orig_rate / orig_frames)
+            scaled_loop = _scale_loop(loop, orig_rate, effective_rate)
+        elif loop:
+            # Fallback when frame counts are unavailable: preserve absolute time by
+            # scaling only by channels (so endPos lands in channel-sample units).
+            scaled_loop = _scale_loop(loop, orig_rate, sample_rate * channels)
+        else:
+            scaled_loop = None
 
     # Clamp loop end so that endPos * 2 (= bytePos) never exceeds bookSample->size.
     # max_end is already in channel-sample units.
@@ -991,15 +1126,27 @@ def _do_replace(archive_path: str, asset_path: str,
         scaled_loop = dict(start=0, end=new_frames * channels, count=0,
                            predictor_state=[0] * 16)
 
-    ext         = os.path.splitext(audio_path)[1].lower().lstrip(".")
-    audio_arch  = asset_path + "." + ext
+    ext        = os.path.splitext(audio_path)[1].lower().lstrip(".")
+    audio_arch = asset_path + "." + ext
+
+    with open(audio_path, "rb") as f:
+        audio_bytes = f.read()
+
+    # For looping WAV replacements where the user explicitly set loop points via
+    # the waveform editor (loop_override), snap to zero crossings so the PCM
+    # splice is waveform-continuous.  When loop points were derived automatically
+    # by proportional scaling from the original ADPCM data, do NOT snap: the
+    # scaled position is already the best estimate and snapping with even a small
+    # window can move the point hundreds of samples away.
+    if ext == "wav" and loop_override is not None and scaled_loop and scaled_loop.get("count", 0) != 0:
+        snapped_start, snapped_end = _snap_loop_to_zero_crossings(
+            audio_bytes, scaled_loop["start"], scaled_loop["end"])
+        scaled_loop = dict(scaled_loop, start=snapped_start, end=snapped_end)
+
     xml_content = _make_xml(audio_arch, ext, tuning, unk, loop=scaled_loop)
 
     mod_name = os.path.splitext(os.path.basename(archive_path))[0]
     mod_o2r  = os.path.join(out_dir, f"{mod_name}_audio_replacements.o2r")
-
-    with open(audio_path, "rb") as f:
-        audio_bytes = f.read()
 
     _upsert_mod_o2r(mod_o2r,
                     asset_path,  xml_content.encode(),
@@ -1136,17 +1283,29 @@ def export_aliases_to(aliases: dict[str, str], out_path: str) -> None:
         json.dump({"version": 1, "aliases": aliases}, f, indent=2)
 
 
-def _play_pcm_wav(pcm: bytes, sample_rate: int = MIXER_RATE_HZ):
-    """Write PCM to a temp WAV and play via ffplay (blocking)."""
-    if not shutil.which("ffplay"):
-        raise RuntimeError("ffplay not found — install ffmpeg.")
+def _play_pcm_wav(pcm: bytes, sample_rate: int = MIXER_RATE_HZ,
+                  volume: float = 1.0):
+    """Write PCM to a temp WAV and play (blocking).
+
+    Uses afplay on macOS (volume via -v 0.0-1.0+), falls back to ffplay.
+    volume — linear gain in [0.0, 1.0].
+    """
     with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tf:
         tmp = tf.name
     try:
         _write_wav(pcm, tmp, rate=sample_rate)
-        subprocess.run(["ffplay", "-nodisp", "-autoexit", tmp],
-                       stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
-                       check=True)
+        vol = max(0.0, float(volume))
+        if sys.platform == "darwin" and shutil.which("afplay"):
+            subprocess.run(["afplay", "-v", f"{vol:.4f}", tmp],
+                           stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        elif shutil.which("ffplay"):
+            vol_int = max(0, min(100, int(round(vol * 100))))
+            subprocess.run(["ffplay", "-nodisp", "-autoexit",
+                            "-volume", str(vol_int), tmp],
+                           stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                           check=True)
+        else:
+            raise RuntimeError("No audio player found — install ffmpeg or ensure afplay is available.")
     finally:
         try:
             os.unlink(tmp)
@@ -1569,6 +1728,1138 @@ def cmd_gui(args):
     FONT_SML = ("Helvetica", 9)
     FONT_MON = ("Menlo", 10) if sys.platform == "darwin" else ("Consolas", 10)
 
+    # ── waveform / loop-point editor ──────────────────────────────────────────
+    class _WaveformEditor(tk.Toplevel):
+        """Audacity-style waveform view with draggable loop-start / loop-end markers.
+
+        Parameters
+        ----------
+        parent      : tk widget
+        sample      : the sample info dict (must have 'raw', 'codec', 'loop_data',
+                      and optionally 'book_data')
+        pcm         : S16 LE mono PCM bytes already decoded by the caller
+        rate        : playback sample rate in Hz
+        on_save     : callable(new_loop_data: dict) called when the user saves
+        orig_pcm    : optional S16 LE mono PCM of the original (vanilla) sample
+        orig_rate   : sample rate of orig_pcm in Hz
+        orig_loop   : optional loop_data dict for the original sample
+        """
+
+        _WAVEFORM_H  = 200          # canvas height in pixels
+        _RULER_H     = 24           # ruler strip above waveform
+        _HANDLE_R    = 6            # half-width of marker line (used for hit zone)
+        _HANDLE_W    = 14           # grip pill width
+        _HANDLE_PH   = 36           # grip pill height
+        _MIN_ZOOM    = 8            # minimum samples per pixel
+        _MAX_ZOOM    = 0.25         # maximum samples per pixel (= 4 px/sample)
+        # ── canvas background
+        _COL_BG      = "#0d0d14"
+        # ── waveforms
+        _COL_WAVE    = "#5b9cf6"    # cool blue  — replacement
+        _COL_WAVE_LN = "#89b4fa"    # brighter blue outline / center line
+        _COL_WAVE2   = "#e06c75"    # muted red  — original (vanilla)
+        _COL_WAVE2_LN= "#f38ba8"    # pink outline
+        # ── loop region
+        _COL_LOOP    = "#1e2a3a"    # dark teal tint
+        _COL_LOOP_BD = "#2d4a6a"    # loop region border
+        # ── markers
+        _COL_START   = "#98c379"    # green — loop-start
+        _COL_START_DK= "#2d4030"    # dark green fill for handle body
+        _COL_END     = "#e5c07b"    # amber — loop-end  (was red, now distinct from orig)
+        _COL_END_DK  = "#3d3010"    # dark amber fill
+        # ── playback cursor
+        _COL_CURSOR  = "#f8f8f2"    # near-white
+        # ── ruler
+        _COL_RULER   = "#4a4a6a"
+        _COL_RULER_H = "#a8a8c8"
+        # ── zero line / grid
+        _COL_GRID    = "#1a1a2e"
+        _COL_ZERO    = "#2a2a3e"    # zero-crossing line
+
+        def __init__(self, parent, *, sample: dict, pcm: bytes, rate: int,
+                     on_save,
+                     orig_pcm: bytes | None = None,
+                     orig_rate: int | None = None,
+                     orig_loop: dict | None = None):
+            super().__init__(parent)
+            self.title("Loop Editor — " + os.path.basename(sample["path"]))
+            self.configure(bg=BG)
+            self.resizable(True, True)
+            self.minsize(720, 460)
+
+            self._sample   = sample
+            self._rate     = rate
+            self._on_save  = on_save
+
+            # PCM as array of signed shorts (mono) — replacement
+            import array as _array
+            self._samples = _array.array('h', pcm)
+            self._n       = len(self._samples)
+
+            # Original (vanilla) waveform — may be None if not available
+            self._orig_samples: _array.array | None = None
+            self._orig_rate    = orig_rate or rate
+            self._orig_loop    = orig_loop  # loop_data dict or None
+            if orig_pcm:
+                self._orig_samples = _array.array('h', orig_pcm)
+
+            # Loop points (in sample indices, mono channel)
+            ld = sample.get("loop_data") or {}
+            self._loop_start = int(ld.get("start", 0))
+            self._loop_end   = int(ld.get("end",   max(0, self._n - 1)))
+            self._loop_count = ld.get("count", LOOP_INFINITE)
+            self._loop_state = ld.get("state", [0] * 16)
+            # Clamp
+            self._loop_start = max(0, min(self._loop_start, self._n - 1))
+            self._loop_end   = max(self._loop_start + 1,
+                                   min(self._loop_end, self._n))
+
+            # View state
+            self._view_start  = 0                   # first visible sample index
+            self._spp         = max(self.__clamp_spp(self._n / 900), self._MAX_ZOOM)
+            # samples per pixel — set so full waveform fits in ~900 px initially
+
+            # Overlay toggle — show original waveform on top
+            self._show_orig = tk.BooleanVar(value=orig_pcm is not None)
+
+            # Drag state
+            self._drag_target: str | None = None    # "start" | "end" | None
+            self._drag_offset_px = 0
+
+            # Playback — which source is playing: "loop" or "orig"
+            self._play_proc:   subprocess.Popen | None = None
+            self._play_thread: threading.Thread | None = None
+            self._play_which:  str  = "loop"   # "loop" | "orig"
+            self._play_stop_evt = threading.Event()
+            self._cursor_pos:  int   = -1   # sample index, -1 = not playing
+            self._play_start_time: float = 0.0
+            self._play_loop_start: int   = 0
+            self._play_loop_len:   int   = 0
+            self._play_attack_len: int   = 0   # samples in the attack pass (0 = no attack)
+            self._play_tmp_attack: str | None = None
+            self._cursor_after_id: str | None = None
+
+            # Interaction state
+            self._drag_target:   str | None = None
+            self._pan_mode:      bool       = False
+            self._shift_mode:    bool       = False
+            self._pan_start_x:   int        = 0
+            self._pan_start_view:int        = 0
+            self._last_dragged:  str        = "start"  # for arrow-key nudge focus
+            self._shift_at_drag: int        = 0
+
+            # Original waveform shift (in orig-sample units, positive = shift right)
+            self._orig_shift: int = 0
+
+            self._build_ui()
+            self._redraw()
+            self.protocol("WM_DELETE_WINDOW", self._on_close)
+
+        def _on_close(self):
+            self._action_stop()
+            self.destroy()
+
+        # ── helpers ───────────────────────────────────────────────────────────
+
+        def _clamp_spp(self, spp: float) -> float:
+            return max(self._MAX_ZOOM, min(float(self._MIN_ZOOM), spp))
+
+        # alias so inner lambdas can call self._clamp_spp or self.__class__._clamp_spp
+        _WaveformEditor__clamp_spp = _clamp_spp  # will be set correctly as a method
+
+        def _sample_to_x(self, idx: int) -> float:
+            """Convert a sample index to a canvas x coordinate."""
+            return (idx - self._view_start) / self._spp
+
+        def _x_to_sample(self, x: float) -> int:
+            """Convert a canvas x coordinate to the nearest sample index."""
+            return int(round(x * self._spp + self._view_start))
+
+        def _visible_range(self) -> tuple[int, int]:
+            w = self._canvas.winfo_width() or 900
+            end = int(self._view_start + w * self._spp)
+            return self._view_start, min(end, self._n)
+
+        # ── UI construction ───────────────────────────────────────────────────
+
+        def _build_ui(self):
+            # ── toolbar row 1: playback ───────────────────────────────────────
+            tb = ttk.Frame(self, padding=(8, 6, 8, 2))
+            tb.pack(fill="x")
+
+            self._btn_play_loop = ttk.Button(
+                tb, text="▶  Play Loop",
+                command=lambda: self._action_play("loop"))
+            self._btn_play_loop.pack(side="left", padx=(0, 4))
+
+            self._btn_play_orig = ttk.Button(
+                tb, text="▶  Play Original",
+                command=lambda: self._action_play("orig"),
+                state="normal" if self._orig_samples is not None else "disabled")
+            self._btn_play_orig.pack(side="left", padx=(0, 4))
+
+            self._btn_stop = ttk.Button(tb, text="■  Stop",
+                                        command=self._action_stop,
+                                        state="disabled")
+            self._btn_stop.pack(side="left", padx=(0, 6))
+
+            # Volume slider — read at play-start; afplay accepts 0.0-1.0+
+            ttk.Label(tb, text="Vol:", foreground=FG_DIM,
+                      font=FONT_SML).pack(side="left", padx=(0, 2))
+            self._vol_var = tk.DoubleVar(value=1.0)
+            ttk.Scale(tb, from_=0.0, to=2.0, orient="horizontal",
+                      variable=self._vol_var, length=80).pack(side="left")
+
+            ttk.Separator(tb, orient="vertical").pack(side="left",
+                                                       fill="y", padx=(6, 8))
+
+            # Overlay checkbox — only visible when orig waveform is available
+            if self._orig_samples is not None:
+                ttk.Checkbutton(
+                    tb, text="Show Original",
+                    variable=self._show_orig,
+                    command=self._redraw).pack(side="left", padx=(0, 8))
+                ttk.Separator(tb, orient="vertical").pack(
+                    side="left", fill="y", padx=(0, 8))
+
+            self._btn_snap = ttk.Button(tb, text="⊞  Snap to Zero",
+                                        command=self._action_snap)
+            self._btn_snap.pack(side="left", padx=(0, 8))
+
+            # Original shift controls — only shown when orig waveform exists
+            if self._orig_samples is not None:
+                ttk.Separator(tb, orient="vertical").pack(
+                    side="left", fill="y", padx=(0, 8))
+                ttk.Label(tb, text="Orig shift:", foreground=FG_DIM,
+                          font=FONT_SML).pack(side="left", padx=(0, 2))
+                self._shift_var = tk.StringVar(value="0")
+                self._shift_entry = ttk.Entry(tb, textvariable=self._shift_var,
+                                              width=8, font=FONT_MON)
+                self._shift_entry.pack(side="left", padx=(0, 2))
+                self._shift_entry.bind("<Return>",   lambda *_: self._commit_shift())
+                self._shift_entry.bind("<FocusOut>", lambda *_: self._commit_shift())
+                ttk.Button(tb, text="◀", width=2,
+                           command=lambda: self._nudge_shift(-1)).pack(side="left")
+                ttk.Button(tb, text="▶", width=2,
+                           command=lambda: self._nudge_shift(1)).pack(
+                               side="left", padx=(1, 4))
+                ttk.Button(tb, text="Reset",
+                           command=self._reset_shift).pack(side="left", padx=(0, 8))
+
+            ttk.Separator(tb, orient="vertical").pack(side="left",
+                                                       fill="y", padx=(0, 8))
+
+            # Loop count
+            ttk.Label(tb, text="Loop:", foreground=FG_DIM,
+                      font=FONT_SML).pack(side="left", padx=(0, 4))
+            self._loop_count_var = tk.StringVar(
+                value="∞" if self._loop_count == LOOP_INFINITE else str(self._loop_count))
+            self._loop_count_entry = ttk.Entry(tb, textvariable=self._loop_count_var,
+                                               width=6, font=FONT_MON)
+            self._loop_count_entry.pack(side="left", padx=(0, 12))
+
+            ttk.Separator(tb, orient="vertical").pack(side="left",
+                                                       fill="y", padx=(0, 8))
+
+            # Zoom
+            ttk.Label(tb, text="Zoom:", foreground=FG_DIM,
+                      font=FONT_SML).pack(side="left", padx=(0, 4))
+            ttk.Button(tb, text="−", width=2,
+                       command=lambda: self._zoom_step(2.0)).pack(side="left")
+            ttk.Button(tb, text="+", width=2,
+                       command=lambda: self._zoom_step(0.5)).pack(side="left",
+                                                                   padx=(2, 12))
+            ttk.Button(tb, text="Fit",
+                       command=self._zoom_fit).pack(side="left", padx=(0, 12))
+
+            # Save / Cancel
+            ttk.Button(tb, text="✕  Cancel",
+                       command=self.destroy).pack(side="right", padx=(4, 0))
+            self._btn_save = ttk.Button(tb, text="✔  Save Loop Points",
+                                        style="Accent.TButton",
+                                        command=self._action_save)
+            self._btn_save.pack(side="right", padx=(0, 4))
+
+            # ── position readout ──────────────────────────────────────────────
+            info = ttk.Frame(self, padding=(8, 0, 8, 2))
+            info.pack(fill="x")
+            self._info_var = tk.StringVar(value="")
+            ttk.Label(info, textvariable=self._info_var,
+                      foreground=FG_DIM, font=FONT_SML).pack(side="left")
+
+            # ── canvas ────────────────────────────────────────────────────────
+            canvas_frame = ttk.Frame(self, padding=(8, 0, 8, 0))
+            canvas_frame.pack(fill="both", expand=True)
+            canvas_frame.rowconfigure(0, weight=1)
+            canvas_frame.columnconfigure(0, weight=1)
+
+            total_h = self._RULER_H + self._WAVEFORM_H
+            self._canvas = tk.Canvas(canvas_frame, bg=self._COL_BG,
+                                     height=total_h, highlightthickness=0,
+                                     cursor="crosshair")
+            self._canvas.grid(row=0, column=0, sticky="nsew")
+
+            self._hbar = ttk.Scrollbar(canvas_frame, orient="horizontal",
+                                       command=self._on_hscroll)
+            self._hbar.grid(row=1, column=0, sticky="ew")
+
+            self._canvas.bind("<Configure>",      lambda _e: self._redraw())
+            self._canvas.bind("<ButtonPress-1>",  self._on_press)
+            self._canvas.bind("<B1-Motion>",       self._on_drag)
+            self._canvas.bind("<ButtonRelease-1>", self._on_release)
+            self._canvas.bind("<MouseWheel>",      self._on_wheel)
+            self._canvas.bind("<Button-4>",        self._on_wheel)
+            self._canvas.bind("<Button-5>",        self._on_wheel)
+            self._canvas.bind("<ButtonPress-2>",   self._on_pan_start)
+            self._canvas.bind("<B2-Motion>",        self._on_pan_drag)
+
+            # Keyboard bindings (focus the canvas so key events reach it)
+            self._canvas.focus_set()
+            self._canvas.bind("<KeyPress>", self._on_key)
+            self.bind("<KeyPress>",         self._on_key)
+
+            # ── legend when both waveforms shown ─────────────────────────────
+            if self._orig_samples is not None:
+                leg = ttk.Frame(self, padding=(8, 2, 8, 0))
+                leg.pack(fill="x")
+                tk.Label(leg, text="■", fg=self._COL_WAVE,  bg=BG,
+                         font=FONT_SML).pack(side="left")
+                tk.Label(leg, text="Replacement", fg=FG_DIM, bg=BG,
+                         font=FONT_SML).pack(side="left", padx=(2, 12))
+                tk.Label(leg, text="■", fg=self._COL_WAVE2, bg=BG,
+                         font=FONT_SML).pack(side="left")
+                tk.Label(leg, text="Original (vanilla)", fg=FG_DIM, bg=BG,
+                         font=FONT_SML).pack(side="left", padx=(2, 16))
+                tk.Label(leg,
+                         text="Drag=pan  •  Ctrl+drag=shift original  •  "
+                              "Ctrl+scroll=zoom  •  ←/→=nudge marker  •  "
+                              "Shift+←/→=nudge×10  •  Home/End=jump",
+                         fg=FG_DIM, bg=BG, font=FONT_SML).pack(side="left")
+
+            # ── status bar with loop point entries ───────────────────────────
+            sb = ttk.Frame(self, padding=(8, 4, 8, 8))
+            sb.pack(fill="x")
+
+            ttk.Label(sb, text="Start:", foreground=self._COL_START,
+                      font=FONT_SML).pack(side="left")
+            self._start_var = tk.StringVar(value=str(self._loop_start))
+            self._start_entry = ttk.Entry(sb, textvariable=self._start_var,
+                                          width=10, font=FONT_MON)
+            self._start_entry.pack(side="left", padx=(4, 16))
+            self._start_entry.bind("<Return>",   lambda *_: self._commit_entries())
+            self._start_entry.bind("<FocusOut>", lambda *_: self._commit_entries())
+
+            ttk.Label(sb, text="End:", foreground=self._COL_END,
+                      font=FONT_SML).pack(side="left")
+            self._end_var = tk.StringVar(value=str(self._loop_end))
+            self._end_entry = ttk.Entry(sb, textvariable=self._end_var,
+                                        width=10, font=FONT_MON)
+            self._end_entry.pack(side="left", padx=(4, 16))
+            self._end_entry.bind("<Return>",   lambda *_: self._commit_entries())
+            self._end_entry.bind("<FocusOut>", lambda *_: self._commit_entries())
+
+            ttk.Label(sb, text="Duration:",
+                      foreground=FG_DIM, font=FONT_SML).pack(side="left")
+            self._dur_var = tk.StringVar(value="")
+            ttk.Label(sb, textvariable=self._dur_var,
+                      foreground=FG, font=FONT_MON).pack(side="left", padx=(4, 0))
+
+            self._update_status()
+
+
+        # ── drawing ───────────────────────────────────────────────────────────
+
+        def _redraw(self):
+            c = self._canvas
+            w = c.winfo_width()  or 900
+            h = c.winfo_height() or (self._RULER_H + self._WAVEFORM_H)
+            wave_h = h - self._RULER_H
+
+            c.delete("all")
+
+            v0, v1 = self._visible_range()
+
+            # ── loop region highlight ──────────────────────────────────────
+            lsx = self._sample_to_x(self._loop_start)
+            lex = self._sample_to_x(self._loop_end)
+            if lex > lsx:
+                c.create_rectangle(lsx, self._RULER_H, lex, h,
+                                   fill=self._COL_LOOP,
+                                   outline=self._COL_LOOP_BD,
+                                   width=1, tags="loop_bg")
+
+            # ── helper: draw one waveform envelope ────────────────────────
+            def _draw_wave(samps, n_samps, color, tag,
+                           spp_override=None, offset=0):
+                """Draw filled waveform envelope for samps[].
+
+                spp_override / offset: allow a different samples-per-pixel and
+                a sample-index shift so the original waveform can be aligned to
+                the replacement by matching their loop regions.
+                """
+                spp = spp_override if spp_override is not None else self._spp
+                # visible range in *this* array's coordinate space
+                a0 = int(self._view_start * spp / self._spp) + offset
+                a1 = int(a0 + w * spp)
+                a0 = max(0, a0); a1 = min(a1, n_samps)
+                if a1 <= a0:
+                    return
+                bucket = max(1, int((a1 - a0) / max(1, w)))
+                mid   = self._RULER_H + wave_h / 2
+                scale = wave_h / 2 / 32768.0
+                pts_hi, pts_lo = [], []
+                i = 0
+                while True:
+                    s0 = a0 + i * bucket
+                    s1 = min(s0 + bucket, a1)
+                    if s0 >= a1:
+                        break
+                    s0c = max(0, min(s0, n_samps - 1))
+                    s1c = max(1, min(s1, n_samps))
+                    chunk = samps[s0c:s1c]
+                    lo = min(chunk) if chunk else 0
+                    hi = max(chunk) if chunk else 0
+                    # x in canvas coordinates: map from orig-array index back to
+                    # replacement canvas space
+                    canvas_idx = (s0 - offset) * self._spp / spp
+                    x = (canvas_idx - self._view_start) / self._spp
+                    pts_hi.append((x, mid - hi * scale))
+                    pts_lo.append((x, mid - lo * scale))
+                    i += 1
+                if len(pts_hi) >= 2:
+                    poly = pts_hi + list(reversed(pts_lo))
+                    flat = [coord for pt in poly for coord in pt]
+                    c.create_polygon(flat, fill=color, outline="", tags=tag)
+
+            # Draw replacement waveform first (underneath)
+            _draw_wave(self._samples, self._n, self._COL_WAVE, "wave")
+            c.create_line(0, self._RULER_H + wave_h / 2, w,
+                          self._RULER_H + wave_h / 2,
+                          fill=self._COL_ZERO, tags="wave_mid")
+
+            if self._orig_samples is not None and self._show_orig.get():
+                orig_n  = len(self._orig_samples)
+                orig_off = self._orig_shift   # in orig-sample units (same spp as repl)
+                # Draw at the same spp as replacement so both are time-aligned:
+                # equal canvas pixels per sample means equal canvas pixels per second
+                # (both streams share the same sample rate after normalisation).
+                _draw_wave(self._orig_samples, orig_n,
+                           self._COL_WAVE2, "wave_orig",
+                           spp_override=self._spp, offset=orig_off)
+
+                # Draw orig loop markers at the same spp (no proportional remap)
+                if self._orig_loop:
+                    ol_s = self._orig_loop.get("start", 0)
+                    ol_e = self._orig_loop.get("end",   orig_n)
+                    for ol, lbl in ((ol_s - orig_off, "OS"),
+                                    (ol_e - orig_off, "OE")):
+                        ox = self._sample_to_x(ol)
+                        if 0 <= ox <= w:
+                            c.create_line(ox, self._RULER_H, ox, h,
+                                          fill=self._COL_WAVE2_LN, width=1,
+                                          dash=(3, 5), tags="orig_marker")
+                            c.create_text(ox + 3, self._RULER_H + 14,
+                                          text=lbl, anchor="nw",
+                                          fill=self._COL_WAVE2_LN,
+                                          font=FONT_SML, tags="orig_marker")
+
+            # ── ruler ────────────────────────────────────────────────────
+            self._draw_ruler(w)
+
+            # ── loop markers ────────────────────────────────────────────
+            self._draw_marker(self._loop_start, self._COL_START, self._COL_START_DK, "S", "start")
+            self._draw_marker(self._loop_end,   self._COL_END,   self._COL_END_DK,   "E", "end")
+
+            # ── playback cursor ──────────────────────────────────────────
+            if self._cursor_pos >= 0:
+                cx = self._sample_to_x(self._cursor_pos)
+                if 0 <= cx <= w:
+                    r = self._HANDLE_R - 2
+                    c.create_line(cx, self._RULER_H, cx, h,
+                                  fill=self._COL_CURSOR, width=1,
+                                  tags="cursor")
+                    c.create_polygon(cx - r, self._RULER_H,
+                                     cx + r, self._RULER_H,
+                                     cx,     self._RULER_H + r * 2,
+                                     fill=self._COL_CURSOR, outline="",
+                                     tags="cursor")
+
+            # ── scrollbar sync ───────────────────────────────────────────
+            frac_lo = self._view_start / max(1, self._n)
+            frac_hi = min(1.0, (self._view_start + w * self._spp) / max(1, self._n))
+            self._hbar.set(frac_lo, frac_hi)
+
+
+        def _draw_ruler(self, w: int):
+            c = self._canvas
+            # Choose a tick spacing so we get roughly one tick per 80–120 px
+            # in whole-number sample counts.
+            samples_visible = w * self._spp
+            raw_step = samples_visible / max(1, w / 90)
+            # Round to a nice power-of-two or power-of-ten boundary
+            import math as _math
+            exp = _math.floor(_math.log10(max(1, raw_step)))
+            base = 10 ** exp
+            for mult in (1, 2, 5, 10):
+                if base * mult >= raw_step:
+                    tick_step = base * mult
+                    break
+            else:
+                tick_step = base * 10
+            tick_step = max(1, int(tick_step))
+
+            c.create_rectangle(0, 0, w, self._RULER_H,
+                                fill=BG2, outline="", tags="ruler")
+
+            first_tick = (self._view_start // tick_step) * tick_step
+            idx = first_tick
+            while True:
+                x = self._sample_to_x(idx)
+                if x > w:
+                    break
+                if x >= 0:
+                    c.create_line(x, self._RULER_H - 6, x, self._RULER_H,
+                                  fill=self._COL_RULER, tags="ruler")
+                    label = f"{idx:,}"
+                    if self._rate:
+                        secs = idx / self._rate
+                        label += f"  {secs:.3f}s"
+                    c.create_text(x + 3, self._RULER_H // 2,
+                                  text=label, anchor="w",
+                                  fill=self._COL_RULER_H, font=FONT_SML,
+                                  tags="ruler")
+                idx += tick_step
+
+        def _draw_marker(self, sample_idx: int, color: str, color_dk: str,
+                         label: str, tag: str):
+            """Draw a marker: full-height line + centre grip pill + label.
+
+            The grip pill sits at mid-height so it's easy to grab with the mouse.
+            color_dk is the darker fill used for the pill body.
+            """
+            c = self._canvas
+            h = c.winfo_height() or (self._RULER_H + self._WAVEFORM_H)
+            x = self._sample_to_x(sample_idx)
+            hw = self._HANDLE_W // 2       # half pill width
+            ph = self._HANDLE_PH           # pill height
+            mid = self._RULER_H + (h - self._RULER_H) // 2
+
+            # Full-height vertical line
+            c.create_line(x, self._RULER_H, x, h,
+                          fill=color, width=2, tags=(tag, "marker"))
+
+            # Grip pill (rounded rectangle approximated with a rectangle + two ovals)
+            px0, py0 = x - hw, mid - ph // 2
+            px1, py1 = x + hw, mid + ph // 2
+            r = hw  # corner radius = half-width → full semicircles
+            c.create_rectangle(px0, py0 + r, px1, py1 - r,
+                                fill=color_dk, outline=color, width=1,
+                                tags=(tag, "marker", tag + "_handle"))
+            c.create_oval(px0, py0, px1, py0 + r * 2,
+                          fill=color_dk, outline=color, width=1,
+                          tags=(tag, "marker", tag + "_handle"))
+            c.create_oval(px0, py1 - r * 2, px1, py1,
+                          fill=color_dk, outline=color, width=1,
+                          tags=(tag, "marker", tag + "_handle"))
+
+            # Small tick marks inside the pill for grip texture
+            for dy in (-ph // 6, 0, ph // 6):
+                c.create_line(x - hw + 3, mid + dy, x + hw - 3, mid + dy,
+                               fill=color, width=1,
+                               tags=(tag, "marker"))
+
+            # Label above the pill
+            c.create_text(x + hw + 3, mid - ph // 2 - 2,
+                          text=label, anchor="sw",
+                          fill=color, font=FONT_SML, tags=(tag, "marker"))
+
+        # ── interaction ───────────────────────────────────────────────────────
+
+        def _nearest_marker(self, x: float) -> str | None:
+            """Return 'start', 'end', or None based on which marker is closer to x."""
+            xs = self._sample_to_x(self._loop_start)
+            xe = self._sample_to_x(self._loop_end)
+            ds = abs(x - xs)
+            de = abs(x - xe)
+            threshold = max(self._HANDLE_W, 14)   # match pill half-width
+            if ds <= threshold or de <= threshold:
+                return "start" if ds <= de else "end"
+            return None
+
+        def _on_press(self, event):
+            ctrl = (event.state & 0x4) != 0
+            if ctrl and self._orig_samples is not None:
+                # Ctrl+drag shifts the original waveform
+                self._drag_target   = None
+                self._pan_mode      = False
+                self._shift_mode    = True
+                self._pan_start_x   = event.x
+                self._shift_at_drag = self._orig_shift
+                self._canvas.config(cursor="hand2")
+                return
+            self._shift_mode = False
+            target = self._nearest_marker(event.x)
+            if target:
+                self._drag_target = target
+                self._pan_mode    = False
+                self._canvas.config(cursor="sb_h_double_arrow")
+            else:
+                # Left-click on empty canvas = pan
+                self._drag_target = None
+                self._pan_mode    = True
+                self._pan_start_x    = event.x
+                self._pan_start_view = self._view_start
+                self._canvas.config(cursor="fleur")
+
+        def _on_drag(self, event):
+            if getattr(self, '_shift_mode', False):
+                dx = event.x - self._pan_start_x
+                # dx pixels → sample delta (same spp as replacement)
+                delta  = int(-dx * self._spp)
+                orig_n = len(self._orig_samples) if self._orig_samples else 1
+                new_shift = self._shift_at_drag + delta
+                self._orig_shift = max(-orig_n, min(new_shift, orig_n))
+                if hasattr(self, '_shift_var'):
+                    self._shift_var.set(str(self._orig_shift))
+                self._redraw()
+                return
+            if self._pan_mode:
+                dx = event.x - self._pan_start_x
+                vs = max(0, int(self._pan_start_view - dx * self._spp))
+                self._view_start = vs
+                self._redraw()
+                return
+            if self._drag_target is None:
+                return
+            idx = self._x_to_sample(event.x)
+            idx = max(0, min(idx, self._n))
+            if self._drag_target == "start":
+                self._loop_start = min(idx, self._loop_end - 1)
+                self._last_dragged = "start"
+            else:
+                self._loop_end = max(idx, self._loop_start + 1)
+                self._last_dragged = "end"
+            self._sync_entries()
+            self._redraw()
+            self._update_status()
+
+        def _on_release(self, _event):
+            self._drag_target = None
+            self._pan_mode    = False
+            self._shift_mode  = False
+            self._canvas.config(cursor="crosshair")
+
+        def _on_wheel(self, event):
+            # Ctrl + wheel → zoom; plain wheel → pan horizontally
+            ctrl = (event.state & 0x4) != 0
+            if event.num == 4:
+                delta = 1
+            elif event.num == 5:
+                delta = -1
+            else:
+                delta = event.delta
+
+            if ctrl:
+                # Zoom around mouse position
+                idx_center = self._x_to_sample(event.x)
+                factor = 0.7 if delta > 0 else 1.0 / 0.7
+                self._spp = self._clamp_spp(self._spp * factor)
+                self._view_start = max(0, int(idx_center - event.x * self._spp))
+            else:
+                # Pan horizontally
+                w = self._canvas.winfo_width() or 900
+                step = w * self._spp * 0.15 * (-1 if delta > 0 else 1)
+                self._view_start = max(
+                    0, min(int(self._view_start + step),
+                           int(self._n - w * self._spp)))
+            self._redraw()
+
+        def _on_hscroll(self, *args):
+            cmd = args[0]
+            w = self._canvas.winfo_width() or 900
+            visible = w * self._spp
+            if cmd == "moveto":
+                self._view_start = int(float(args[1]) * self._n)
+            elif cmd == "scroll":
+                amount = int(args[1])
+                unit   = args[2]
+                step   = visible * 0.1 if unit == "units" else visible * 0.9
+                self._view_start = int(self._view_start + amount * step)
+            self._view_start = max(0, min(self._view_start,
+                                          int(self._n - visible)))
+            self._redraw()
+
+        def _on_pan_start(self, event):
+            """Middle-mouse pan (kept for backward compat)."""
+            self._pan_start_x    = event.x
+            self._pan_start_view = self._view_start
+
+        def _on_pan_drag(self, event):
+            dx = event.x - self._pan_start_x
+            self._view_start = max(0, int(self._pan_start_view - dx * self._spp))
+            self._redraw()
+
+        def _on_key(self, event):
+            """Keyboard navigation.
+
+            Arrow keys (no mod) nudge the focused marker (start if neither
+            focused → start; end if end-entry focused).
+            Shift+arrow nudges by 10× the step.
+            Ctrl+Left/Right pans the view.
+            Home  → jump view to loop start.
+            End   → jump view to loop end.
+            """
+            key = event.keysym
+            shift = (event.state & 0x1) != 0
+            ctrl  = (event.state & 0x4) != 0
+            step  = 10 if shift else 1
+            w     = self._canvas.winfo_width() or 900
+
+            if key in ("Left", "Right"):
+                sign = -1 if key == "Left" else 1
+                if ctrl:
+                    # Pan view
+                    self._view_start = max(
+                        0, min(int(self._view_start + sign * step * self._spp * 20),
+                               int(self._n - w * self._spp)))
+                    self._redraw()
+                else:
+                    # Nudge whichever marker is "active" (end-entry focused → end)
+                    focused = str(self.focus_get())
+                    if "end_entry" in focused or self._last_dragged == "end":
+                        self._loop_end = max(
+                            self._loop_start + 1,
+                            min(self._loop_end + sign * step, self._n))
+                    else:
+                        self._loop_start = max(
+                            0, min(self._loop_start + sign * step,
+                                   self._loop_end - 1))
+                    self._sync_entries()
+                    self._update_status()
+                    self._redraw()
+
+            elif key == "Home":
+                # Scroll so loop_start is at 10% from left
+                self._view_start = max(
+                    0, int(self._loop_start - w * self._spp * 0.1))
+                self._redraw()
+            elif key == "End":
+                self._view_start = max(
+                    0, int(self._loop_end - w * self._spp * 0.9))
+                self._redraw()
+            self._update_status()
+
+        def _on_release(self, _event):
+            self._drag_target = None
+            self._canvas.config(cursor="crosshair")
+
+        def _on_wheel(self, event):
+            # Delta: positive = scroll up = zoom in (macOS/Windows)
+            if event.num == 4:
+                delta = 1
+            elif event.num == 5:
+                delta = -1
+            else:
+                delta = event.delta
+            # Zoom around the mouse position
+            x_center = event.x
+            idx_center = self._x_to_sample(x_center)
+            factor = 0.7 if delta > 0 else 1.0 / 0.7
+            self._spp = self._clamp_spp(self._spp * factor)
+            # Keep idx_center under the mouse
+            self._view_start = max(0, int(idx_center - x_center * self._spp))
+            self._redraw()
+
+        def _on_hscroll(self, *args):
+            cmd = args[0]
+            w = self._canvas.winfo_width() or 900
+            visible = w * self._spp
+            if cmd == "moveto":
+                self._view_start = int(float(args[1]) * self._n)
+            elif cmd == "scroll":
+                amount = int(args[1])
+                unit   = args[2]
+                step   = visible * 0.1 if unit == "units" else visible * 0.9
+                self._view_start = int(self._view_start + amount * step)
+            self._view_start = max(0, min(self._view_start,
+                                          int(self._n - visible)))
+            self._redraw()
+
+        def _on_pan_start(self, event):
+            self._pan_start_x    = event.x
+            self._pan_start_view = self._view_start
+
+        def _on_pan_drag(self, event):
+            dx = event.x - self._pan_start_x
+            self._view_start = max(0, int(self._pan_start_view - dx * self._spp))
+            self._redraw()
+
+        def _zoom_step(self, factor: float):
+            w = self._canvas.winfo_width() or 900
+            center = self._view_start + (w * self._spp) / 2
+            self._spp = self._clamp_spp(self._spp * factor)
+            self._view_start = max(0, int(center - (w * self._spp) / 2))
+            self._redraw()
+
+        def _zoom_fit(self):
+            w = self._canvas.winfo_width() or 900
+            self._spp = self._clamp_spp(self._n / max(1, w))
+            self._view_start = 0
+            self._redraw()
+
+        # ── entry sync ────────────────────────────────────────────────────────
+
+        def _commit_shift(self):
+            """Apply the shift value typed in the entry box."""
+            try:
+                v = int(self._shift_var.get().strip())
+            except (ValueError, AttributeError):
+                self._shift_var.set(str(self._orig_shift))
+                return
+            if self._orig_samples is not None:
+                orig_n = len(self._orig_samples)
+                self._orig_shift = max(-orig_n, min(v, orig_n))
+            self._shift_var.set(str(self._orig_shift))
+            self._redraw()
+
+        def _nudge_shift(self, delta: int):
+            """Shift the original waveform by delta samples (same units as replacement)."""
+            if self._orig_samples is None:
+                return
+            # 1 button press moves ~1 screen pixel worth of samples
+            step = max(1, int(self._spp))
+            orig_n = len(self._orig_samples)
+            self._orig_shift = max(-orig_n,
+                                   min(self._orig_shift + delta * step, orig_n))
+            self._shift_var.set(str(self._orig_shift))
+            self._redraw()
+
+        def _reset_shift(self):
+            self._orig_shift = 0
+            if hasattr(self, '_shift_var'):
+                self._shift_var.set("0")
+            self._redraw()
+
+        def _sync_entries(self):
+            self._start_var.set(str(self._loop_start))
+            self._end_var.set(str(self._loop_end))
+
+        def _commit_entries(self):
+            try:
+                s = int(self._start_var.get().strip())
+                e = int(self._end_var.get().strip())
+            except ValueError:
+                self._sync_entries()
+                return
+            s = max(0, min(s, self._n - 1))
+            e = max(s + 1, min(e, self._n))
+            self._loop_start = s
+            self._loop_end   = e
+            self._sync_entries()
+            self._update_status()
+            self._redraw()
+
+        def _update_status(self):
+            loop_len = self._loop_end - self._loop_start
+            dur_str  = _fmt_duration(loop_len, self._rate) if self._rate else f"{loop_len:,} smps"
+            self._dur_var.set(f"{loop_len:,} samples  ({dur_str})")
+
+        # ── actions ───────────────────────────────────────────────────────────
+
+        def _action_snap(self):
+            """Snap loop points to nearest zero crossings in the decoded PCM."""
+            import io as _io
+            # Re-wrap PCM as a WAV in memory so _snap_loop_to_zero_crossings can read it
+            buf = _io.BytesIO()
+            import wave as _wave
+            with _wave.open(buf, "wb") as wf:
+                wf.setnchannels(1)
+                wf.setsampwidth(2)
+                wf.setframerate(self._rate)
+                wf.writeframes(self._samples.tobytes())
+            wav_bytes = buf.getvalue()
+            new_s, new_e = _snap_loop_to_zero_crossings(
+                wav_bytes, self._loop_start, self._loop_end)
+            self._loop_start = new_s
+            self._loop_end   = new_e
+            self._sync_entries()
+            self._update_status()
+            self._redraw()
+
+        @staticmethod
+        def _resample_pcm(pcm: bytes, src_rate: int, dst_rate: int) -> bytes:
+            """Pitch-preserving resample of mono S16-LE PCM from src_rate to dst_rate.
+
+            Uses ffmpeg (aresample filter) when available, so both replacement and
+            original waveforms play at the exact same musical pitch regardless of
+            their raw sample rates.  Falls back to a simple linear interpolation
+            when ffmpeg is not installed.
+            """
+            if src_rate == dst_rate or not pcm:
+                return pcm
+            import tempfile as _tmp2, wave as _w2
+            # Write raw PCM to a temp WAV at src_rate
+            tf_in  = _tmp2.NamedTemporaryFile(suffix=".wav", delete=False)
+            tf_out = _tmp2.NamedTemporaryFile(suffix=".wav", delete=False)
+            tf_in.close(); tf_out.close()
+            try:
+                _write_wav(pcm, tf_in.name, rate=src_rate)
+                if shutil.which("ffmpeg"):
+                    subprocess.run(
+                        ["ffmpeg", "-y", "-i", tf_in.name,
+                         "-af", f"aresample={dst_rate}",
+                         "-ar", str(dst_rate),
+                         tf_out.name],
+                        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                        check=True)
+                    with _w2.open(tf_out.name, "rb") as wf:
+                        return wf.readframes(wf.getnframes())
+                else:
+                    # Python linear interpolation fallback
+                    import array as _ar2
+                    src = _ar2.array('h', pcm)
+                    ratio   = src_rate / dst_rate
+                    n_out   = int(len(src) / ratio)
+                    out     = _ar2.array('h', [0] * n_out)
+                    for i in range(n_out):
+                        f = i * ratio
+                        lo = int(f); hi = min(lo + 1, len(src) - 1)
+                        t  = f - lo
+                        out[i] = int(src[lo] * (1 - t) + src[hi] * t)
+                    return out.tobytes()
+            finally:
+                for p in (tf_in.name, tf_out.name):
+                    try: os.unlink(p)
+                    except OSError: pass
+
+        # Target output rate — both replacement and original are normalized here
+        # before playback so they sound at identical pitch in afplay / ffplay.
+        _PLAY_OUT_RATE = 44100
+
+        def _action_play(self, which: str = "loop"):
+            """Start looped playback of 'loop' (replacement loop region) or 'orig'.
+
+            Both sources are resampled to _PLAY_OUT_RATE (44100 Hz) before playback
+            so they sound at the same musical pitch regardless of their raw sample
+            rates.  Uses afplay on macOS (supports -v volume float), falls back to
+            ffplay.  Looping is implemented in a watcher thread that restarts the
+            process until _action_stop() sets _play_stop_evt.
+            """
+            if self._play_proc is not None:
+                return
+
+            # Determine which PCM and rate to play
+            if which == "orig":
+                if self._orig_samples is None:
+                    return
+                loop_samples = self._orig_samples
+                rate = self._orig_rate
+                if self._orig_loop:
+                    ls = max(0, int(self._orig_loop.get("start", 0)))
+                    le = min(len(loop_samples),
+                             int(self._orig_loop.get("end", len(loop_samples))))
+                else:
+                    ls, le = 0, len(loop_samples)
+                # Map orig indices back to replacement canvas indices for cursor
+                cursor_base  = int(ls * self._n / max(1, len(loop_samples)))
+                cursor_scale = self._n / max(1, len(loop_samples))
+            else:
+                loop_samples = self._samples
+                rate  = self._rate
+                ls, le = self._loop_start, self._loop_end
+                cursor_base  = ls
+                cursor_scale = 1.0
+
+            loop_len = max(1, le - ls)
+            vol      = max(0.0, float(self._vol_var.get()))
+
+            # Normalize to common output rate so both sources play at the same pitch
+            play_rate = self._PLAY_OUT_RATE
+
+            # Write two temp WAVs mirroring exactly what the engine does:
+            #   attack.wav  — full sample 0→le, played ONCE on the first pass
+            #   sustain.wav — loop region ls→le, repeated forever after
+            # For "orig" playback there is no pre-loop attack, so attack == sustain.
+            import tempfile as _tmp, time as _time
+
+            has_attack = (which != "orig" and ls > 0)
+
+            if has_attack:
+                attack_raw = loop_samples[0:le].tobytes()
+                attack_pcm = self._resample_pcm(attack_raw, rate, play_rate)
+                tf_a = _tmp.NamedTemporaryFile(suffix=".wav", delete=False)
+                self._play_tmp_attack = tf_a.name
+                tf_a.close()
+                _write_wav(attack_pcm, self._play_tmp_attack, rate=play_rate)
+            else:
+                self._play_tmp_attack = None
+
+            sustain_raw = loop_samples[ls:le].tobytes()
+            sustain_pcm = self._resample_pcm(sustain_raw, rate, play_rate)
+            tf_s = _tmp.NamedTemporaryFile(suffix=".wav", delete=False)
+            self._play_tmp = tf_s.name
+            tf_s.close()
+            _write_wav(sustain_pcm, self._play_tmp, rate=play_rate)
+
+            # Choose player
+            use_afplay = sys.platform == "darwin" and shutil.which("afplay")
+            use_ffplay = not use_afplay and shutil.which("ffplay")
+            if not use_afplay and not use_ffplay:
+                messagebox.showwarning(
+                    "No audio player",
+                    "afplay (macOS) or ffplay (ffmpeg) is required for playback.",
+                    parent=self)
+                try:
+                    os.unlink(self._play_tmp)
+                except OSError:
+                    pass
+                return
+
+            self._play_which  = which
+            self._play_stop_evt.clear()
+            self._play_start_time = _time.monotonic()
+            self._play_loop_start = cursor_base
+            self._play_loop_len   = int(loop_len * cursor_scale)
+            self._play_loop_rate  = rate
+            # Attack length in replacement-sample units (0 if no pre-loop region)
+            self._play_attack_len = int(ls * cursor_scale) if has_attack else 0
+
+            self._btn_play_loop.state(["disabled"])
+            self._btn_play_orig.state(["disabled"])
+            self._btn_stop.state(["!disabled"])
+
+            label = "Original" if which == "orig" else "Loop"
+            path  = self._sample["path"]
+            self._info_var.set(
+                f"▶  {label}  {os.path.basename(path)}"
+                f"   start={ls:,}  end={le:,}  vol={vol:.2f}")
+            self.title(f"▶ {label}  {os.path.basename(path)}")
+
+            def _launch(path):
+                if use_afplay:
+                    return subprocess.Popen(
+                        ["afplay", "-v", f"{vol:.4f}", path],
+                        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                else:
+                    vol_int = max(0, min(100, int(round(vol * 100))))
+                    return subprocess.Popen(
+                        ["ffplay", "-nodisp", "-loop", "1",
+                         "-volume", str(vol_int), path],
+                        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
+            # First pass: play attack (0→le) once if there is a pre-loop region
+            if self._play_tmp_attack:
+                self._play_proc = _launch(self._play_tmp_attack)
+            else:
+                self._play_proc = _launch(self._play_tmp)
+
+            def _watch():
+                """Play attack once then loop sustain until stopped."""
+                first = True
+                while not self._play_stop_evt.is_set():
+                    self._play_proc.wait()
+                    if self._play_stop_evt.is_set():
+                        break
+                    if first and self._play_tmp_attack:
+                        # Attack finished — switch cursor to sustain start
+                        self._play_start_time = _time.monotonic()
+                        first = False
+                    # Always loop the sustain WAV from here on
+                    self._play_proc = _launch(self._play_tmp)
+                for f in [self._play_tmp_attack, self._play_tmp]:
+                    if f:
+                        try:
+                            os.unlink(f)
+                        except OSError:
+                            pass
+                self._play_tmp_attack = None
+                self.after(0, self._play_done)
+
+            self._play_thread = threading.Thread(target=_watch, daemon=True)
+            self._play_thread.start()
+            self._tick_cursor()
+
+        def _action_stop(self):
+            self._play_stop_evt.set()
+            proc = self._play_proc
+            if proc is not None:
+                try:
+                    proc.terminate()
+                except Exception:
+                    pass
+
+        def _tick_cursor(self):
+            """Advance the playback cursor and schedule the next tick (~60 fps)."""
+            if self._play_proc is None:
+                return
+            import time as _time
+            elapsed = _time.monotonic() - self._play_start_time
+            rate    = getattr(self, "_play_loop_rate", self._rate)
+            atk_len = getattr(self, "_play_attack_len", 0)
+
+            if atk_len > 0:
+                # During attack pass: cursor runs 0 → loop_end (atk_len + loop_len)
+                atk_samples = int(elapsed * rate)
+                full_len = atk_len + self._play_loop_len
+                if atk_samples < full_len:
+                    self._cursor_pos = atk_samples
+                else:
+                    # Attack done — cursor is now in sustain
+                    sustain_elapsed = elapsed - full_len / rate
+                    pos_in_loop = int(sustain_elapsed * rate) % max(1, self._play_loop_len)
+                    self._cursor_pos = self._play_loop_start + pos_in_loop
+            else:
+                pos_in_loop = int(elapsed * rate) % max(1, self._play_loop_len)
+                self._cursor_pos = self._play_loop_start + pos_in_loop
+
+            self._redraw()
+            self._cursor_after_id = self.after(16, self._tick_cursor)
+
+        def _play_done(self):
+            if self._cursor_after_id:
+                try:
+                    self.after_cancel(self._cursor_after_id)
+                except Exception:
+                    pass
+                self._cursor_after_id = None
+            self._play_proc   = None
+            self._play_thread = None
+            self._cursor_pos  = -1
+            self._play_stop_evt.clear()
+            try:
+                if not self.winfo_exists():
+                    return
+                self._btn_play_loop.state(["!disabled"])
+                if self._orig_samples is not None:
+                    self._btn_play_orig.state(["!disabled"])
+                self._btn_stop.state(["disabled"])
+                self._info_var.set("")
+                self.title("Loop Editor — " + os.path.basename(self._sample["path"]))
+                self._redraw()
+            except Exception:
+                pass
+
+
+        def _action_save(self):
+            # Parse loop count from entry
+            raw = self._loop_count_var.get().strip()
+            if raw in ("∞", "inf", "-1", ""):
+                count = LOOP_INFINITE
+            else:
+                try:
+                    count = max(0, int(raw))
+                except ValueError:
+                    count = LOOP_INFINITE
+
+            new_loop = dict(
+                start=self._loop_start,
+                end=self._loop_end,
+                count=count,
+                state=list(self._loop_state),
+            )
+            self._on_save(new_loop)
+            self.destroy()
+
     # ── main window ───────────────────────────────────────────────────────────
     class App(tk.Tk):
         def __init__(self):
@@ -1818,28 +3109,33 @@ def cmd_gui(args):
             self._btn_play.grid(row=btn_row, column=0, columnspan=2,
                                 sticky="ew", pady=2)
 
+            self._btn_loop_editor = ttk.Button(detail, text="◈  Loop Editor…",
+                                               command=self._action_loop_editor)
+            self._btn_loop_editor.grid(row=btn_row+1, column=0, columnspan=2,
+                                       sticky="ew", pady=2)
+
             self._btn_export = ttk.Button(detail, text="↓  Export",
                                           command=self._action_export)
-            self._btn_export.grid(row=btn_row+1, column=0, columnspan=2,
+            self._btn_export.grid(row=btn_row+2, column=0, columnspan=2,
                                   sticky="ew", pady=2)
 
             self._btn_assign = ttk.Button(detail, text="↔  Assign Audio…",
                                           command=self._assign_audio)
-            self._btn_assign.grid(row=btn_row+2, column=0, columnspan=2,
+            self._btn_assign.grid(row=btn_row+3, column=0, columnspan=2,
                                   sticky="ew", pady=2)
 
             self._btn_clear = ttk.Button(detail, text="✕  Clear Assigned Audio",
                                          command=self._clear_audio)
-            self._btn_clear.grid(row=btn_row+3, column=0, columnspan=2,
+            self._btn_clear.grid(row=btn_row+4, column=0, columnspan=2,
                                  sticky="ew", pady=2)
 
             self._btn_export_aliases = ttk.Button(detail, text="⬆  Export Aliases…",
                                                    command=self._action_export_aliases)
-            self._btn_export_aliases.grid(row=btn_row+4, column=0, columnspan=2,
+            self._btn_export_aliases.grid(row=btn_row+5, column=0, columnspan=2,
                                           sticky="ew", pady=(10, 2))
 
-            for btn in (self._btn_play, self._btn_export, self._btn_assign,
-                        self._btn_clear, self._btn_export_aliases):
+            for btn in (self._btn_play, self._btn_loop_editor, self._btn_export,
+                        self._btn_assign, self._btn_clear, self._btn_export_aliases):
                 btn.state(["disabled"])
 
         # ── loading ───────────────────────────────────────────────────────────
@@ -2215,6 +3511,11 @@ def cmd_gui(args):
                 self._btn_play.state(["!disabled"])
             else:
                 self._btn_play.state(["disabled"])
+            # Loop editor needs a decodable sample that has loop data
+            if can_play and s.get("has_loop"):
+                self._btn_loop_editor.state(["!disabled"])
+            else:
+                self._btn_loop_editor.state(["disabled"])
             if s["path"] in self._batch_mapping:
                 self._btn_clear.state(["!disabled"])
             else:
@@ -2231,7 +3532,8 @@ def cmd_gui(args):
             self._alias_var.set("")
             self._alias_current_path = ""
             self._alias_entry.state(["disabled"])
-            for btn in (self._btn_play, self._btn_export, self._btn_assign, self._btn_clear):
+            for btn in (self._btn_play, self._btn_loop_editor, self._btn_export,
+                        self._btn_assign, self._btn_clear):
                 btn.state(["disabled"])
 
         # ── alias helpers ─────────────────────────────────────────────────────
@@ -2286,6 +3588,118 @@ def cmd_gui(args):
                     parent=self)
 
         # ── actions ───────────────────────────────────────────────────────────
+        def _action_loop_editor(self):
+            s, _slot, slot_tuning = self._selected_sample()
+            if s is None:
+                return
+
+            asset_path = s.get("path", "")
+
+            # Determine replacement WAV path from batch mapping (may be absent)
+            repl_wav = self._batch_mapping.get(asset_path)
+
+            # ------------------------------------------------------------------
+            # "replacement" pcm — what the user is editing loop points for.
+            # If a WAV replacement exists, decode that.  Otherwise fall back to
+            # the ADPCM sample from the archive (no comparison mode).
+            # ------------------------------------------------------------------
+            import array as _array, wave as _wave_mod, io as _io_mod
+
+            def _downmix_mono(pcm_bytes, n_pcm_samples):
+                arr = _array.array('h', pcm_bytes)
+                if n_pcm_samples and len(arr) > n_pcm_samples:
+                    ch = len(arr) // n_pcm_samples
+                else:
+                    ch = 1
+                if ch == 2:
+                    arr = _array.array('h', (
+                        (arr[i] + arr[i + 1]) >> 1
+                        for i in range(0, len(arr) - 1, 2)
+                    ))
+                return arr.tobytes()
+
+            if repl_wav and os.path.isfile(repl_wav):
+                # Read replacement WAV directly
+                try:
+                    with _wave_mod.open(repl_wav, "rb") as wf:
+                        repl_rate = wf.getframerate()
+                        repl_ch   = wf.getnchannels()
+                        repl_n    = wf.getnframes()
+                        repl_raw  = wf.readframes(repl_n)
+                    repl_arr = _array.array('h', repl_raw)
+                    if repl_ch == 2:
+                        repl_arr = _array.array('h', (
+                            (repl_arr[i] + repl_arr[i + 1]) >> 1
+                            for i in range(0, len(repl_arr) - 1, 2)
+                        ))
+                    repl_pcm  = repl_arr.tobytes()
+                    rate      = repl_rate
+                except Exception as exc:
+                    messagebox.showinfo("Cannot read WAV",
+                                        f"Failed to read replacement WAV:\n{exc}",
+                                        parent=self)
+                    return
+            else:
+                # No replacement — show ADPCM only
+                result = _decode_sample(s, slot_tuning)
+                if result is None:
+                    messagebox.showinfo(
+                        "Cannot open Loop Editor",
+                        "The sample codec is not supported for waveform display, "
+                        "or book data is missing.",
+                        parent=self)
+                    return
+                repl_pcm, rate = result
+                repl_pcm = _downmix_mono(repl_pcm, s.get("pcm_samples", 0))
+
+            # ------------------------------------------------------------------
+            # "original" pcm — the vanilla ADPCM from the base archive.
+            # Only shown when a WAV replacement exists (otherwise they would be
+            # the same sample and comparison is meaningless).
+            # ------------------------------------------------------------------
+            orig_pcm  = None
+            orig_rate = None
+            orig_loop = None
+            if repl_wav:
+                try:
+                    orig_info, orig_loop_data, _ = read_sample_full(
+                        self._archive_path, asset_path)
+                    if orig_info is not None and orig_info.get("codec") in (0, 5):
+                        orig_result = _decode_sample(orig_info, slot_tuning)
+                        if orig_result is not None:
+                            orig_pcm_raw, orig_rate = orig_result
+                            orig_pcm  = _downmix_mono(orig_pcm_raw,
+                                                       orig_info.get("pcm_samples", 0))
+                            orig_loop = orig_loop_data
+                except Exception:
+                    pass  # silently skip — comparison lane just won't show
+
+            def _on_save(new_loop: dict):
+                s["loop_data"] = new_loop
+                cnt = "∞" if new_loop["count"] == LOOP_INFINITE else str(new_loop["count"])
+                self._detail_labels["loop"].set(
+                    f"start  {new_loop['start']:,}\n"
+                    f"end    {new_loop['end']:,}\n"
+                    f"count  {cnt}")
+                self._status_var.set(
+                    "Loop points updated — use Replace / Replace All to write to archive.")
+
+            ed = _WaveformEditor(self, sample=s, pcm=repl_pcm,
+                                 # Use orig_rate for the replacement when available:
+                                 # the WAV was written with asetrate (header relabeled,
+                                 # samples unchanged), so its declared rate is wrong for
+                                 # direct playback.  Both streams must use the same rate
+                                 # so afplay plays them at identical pitch.
+                                 rate=orig_rate if orig_rate else rate,
+                                 on_save=_on_save,
+                                 orig_pcm=orig_pcm,
+                                 orig_rate=orig_rate,
+                                 orig_loop=orig_loop)
+            ed.transient(self)
+            ed.grab_set()
+
+
+
         def _action_play(self):
             s, _slot, slot_tuning = self._selected_sample()
             if s is None:
@@ -2299,26 +3713,35 @@ def cmd_gui(args):
                     parent=self)
                 return
             pcm, rate = result
-            if not shutil.which("ffplay"):
+
+            use_afplay = sys.platform == "darwin" and shutil.which("afplay")
+            use_ffplay = not use_afplay and shutil.which("ffplay")
+            if not use_afplay and not use_ffplay:
                 if sys.platform == "darwin":
-                    hint = "Install ffmpeg via Homebrew:\n  brew install ffmpeg"
+                    hint = "afplay is built-in — check your PATH, or install ffmpeg."
                 elif sys.platform.startswith("win"):
                     hint = "Install ffmpeg and add it to PATH:\n  https://ffmpeg.org/download.html"
                 else:
                     hint = "Install ffmpeg (e.g. sudo apt install ffmpeg)"
                 messagebox.showwarning(
-                    "ffplay not found",
-                    f"ffplay is required for audio playback but was not found.\n\n{hint}",
+                    "No audio player",
+                    f"No audio player found.\n\n{hint}",
                     parent=self)
                 return
+
+            path = s["path"]
+            self._status_var.set(f"▶  {path}")
 
             def _run():
                 try:
                     _play_pcm_wav(pcm, rate)
                 except Exception:
                     pass
+                self.after(0, self._status_var.set,
+                           f"{len(self._filtered)} samples")
 
             threading.Thread(target=_run, daemon=True).start()
+
 
         def _action_export(self):
             s, slot, slot_tuning = self._selected_sample()
@@ -2474,6 +3897,13 @@ def cmd_gui(args):
                 out_dir = os.path.dirname(os.path.abspath(self._archive_path))
             os.makedirs(out_dir, exist_ok=True)
             items = list(self._batch_mapping.items())
+            # Build path → sample dict for loop_override lookup.
+            # (Each path may appear in multiple slots; take the first hit.)
+            sample_by_path: dict[str, dict] = {}
+            for s in self._samples:
+                p = s["path"]
+                if p not in sample_by_path:
+                    sample_by_path[p] = s
             self._btn_replace_all.state(["disabled"])
             self._btn_scan.state(["disabled"])
 
@@ -2484,7 +3914,10 @@ def cmd_gui(args):
                     self.after(0, self._status_var.set,
                                f"Replacing {i + 1} / {n}…")
                     try:
-                        _do_replace(self._archive_path, sp, ap, out_dir)
+                        sd = sample_by_path.get(sp)
+                        loop_ov = sd.get("loop_data") if sd else None
+                        _do_replace(self._archive_path, sp, ap, out_dir,
+                                    loop_override=loop_ov)
                         def _mark_ok(p=sp, a=ap):
                             for iid in self._iids_by_path.get(p, []):
                                 try: self._tree.set(iid, "file", "✓ " + os.path.basename(a))
