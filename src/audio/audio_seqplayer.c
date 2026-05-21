@@ -2,6 +2,7 @@
 #include "sf64audio_provisional.h"
 #include "endianness.h"
 #include "port/Engine.h"
+#include "port/audio/AudioDebug.h"
 
 #define PORTAMENTO_IS_SPECIAL(x) ((x).mode & 0x80)
 #define PORTAMENTO_MODE(x) ((x).mode & ~0x80)
@@ -1517,7 +1518,7 @@ void AudioSeq_SequencePlayerProcessSequence(SequencePlayer* seqPlayer) {
         }
     }
     for (i = 0; i < SEQ_NUM_CHANNELS; i++) {
-        if(i != 3) continue;
+        if (AudioDebug_IsChannelMuted(i)) continue;
         if (IS_SEQUENCE_CHANNEL_VALID(seqPlayer->channels[i]) == 1) {
             AudioSeq_SequenceChannelProcessScript(seqPlayer->channels[i]);
         }

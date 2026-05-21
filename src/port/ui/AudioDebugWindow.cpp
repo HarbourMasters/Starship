@@ -40,6 +40,53 @@ void AudioDebugWindow::DrawElement() {
     AudioDebugSnapshot s = AudioDebug_GetSnapshot();
     const std::string& path = AudioDebug_GetSamplePath(s.sample);
 
+    // ── Channel mute ─────────────────────────────────────────────────────────
+    if (ImGui::CollapsingHeader("Channel Mute", ImGuiTreeNodeFlags_DefaultOpen)) {
+        // "Mute All" / "Unmute All" convenience buttons
+        if (ImGui::Button("Mute All")) {
+            for (int i = 0; i < SF64::kNumSeqChannels; i++)
+                SF64::gMutedChannels[i].store(true,  std::memory_order_relaxed);
+        }
+        ImGui::SameLine();
+        if (ImGui::Button("Unmute All")) {
+            for (int i = 0; i < SF64::kNumSeqChannels; i++)
+                SF64::gMutedChannels[i].store(false, std::memory_order_relaxed);
+        }
+
+        ImGui::Spacing();
+
+        // Draw 16 toggle buttons in two rows of 8
+        for (int i = 0; i < SF64::kNumSeqChannels; i++) {
+            if (i > 0 && i % 8 == 0) ImGui::NewLine();
+            else if (i > 0)          ImGui::SameLine();
+
+            bool muted = SF64::gMutedChannels[i].load(std::memory_order_relaxed);
+
+            // Highlight muted channels in red
+            if (muted)
+                ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.7f, 0.15f, 0.15f, 1.0f));
+
+            char label[8];
+            snprintf(label, sizeof(label), "Ch %d", i);
+            if (ImGui::Button(label, ImVec2(52.0f, 0.0f))) {
+                SF64::gMutedChannels[i].store(!muted, std::memory_order_relaxed);
+            }
+
+            if (muted)
+                ImGui::PopStyleColor();
+
+            if (ImGui::IsItemHovered()) {
+                ImGui::BeginTooltip();
+                ImGui::Text("Channel %d — %s\nClick to %s",
+                            i,
+                            muted ? "MUTED" : "active",
+                            muted ? "unmute" : "mute");
+                ImGui::EndTooltip();
+            }
+        }
+        ImGui::NewLine();
+    }
+
     // ── Current sample ───────────────────────────────────────────────────────
     if (ImGui::CollapsingHeader("Current Sample", ImGuiTreeNodeFlags_DefaultOpen)) {
         ImGui::Columns(2, "sample_cols", false);

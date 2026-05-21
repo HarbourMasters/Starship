@@ -13,6 +13,10 @@ void AudioDebug_SetLastPlayed(void* sample, int samplePosInt, unsigned int endPo
                               int loopStart, int loopEnd, unsigned int loopCount,
                               unsigned short resampleRate, int codec, unsigned int sampleSize);
 
+// Called from audio_seqplayer.c inside the channel processing loop.
+// Returns 1 if the channel should be skipped (muted), 0 if it should run.
+int AudioDebug_IsChannelMuted(int channelIndex);
+
 #ifdef __cplusplus
 }
 
@@ -38,6 +42,11 @@ struct AudioDebugSnapshot {
     int           codec       = 0;       // bookSample->codec
     uint32_t      sampleSize  = 0;       // bookSample->size (bytes)
 };
+
+// Per-channel mute flags — written by the render/UI thread, read by the audio thread.
+// Index matches seqPlayer->channels[i].  16 channels per SEQ_NUM_CHANNELS.
+static constexpr int kNumSeqChannels = 16;
+extern std::atomic<bool> gMutedChannels[kNumSeqChannels];
 
 // Populated at sample-factory load time.
 extern std::unordered_map<SampleData*, std::string> gSamplePathMap;

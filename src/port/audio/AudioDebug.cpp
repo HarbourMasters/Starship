@@ -9,6 +9,9 @@ AudioDebugSnapshot gSnapshot;
 std::mutex         gSnapshotMutex;
 std::atomic<bool>  gSnapshotReady{ false };
 
+// All channels unmuted by default.
+std::atomic<bool> gMutedChannels[kNumSeqChannels] = {};
+
 void AudioDebug_RegisterSample(SampleData* sample, const std::string& path) {
     if (sample == nullptr) return;
     std::lock_guard<std::mutex> lk(gSamplePathMapMutex);
@@ -50,4 +53,9 @@ extern "C" void AudioDebug_SetLastPlayed(void* sample, int samplePosInt, unsigne
         SF64::gSnapshot = snap;
     }
     SF64::gSnapshotReady.store(true, std::memory_order_release);
+}
+
+extern "C" int AudioDebug_IsChannelMuted(int channelIndex) {
+    if (channelIndex < 0 || channelIndex >= SF64::kNumSeqChannels) return 0;
+    return SF64::gMutedChannels[channelIndex].load(std::memory_order_relaxed) ? 1 : 0;
 }
