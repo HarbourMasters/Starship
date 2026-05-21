@@ -60,3 +60,6 @@ src/cn/
 properties.h
 mods*/
 sf64.aliases.json
+*.raw
+*.ssproj
+*.wav
