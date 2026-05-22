@@ -749,8 +749,8 @@ void AudioDebugWindow::DrawElement() {
         static float  sRefreshHz      = 4.f;
         static double sLastRefreshTime = 0.0;
         static bool   sShowPlayer[SEQ_PLAYER_MAX] = { true, true, true, true };
-        static bool   sActiveOnly  = false;
-        static int    sVisibleRows = 16;
+        static bool  sActiveOnly    = false;
+        static float sTableHeightPx = 320.f;
 
         // Sample path history for the current sequence (BGM player).
         // Cleared automatically when the BGM sequence ID changes.
@@ -914,23 +914,16 @@ void AudioDebugWindow::DrawElement() {
             ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
             ImGui::SameLine();
             ImGui::Checkbox("Active Only", &sActiveOnly);
-            if (sActiveOnly) {
-                ImGui::SameLine();
-                ImGui::SetNextItemWidth(60.f);
-                ImGui::InputInt("Rows", &sVisibleRows, 1, 4);
-                if (sVisibleRows < 1) sVisibleRows = 1;
-            }
             ImGui::Separator();
 
-            const float rowH       = ImGui::GetFrameHeight() + ImGui::GetStyle().CellPadding.y * 2.0f;
-            const float headerH    = rowH; // header row is the same height
-            const float tableH     = headerH + sVisibleRows * rowH;
+            const float rowH   = ImGui::GetFrameHeight() + ImGui::GetStyle().CellPadding.y * 2.0f;
+            const float minH   = rowH * 3.f;
 
             if (ImGui::BeginTable("##notes", 10,
                     ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg |
                     ImGuiTableFlags_ScrollY | ImGuiTableFlags_SizingFixedFit |
-                    ImGuiTableFlags_ScrollX,
-                    ImVec2(0.f, tableH))) {
+                    ImGuiTableFlags_ScrollX | ImGuiTableFlags_Resizable,
+                    ImVec2(0.f, sTableHeightPx))) {
 
                 ImGui::TableSetupScrollFreeze(0, 1);
                 ImGui::TableSetupColumn("##dot",    ImGuiTableColumnFlags_WidthFixed,  12.f);
@@ -1042,6 +1035,35 @@ void AudioDebugWindow::DrawElement() {
                         ImGui::PopStyleColor();
                 }
                 ImGui::EndTable();
+            }
+
+            // ── Resize handle ─────────────────────────────────────────────────
+            {
+                ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0.f, 0.f));
+                ImGui::InvisibleButton("##tblresize", ImVec2(-1.f, 6.f));
+                ImGui::PopStyleVar();
+
+                bool hovered = ImGui::IsItemHovered();
+                bool active  = ImGui::IsItemActive();
+                if (hovered || active)
+                    ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeNS);
+                if (active) {
+                    sTableHeightPx += ImGui::GetIO().MouseDelta.y;
+                    if (sTableHeightPx < minH) sTableHeightPx = minH;
+                }
+
+                // Draw grip dots centred on the handle.
+                ImVec2 rmin = ImGui::GetItemRectMin();
+                ImVec2 rmax = ImGui::GetItemRectMax();
+                ImU32  col  = active  ? IM_COL32(180,180,180,255) :
+                              hovered ? IM_COL32(140,140,140,220) :
+                                        IM_COL32(100,100,100,160);
+                ImDrawList* dl = ImGui::GetWindowDrawList();
+                dl->AddRectFilled(rmin, rmax, IM_COL32(60,60,60,80));
+                float cy = (rmin.y + rmax.y) * 0.5f;
+                float cx = (rmin.x + rmax.x) * 0.5f;
+                for (int d = -2; d <= 2; d++)
+                    dl->AddCircleFilled(ImVec2(cx + d * 6.f, cy), 1.5f, col);
             }
 
             // ── Sample history ────────────────────────────────────────────────
