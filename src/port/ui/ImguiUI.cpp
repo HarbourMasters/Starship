@@ -810,6 +810,10 @@ void DrawDebugMenu() {
             .tooltip = "Enables the Gfx Debugger window, allowing you to input commands, type help for some examples"
         });
 
+        UIWidgets::WindowButton("Audio Debug", "gAudioDebugEnabled", GameUI::mAudioDebugWindow, {
+            .tooltip = "Shows the last triggered sample and all registered samples"
+        });
+
         // UIWidgets::CVarCheckbox("Debug mode", "gEnableDebugMode", {
         //     .tooltip = "TBD"
         // });
@@ -828,10 +832,6 @@ void DrawDebugMenu() {
 
         UIWidgets::CVarCheckbox("SFX Jukebox", "gSfxJukebox", {
             .tooltip = "Press L in the Expert Sound options to play sound effects from the game"
-        });
-
-        UIWidgets::WindowButton("Audio Debug", "gAudioDebugEnabled", GameUI::mAudioDebugWindow, {
-            .tooltip = "Shows the last triggered sample and all registered samples"
         });
 
         UIWidgets::CVarCheckbox("Disable Starfield interpolation", "gDisableStarsInterpolation", {
