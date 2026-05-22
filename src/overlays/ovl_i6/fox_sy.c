@@ -87,6 +87,9 @@ void SectorY_SyShogun_Init(SyShogun* this) {
         if (gPlayer[0].state == PLAYERSTATE_START_360) {
             this->obj.pos.z = -28900.0f;
             gScenery360[SHOGUN_SHIP].obj.pos.z = -30000.0f;
+            
+            // @port: Fix crash with expanded draw distance.
+            gScenery360[SHOGUN_SHIP].info.dList = aSySaruzinDL;
         }
 
         this->rot_078.y = 0.0f;

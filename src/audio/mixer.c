@@ -156,6 +156,10 @@ void aLoadBufferImpl(const void* source_addr, uint16_t dest_addr, uint16_t nbyte
 #endif
 }
 
+void aLoadBufferExactImpl(const void* source_addr, uint16_t dest_addr, uint16_t nbytes) {
+    memcpy(BUF_U8(dest_addr), source_addr, nbytes);
+}
+
 void aSaveBufferImpl(uint16_t source_addr, int16_t* dest_addr, uint16_t nbytes) {
     // printf("source_addr: %x\n dest_addr; %x\n nbytes: %d\n", source_addr, dest_addr, nbytes);
     // if (nbytes > 704) {nbytes = 704;}

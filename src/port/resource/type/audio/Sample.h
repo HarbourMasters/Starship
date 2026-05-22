@@ -12,7 +12,7 @@ struct SampleData {
     uint32_t medium : 2;
     uint32_t unk : 1;
     uint32_t isRelocated : 1;
-    uint32_t size : 24;
+    uint32_t size;
     uint8_t* sampleAddr;
     AdpcmLoopData* loop;
     AdpcmBookData* book;

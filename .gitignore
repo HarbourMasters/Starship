@@ -69,3 +69,7 @@ workspace/template/output/*
 !workspace/template/output/manifest.json
 *.pem
 .tcc
+sf64.aliases.json
+*.raw
+*.ssproj
+*.wav

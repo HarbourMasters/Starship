@@ -18,19 +18,22 @@ std::shared_ptr<Ship::IResource> ResourceFactoryBinaryInstrumentV0::ReadResource
     instrument->mInstrument.adsrDecayIndex = reader->ReadUByte();
     instrument->mInstrument.envelope = LoadChild<EnvelopePointData*>(reader->ReadUInt64());
     auto lowSample = LoadChild<SampleData*>(reader->ReadUInt64());
+    float lowTuning = reader->ReadFloat();
     instrument->mInstrument.lowPitchTunedSample.sample = lowSample;
     instrument->mInstrument.lowPitchTunedSample.tuning =
-        lowSample != nullptr && lowSample->tuning != 0.0f ? lowSample->tuning : reader->ReadFloat();
+        lowSample != nullptr && lowSample->tuning != 0.0f ? lowSample->tuning : lowTuning;
 
     auto normalSample = LoadChild<SampleData*>(reader->ReadUInt64());
+    float normalTuning = reader->ReadFloat();
     instrument->mInstrument.normalPitchTunedSample.sample = normalSample;
     instrument->mInstrument.normalPitchTunedSample.tuning =
-        normalSample != nullptr && normalSample->tuning != 0.0f ? normalSample->tuning : reader->ReadFloat();
+        normalSample != nullptr && normalSample->tuning != 0.0f ? normalSample->tuning : normalTuning;
 
     auto highSample = LoadChild<SampleData*>(reader->ReadUInt64());
+    float highTuning = reader->ReadFloat();
     instrument->mInstrument.highPitchTunedSample.sample = highSample;
     instrument->mInstrument.highPitchTunedSample.tuning =
-        highSample != nullptr && highSample->tuning != 0.0f ? highSample->tuning : reader->ReadFloat();
+        highSample != nullptr && highSample->tuning != 0.0f ? highSample->tuning : highTuning;
     instrument->mInstrument.isRelocated = 1;
 
     return instrument;

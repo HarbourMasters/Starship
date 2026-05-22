@@ -1,6 +1,7 @@
 #include "ImguiUI.h"
 #include "UIWidgets.h"
 #include "ResolutionEditor.h"
+#include "AudioDebugWindow.h"
 
 #include <spdlog/spdlog.h>
 #include <imgui.h>
@@ -17,6 +18,7 @@
 #include "port/notification/notification.h"
 #include <ship/utils/StringHelper.h>
 #include <ship/scripting/ScriptLoader.h>
+#include "port/audio/AudioDebug.h"
 #include <SDL2/SDL.h>
 
 #ifdef __SWITCH__
@@ -36,6 +38,7 @@ std::shared_ptr<Ship::GuiWindow> mConsoleWindow;
 std::shared_ptr<Ship::GuiWindow> mStatsWindow;
 std::shared_ptr<Ship::GuiWindow> mInputEditorWindow;
 std::shared_ptr<Ship::GuiWindow> mGfxDebuggerWindow;
+std::shared_ptr<Ship::GuiWindow> mAudioDebugWindow;
 std::shared_ptr<Notification::Window> mNotificationWindow;
 std::shared_ptr<AdvancedResolutionSettings::AdvancedResolutionSettingsWindow> mAdvancedResolutionSettingsWindow;
 
@@ -85,6 +88,8 @@ void SetupGuiElements() {
     mNotificationWindow = std::make_shared<Notification::Window>("gNotifications", "Notifications Window");
     gui->AddGuiWindow(mNotificationWindow);
     mNotificationWindow->Show();
+    mAudioDebugWindow = std::make_shared<SF64::AudioDebugWindow>("gAudioDebugEnabled", "Audio Debug");
+    gui->AddGuiWindow(mAudioDebugWindow);
 }
 
 void Destroy() {
@@ -120,7 +125,12 @@ static const char* filters[3] = {
     "Linear", "None"
 };
 
-static const char* voiceLangs[] = { "Original", /*"Japanese",*/ "Lylat" };
+static const char* voiceLangs[] = {
+    "Original", /*"Japanese",*/ "Lylat"
+};
+static const char* voiceLangsSPA[] = {
+    "Español", /*"Japanese",*/ "Lylat"
+};
 
 void DrawSpeakerPositionEditor() {
     static ImVec2 lastCanvasPos;
@@ -333,15 +343,26 @@ void DrawSettingsMenu() {
             UIWidgets::Spacer(0);
             if (UIWidgets::BeginMenu("Language")) {
                 ImGui::Dummy(ImVec2(150, 0.0f));
-                if (!GameEngine::HasVersion(SF64_VER_JP) && GameEngine::HasVersion(SF64_VER_EU)) {
-                    // UIWidgets::Spacer(0);
-                    if (UIWidgets::CVarCombobox("Voices", "gVoiceLanguage", voiceLangs,
-                                                {
-                                                    .tooltip = "Changes the language of the voice acting in the game",
-                                                    .defaultIndex = 0,
-                                                })) {
-                        Audio_SetVoiceLanguage(CVarGetInteger("gVoiceLanguage", 0));
-                    };
+                if (!GameEngine::HasVersion(SF64_VER_JP) && (GameEngine::HasVersion(SF64_VER_EU) || GameEngine::HasVersion(SF64_VER_EU_SPA))) {
+                    if (GameEngine::HasVersion(SF64_VER_EU_SPA)) {
+                        //UIWidgets::Spacer(0);
+                        if (UIWidgets::CVarCombobox("Voices", "gVoiceLanguage", voiceLangsSPA, 
+                            {
+                                .tooltip = "Changes the language of the voice acting in the game",
+                                .defaultIndex = 0,
+                            })) {
+                                Audio_SetVoiceLanguage(CVarGetInteger("gVoiceLanguage", 0));
+                            };
+                    } else {
+                        //UIWidgets::Spacer(0);
+                        if (UIWidgets::CVarCombobox("Voices", "gVoiceLanguage", voiceLangs, 
+                            {
+                                .tooltip = "Changes the language of the voice acting in the game",
+                                .defaultIndex = 0,
+                            })) {
+                                Audio_SetVoiceLanguage(CVarGetInteger("gVoiceLanguage", 0));
+                            };
+                    }
                 } else {
                     if (UIWidgets::Button("Install JP/EU Audio")) {
                         if (GameEngine::GenAssetFile(false)) {
@@ -928,6 +949,10 @@ void DrawDebugMenu() {
             "Gfx Debugger", "gGfxDebuggerEnabled", GameUI::mGfxDebuggerWindow,
             { .tooltip =
                   "Enables the Gfx Debugger window, allowing you to input commands, type help for some examples" });
+
+        UIWidgets::WindowButton("Audio Debug", "gAudioDebugEnabled", GameUI::mAudioDebugWindow, {
+            .tooltip = "Shows the last triggered sample and all registered samples"
+        });
 
         // UIWidgets::CVarCheckbox("Debug mode", "gEnableDebugMode", {
         //     .tooltip = "TBD"

@@ -18,6 +18,7 @@ std::unordered_map<std::string, std::string> mGameList = {
     { "d064229a32cc05ab85e2381ce07744eb3ffaf530", "Star Fox 64 (J) (V1.0) (Uncompressed)" },
     { "05b307b8804f992af1a1e2fbafbd588501fdf799", "Star Fox 64 (E) (V1.0)" },
     { "09f5d5c14219fc77a36c5a6ad5e63f7abd8b3385", "Star Fox 64 (E) (V1.0) (Uncompressed)" },
+    { "e6dad7523ff8f83fad6fbdb59d472b4f76340c2b", "Star Fox 64 (E) (V1.0) (Spanish Romhack)" },
     { "c8a10699dea52f4bb2e2311935c1376dfb352e7a", "Star Fox 64 (C) (V1.1)" },
     { "3a05aba5549fa71e8b16a0c6e2c8481b070818a9", "Star Fox 64 (C) (V1.1) (Uncompressed)" },
 };

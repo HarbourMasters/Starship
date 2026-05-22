@@ -237,14 +237,14 @@ typedef struct {
     /* 0x00 */ u32 medium : 2; // Medium where sample is currently stored
     /* 0x00 */ u32 unk_bit26 : 1;
     /* 0x00 */ u32 isRelocated : 1; // Has the sample header been relocated (offsets to pointers)
-    /* 0x01 */ u32 size : 24;       // Size of the sample
-    /* 0x04 */ u8* sampleAddr;      // Raw sample data. Offset from the start of the sample bank or absolute address to
+    /* 0x04 */ u32 size;            // Size of the sample
+    /* 0x08 */ u8* sampleAddr;      // Raw sample data. Offset from the start of the sample bank or absolute address to
                                     // either rom or ram
-    /* 0x08 */ AdpcmLoop*
+    /* 0x0C */ AdpcmLoop*
         loop; // Adpcm loop parameters used by the sample. Offset from the start of the sound font / pointer to ram
-    /* 0x0C */ AdpcmBook*
+    /* 0x10 */ AdpcmBook*
         book; // Adpcm book parameters used by the sample. Offset from the start of the sound font / pointer to ram
-} Sample;     // size = 0x10
+} Sample;     // size = 0x18
 
 typedef struct {
     /* 0x00 */ Sample* sample;
