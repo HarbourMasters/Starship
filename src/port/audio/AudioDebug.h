@@ -78,6 +78,10 @@ extern std::mutex            gAudioRecordMutex;  // protects gAudioRecordPath
 extern std::unordered_map<SampleData*, std::string> gSamplePathMap;
 extern std::mutex gSamplePathMapMutex;
 
+// Populated at sequence-factory load time: seqNumber → archive path.
+extern std::unordered_map<uint8_t, std::string> gSeqPathMap;
+extern std::mutex gSeqPathMapMutex;
+
 // Written lock-free by the audio thread; read by the render thread.
 // Access via AudioDebug_GetSnapshot() for a consistent copy.
 extern std::atomic<bool>          gSnapshotReady;
@@ -86,6 +90,9 @@ extern std::mutex                 gSnapshotMutex;
 
 void AudioDebug_RegisterSample(SampleData* sample, const std::string& path);
 const std::string& AudioDebug_GetSamplePath(SampleData* sample);
+
+void AudioDebug_RegisterSequence(uint8_t seqNumber, const std::string& path);
+const std::string& AudioDebug_GetSeqPath(uint8_t seqNumber);
 
 // Returns a safe copy of the latest snapshot for the render thread.
 AudioDebugSnapshot AudioDebug_GetSnapshot();

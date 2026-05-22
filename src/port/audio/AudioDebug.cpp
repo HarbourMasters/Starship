@@ -5,6 +5,9 @@ namespace SF64 {
 std::unordered_map<SampleData*, std::string> gSamplePathMap;
 std::mutex                                   gSamplePathMapMutex;
 
+std::unordered_map<uint8_t, std::string> gSeqPathMap;
+std::mutex                               gSeqPathMapMutex;
+
 AudioDebugSnapshot gSnapshot;
 std::mutex         gSnapshotMutex;
 std::atomic<bool>  gSnapshotReady{ false };
@@ -30,6 +33,18 @@ void AudioDebug_RegisterSample(SampleData* sample, const std::string& path) {
     if (sample == nullptr) return;
     std::lock_guard<std::mutex> lk(gSamplePathMapMutex);
     gSamplePathMap[sample] = path;
+}
+
+void AudioDebug_RegisterSequence(uint8_t seqNumber, const std::string& path) {
+    std::lock_guard<std::mutex> lk(gSeqPathMapMutex);
+    gSeqPathMap[seqNumber] = path;
+}
+
+const std::string& AudioDebug_GetSeqPath(uint8_t seqNumber) {
+    static const std::string sEmpty;
+    std::lock_guard<std::mutex> lk(gSeqPathMapMutex);
+    auto it = gSeqPathMap.find(seqNumber);
+    return (it != gSeqPathMap.end()) ? it->second : sEmpty;
 }
 
 const std::string& AudioDebug_GetSamplePath(SampleData* sample) {

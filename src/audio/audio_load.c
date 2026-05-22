@@ -395,7 +395,8 @@ void AudioLoad_SyncInitSeqPlayerInternal(s32 playerIdx, s32 seqId, s32 arg2) {
     s32 fontId;
     s32 i;
 
-    //    seqId = AudioLoad_GetLoadTableIndex(SEQUENCE_TABLE, seqId);
+    // @port: seqId is looked up via ResourceGetDataByCrc in AudioLoad_SyncLoadSeq below.
+    //        Mod replacement sequences override the same CRC path automatically.
 
     AudioSeq_SequencePlayerDisable(&gSeqPlayers[playerIdx]);
 

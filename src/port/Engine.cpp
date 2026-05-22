@@ -29,6 +29,7 @@
 #include "resource/importers/audio/InstrumentFactory.h"
 #include "resource/importers/audio/LoopFactory.h"
 #include "resource/importers/audio/SampleFactory.h"
+#include "resource/importers/audio/SequenceFactory.h"
 #include "resource/importers/audio/SoundFontFactory.h"
 
 #include "port/interpolation/FrameInterpolation.h"
@@ -263,6 +264,12 @@ GameEngine::GameEngine() {
 
     loader->RegisterResourceFactory(std::make_shared<SF64::ResourceFactoryXMLSoundFontV0>(), RESOURCE_FORMAT_XML,
                                     "SoundFont", static_cast<uint32_t>(SF64::ResourceType::SoundFont), 0);
+
+    loader->RegisterResourceFactory(std::make_shared<SF64::ResourceFactoryBinarySequenceV2>(), RESOURCE_FORMAT_BINARY,
+                                    "Sequence", static_cast<uint32_t>(SF64::ResourceType::Sequence), 2);
+
+    loader->RegisterResourceFactory(std::make_shared<SF64::ResourceFactoryXMLSequenceV0>(), RESOURCE_FORMAT_XML,
+                                    "Sequence", static_cast<uint32_t>(SF64::ResourceType::Sequence), 0);
 
     prevAltAssets = CVarGetInteger("gEnhancements.Mods.AlternateAssets", 0);
     gEnableGammaBoost = CVarGetInteger("gGraphics.GammaMode", 0) == 0;

@@ -42,6 +42,9 @@ BOOK_RES_TYPE   = 0x41504342   # Torch::ResourceType::AdpcmBook   (APCB)
 INST_RES_TYPE   = 0x494E5354   # Torch::ResourceType::Instrument  (INST)
 DRUM_RES_TYPE   = 0x4452554D   # Torch::ResourceType::Drum        (DRUM)
 FONT_RES_TYPE   = 0x53464E54   # Torch::ResourceType::SoundFont   (SFNT)
+SEQ_RES_TYPE    = 0x53455143   # SF64::ResourceType::Sequence     (SEQC)
+BLOB_RES_TYPE   = 0x4F424C42   # Torch::ResourceType::Blob        (OBLB)
+ATBL_RES_TYPE   = 0x4154424C   # Torch::ResourceType::AudioTable  (ATBL)
 
 CODEC_NAMES  = {0: "ADPCM", 1: "S8", 2: "S16MEM", 3: "SMALL_ADPCM", 4: "REVERB", 5: "S16"}
 MEDIUM_NAMES = {0: "Ram",   1: "Unk", 2: "Cart",   3: "Disk",        5: "RamUnloaded"}
@@ -679,6 +682,162 @@ def list_samples(archive_path: str,
     return results
 
 
+def list_sequences(archive_path: str) -> list[dict]:
+    """Scan an archive for sequences.
+
+    Supports three source formats:
+      - AudioTable (ATBL) + SEQC: the main game archive layout written by Torch.
+        The ATBL encodes the full 66-entry table including alias entries (size==0).
+        ATBL CRCs match CRC64(path) of the corresponding SEQC entry.
+        Alias entries share a CRC with a non-alias entry → same path.
+      - Binary V2 (SEQC): mod-packed format; not covered by an ATBL.
+      - XML V0 (<Sequence> root): mod XML descriptors (raw or streamed).
+    """
+    _medium_map = {0: "Ram", 1: "Unk", 2: "Cart", 3: "Disk", 5: "RamUnloaded"}
+    _cache_map  = {0: "Temporary", 1: "Persistent", 2: "Either", 3: "Permanent"}
+
+    results: list[dict] = []
+    seen_paths: set[str] = set()
+
+    with zipfile.ZipFile(archive_path, "r") as z:
+        all_names = z.namelist()
+
+        # ── pass 1: build CRC→path map for SEQC entries ─────────────────────
+        # ATBL stores CRC64(path) of each referenced SEQC entry as its "romAddr".
+        # (Note: the embedded seqNumber in the SEQC body is the ROM-offset order,
+        # NOT the ATBL table index.  Use the CRC for matching, not seqNumber.)
+        seqc_crc_to_info: dict[int, dict] = {}
+        for name in all_names:
+            data = z.read(name)
+            if len(data) < BODY_OFFSET + 4 or data[0:1] == b"<":
+                continue
+            if _res_type(data) != SEQ_RES_TYPE:
+                continue
+            off = BODY_OFFSET
+            seq_data_size = struct.unpack_from("<I", data, off)[0]
+            off += 4 + seq_data_size
+            if off + 3 > len(data):
+                continue
+            med_byte   = data[off + 1]
+            cache_byte = data[off + 2]
+            seqc_crc_to_info[crc64_hash(name)] = dict(
+                path       = name,
+                med_byte   = med_byte,
+                cache_byte = cache_byte,
+                size       = seq_data_size,
+            )
+            seen_paths.add(name)
+
+        # ── pass 2: ATBL-driven scan — all entries including aliases ─────────
+        # Aliases (size==0) have the same CRC as their canonical entry; the lookup
+        # via seqc_crc_to_info naturally returns the canonical path for both.
+        for name in all_names:
+            data = z.read(name)
+            if len(data) < BODY_OFFSET + 10 or data[0:1] == b"<":
+                continue
+            if _res_type(data) != ATBL_RES_TYPE:
+                continue
+            b = data[BODY_OFFSET:]
+            table_count = struct.unpack_from("<I", b, 6)[0]
+            if len(b) != 10 + table_count * 20 or table_count < 5:
+                continue
+            if table_count == 4:   # sample bank table always has 4 entries
+                continue
+
+            for i in range(table_count):
+                off        = 10 + i * 20
+                crc        = struct.unpack_from("<Q", b, off)[0]
+                size       = struct.unpack_from("<I", b, off + 8)[0]
+                med_byte   = b[off + 12]
+                cache_byte = b[off + 13]
+                is_alias   = size == 0
+                seq_name   = _SEQ_ID_NAMES[i] if i < len(_SEQ_ID_NAMES) else f"SEQ_{i}"
+
+                # CRC lookup works for both regular entries and aliases (shared CRC)
+                src  = seqc_crc_to_info.get(crc, {})
+                path = src.get("path", "")
+
+                results.append(dict(
+                    path       = path,
+                    seq_index  = i,
+                    seq_name   = seq_name,
+                    format     = "Alias" if is_alias else "Blob",
+                    streamed   = False,
+                    medium     = _medium_map.get(med_byte,   str(med_byte)),
+                    cache      = _cache_map.get(cache_byte, str(cache_byte)),
+                    size       = src.get("size", 0) if is_alias else size,
+                    looped     = True,
+                    stereo     = False,
+                    length_ms  = 0,
+                    audio_path = "",
+                    is_alias   = is_alias,
+                ))
+            break   # only one seq table expected per archive
+
+        # ── pass 3: remaining SEQC entries not already covered by ATBL ───────
+        for crc, src in seqc_crc_to_info.items():
+            name = src["path"]
+            if name in seen_paths:
+                continue
+            seen_paths.add(name)
+            results.append(dict(
+                path       = name,
+                seq_index  = -1,
+                seq_name   = os.path.basename(name),
+                format     = "Binary",
+                streamed   = False,
+                medium     = _medium_map.get(src["med_byte"],   str(src["med_byte"])),
+                cache      = _medium_map.get(src["cache_byte"], str(src["cache_byte"])),
+                size       = src["size"],
+                looped     = True,
+                stereo     = False,
+                length_ms  = 0,
+                audio_path = "",
+                is_alias   = False,
+            ))
+
+        # ── pass 4: XML V0 (<Sequence> descriptors) ──────────────────────────
+        for name in all_names:
+            if not name.endswith(".xml"):
+                continue
+            data = z.read(name)
+            if not data or data[0:1] != b"<":
+                continue
+            try:
+                root = ET.fromstring(data.decode("utf-8", errors="replace"))
+            except Exception:
+                continue
+            if root.tag != "Sequence":
+                continue
+            try:
+                seq_index = int(root.get("Index", -1))
+            except (ValueError, TypeError):
+                seq_index = -1
+            seq_name = _SEQ_ID_NAMES[seq_index] if 0 <= seq_index < len(_SEQ_ID_NAMES) else "?"
+            streamed = root.get("Streamed", "false").lower() == "true"
+            results.append(dict(
+                path       = name,
+                seq_index  = seq_index,
+                seq_name   = seq_name,
+                format     = "Streamed" if streamed else "XML",
+                streamed   = streamed,
+                medium     = root.get("Medium", ""),
+                cache      = root.get("CachePolicy", ""),
+                size       = int(root.get("Size", 0) or 0),
+                looped     = root.get("Looped", "true").lower()  == "true",
+                stereo     = root.get("Stereo", "false").lower() == "false",
+                length_ms  = int(root.get("Length", 0) or 0),
+                audio_path = root.get("Path", ""),
+                is_alias   = False,
+            ))
+
+    results.sort(key=lambda s: (
+        s["seq_index"],
+        {"Blob": 0, "Alias": 1, "Binary": 2, "XML": 3, "Streamed": 4}.get(s["format"], 5),
+    ))
+    return results
+
+
 def read_sample(archive_path: str, asset_path: str) -> tuple[dict | None, bytes | None]:
     """Read one sample entry; no loop/book resolution."""
     with zipfile.ZipFile(archive_path, "r") as z:
@@ -882,6 +1041,32 @@ def _resample_audio(audio_path: str, target_rate: int) -> str:
     return tmp.name
 
 
+def _resample_to_32k_mono(audio_path: str) -> bytes:
+    """Pitch-preserving resample to 32 kHz mono WAV, returned as raw bytes.
+
+    Used for instrument samples in the N64 font pipeline so that
+    mSample.tuning = 32000*1/32000 = 1.0 — the engine plays back at the
+    reference pitch with no rate mismatch in loop-end / size calculations.
+    Requires ffmpeg; raises RuntimeError if unavailable.
+    """
+    if not shutil.which("ffmpeg"):
+        raise RuntimeError("ffmpeg is required for instrument sample resampling.")
+    tmp = tempfile.NamedTemporaryFile(suffix=".wav", delete=False)
+    tmp.close()
+    atexit.register(os.unlink, tmp.name)
+    subprocess.run(
+        ["ffmpeg", "-y", "-i", audio_path,
+         "-af", "aresample=32000",
+         "-ar", "32000",
+         "-ac", "1",
+         tmp.name],
+        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+        check=True,
+    )
+    with open(tmp.name, "rb") as f:
+        return f.read()
+
+
 def _make_xml(audio_arch_path: str, fmt: str, tuning: float, unk: int,
               loop: dict | None = None) -> str:
     """Build the XML descriptor for a custom-format sample replacement.
@@ -910,19 +1095,116 @@ def _make_xml(audio_arch_path: str, fmt: str, tuning: float, unk: int,
     return dom.toprettyxml(indent="  ").replace('<?xml version="1.0" ?>\n', "")
 
 
-def _upsert_mod_o2r(mod_path: str,
-                    xml_arch_path: str, xml_bytes: bytes,
-                    audio_arch_path: str, audio_bytes: bytes):
+def _upsert_mod_o2r(mod_path: str, entries: dict[str, bytes]):
+    """Write or update a mod .o2r archive, merging new entries over existing ones."""
     existing: dict[str, bytes] = {}
     if os.path.isfile(mod_path):
         with zipfile.ZipFile(mod_path, "r") as z:
             for name in z.namelist():
                 existing[name] = z.read(name)
-    existing[xml_arch_path]   = xml_bytes
-    existing[audio_arch_path] = audio_bytes
+    existing.update(entries)
     with zipfile.ZipFile(mod_path, "w", compression=zipfile.ZIP_DEFLATED) as z:
         for name, data in existing.items():
             z.writestr(name, data)
+
+
+def _build_seq_font_map(archive_path: str) -> dict[int, int]:
+    """Parse ast_audio/audio_seq_font_table → {seq_index: font_id}.
+
+    Table body (after 64-byte OTR header + 8-byte body header):
+      u16 BE offsets[numSeqs]   — offset[i] points into this same array
+      font lists                — each list: u8 numFonts, u8 fontId[numFonts]
+    The last fontId in each list is the seqPlayer defaultFont.
+    numSeqs is inferred from offsets[0] // 2 (offsets[0] = first data byte past table).
+    """
+    result: dict[int, int] = {}
+    with zipfile.ZipFile(archive_path, "r") as z:
+        names = z.namelist()
+        tname = next((n for n in names if "seq_font_table" in n), None)
+        if tname is None:
+            return result
+        raw = z.read(tname)
+    if len(raw) < BODY_OFFSET + 10:
+        return result
+    tbl = raw[BODY_OFFSET + 8:]   # skip OTR header + 8-byte body header
+    if len(tbl) < 2:
+        return result
+    first_off = struct.unpack_from(">H", tbl, 0)[0]
+    num_seqs  = first_off // 2
+    for i in range(num_seqs):
+        idx = i * 2
+        if idx + 2 > len(tbl):
+            break
+        offset = struct.unpack_from(">H", tbl, idx)[0]
+        if offset >= len(tbl):
+            continue
+        num_fonts = tbl[offset]
+        if num_fonts == 0 or offset + num_fonts >= len(tbl):
+            continue
+        result[i] = tbl[offset + num_fonts]  # last fontId = defaultFont
+    return result
+
+
+def _build_font_path_map(archive_path: str) -> dict[int, str]:
+    """Return {font_id: sfnt_archive_path} by cross-referencing the soundfont ATBL
+    against SFNT entries in the archive.
+
+    ATBL entry layout (20 bytes each, LE):
+      u64 romAddr  — CRC64 of the SFNT archive path
+      u32 size
+      u8  medium, u8 cache, u16 shortData1, u16 shortData2, u16 pad
+    """
+    crc_to_sfnt: dict[int, str] = {}
+    font_crcs:   dict[int, int] = {}  # fontId → CRC64
+
+    with zipfile.ZipFile(archive_path, "r") as z:
+        names = z.namelist()
+
+        # Map CRC64(path) → path for every SFNT entry
+        for name in names:
+            data = z.read(name)
+            if len(data) < BODY_OFFSET + 4 or data[0:1] == b"<":
+                continue
+            if _res_type(data) == FONT_RES_TYPE:
+                crc_to_sfnt[crc64_hash(name)] = name
+
+        # Find the soundfont ATBL by path name
+        sfnt_atbl = next((n for n in names if "soundfont_table" in n
+                          or "sound_font_table" in n), None)
+        if sfnt_atbl is None:
+            # Fallback: pick ATBL whose name contains "font"
+            for name in names:
+                data = z.read(name)
+                if len(data) < BODY_OFFSET + 10 or data[0:1] == b"<":
+                    continue
+                if _res_type(data) != ATBL_RES_TYPE:
+                    continue
+                b = data[BODY_OFFSET:]
+                tc = struct.unpack_from("<I", b, 6)[0]
+                if tc <= 4:
+                    continue
+                if "font" in name.lower():
+                    sfnt_atbl = name
+                    break
+        if sfnt_atbl is None:
+            return {}
+
+        data = z.read(sfnt_atbl)
+        b    = data[BODY_OFFSET:]
+        tc   = struct.unpack_from("<I", b, 6)[0]
+        for i in range(tc):
+            off = 10 + i * 20
+            if off + 8 > len(b):
+                break
+            crc = struct.unpack_from("<Q", b, off)[0]
+            font_crcs[i] = crc
+
+    result: dict[int, str] = {}
+    for fid, crc in font_crcs.items():
+        path = crc_to_sfnt.get(crc, "")
+        if path:
+            result[fid] = path
+    return result
 
 
 def _scale_loop(loop_data: dict, orig_rate: int, new_rate: int) -> dict | None:
@@ -1148,9 +1430,10 @@ def _do_replace(archive_path: str, asset_path: str,
     mod_name = os.path.splitext(os.path.basename(archive_path))[0]
     mod_o2r  = os.path.join(out_dir, f"{mod_name}_audio_replacements.o2r")
 
-    _upsert_mod_o2r(mod_o2r,
-                    asset_path,  xml_content.encode(),
-                    audio_arch,  audio_bytes)
+    _upsert_mod_o2r(mod_o2r, {
+        asset_path: xml_content.encode(),
+        audio_arch: audio_bytes,
+    })
     return dict(sample_rate=sample_rate, channels=channels,
                 tuning=tuning, mod_o2r=mod_o2r,
                 loop=scaled_loop, orig_rate=orig_rate,
@@ -1168,7 +1451,7 @@ def _project_default_path(archive_path: str) -> str:
 
 def load_project(project_path: str) -> dict:
     """Load a project file (JSON) or bundle (.ssproj ZIP).
-    Returns dict: archive, out_dir, replacements — all absolute paths.
+    Returns dict: archive, out_dir, replacements, seq_replacements — all absolute paths.
     For bundles, audio is extracted to a temp dir that is cleaned up on exit."""
     if zipfile.is_zipfile(project_path):
         return _load_bundle(project_path)
@@ -1182,8 +1465,10 @@ def load_project(project_path: str) -> dict:
 
     archive = _abs(data.get("archive", ""))
     out_dir = _abs(data.get("out_dir", "."))
-    replacements = {asset: _abs(audio) for asset, audio in data.get("replacements", {}).items()}
-    return dict(archive=archive, out_dir=out_dir, replacements=replacements)
+    replacements     = {a: _abs(p) for a, p in data.get("replacements",     {}).items()}
+    seq_replacements = {a: _abs(p) for a, p in data.get("seq_replacements", {}).items()}
+    return dict(archive=archive, out_dir=out_dir,
+                replacements=replacements, seq_replacements=seq_replacements)
 
 
 def _load_bundle(bundle_path: str) -> dict:
@@ -1196,7 +1481,6 @@ def _load_bundle(bundle_path: str) -> dict:
 
     base = os.path.dirname(os.path.abspath(bundle_path))
 
-    # Archive: prefer the embedded copy; fall back to a path next to the bundle
     archive_internal = data.get("archive", "")
     embedded = os.path.join(tmp, archive_internal)
     if os.path.isfile(embedded):
@@ -1209,41 +1493,53 @@ def _load_bundle(bundle_path: str) -> dict:
     if not os.path.isabs(out_dir):
         out_dir = os.path.normpath(os.path.join(base, out_dir))
 
-    replacements = {}
-    for asset, internal in data.get("replacements", {}).items():
-        replacements[asset] = os.path.join(tmp, internal)
-
-    return dict(archive=archive, out_dir=out_dir, replacements=replacements)
+    replacements = {
+        asset: os.path.join(tmp, internal)
+        for asset, internal in data.get("replacements", {}).items()
+    }
+    seq_replacements = {
+        asset: os.path.join(tmp, internal)
+        for asset, internal in data.get("seq_replacements", {}).items()
+    }
+    return dict(archive=archive, out_dir=out_dir,
+                replacements=replacements, seq_replacements=seq_replacements)
 
 
 
 def save_project_bundle(bundle_path: str, archive: str, out_dir: str,
-                        replacements: dict[str, str]) -> int:
+                        replacements: dict[str, str],
+                        seq_replacements: dict[str, str] | None = None) -> int:
     """Save a fully self-contained .ssproj bundle (ZIP).
     Embeds the base archive and all replacement audio files.
-    Returns the number of audio files embedded."""
+    Returns the total number of audio files embedded."""
 
-    # Build a deduplicated internal path mapping (asset → audio/<filename>)
-    audio_map: dict[str, str] = {}
+    def _dedup_map(items: dict[str, str], prefix: str,
+                   used: set[str]) -> dict[str, str]:
+        result: dict[str, str] = {}
+        for asset, audio_abs in items.items():
+            fname = os.path.basename(audio_abs)
+            stem, ext = os.path.splitext(fname)
+            candidate = fname
+            n = 1
+            while candidate in used:
+                candidate = f"{stem}_{n}{ext}"
+                n += 1
+            used.add(candidate)
+            result[asset] = f"{prefix}/{candidate}"
+        return result
+
     used: set[str] = set()
-    for asset, audio_abs in replacements.items():
-        fname = os.path.basename(audio_abs)
-        stem, ext = os.path.splitext(fname)
-        candidate = fname
-        n = 1
-        while candidate in used:
-            candidate = f"{stem}_{n}{ext}"
-            n += 1
-        used.add(candidate)
-        audio_map[asset] = f"audio/{candidate}"
+    audio_map  = _dedup_map(replacements,                 "audio",     used)
+    seq_map    = _dedup_map(seq_replacements or {},        "seq_audio", used)
 
     archive_internal = os.path.basename(archive)
 
     metadata = {
-        "version": 2,
+        "version": 3,
         "archive": archive_internal,
         "out_dir": out_dir or ".",
-        "replacements": audio_map,
+        "replacements":     audio_map,
+        "seq_replacements": seq_map,
     }
 
     with zipfile.ZipFile(bundle_path, "w", compression=zipfile.ZIP_DEFLATED) as z:
@@ -1251,6 +1547,8 @@ def save_project_bundle(bundle_path: str, archive: str, out_dir: str,
         z.write(archive, archive_internal)
         for asset, audio_abs in replacements.items():
             z.write(audio_abs, audio_map[asset])
+        for asset, audio_abs in (seq_replacements or {}).items():
+            z.write(audio_abs, seq_map[asset])
 
     return len(replacements)
 
@@ -1313,6 +1611,18 @@ def _play_pcm_wav(pcm: bytes, sample_rate: int = MIXER_RATE_HZ,
             pass
 
 
+def _play_audio_file(path: str):
+    """Play an audio file directly (blocking). Uses afplay on macOS, ffplay elsewhere."""
+    if sys.platform == "darwin" and shutil.which("afplay"):
+        subprocess.run(["afplay", path],
+                       stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    elif shutil.which("ffplay"):
+        subprocess.run(["ffplay", "-nodisp", "-autoexit", path],
+                       stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    else:
+        raise RuntimeError("No audio player found — install ffmpeg or ensure afplay is available.")
+
+
 def _effective_rate(info: dict) -> int:
     """Return the best-known playback sample rate for a sample.
 
@@ -1341,6 +1651,153 @@ def _decode_sample(info: dict,
             return None
         return vadpcm_to_pcm(info["raw"], book), rate
     return None
+
+
+# ─── sequence import helpers ─────────────────────────────────────────────────
+
+# Names for seqId 0-66  (matches BgmSeqIds in include/bgm.h)
+_SEQ_ID_NAMES = [
+    "SFX", "VOICE", "CORNERIA", "METEO", "TITANIA", "SECTOR X", "ZONESS",
+    "AREA 6", "VENOM 1", "SECTOR Y", "FORTUNA", "SOLAR", "BOLSE", "KATINA",
+    "AQUAS", "SECTOR Z", "MACBETH", "ANDROSS", "BOSS CO 1", "BOSS ME",
+    "BOSS TI", "BOSS SX", "BOSS ZO", "BOSS A6", "BOSS VE", "BOSS SY",
+    "UNK_26", "BOSS SO", "BOSS BO", "BOSS KA", "BOSS AQ", "BOSS SZ",
+    "BOSS MA", "BOSS ANDROSS", "TITLE", "OPENING", "MENU", "CO_INTRO",
+    "GOOD END", "DEATH", "GAME OVER", "UNK_41", "STAFF ROLL", "STAR WOLF",
+    "INTRO S", "INTRO M", "VERSUS", "VS HURRY", "BOSS CO 2", "BAD END",
+    "ME_INTRO", "INTRO_51", "UNK_52", "UNK_53", "KATT", "BILL", "VS_MENU",
+    "UNK_57", "WARP ZONE", "UNK_59", "WORLD MAP", "AND BRAIN", "TO ANDROSS",
+    "TRAINING", "VE CLEAR", "BOSS RESUME", "VOICE LYLAT",
+]
+
+# Combobox values: "0 — SFX", "1 — VOICE", etc.
+_SEQ_ID_COMBO_VALUES = [f"{i} — {n}" for i, n in enumerate(_SEQ_ID_NAMES)]
+
+
+def _seq_disassemble(data: bytes) -> str:
+    """Delegate to import_sequence.disassemble() loaded at runtime."""
+    import importlib.util, pathlib
+    spec = importlib.util.spec_from_file_location(
+        "import_sequence",
+        pathlib.Path(__file__).parent / "import_sequence.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod.disassemble(bytearray(data))
+
+
+def _seq_make_xml_raw(asset_path_no_ext: str, binary_ext: str,
+                      seq_size: int, seq_index: int,
+                      medium: str, cache_policy: str) -> str:
+    """Build non-streamed Sequence XML (ResourceFactoryXMLSequenceV0)."""
+    import xml.etree.ElementTree as _ET, xml.dom.minidom as _dom
+    binary_path = f"{asset_path_no_ext}.{binary_ext}"
+    root = _ET.Element("Sequence")
+    root.set("Version",     "0")
+    root.set("Medium",      medium)
+    root.set("CachePolicy", cache_policy)
+    root.set("Size",        str(seq_size))
+    root.set("Index",       str(seq_index))
+    root.set("Streamed",    "false")
+    root.set("Path",        binary_path)
+    raw = _ET.tostring(root, encoding="unicode")
+    dom = _dom.parseString(raw)
+    return dom.toprettyxml(indent="  ", encoding=None).replace('<?xml version="1.0" ?>\n', "")
+
+
+def _seq_make_xml_streamed(asset_path_no_ext: str, audio_ext: str,
+                           seq_index: int, medium: str, cache_policy: str,
+                           looped: bool, stereo: bool, length_ms: int,
+                           embed_path: bool = True) -> str:
+    """Build streamed Sequence XML (ResourceFactoryXMLSequenceV0 Streamed=true)."""
+    import xml.etree.ElementTree as _ET, xml.dom.minidom as _dom
+    root = _ET.Element("Sequence")
+    root.set("Version",     "0")
+    root.set("Medium",      medium)
+    root.set("CachePolicy", cache_policy)
+    root.set("Index",       str(seq_index))
+    root.set("Streamed",    "true")
+    root.set("Looped",      "true" if looped else "false")
+    root.set("Stereo",      "true" if stereo else "false")
+    root.set("Length",      str(length_ms))
+    if embed_path:
+        root.set("Path", f"{asset_path_no_ext}.{audio_ext}")
+    raw = _ET.tostring(root, encoding="unicode")
+    dom = _dom.parseString(raw)
+    return dom.toprettyxml(indent="  ", encoding=None).replace('<?xml version="1.0" ?>\n', "")
+
+
+def _seq_make_sample_xml(audio_arch_path: str, audio_ext: str,
+                         loop: dict | None = None) -> str:
+    """Build Sample XML for a 32 kHz mono instrument WAV.
+
+    loop — optional dict {start, end, count} in mono frame units.
+           When present an <ADPCMLoop> element is embedded so the N64 synthesis
+           engine loops the sample (CODEC_S16 always dereferences loopInfo).
+           When absent the engine will crash, so the caller must always supply
+           at least a sentinel non-looping loop.
+    """
+    root = ET.Element("Sample")
+    root.set("Version",      "0")
+    root.set("Codec",        "S16")
+    root.set("Medium",       "Ram")
+    root.set("bit26",        "0")
+    root.set("Size",         "0")
+    root.set("CustomFormat", audio_ext.lower())
+    root.set("Path",         audio_arch_path)
+    if loop is not None:
+        lel = ET.SubElement(root, "ADPCMLoop")
+        lel.set("Start", str(loop["start"]))
+        lel.set("End",   str(loop["end"]))
+        lel.set("Count", str(loop["count"]))
+    raw = ET.tostring(root, encoding="unicode")
+    dom = xml.dom.minidom.parseString(raw)
+    return dom.toprettyxml(indent="  ", encoding=None).replace('<?xml version="1.0" ?>\n', "")
+
+
+def _seq_make_font_xml(sample_asset_path: str) -> str:
+    """Build SoundFont XML with one instrument that plays the given sample.
+
+    Data1=65535 → sampleBankId1=0xFF, sampleBankId2=0xFF (SAMPLES_NONE).
+    Data2=256   → numInstruments=1, numDrums=0.
+    The instrument covers the full pitch range (0-127) with a basic ADSR.
+    SampleRef points to the Sample XML archive path so the engine resolves it
+    through the normal ResourceGetDataByCrc pipeline.
+    """
+    root = ET.Element("SoundFont")
+    root.set("Version", "0")
+    root.set("Data1",   "65535")
+    root.set("Data2",   "256")
+
+    insts = ET.SubElement(root, "Instruments")
+    inst  = ET.SubElement(insts, "Instrument")
+    inst.set("IsValid",       "1")
+    inst.set("Loaded",        "0")
+    inst.set("NormalRangeLo", "0")
+    inst.set("NormalRangeHi", "127")
+    inst.set("ReleaseRate",   "120")
+
+    # Envelope values must be pre-swapped for BSWAP16 (audio_effects.c always
+    # calls BSWAP16 on the raw s16 stored in EnvelopePointData, because the
+    # original N64 binary data was big-endian).
+    # To get engine delay=1 tick : XML Delay="256"  (BSWAP16(0x0100)=0x0001=1)
+    # To get engine arg=32767    : XML Arg="-129"   (BSWAP16(0xFF7F)=0x7FFF=32767)
+    # ADSR_HANG (-1) is symmetric under BSWAP16 (0xFFFF stays 0xFFFF), so
+    # Delay="-1" works as-is.
+    envs = ET.SubElement(inst, "Envelopes")
+    e1   = ET.SubElement(envs, "Envelope")
+    e1.set("Delay", "256")   # engine: 1-tick attack
+    e1.set("Arg",   "-129")  # engine: 32767 = full volume → SQ(1.0) = 1.0
+    e2   = ET.SubElement(envs, "Envelope")
+    e2.set("Delay", "-1")    # ADSR_HANG: sustain at current level until note-off
+    e2.set("Arg",   "0")
+
+    sound = ET.SubElement(inst, "NormalNotesSound")
+    sound.set("Tuning",    "1.0")
+    sound.set("SampleRef", sample_asset_path)
+
+    raw = ET.tostring(root, encoding="unicode")
+    dom = xml.dom.minidom.parseString(raw)
+    return dom.toprettyxml(indent="  ", encoding=None).replace('<?xml version="1.0" ?>\n', "")
 
 
 # ─── CLI subcommands ──────────────────────────────────────────────────────────
@@ -2930,6 +3387,14 @@ def cmd_gui(args):
             s.configure("Vertical.TScrollbar",
                 background=BG3, troughcolor=BG2,
                 arrowcolor=FG_DIM, relief="flat", width=10)
+            s.configure("TNotebook",
+                background=BG2, borderwidth=0, tabmargins=0)
+            s.configure("TNotebook.Tab",
+                background=BG3, foreground=FG_DIM,
+                padding=(14, 4), font=FONT, borderwidth=0)
+            s.map("TNotebook.Tab",
+                  background=[("selected", BG), ("active", SEL_BG)],
+                  foreground=[("selected", FG), ("active", FG)])
 
         # ── UI layout ─────────────────────────────────────────────────────────
         def _build_ui(self):
@@ -2950,6 +3415,19 @@ def cmd_gui(args):
                       width=28).pack(side="left", padx=(6, 4))
             ttk.Button(top, text="…",
                        command=self._pick_outdir).pack(side="left")
+            ttk.Separator(top, orient="vertical").pack(side="left", fill="y", padx=(10, 8))
+            ttk.Button(top, text="Open Project",
+                       command=self._action_open_project).pack(side="left", padx=(0, 4))
+            self._btn_save_project_top = ttk.Button(top, text="Save Project",
+                                                    command=self._action_save_project)
+            self._btn_save_project_top.pack(side="left", padx=(0, 8))
+            self._btn_save_project_top.state(["disabled"])
+            ttk.Separator(top, orient="vertical").pack(side="left", fill="y", padx=(0, 8))
+            self._btn_write_all = ttk.Button(top, text="Write All  (0)",
+                                             style="Accent.TButton",
+                                             command=self._action_write_all)
+            self._btn_write_all.pack(side="left", padx=(0, 4))
+            self._btn_write_all.state(["disabled"])
 
             # filter / action bar
             fbar = ttk.Frame(self, padding=(10, 0, 10, 6))
@@ -2976,30 +3454,25 @@ def cmd_gui(args):
             self._bank_box.bind("<<ComboboxSelected>>", lambda _: self._on_filter_change())
             self._btn_scan = ttk.Button(fbar, text="Scan Folder…",
                                         command=self._action_scan_folder)
-            self._btn_scan.pack(side="left", padx=(0, 6))
+            self._btn_scan.pack(side="left", padx=(0, 10))
             self._btn_scan.state(["disabled"])
-            self._btn_replace_all = ttk.Button(fbar, text="Replace All  (0)",
-                                               style="Accent.TButton",
-                                               command=self._action_replace_all)
-            self._btn_replace_all.pack(side="left", padx=(0, 10))
-            self._btn_replace_all.state(["disabled"])
-            ttk.Separator(fbar, orient="vertical").pack(side="left", fill="y", padx=(0, 8))
-            ttk.Button(fbar, text="Open Project",
-                       command=self._action_open_project).pack(side="left", padx=(0, 4))
-            self._btn_save_project = ttk.Button(fbar, text="Save Project",
-                                                command=self._action_save_project)
-            self._btn_save_project.pack(side="left", padx=(0, 10))
-            self._btn_save_project.state(["disabled"])
             self._status_var = tk.StringVar(value="Open an archive to begin.")
             ttk.Label(fbar, textvariable=self._status_var,
                       foreground=FG_DIM, font=FONT_SML).pack(side="right")
 
-            # main area
-            pane = ttk.Frame(self, padding=(10, 0, 10, 10))
-            pane.pack(fill="both", expand=True)
+            # main area — tabbed: Samples | Sequences
+            nb = ttk.Notebook(self)
+            nb.pack(fill="both", expand=True, padx=10, pady=(0, 10))
+
+            pane = ttk.Frame(nb, padding=(0, 4, 0, 0))
+            nb.add(pane, text="  Samples  ")
             pane.columnconfigure(0, weight=3)
             pane.columnconfigure(1, weight=1, minsize=330)
             pane.rowconfigure(0, weight=1)
+
+            seq_tab = ttk.Frame(nb, padding=(0, 4, 0, 0))
+            nb.add(seq_tab, text="  Sequences  ")
+            self._build_seq_tab(seq_tab)
 
             # sample list
             list_frame = ttk.Frame(pane)
@@ -3160,12 +3633,13 @@ def cmd_gui(args):
             self._aliases = {}
             self._alias_current_path = ""
             self._batch_mapping = {}
+            self._seq_mapping   = {}
             if not self._outdir_var.get():
                 self._outdir_var.set(os.path.dirname(os.path.abspath(path)))
             self._tree.delete(*self._tree.get_children())
             self._clear_detail()
             self._btn_scan.state(["disabled"])
-            self._btn_replace_all.state(["disabled"])
+            self._btn_write_all.state(["disabled"])
             self._btn_export_aliases.state(["disabled"])
             self._bank_var.set("All")
             self._bank_box.configure(values=["All"])
@@ -3189,12 +3663,13 @@ def cmd_gui(args):
             self._aliases = load_aliases(self._archive_path)
             self._btn_scan.state(["!disabled"])
             self._btn_export_aliases.state(["!disabled"])
-            self._btn_save_project.state(["!disabled"])
+            self._btn_save_project_top.state(["!disabled"])
             all_banks = sorted({b for s in samples for b in s.get("banks", [])},
                                key=lambda p: _font_short(p))
             self._bank_box.configure(values=["All"] + all_banks)
             self._bank_var.set("All")
             self._apply_filter()
+            self._refresh_seq_tree()
 
         # ── filtering ─────────────────────────────────────────────────────────
         def _on_filter_change(self, *_):
@@ -3849,10 +4324,26 @@ def cmd_gui(args):
             self._btn_clear.state(["disabled"])
             self._update_replace_all_btn()
 
+        def _update_write_all_btn(self):
+            n = len(self._batch_mapping) + len(self._seq_mapping)
+            self._btn_write_all.configure(text=f"Write All  ({n})")
+            self._btn_write_all.state(["!disabled"] if n > 0 else ["disabled"])
+
         def _update_replace_all_btn(self):
-            n = len(self._batch_mapping)
-            self._btn_replace_all.configure(text=f"Replace All  ({n})")
-            self._btn_replace_all.state(["!disabled"] if n else ["disabled"])
+            self._update_write_all_btn()
+
+        def _action_write_all(self):
+            n_samples = len(self._batch_mapping)
+            n_seqs    = len(self._seq_mapping)
+            if not n_samples and not n_seqs:
+                return
+            self._btn_write_all.state(["disabled"])
+            if n_seqs:
+                self._seq_action_write_o2r()
+            if n_samples:
+                self._action_replace_all()
+            else:
+                self._update_write_all_btn()
 
         def _action_scan_folder(self):
             if not self._samples:
@@ -3904,7 +4395,7 @@ def cmd_gui(args):
                 p = s["path"]
                 if p not in sample_by_path:
                     sample_by_path[p] = s
-            self._btn_replace_all.state(["disabled"])
+            self._btn_write_all.state(["disabled"])
             self._btn_scan.state(["disabled"])
 
             def worker():
@@ -3938,7 +4429,7 @@ def cmd_gui(args):
         def _replace_all_done(self, done: int,
                               errors: list[str], out_dir: str):
             self._btn_scan.state(["!disabled"])
-            self._update_replace_all_btn()
+            self._update_write_all_btn()
             mod_name = os.path.splitext(os.path.basename(self._archive_path))[0]
             mod_o2r  = os.path.join(out_dir,
                                     f"{mod_name}_audio_replacements.o2r")
@@ -3982,23 +4473,37 @@ def cmd_gui(args):
             # Populate output dir
             if proj["out_dir"]:
                 self._outdir_var.set(proj["out_dir"])
-            # Populate batch mapping from project replacements
+            # Populate batch mapping (sample replacements)
             valid = {a: p for a, p in proj["replacements"].items() if os.path.isfile(p)}
             missing = [a for a in proj["replacements"] if a not in valid]
             self._batch_mapping.update(valid)
-            self._update_replace_all_btn()
-            # Update tree "Replace With" column for loaded entries
+            # Update Samples tree "Replace With" column
             for asset, audio in valid.items():
                 for iid in self._iids_by_path.get(asset, []):
                     try:
                         self._tree.set(iid, "file", os.path.basename(audio))
                     except Exception:
                         pass
-            msg = f"Loaded project: {len(valid)} replacement(s)."
-            if missing:
-                msg += f"\n\n{len(missing)} audio file(s) not found (paths may need updating):\n"
-                msg += "\n".join(f"  {a}" for a in missing[:10])
-                if len(missing) > 10:
+
+            # Populate sequence mapping (sequence replacements)
+            seq_valid = {a: p for a, p in proj.get("seq_replacements", {}).items()
+                         if os.path.isfile(p)}
+            seq_missing = [a for a in proj.get("seq_replacements", {}) if a not in seq_valid]
+            self._seq_mapping.update(seq_valid)
+            for asset, audio in seq_valid.items():
+                for iid in self._seq_iids_by_path.get(asset, []):
+                    try:
+                        self._seq_tree.set(iid, "file", os.path.basename(audio))
+                    except Exception:
+                        pass
+
+            self._update_write_all_btn()
+            all_missing = missing + seq_missing
+            msg = f"Loaded project: {len(valid)} sample(s) + {len(seq_valid)} sequence(s)."
+            if all_missing:
+                msg += f"\n\n{len(all_missing)} file(s) not found:\n"
+                msg += "\n".join(f"  {a}" for a in all_missing[:10])
+                if len(all_missing) > 10:
                     msg += "\n  …"
                 messagebox.showwarning("Missing Files", msg, parent=self)
             else:
@@ -4021,14 +4526,769 @@ def cmd_gui(args):
             out_dir = self._outdir_var.get().strip() or os.path.dirname(
                 os.path.abspath(self._archive_path))
             try:
-                n = save_project_bundle(path, self._archive_path, out_dir, self._batch_mapping)
+                n = save_project_bundle(path, self._archive_path, out_dir,
+                                        self._batch_mapping, self._seq_mapping)
             except Exception as e:
                 messagebox.showerror("Error", f"Could not save project:\n{e}", parent=self)
                 return
             self._project_path = path
             self.title(f"Starship Sample Editor — {os.path.basename(path)}")
+            ns = len(self._seq_mapping)
             self._status_var.set(
-                f"Project saved: {n} replacement(s)  →  {os.path.basename(path)}")
+                f"Project saved: {n - ns} sample(s) + {ns} sequence(s)  →  {os.path.basename(path)}")
+
+        # ── Sequences tab ─────────────────────────────────────────────────────
+        def _build_seq_tab(self, parent):
+            parent.columnconfigure(0, weight=2)
+            parent.columnconfigure(1, weight=1, minsize=320)
+            parent.rowconfigure(0, weight=1)
+
+            self._seq_entries:        list[dict]       = []
+            self._seq_filtered:       list[dict]       = []
+            self._seq_sort_col        = "seq_index"
+            self._seq_sort_rev        = False
+            self._seq_mapping:        dict[str, str]   = {}
+            self._seq_iids_by_path:   dict[str, list]  = {}
+            self._seq_loop_overrides: dict[str, dict]  = {}  # seq_path → loop_data
+
+            # ── left: filter bar + write bar + list ───────────────────────────
+            left = ttk.Frame(parent, padding=(4, 0, 4, 4))
+            left.grid(row=0, column=0, sticky="nsew")
+            left.columnconfigure(0, weight=1)
+            left.rowconfigure(1, weight=1)
+
+            # row 0: filter bar
+            fbar = ttk.Frame(left)
+            fbar.grid(row=0, column=0, sticky="ew", pady=(0, 4))
+            ttk.Label(fbar, text="Filter", foreground=FG_DIM).pack(
+                side="left", padx=(0, 4))
+            self._seq_filter_var = tk.StringVar()
+            self._seq_filter_var.trace_add("write", lambda *_: self._seq_apply_filter())
+            ttk.Entry(fbar, textvariable=self._seq_filter_var).pack(
+                side="left", fill="x", expand=True, padx=(0, 6))
+            self._seq_count_lbl = ttk.Label(fbar, text="",
+                                            foreground=FG_DIM,
+                                            font=(*FONT[:1], FONT[1] - 1))
+            self._seq_count_lbl.pack(side="left")
+
+            # row 1: treeview
+            tree_frame = ttk.Frame(left)
+            tree_frame.grid(row=1, column=0, sticky="nsew")
+            tree_frame.columnconfigure(0, weight=1)
+            tree_frame.rowconfigure(0, weight=1)
+
+            cols = ("name", "type", "medium", "cache", "size", "file", "path")
+            self._seq_tree = ttk.Treeview(
+                tree_frame, columns=cols, show="headings", selectmode="browse")
+            for col, lbl, w, anc, stretch in [
+                ("name",   "Name",    140, "w",      False),
+                ("type",   "Type",     70, "center", False),
+                ("medium", "Medium",   55, "center", False),
+                ("cache",  "Cache",    90, "center", False),
+                ("size",   "Size",     62, "e",      False),
+                ("file",   "Replace",  90, "w",      False),
+                ("path",   "Path",      0, "w",      True),
+            ]:
+                self._seq_tree.heading(col, text=lbl,
+                                       command=lambda c=col: self._seq_sort(c))
+                self._seq_tree.column(col, width=w, anchor=anc, stretch=stretch)
+            self._seq_tree.tag_configure("streamed", foreground=ACCENT)
+            self._seq_tree.tag_configure("alias",    foreground=FG_DIM)
+            self._seq_tree.grid(row=0, column=0, sticky="nsew")
+            _vsb = ttk.Scrollbar(tree_frame, orient="vertical",
+                                 command=self._seq_tree.yview)
+            _vsb.grid(row=0, column=1, sticky="ns")
+            self._seq_tree.configure(yscrollcommand=_vsb.set)
+            self._seq_tree.bind("<<TreeviewSelect>>", self._seq_on_select)
+
+            # ── right: detail panel ───────────────────────────────────────────
+            right = ttk.Frame(parent, padding=(10, 0, 8, 4))
+            right.grid(row=0, column=1, sticky="nsew")
+            right.columnconfigure(1, weight=1)
+
+            ttk.Label(right, text="Sequence Details",
+                      foreground=ACCENT,
+                      font=(*FONT[:1], FONT[1] + 1, "bold")).grid(
+                row=0, column=0, columnspan=2, sticky="w", pady=(0, 8))
+
+            self._seq_detail_labels: dict[str, tk.StringVar] = {}
+            detail_rows = [
+                ("Path",   "path"),
+                ("Seq ID", "seq_id"),
+                ("Format", "format"),
+                ("Medium", "medium"),
+                ("Cache",  "cache"),
+                ("Size",   "size"),
+            ]
+            for i, (label, key) in enumerate(detail_rows, start=1):
+                ttk.Label(right, text=label, foreground=FG_DIM,
+                          font=FONT_SML).grid(row=i, column=0, sticky="nw",
+                                              padx=(0, 8), pady=2)
+                var = tk.StringVar(value="—")
+                self._seq_detail_labels[key] = var
+                ttk.Label(right, textvariable=var, foreground=FG,
+                          font=FONT_MON, wraplength=235,
+                          justify="left").grid(row=i, column=1, sticky="nw", pady=2)
+
+            sep_row = len(detail_rows) + 1
+            ttk.Frame(right, height=1).grid(
+                row=sep_row, column=0, columnspan=2, sticky="ew", pady=(10, 8))
+
+            btn_row = sep_row + 1
+            self._seq_btn_play = ttk.Button(right, text="▶  Play",
+                                            command=self._seq_action_play)
+            self._seq_btn_play.grid(row=btn_row, column=0, columnspan=2,
+                                    sticky="ew", pady=2)
+
+            self._seq_btn_export = ttk.Button(right, text="↓  Export .m64",
+                                              command=self._seq_action_export)
+            self._seq_btn_export.grid(row=btn_row + 1, column=0, columnspan=2,
+                                      sticky="ew", pady=2)
+
+            self._seq_btn_assign = ttk.Button(right, text="↔  Assign Audio…",
+                                              command=self._seq_action_assign)
+            self._seq_btn_assign.grid(row=btn_row + 2, column=0, columnspan=2,
+                                      sticky="ew", pady=2)
+
+            self._seq_btn_loop = ttk.Button(
+                right, text="〜  Loop Editor…",
+                command=self._seq_action_loop_editor)
+            self._seq_btn_loop.grid(row=btn_row + 3, column=0, columnspan=2,
+                                    sticky="ew", pady=2)
+
+            self._seq_btn_clear = ttk.Button(
+                right, text="✕  Clear Assigned Audio",
+                command=self._seq_action_clear_assign)
+            self._seq_btn_clear.grid(row=btn_row + 4, column=0, columnspan=2,
+                                     sticky="ew", pady=2)
+
+            self._seq_status_var = tk.StringVar(value="")
+            ttk.Label(right, textvariable=self._seq_status_var,
+                      foreground=FG_DIM,
+                      font=(*FONT[:1], FONT[1] - 1),
+                      wraplength=300).grid(
+                row=btn_row + 5, column=0, columnspan=2, sticky="w", pady=(8, 0))
+
+            for btn in (self._seq_btn_play, self._seq_btn_export,
+                        self._seq_btn_assign, self._seq_btn_loop,
+                        self._seq_btn_clear):
+                btn.state(["disabled"])
+
+            # ── disassembly section ───────────────────────────────────────────
+            dsm_sep = btn_row + 6
+            ttk.Frame(right, height=1).grid(
+                row=dsm_sep, column=0, columnspan=2, sticky="ew", pady=(10, 6))
+
+            dsm_hdr_row = dsm_sep + 1
+            dsm_hdr = ttk.Frame(right)
+            dsm_hdr.grid(row=dsm_hdr_row, column=0, columnspan=2,
+                         sticky="ew", pady=(0, 4))
+            dsm_hdr.columnconfigure(0, weight=1)
+            ttk.Label(dsm_hdr, text="Disassembly",
+                      foreground=FG_DIM,
+                      font=(*FONT[:1], FONT[1], "bold")).grid(
+                row=0, column=0, sticky="w")
+            ttk.Button(dsm_hdr, text="Clear",
+                       command=self._seq_clear_text).grid(
+                row=0, column=1, sticky="e", padx=(4, 0))
+            ttk.Button(dsm_hdr, text="Disassemble",
+                       command=self._seq_action_disassemble).grid(
+                row=0, column=2, sticky="e", padx=(4, 0))
+
+            dsm_text_row = dsm_hdr_row + 1
+            right.rowconfigure(dsm_text_row, weight=1)
+            txt_frame = ttk.Frame(right)
+            txt_frame.grid(row=dsm_text_row, column=0, columnspan=2,
+                           sticky="nsew", pady=(0, 4))
+            txt_frame.columnconfigure(0, weight=1)
+            txt_frame.rowconfigure(0, weight=1)
+            self._seq_text = tk.Text(
+                txt_frame, font=FONT_MON, bg=BG2, fg=FG,
+                insertbackground=FG, relief="flat",
+                wrap="none", state="disabled")
+            self._seq_text.grid(row=0, column=0, sticky="nsew")
+            _tvsb = ttk.Scrollbar(txt_frame, orient="vertical",
+                                  command=self._seq_text.yview)
+            _tvsb.grid(row=0, column=1, sticky="ns")
+            _thsb = ttk.Scrollbar(txt_frame, orient="horizontal",
+                                  command=self._seq_text.xview)
+            _thsb.grid(row=1, column=0, sticky="ew")
+            self._seq_text.configure(yscrollcommand=_tvsb.set,
+                                     xscrollcommand=_thsb.set)
+
+        # ── sequences list helpers ─────────────────────────────────────────────
+        def _refresh_seq_tree(self):
+            if not self._archive_path or not os.path.isfile(self._archive_path):
+                self._seq_entries = []
+                self._seq_apply_filter()
+                return
+            try:
+                self._seq_entries = list_sequences(self._archive_path)
+            except Exception:
+                self._seq_entries = []
+            self._seq_apply_filter()
+
+        def _seq_apply_filter(self):
+            text = self._seq_filter_var.get().lower() if hasattr(self, "_seq_filter_var") else ""
+            if not text:
+                self._seq_filtered = list(self._seq_entries)
+            else:
+                self._seq_filtered = [
+                    s for s in self._seq_entries
+                    if (text in str(s["seq_index"])
+                        or text in s["seq_name"].lower()
+                        or text in s["path"].lower()
+                        or text in s["medium"].lower()
+                        or text in s["cache"].lower()
+                        or text in ("streamed" if s["streamed"] else "raw"))
+                ]
+            self._seq_populate_tree()
+
+        def _seq_sort(self, col: str):
+            if self._seq_sort_col == col:
+                self._seq_sort_rev = not self._seq_sort_rev
+            else:
+                self._seq_sort_col = col
+                self._seq_sort_rev = False
+            self._seq_populate_tree()
+
+        def _seq_populate_tree(self):
+            _key = {
+                "name":   lambda s: s["seq_name"].lower(),
+                "type":   lambda s: ("streamed" if s["streamed"] else "raw"),
+                "medium": lambda s: s["medium"].lower(),
+                "cache":  lambda s: s["cache"].lower(),
+                "size":   lambda s: s["size"],
+                "file":   lambda s: self._seq_mapping.get(s["path"], "").lower(),
+                "path":   lambda s: s["path"].lower(),
+            }
+            fn   = _key.get(self._seq_sort_col, lambda s: s["seq_index"])
+            seqs = sorted(self._seq_filtered, key=fn, reverse=self._seq_sort_rev)
+            self._seq_tree.delete(*self._seq_tree.get_children())
+            self._seq_iids_by_path = {}
+            for s in seqs:
+                iid = f"{s['seq_index']}:{s['path']}"
+                fmt = s["format"]
+                if fmt == "Streamed":
+                    tag = ("streamed",)
+                elif fmt == "Alias":
+                    tag = ("alias",)
+                else:
+                    tag = ()
+                file_val = ""
+                if s["path"] in self._seq_mapping:
+                    file_val = os.path.basename(self._seq_mapping[s["path"]])
+                self._seq_tree.insert(
+                    "", "end", iid=iid,
+                    values=(
+                        f"{s['seq_index']} — {s['seq_name']}",
+                        fmt,
+                        s["medium"],
+                        s["cache"],
+                        _fmt_size(s["size"]) if s["size"] else "—",
+                        file_val,
+                        s["path"],
+                    ),
+                    tags=tag)
+                self._seq_iids_by_path.setdefault(s["path"], []).append(iid)
+            n = len(seqs)
+            self._seq_count_lbl.configure(
+                text=f"{n} sequence{'s' if n != 1 else ''}")
+
+        def _seq_clear_detail(self):
+            for var in self._seq_detail_labels.values():
+                var.set("—")
+            for btn in (self._seq_btn_play, self._seq_btn_export,
+                        self._seq_btn_assign, self._seq_btn_loop,
+                        self._seq_btn_clear):
+                btn.state(["disabled"])
+            self._seq_status_var.set("")
+
+        def _seq_on_select(self, _=None):
+            sel = self._seq_tree.selection()
+            if not sel:
+                self._seq_clear_detail()
+                return
+            iid = sel[0]
+            entry = next(
+                (s for s in self._seq_entries
+                 if f"{s['seq_index']}:{s['path']}" == iid), None)
+            if entry is None:
+                self._seq_clear_detail()
+                return
+
+            is_alias = entry.get("is_alias", False)
+            path     = entry["path"]
+            idx      = entry["seq_index"]
+            name     = entry["seq_name"]
+            fmt      = entry["format"]
+
+            self._seq_detail_labels["path"].set(path)
+            self._seq_detail_labels["seq_id"].set(f"{idx} — {name}")
+            self._seq_detail_labels["format"].set(fmt)
+            self._seq_detail_labels["medium"].set(entry["medium"])
+            self._seq_detail_labels["cache"].set(entry["cache"])
+            self._seq_detail_labels["size"].set(
+                f"{entry['size']:,} bytes" if entry["size"] else "—")
+
+            if not is_alias:
+                self._seq_btn_export.state(["!disabled"])
+                self._seq_btn_assign.state(["!disabled"])
+            else:
+                self._seq_btn_export.state(["disabled"])
+                self._seq_btn_assign.state(["disabled"])
+
+            # enable Play for anything that has audio (assigned, embedded, or
+            # streamed audio_path); keep it enabled for raw blobs too so the
+            # user gets a clear "no audio" message rather than a greyed button
+            can_play = not is_alias
+            self._seq_btn_play.state(["!disabled"] if can_play else ["disabled"])
+
+            has_audio = path in self._seq_mapping
+            self._seq_btn_loop.state(
+                ["!disabled"] if (has_audio and not is_alias) else ["disabled"])
+            self._seq_btn_clear.state(["!disabled"] if has_audio else ["disabled"])
+
+            self._seq_status_var.set("")
+
+        # ── seq detail actions ─────────────────────────────────────────────────
+        def _seq_get_raw_bytes(self, entry: dict) -> bytes | None:
+            """Extract raw sequence (or audio) bytes from the archive."""
+            path    = entry["path"]
+            archive = self._archive_path
+            if not archive or not os.path.isfile(archive):
+                return None
+            fmt = entry["format"]
+            try:
+                with zipfile.ZipFile(archive, "r") as z:
+                    raw = z.read(path)
+            except Exception:
+                return None
+            OTR = 64
+            if fmt in ("Blob", "Alias"):
+                if len(raw) < OTR + 4:
+                    return None
+                size = struct.unpack_from("<I", raw, OTR)[0]
+                return raw[OTR + 4 : OTR + 4 + size]
+            elif fmt == "Binary":
+                if len(raw) < OTR + 4:
+                    return None
+                size = struct.unpack_from(">I", raw, OTR)[0]
+                return raw[OTR + 4 : OTR + 4 + size]
+            elif fmt in ("XML", "Streamed"):
+                audio_path = entry.get("audio_path")
+                if not audio_path:
+                    return None
+                try:
+                    with zipfile.ZipFile(archive, "r") as z:
+                        return z.read(audio_path)
+                except Exception:
+                    return None
+            return None
+
+        def _seq_action_export(self):
+            sel = self._seq_tree.selection()
+            if not sel:
+                return
+            iid = sel[0]
+            entry = next(
+                (s for s in self._seq_entries
+                 if f"{s['seq_index']}:{s['path']}" == iid), None)
+            if entry is None:
+                return
+            fmt = entry["format"]
+            if fmt in ("XML", "Streamed"):
+                def_ext = ""
+                ftypes  = [("Audio files", "*.wav *.ogg *.mp3"), ("All", "*")]
+                init    = os.path.basename(entry["path"]).replace(".xml", "")
+            else:
+                def_ext = ".m64"
+                ftypes  = [("N64 sequence binary", "*.m64"), ("All", "*")]
+                init    = os.path.basename(entry["path"]) + ".m64"
+            out = filedialog.asksaveasfilename(
+                title="Export sequence",
+                defaultextension=def_ext,
+                initialfile=init,
+                filetypes=ftypes,
+                parent=self)
+            if not out:
+                return
+            data = self._seq_get_raw_bytes(entry)
+            if data is None:
+                messagebox.showerror("Export failed",
+                    "Could not extract sequence data from archive.", parent=self)
+                return
+            with open(out, "wb") as f:
+                f.write(data)
+            self._seq_status_var.set(f"Exported: {os.path.basename(out)}")
+
+        def _seq_action_play(self):
+            sel = self._seq_tree.selection()
+            if not sel:
+                return
+            iid = sel[0]
+            entry = next(
+                (s for s in self._seq_entries
+                 if f"{s['seq_index']}:{s['path']}" == iid), None)
+            if entry is None:
+                return
+            path = entry["path"]
+            fmt  = entry["format"]
+
+            # 1. prefer explicitly assigned audio replacement
+            audio_file = self._seq_mapping.get(path)
+            if audio_file and os.path.isfile(audio_file):
+                self._seq_status_var.set(f"▶  {os.path.basename(audio_file)}")
+                def _run_assigned(f=audio_file):
+                    try:
+                        _play_audio_file(f)
+                    except Exception:
+                        pass
+                    self.after(0, self._seq_status_var.set, "")
+                threading.Thread(target=_run_assigned, daemon=True).start()
+                return
+
+            # 2. for streamed / XML entries, play the embedded audio file
+            if fmt in ("Streamed", "XML"):
+                audio_path = entry.get("audio_path")
+                if not audio_path:
+                    self._seq_status_var.set(
+                        "Streamed entry has no embedded audio path.")
+                    return
+                data = self._seq_get_raw_bytes(entry)
+                if not data:
+                    self._seq_status_var.set(
+                        "Could not extract audio from archive.")
+                    return
+                ext = os.path.splitext(audio_path)[1] or ".wav"
+                with tempfile.NamedTemporaryFile(suffix=ext, delete=False) as tf:
+                    tf.write(data)
+                    tmp_path = tf.name
+                self._seq_status_var.set(f"▶  {os.path.basename(audio_path)}")
+                def _run_embedded(p=tmp_path):
+                    try:
+                        _play_audio_file(p)
+                    except Exception:
+                        pass
+                    try:
+                        os.unlink(p)
+                    except OSError:
+                        pass
+                    self.after(0, self._seq_status_var.set, "")
+                threading.Thread(target=_run_embedded, daemon=True).start()
+                return
+
+            # 3. raw N64 sequence — needs the game audio engine to render
+            self._seq_status_var.set(
+                "Raw N64 sequences need the game engine to play. "
+                "Assign a replacement audio file, or use AudioDebugWindow "
+                "in-game to preview.")
+
+        def _seq_action_assign(self):
+            sel = self._seq_tree.selection()
+            if not sel:
+                return
+            iid = sel[0]
+            entry = next(
+                (s for s in self._seq_entries
+                 if f"{s['seq_index']}:{s['path']}" == iid), None)
+            if entry is None:
+                return
+            path  = entry["path"]
+            audio = filedialog.askopenfilename(
+                parent=self,
+                title=f"Assign audio to {entry['seq_name']}",
+                filetypes=[("Audio files", "*.wav *.ogg *.mp3"),
+                           ("WAV", "*.wav"), ("OGG", "*.ogg"),
+                           ("MP3", "*.mp3"), ("All", "*")])
+            if not audio:
+                return
+            self._seq_mapping[path] = audio
+            self._seq_loop_overrides.pop(path, None)  # reset loop when audio changes
+            for iid2 in self._seq_iids_by_path.get(path, []):
+                try:
+                    self._seq_tree.set(iid2, "file", os.path.basename(audio))
+                except Exception:
+                    pass
+            self._seq_btn_loop.state(["!disabled"])
+            self._seq_btn_clear.state(["!disabled"])
+            self._seq_btn_play.state(["!disabled"])
+            self._seq_update_write_btn()
+
+        def _seq_action_clear_assign(self):
+            sel = self._seq_tree.selection()
+            if not sel:
+                return
+            iid = sel[0]
+            entry = next(
+                (s for s in self._seq_entries
+                 if f"{s['seq_index']}:{s['path']}" == iid), None)
+            if entry is None:
+                return
+            path = entry["path"]
+            self._seq_mapping.pop(path, None)
+            self._seq_loop_overrides.pop(path, None)
+            for iid2 in self._seq_iids_by_path.get(path, []):
+                try:
+                    self._seq_tree.set(iid2, "file", "")
+                except Exception:
+                    pass
+            self._seq_btn_loop.state(["disabled"])
+            self._seq_btn_clear.state(["disabled"])
+            can_play = bool(entry.get("audio_path"))
+            self._seq_btn_play.state(["!disabled"] if can_play else ["disabled"])
+            self._seq_update_write_btn()
+
+        def _seq_action_loop_editor(self):
+            """Open the waveform/loop editor for the sequence's instrument sample.
+
+            Resamples the assigned audio to 32 kHz mono (matching what the engine
+            decodes from the WAV), then opens _WaveformEditor so the user can drag
+            loop start/end markers.  The saved loop dict is stored in
+            _seq_loop_overrides and written into the Sample XML by
+            _seq_action_write_o2r.
+            """
+            sel = self._seq_tree.selection()
+            if not sel:
+                return
+            iid = sel[0]
+            entry = next(
+                (s for s in self._seq_entries
+                 if f"{s['seq_index']}:{s['path']}" == iid), None)
+            if entry is None:
+                return
+
+            seq_path   = entry["path"]
+            audio_path = self._seq_mapping.get(seq_path)
+            if not audio_path or not os.path.isfile(audio_path):
+                messagebox.showinfo(
+                    "No audio assigned",
+                    "Assign a replacement audio file first.",
+                    parent=self)
+                return
+
+            self._seq_status_var.set("Resampling to 32 kHz mono…")
+            self.update_idletasks()
+
+            try:
+                wav_bytes = _resample_to_32k_mono(audio_path)
+            except Exception as exc:
+                self._seq_status_var.set(f"Resample failed: {exc}")
+                return
+
+            # Decode PCM for the waveform display.
+            import io as _io
+            try:
+                with wave.open(_io.BytesIO(wav_bytes)) as _wv:
+                    n_frames = _wv.getnframes()
+                    rate     = _wv.getframerate()
+                    pcm_raw  = _wv.readframes(n_frames)
+            except Exception as exc:
+                self._seq_status_var.set(f"WAV decode failed: {exc}")
+                return
+
+            # Use any previously saved loop override, otherwise default to the
+            # full file with infinite repeat.
+            existing = self._seq_loop_overrides.get(seq_path)
+            if existing is None:
+                existing = {"start": 0, "end": n_frames, "count": LOOP_INFINITE}
+
+            # Build a minimal sample-dict that _WaveformEditor accepts.
+            fake_sample = {
+                "path":      entry["seq_name"],
+                "loop_data": existing,
+            }
+
+            def _on_save(new_loop: dict):
+                self._seq_loop_overrides[seq_path] = new_loop
+                cnt = ("∞" if new_loop["count"] == LOOP_INFINITE
+                       else str(new_loop["count"]))
+                self._seq_status_var.set(
+                    f"Loop saved  start={new_loop['start']:,}  "
+                    f"end={new_loop['end']:,}  count={cnt} — "
+                    "click Write .o2r to apply.")
+
+            self._seq_status_var.set("")
+            ed = _WaveformEditor(
+                self,
+                sample=fake_sample,
+                pcm=pcm_raw,
+                rate=rate,
+                on_save=_on_save)
+            ed.transient(self)
+            ed.grab_set()
+
+        def _seq_action_disassemble(self):
+            sel = self._seq_tree.selection()
+            if not sel:
+                self._seq_status_var.set("Select a sequence first.")
+                return
+            iid = sel[0]
+            entry = next(
+                (s for s in self._seq_entries
+                 if f"{s['seq_index']}:{s['path']}" == iid), None)
+            if entry is None:
+                return
+            fmt = entry["format"]
+            if fmt in ("XML", "Streamed"):
+                self._seq_status_var.set(
+                    "Streamed sequences have no N64 bytecode to disassemble.")
+                return
+            data = self._seq_get_raw_bytes(entry)
+            if not data:
+                self._seq_status_var.set("Could not extract sequence data.")
+                return
+            try:
+                text = _seq_disassemble(data)
+            except Exception as e:
+                text = f"Disassembly failed:\n{e}"
+            self._seq_text.configure(state="normal")
+            self._seq_text.delete("1.0", "end")
+            self._seq_text.insert("1.0", text)
+            self._seq_text.configure(state="disabled")
+            self._seq_status_var.set(
+                f"Disassembled {_fmt_size(len(data))}")
+
+        def _seq_clear_text(self):
+            self._seq_text.configure(state="normal")
+            self._seq_text.delete("1.0", "end")
+            self._seq_text.configure(state="disabled")
+
+        def _seq_update_write_btn(self):
+            self._update_write_all_btn()
+
+        def _seq_action_write_o2r(self):
+            if not self._seq_mapping:
+                return
+            out_dir = self._outdir_var.get().strip()
+            if not out_dir:
+                out_dir = os.path.dirname(os.path.abspath(self._archive_path))
+            os.makedirs(out_dir, exist_ok=True)
+
+            entry_by_path: dict[str, dict] = {s["path"]: s for s in self._seq_entries}
+            errors: list[str] = []
+            written = 0
+
+            # Build font lookup tables once for the whole export pass.
+            seq_font_map  = _build_seq_font_map(self._archive_path)   # seq_idx → font_id
+            font_path_map = _build_font_path_map(self._archive_path)  # font_id → sfnt_arch_path
+
+            for seq_path, audio_path in list(self._seq_mapping.items()):
+                entry = entry_by_path.get(seq_path)
+                if entry is None:
+                    errors.append(f"Unknown entry: {seq_path}")
+                    continue
+                if not os.path.isfile(audio_path):
+                    errors.append(f"Audio file not found: {audio_path}")
+                    continue
+                try:
+                    with open(audio_path, "rb") as f:
+                        audio_bytes = f.read()
+                    rate, channels = _probe_audio(audio_path)
+                    frames     = _count_frames(audio_path, rate)
+                    length_ms  = int(frames * 1000 / rate) if rate and frames else 0
+                    stereo     = channels >= 2
+                    idx        = entry["seq_index"]
+                    medium     = entry["medium"]
+                    cache      = entry["cache"]
+                    ext        = os.path.splitext(audio_path)[1].lstrip(".") or "wav"
+                    slug       = entry["seq_name"].lower().replace(" ", "_")
+                    audio_asset  = f"ast_audio/seq_{idx:02d}_{slug}"
+                    sample_asset = f"{audio_asset}_sample"
+
+                    # Sequence XML stored at the original archive path so the
+                    # resource manager's CRC64 lookup matches the base entry.
+                    # embed_path=False: do NOT embed the audio path in the XML.
+                    # When Streamed=true and Path is absent, SequenceFactory generates
+                    # synthetic N64 bytecode (WriteMonoSingleSeq) that plays note 39
+                    # through instrument 0 of the sequence's default font.  That is the
+                    # path that actually reaches the N64 MIDI engine — embedding the real
+                    # audio bytes would make AudioLoad_SyncLoadSeq return raw OGG/WAV/MP3
+                    # data as the seqData pointer, which the sequencer interprets as
+                    # invalid opcodes and produces silence.
+                    # stereo=False: we export exactly one instrument (index 0); the stereo
+                    # generator uses instruments 0 and 1, which would cause a null-deref
+                    # when instrument 1 is looked up in our single-instrument font.
+                    seq_xml = _seq_make_xml_streamed(
+                        audio_asset, ext, idx, medium, cache,
+                        looped=True, stereo=False, length_ms=length_ms,
+                        embed_path=False)
+
+                    # Resample to 32 kHz mono for the instrument sample so
+                    # tuning = 1.0 and the engine's size/loop calculations are exact.
+                    sample_wav_arch = f"{sample_asset}.wav"
+                    sample_wav_bytes = _resample_to_32k_mono(audio_path)
+
+                    # Determine loop points for the instrument sample.
+                    # CODEC_S16 synthesis always dereferences loopInfo, so we must
+                    # always emit an <ADPCMLoop> element.  Default: loop the entire
+                    # file infinitely.  A user-edited override is stored in
+                    # self._seq_loop_overrides and snapped to zero crossings.
+                    import io as _io
+                    with wave.open(_io.BytesIO(sample_wav_bytes)) as _wv:
+                        _n_frames = _wv.getnframes()
+
+                    loop_override = getattr(self, "_seq_loop_overrides", {}).get(seq_path)
+                    if loop_override is not None:
+                        sample_loop = dict(loop_override)
+                        if sample_loop.get("count", 0) != 0:
+                            _ls, _le = _snap_loop_to_zero_crossings(
+                                sample_wav_bytes,
+                                sample_loop["start"], sample_loop["end"])
+                            sample_loop = dict(sample_loop, start=_ls, end=_le)
+                    else:
+                        # Default: loop the whole file from frame 0 to end.
+                        sample_loop = {
+                            "start": 0,
+                            "end":   _n_frames,
+                            "count": LOOP_INFINITE,
+                        }
+
+                    # Sample XML references the resampled 32 kHz mono file.
+                    sample_xml = _seq_make_sample_xml(sample_wav_arch, "wav",
+                                                      loop=sample_loop)
+
+                    mod_entries: dict[str, bytes] = {
+                        seq_path:                seq_xml.encode("utf-8"),
+                        f"{audio_asset}.{ext}":  audio_bytes,        # original for streaming
+                        sample_asset:            sample_xml.encode("utf-8"),
+                        sample_wav_arch:         sample_wav_bytes,   # 32 kHz mono for instrument
+                    }
+
+                    # SoundFont XML stored at the original font's archive path
+                    # so Audio_LoadFont (via ResourceGetDataByCrc) picks it up.
+                    font_id   = seq_font_map.get(idx)
+                    font_path = font_path_map.get(font_id) if font_id is not None else None
+                    if font_path:
+                        font_xml = _seq_make_font_xml(sample_asset)
+                        mod_entries[font_path] = font_xml.encode("utf-8")
+
+                    mod_name = f"seq_{idx:02d}_{slug}.o2r"
+                    mod_path = os.path.join(out_dir, mod_name)
+                    _upsert_mod_o2r(mod_path, mod_entries)
+                    written += 1
+                    for iid in self._seq_iids_by_path.get(seq_path, []):
+                        try:
+                            self._seq_tree.set(
+                                iid, "file", "✓ " + os.path.basename(audio_path))
+                        except Exception:
+                            pass
+                except Exception as e:
+                    errors.append(f"{os.path.basename(seq_path)}: {e}")
+                    for iid in self._seq_iids_by_path.get(seq_path, []):
+                        try:
+                            self._seq_tree.set(iid, "file", "✗")
+                        except Exception:
+                            pass
+
+            if errors:
+                messagebox.showerror(
+                    "Write errors",
+                    f"Written: {written}\n\nErrors:\n" + "\n".join(errors),
+                    parent=self)
+            else:
+                self._seq_status_var.set(
+                    f"Packed {written} sequence(s) → {out_dir}")
 
     App().mainloop()
 
