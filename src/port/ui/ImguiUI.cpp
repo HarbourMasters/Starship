@@ -812,6 +812,12 @@ void DrawModsMenu() {
             Ship::Context::GetInstance()->GetScriptLoader()->UnloadAll();
             GameEngine::LoadScripts();
         }
+        // Open mods folder button
+        if (UIWidgets::Button(ICON_FA_FOLDER_OPEN " Open Mods Folder", { .color = UIWidgets::Colors::Yellow, .size = ImVec2(0.0f, 0.0f),
+                                                                        .tooltip = "Opens the mods folder in your file explorer." })) {
+            std::string filesPath = Ship::Context::GetInstance()->GetAppDirectoryPath() + "/mods";
+            SDL_OpenURL(std::string("file:///" + std::filesystem::absolute(filesPath).string()).c_str());
+        }
         UIWidgets::PaddedSeparator(true, true);
 
         auto archiveManager = Ship::Context::GetInstance()->GetResourceManager()->GetArchiveManager();

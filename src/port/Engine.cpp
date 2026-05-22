@@ -220,27 +220,41 @@ GameEngine::GameEngine() {
 
     std::vector<std::string> includePaths = {
         Ship::Context::GetPathRelativeToAppDirectory(".tcc/include"),
+#ifdef _WIN32
         Ship::Context::GetPathRelativeToAppDirectory(".tcc/include/tcc"),
         Ship::Context::GetPathRelativeToAppDirectory(".tcc/include/winapi"),
         Ship::Context::GetPathRelativeToAppDirectory(".tcc/include/sys"),
         Ship::Context::GetPathRelativeToAppDirectory(".tcc/include/sec_api"),
+#endif
     };
+
+#ifdef __APPLE__
+    {
+        FILE* fp = popen("xcrun --show-sdk-path 2>/dev/null", "r");
+        if (fp) {
+            char buf[4096] = {};
+            if (fgets(buf, sizeof(buf), fp)) {
+                std::string sdkPath(buf);
+                sdkPath.erase(sdkPath.find_last_not_of("\n\r \t") + 1);
+                if (!sdkPath.empty()) {
+                    includePaths.push_back(sdkPath + "/usr/include");
+                }
+            }
+            pclose(fp);
+        }
+    }
+#endif
 
     std::vector<std::string> libraryPaths = {
         Ship::Context::GetPathRelativeToAppDirectory(".tcc/lib"),
     };
-    
-#ifdef _WIN32
-    std::vector<std::string> libraries = {
-        "Ghostship.def",
-    };
 
+#ifdef _WIN32
+    std::vector<std::string> libraries = { "Starship.def" };
     context->InitScriptLoader(defines, codeVersion, "-g -Wl", includePaths, libraryPaths, libraries);
 #else
     context->InitScriptLoader(defines, codeVersion, "-g -Wl", includePaths, libraryPaths, {});
 #endif
-
-    context->InitScriptLoader(defines, 1);
 
     context->GetResourceManager()->GetArchiveManager()->SetUntrustedArchiveHandler(
         [](Ship::Archive& archive, Ship::KeystoreEntry& key) {
