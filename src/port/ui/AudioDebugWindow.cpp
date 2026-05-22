@@ -3,6 +3,7 @@
 #include <imgui.h>
 #include <string>
 #include <vector>
+#include <unordered_map>
 #include <chrono>
 #include <thread>
 #include <cinttypes>
@@ -728,16 +729,17 @@ void AudioDebugWindow::DrawElement() {
     // ── Active Notes ─────────────────────────────────────────────────────────
     if (sShow_ActiveNotes) {
         struct NoteRow {
-            int         noteIdx;
-            int         playerIdx;
-            int         channelIdx;
-            s32         samplePos;
-            u32         loopStart, loopEnd, loopCount;
-            u16         resampleRate;
-            int         codec;
-            u32         sampleSize;
-            bool        isSynthetic;
-            bool        hasLoop;
+            int         noteIdx    = -1;
+            int         playerIdx  = -1;
+            int         channelIdx = -1;
+            s32         samplePos  = 0;
+            u32         loopStart = 0, loopEnd = 0, loopCount = 0;
+            u16         resampleRate = 0;
+            int         codec      = 0;
+            u32         sampleSize = 0;
+            bool        active     = false;
+            bool        isSynthetic = false;
+            bool        hasLoop    = false;
             std::string samplePath;
         };
 
@@ -748,72 +750,100 @@ void AudioDebugWindow::DrawElement() {
 
         auto capture = [&]() {
             std::vector<NoteRow> rows;
-            rows.reserve(32);
-            if (!gNotes || gNumNotes <= 0) { sCachedRows = std::move(rows); return; }
+            rows.reserve(SEQ_PLAYER_MAX * SEQ_NUM_CHANNELS);
 
-            for (int ni = 0; ni < gNumNotes; ni++) {
-                Note& n = gNotes[ni];
-                if (!n.noteSubEu.bitField0.enabled) continue;
+            // Build a reverse map: layer pointer → note index for quick lookup.
+            std::unordered_map<SequenceLayer*, int> layerToNote;
+            if (gNotes && gNumNotes > 0) {
+                for (int ni = 0; ni < gNumNotes; ni++) {
+                    Note& n = gNotes[ni];
+                    if (!n.noteSubEu.bitField0.enabled) continue;
+                    SequenceLayer* lay = n.playbackState.parentLayer;
+                    if (lay) layerToNote[lay] = ni;
+                }
+            }
 
-                NoteRow r{};
-                r.noteIdx      = ni;
-                r.samplePos    = n.synthesisState.samplePosInt;
-                r.resampleRate = n.noteSubEu.resampleRate;
-                r.isSynthetic  = (bool)n.noteSubEu.bitField1.isSyntheticWave;
+            // Iterate every player → channel → layer, one row per channel.
+            // Channels with no active note appear as idle rows so the full
+            // channel grid (SEQ_PLAYER_MAX × SEQ_NUM_CHANNELS) is always visible.
+            for (int pi = 0; pi < SEQ_PLAYER_MAX; pi++) {
+                const SequencePlayer& p = gSeqPlayers[pi];
+                for (int ci = 0; ci < SEQ_NUM_CHANNELS; ci++) {
+                    SequenceChannel* ch = p.channels[ci];
+                    if (!IS_SEQUENCE_CHANNEL_VALID(ch)) {
+                        // Show a blank idle row so the channel index is visible.
+                        NoteRow r{};
+                        r.playerIdx  = pi;
+                        r.channelIdx = ci;
+                        rows.push_back(r);
+                        continue;
+                    }
 
-                {
-                    SequenceLayer* layer = n.playbackState.parentLayer;
-                    if (layer >= &gSeqLayers[0] && layer < &gSeqLayers[64]) {
-                        SequenceChannel* ch = layer->channel;
-                        if (ch >= &gSeqChannels[0] && ch < &gSeqChannels[48]) {
-                            SequencePlayer* sp = ch->seqPlayer;
-                            if (sp >= &gSeqPlayers[0] && sp < &gSeqPlayers[SEQ_PLAYER_MAX]) {
-                                r.playerIdx = (int)(sp - gSeqPlayers);
-                                for (int ci = 0; ci < SEQ_NUM_CHANNELS; ci++) {
-                                    if (sp->channels[ci] == ch) { r.channelIdx = ci; break; }
+                    // Collect every layer that currently has an active note.
+                    bool anyNote = false;
+                    for (int li = 0; li < (int)ARRAY_COUNT(ch->layers); li++) {
+                        SequenceLayer* layer = ch->layers[li];
+                        if (!layer) continue;
+                        auto it = layerToNote.find(layer);
+                        if (it == layerToNote.end()) continue;
+
+                        int ni = it->second;
+                        Note& n = gNotes[ni];
+
+                        NoteRow r{};
+                        r.noteIdx     = ni;
+                        r.playerIdx   = pi;
+                        r.channelIdx  = ci;
+                        r.active      = true;
+                        r.samplePos   = n.synthesisState.samplePosInt;
+                        r.resampleRate = n.noteSubEu.resampleRate;
+                        r.isSynthetic = (bool)n.noteSubEu.bitField1.isSyntheticWave;
+
+                        if (!r.isSynthetic) {
+                            ::Sample* const* addrPtr = n.noteSubEu.waveSampleAddr;
+                            ::Sample* s = addrPtr ? *addrPtr : nullptr;
+                            if (s) {
+                                r.codec      = (int)s->codec;
+                                r.sampleSize = s->size;
+                                ::AdpcmLoop* loop = s->loop;
+                                if (loop) {
+                                    r.loopStart = loop->start;
+                                    r.loopEnd   = loop->end;
+                                    r.loopCount = loop->count;
+                                    r.hasLoop   = (loop->count != 0);
+                                }
+                                std::lock_guard<std::mutex> lk(gSamplePathMapMutex);
+                                for (auto& [sd, path] : gSamplePathMap) {
+                                    if (reinterpret_cast<void*>(s) == reinterpret_cast<void*>(sd) ||
+                                        (s->sampleAddr &&
+                                         reinterpret_cast<void*>(s->sampleAddr) == reinterpret_cast<void*>(sd))) {
+                                        r.samplePath = path;
+                                        break;
+                                    }
+                                }
+                                if (r.samplePath.empty() && gSnapshotReady.load(std::memory_order_relaxed)) {
+                                    AudioDebugSnapshot snap = AudioDebug_GetSnapshot();
+                                    if (snap.sample &&
+                                        reinterpret_cast<void*>(s) == reinterpret_cast<void*>(snap.sample))
+                                        r.samplePath = AudioDebug_GetSamplePath(snap.sample);
                                 }
                             }
+                        } else {
+                            r.samplePath = "(synthetic wave)";
                         }
+
+                        rows.push_back(std::move(r));
+                        anyNote = true;
+                    }
+
+                    if (!anyNote) {
+                        // Valid channel but no note playing — show idle row.
+                        NoteRow r{};
+                        r.playerIdx  = pi;
+                        r.channelIdx = ci;
+                        rows.push_back(r);
                     }
                 }
-
-                if (!r.isSynthetic) {
-                    auto tryReadSample = [&]() {
-                        ::Sample* const* addrPtr = n.noteSubEu.waveSampleAddr;
-                        if (!addrPtr) return;
-                        ::Sample* s = *addrPtr;
-                        if (!s) return;
-                        r.codec      = (int)s->codec;
-                        r.sampleSize = s->size;
-                        ::AdpcmLoop* loop = s->loop;
-                        if (loop) {
-                            r.loopStart = loop->start;
-                            r.loopEnd   = loop->end;
-                            r.loopCount = loop->count;
-                            r.hasLoop   = (loop->count != 0);
-                        }
-                        std::lock_guard<std::mutex> lk(gSamplePathMapMutex);
-                        for (auto& [sd, path] : gSamplePathMap) {
-                            if (reinterpret_cast<void*>(s) == reinterpret_cast<void*>(sd) ||
-                                (s->sampleAddr &&
-                                 reinterpret_cast<void*>(s->sampleAddr) == reinterpret_cast<void*>(sd))) {
-                                r.samplePath = path;
-                                return;
-                            }
-                        }
-                        if (r.samplePath.empty() && gSnapshotReady.load(std::memory_order_relaxed)) {
-                            AudioDebugSnapshot snap = AudioDebug_GetSnapshot();
-                            if (snap.sample &&
-                                reinterpret_cast<void*>(s) == reinterpret_cast<void*>(snap.sample))
-                                r.samplePath = AudioDebug_GetSamplePath(snap.sample);
-                        }
-                    };
-                    tryReadSample();
-                } else {
-                    r.samplePath = "(synthetic wave)";
-                }
-
-                rows.push_back(std::move(r));
             }
             sCachedRows = std::move(rows);
         };
@@ -851,14 +881,16 @@ void AudioDebugWindow::DrawElement() {
             if (ImGui::Button("Capture Now")) { capture(); sLastRefreshTime = now; }
 
             ImGui::SameLine();
-            ImGui::TextDisabled("  %d voice(s)", (int)sCachedRows.size());
+            {
+                int active = 0;
+                for (auto& r : sCachedRows) if (r.active) active++;
+                ImGui::TextDisabled("  %d active / %d channel(s)", active, (int)sCachedRows.size());
+            }
             if (sFreeze) { ImGui::SameLine(); ImGui::TextColored(ImVec4(1.f,0.7f,0.1f,1.f), "[FROZEN]"); }
 
             ImGui::Separator();
 
-            if (sCachedRows.empty()) {
-                ImGui::TextDisabled("No active voices.");
-            } else if (ImGui::BeginTable("##notes", 10,
+            if (ImGui::BeginTable("##notes", 10,
                     ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg |
                     ImGuiTableFlags_ScrollY | ImGuiTableFlags_SizingFixedFit |
                     ImGuiTableFlags_ScrollX,
@@ -880,19 +912,23 @@ void AudioDebugWindow::DrawElement() {
                 for (auto& r : sCachedRows) {
                     ImGui::TableNextRow();
 
+                    // Dim idle rows so active ones stand out.
+                    if (!r.active)
+                        ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_TextDisabled));
+
                     ImGui::TableSetColumnIndex(0);
-                    ImGui::Text("%d", r.noteIdx);
+                    if (r.noteIdx >= 0)
+                        ImGui::Text("%d", r.noteIdx);
+                    else
+                        ImGui::TextDisabled("-");
 
                     ImGui::TableSetColumnIndex(1);
-                    if (r.playerIdx >= 0 && r.channelIdx >= 0)
-                        ImGui::Text("%d/%d", r.playerIdx, r.channelIdx);
-                    else if (r.playerIdx >= 0)
-                        ImGui::Text("%d/?", r.playerIdx);
-                    else
-                        ImGui::TextDisabled("?");
+                    ImGui::Text("%s/%d", SeqPlayerName(r.playerIdx), r.channelIdx);
 
                     ImGui::TableSetColumnIndex(2);
-                    if (r.isSynthetic) {
+                    if (!r.active) {
+                        ImGui::TextDisabled("(idle)");
+                    } else if (r.isSynthetic) {
                         ImGui::TextDisabled("(synthetic)");
                     } else if (r.samplePath.empty()) {
                         ImGui::TextDisabled("(unknown)");
@@ -907,38 +943,47 @@ void AudioDebugWindow::DrawElement() {
                     }
 
                     ImGui::TableSetColumnIndex(3);
-                    ImGui::TextUnformatted(CodecName(r.codec));
+                    if (r.active) ImGui::TextUnformatted(CodecName(r.codec));
+                    else          ImGui::TextDisabled("-");
 
                     ImGui::TableSetColumnIndex(4);
-                    ImGui::Text("%u B", r.sampleSize);
+                    if (r.active) ImGui::Text("%u B", r.sampleSize);
+                    else          ImGui::TextDisabled("-");
 
                     ImGui::TableSetColumnIndex(5);
-                    if (r.hasLoop && r.loopEnd > r.loopStart) {
-                        u32 len = r.loopEnd - r.loopStart;
-                        s32 posInLoop = r.samplePos - (s32)r.loopStart;
-                        float frac = (posInLoop >= 0) ? (float)posInLoop / (float)len : 0.f;
-                        frac = frac < 0.f ? 0.f : frac > 1.f ? 1.f : frac;
-                        char ov[32]; snprintf(ov, sizeof(ov), "%d", r.samplePos);
-                        ImGui::PushStyleColor(ImGuiCol_PlotHistogram, ImVec4(0.2f,0.6f,1.f,1.f));
-                        ImGui::ProgressBar(frac, ImVec2(110.f, 0.f), ov);
-                        ImGui::PopStyleColor();
+                    if (r.active) {
+                        if (r.hasLoop && r.loopEnd > r.loopStart) {
+                            u32 len = r.loopEnd - r.loopStart;
+                            s32 posInLoop = r.samplePos - (s32)r.loopStart;
+                            float frac = (posInLoop >= 0) ? (float)posInLoop / (float)len : 0.f;
+                            frac = frac < 0.f ? 0.f : frac > 1.f ? 1.f : frac;
+                            char ov[32]; snprintf(ov, sizeof(ov), "%d", r.samplePos);
+                            ImGui::PushStyleColor(ImGuiCol_PlotHistogram, ImVec4(0.2f,0.6f,1.f,1.f));
+                            ImGui::ProgressBar(frac, ImVec2(110.f, 0.f), ov);
+                            ImGui::PopStyleColor();
+                        } else {
+                            ImGui::Text("%d", r.samplePos);
+                        }
                     } else {
-                        ImGui::Text("%d", r.samplePos);
+                        ImGui::TextDisabled("-");
                     }
 
                     ImGui::TableSetColumnIndex(6);
-                    ImGui::TextColored(r.hasLoop ? ImVec4(0.4f,1.f,0.4f,1.f)
-                                                 : ImVec4(0.5f,0.5f,0.5f,1.f),
-                                       r.hasLoop ? "Y" : "N");
+                    if (r.active)
+                        ImGui::TextColored(r.hasLoop ? ImVec4(0.4f,1.f,0.4f,1.f)
+                                                     : ImVec4(0.5f,0.5f,0.5f,1.f),
+                                           r.hasLoop ? "Y" : "N");
+                    else
+                        ImGui::TextDisabled("-");
 
                     ImGui::TableSetColumnIndex(7);
-                    if (r.hasLoop) ImGui::Text("%u", r.loopStart); else ImGui::TextDisabled("-");
+                    if (r.active && r.hasLoop) ImGui::Text("%u", r.loopStart); else ImGui::TextDisabled("-");
 
                     ImGui::TableSetColumnIndex(8);
-                    if (r.hasLoop) ImGui::Text("%u", r.loopEnd);   else ImGui::TextDisabled("-");
+                    if (r.active && r.hasLoop) ImGui::Text("%u", r.loopEnd); else ImGui::TextDisabled("-");
 
                     ImGui::TableSetColumnIndex(9);
-                    if (r.hasLoop) {
+                    if (r.active && r.hasLoop) {
                         if (r.loopCount == 0xFFFFFFFF)
                             ImGui::TextColored(ImVec4(0.4f,0.8f,1.f,1.f), "inf");
                         else
@@ -946,6 +991,9 @@ void AudioDebugWindow::DrawElement() {
                     } else {
                         ImGui::TextDisabled("-");
                     }
+
+                    if (!r.active)
+                        ImGui::PopStyleColor();
                 }
                 ImGui::EndTable();
             }
