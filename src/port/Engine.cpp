@@ -196,7 +196,6 @@ GameEngine::GameEngine() {
     SPDLOG_INFO("Starting Starship version {} (Branch: {} | Commit: {})", (char*)gBuildVersion, (char*)gGitBranch,
                 (char*)gGitCommitHash);
 
-    context->InitGfxDebugger();
     context->InitFileDropMgr();
     context->InitCrashHandler();
 

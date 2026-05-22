@@ -10,6 +10,8 @@
 #include <imgui_internal.h>
 #include <libultraship/libultraship.h>
 #include <fast/interpreter.h>
+#include <fast/Fast3dWindow.h>
+#include <fast/Fast3dGui.h>
 #include "port/Engine.h"
 #include "port/hooks/Events.h"
 #include "port/notification/notification.h"
@@ -475,7 +477,7 @@ void DrawSettingsMenu() {
         UIWidgets::PaddedEnhancementCheckbox("Match Refresh Rate", "gMatchRefreshRate", true, false);
         UIWidgets::Tooltip("Matches interpolation value to the refresh rate of your display.");
 
-        if (Ship::Context::GetInstance()->GetWindow()->GetWindowBackend() == Ship::WindowBackend::FAST3D_DXGI_DX11) {
+        if (Ship::Context::GetInstance()->GetWindow()->GetWindowBackend() == Fast::WindowBackend::FAST3D_DXGI_DX11) {
             UIWidgets::PaddedEnhancementCheckbox("Render parallelization", "gRenderParallelization", true, false, {},
                                                  {}, {}, true);
             UIWidgets::Tooltip(
@@ -487,19 +489,18 @@ void DrawSettingsMenu() {
 
         UIWidgets::PaddedSeparator(true, true, 3.0f, 3.0f);
 
-        static std::unordered_map<Ship::WindowBackend, const char*> windowBackendNames = {
-            { Ship::WindowBackend::FAST3D_DXGI_DX11, "DirectX" },
-            { Ship::WindowBackend::FAST3D_SDL_OPENGL, "OpenGL" },
-            { Ship::WindowBackend::FAST3D_SDL_METAL, "Metal" }
+        static std::unordered_map<int32_t, const char*> windowBackendNames = {
+            { Fast::WindowBackend::FAST3D_DXGI_DX11, "DirectX" },
+            { Fast::WindowBackend::FAST3D_SDL_OPENGL, "OpenGL" },
+            { Fast::WindowBackend::FAST3D_SDL_METAL, "Metal" }
         };
 
         ImGui::Text("Renderer API (Needs reload)");
-        Ship::WindowBackend runningWindowBackend = Ship::Context::GetInstance()->GetWindow()->GetWindowBackend();
-        Ship::WindowBackend configWindowBackend;
+        int32_t runningWindowBackend = Ship::Context::GetInstance()->GetWindow()->GetWindowBackend();
+        int32_t configWindowBackend;
         int configWindowBackendId = Ship::Context::GetInstance()->GetConfig()->GetInt("Window.Backend.Id", -1);
-        if (configWindowBackendId != -1 &&
-            configWindowBackendId < static_cast<int>(Ship::WindowBackend::WINDOW_BACKEND_COUNT)) {
-            configWindowBackend = static_cast<Ship::WindowBackend>(configWindowBackendId);
+        if (configWindowBackendId > 0) {
+            configWindowBackend = configWindowBackendId;
         } else {
             configWindowBackend = runningWindowBackend;
         }
@@ -564,7 +565,7 @@ void DrawMenuBarIcon() {
         gameIconLoaded = false;
     }
 
-    if (Ship::Context::GetInstance()->GetWindow()->GetGui()->GetTextureByName("Game_Icon")) {
+    if (std::static_pointer_cast<Fast::Fast3dGui>(Ship::Context::GetInstance()->GetWindow()->GetGui())->GetTextureByName("Game_Icon")) {
 #ifdef __SWITCH__
         ImVec2 iconSize = ImVec2(20.0f, 20.0f);
         float posScale = 1.0f;
@@ -576,7 +577,7 @@ void DrawMenuBarIcon() {
         float posScale = 1.5f;
 #endif
         ImGui::SetCursorPos(ImVec2(5, 2.5f) * posScale);
-        ImGui::Image(Ship::Context::GetInstance()->GetWindow()->GetGui()->GetTextureByName("Game_Icon"), iconSize);
+        ImGui::Image(std::static_pointer_cast<Fast::Fast3dGui>(Ship::Context::GetInstance()->GetWindow()->GetGui())->GetTextureByName("Game_Icon"), iconSize);
         ImGui::SameLine();
         ImGui::SetCursorPos(ImVec2(25, 0) * posScale);
     }

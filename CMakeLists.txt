@@ -349,6 +349,7 @@ include_directories(
   ${dr_libs_SOURCE_DIR}
 )
 
+set(ENABLE_SCRIPTING ON CACHE BOOL "" FORCE)
 add_subdirectory(libultraship ${CMAKE_CURRENT_SOURCE_DIR}/libultraship)
 add_dependencies(${PROJECT_NAME} libultraship)
 target_link_libraries(${PROJECT_NAME} PRIVATE "$<LINK_LIBRARY:WHOLE_ARCHIVE,libultraship>")
