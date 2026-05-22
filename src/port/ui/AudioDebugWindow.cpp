@@ -909,8 +909,9 @@ void AudioDebugWindow::DrawElement() {
                 ImGui::TableSetupColumn("LoopCount", ImGuiTableColumnFlags_WidthFixed,  64.f);
                 ImGui::TableHeadersRow();
 
+                const float rowH = ImGui::GetFrameHeight();
                 for (auto& r : sCachedRows) {
-                    ImGui::TableNextRow();
+                    ImGui::TableNextRow(ImGuiTableRowFlags_None, rowH);
 
                     // Dim idle rows so active ones stand out.
                     if (!r.active)
