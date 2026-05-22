@@ -7,49 +7,6 @@ include(FetchContent)
 include(cmake/starship-cvars.cmake)
 include(cmake/lus-cvars.cmake)
 
-set(VENV_PATH "${CMAKE_CURRENT_BINARY_DIR}/venv")
-
-if(WIN32)
-    set(VENV_PYTHON "${VENV_PATH}/Scripts/python.exe")
-else()
-    set(VENV_PYTHON "${VENV_PATH}/bin/python")
-endif()
-
-if(NOT EXISTS "${VENV_PYTHON}")
-    message(STATUS "Creating Python virtual environment...")
-    find_package(Python3 COMPONENTS Interpreter REQUIRED)
-    execute_process(
-        COMMAND ${Python3_EXECUTABLE} -m venv ${VENV_PATH}
-        RESULT_VARIABLE VENV_RET
-    )
-    if(NOT VENV_RET EQUAL 0)
-        message(FATAL_ERROR "Failed to create virtual environment")
-    endif()
-endif()
-
-message(STATUS "Ensuring cryptography is installed in venv...")
-execute_process(
-    COMMAND "${VENV_PYTHON}" -m pip install cryptography
-    RESULT_VARIABLE PIP_RET
-)
-
-if(NOT PIP_RET EQUAL 0)
-    message(FATAL_ERROR "Failed to install cryptography in venv")
-endif()
-
-set(Python3_EXECUTABLE ${VENV_PYTHON} CACHE FILEPATH "Path to venv python" FORCE)
-set(Python_EXECUTABLE ${VENV_PYTHON} CACHE FILEPATH "Path to venv python" FORCE)
-set(Python3_ROOT_DIR "${VENV_PATH}" CACHE PATH "Root dir of venv python" FORCE)
-set(Python3_FIND_VIRTUALENV FIRST CACHE STRING "Prefer venv python" FORCE)
-
-unset(Python3_FOUND CACHE)
-unset(Python3_Interpreter_FOUND CACHE)
-unset(Python3_INTERPRETER_ID CACHE)
-
-find_package(Python3 REQUIRED COMPONENTS Interpreter)
-
-message(STATUS "Using Python from venv: ${Python3_EXECUTABLE}")
-
 set(NATO_PHONETIC_ALPHABET
   "Alfa" "Bravo" "Charlie" "Delta" "Echo" "Foxtrot" "Golf" "Hotel"
   "India" "Juliett" "Kilo" "Lima" "Mike" "November" "Oscar" "Papa"
@@ -690,51 +647,11 @@ add_custom_command(
 	COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/assets/" "$<TARGET_FILE_DIR:Starship>/assets/"
 )
 
-if (MSVC)
-    add_custom_command(
-        TARGET ${PROJECT_NAME} POST_BUILD
-        COMMENT "Packaging all generated .lib files into Starship.sdk..."
-        COMMAND cmd /c "lib.exe /NOLOGO /OUT:\"$<TARGET_FILE_DIR:Starship>/Starship.sdk\" \"$<TARGET_FILE_DIR:Starship>/*.lib\""
-    )
-    add_custom_command(
-        TARGET ${PROJECT_NAME} POST_BUILD
-        COMMENT "Copying libtcc headers and libs..."
-        COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:Starship>/.tcc/"
-        COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:Starship>/.tcc/lib/"
-        COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:Starship>/.tcc/include/"
-        COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_BINARY_DIR}/_deps/tinycc-src/include/" "$<TARGET_FILE_DIR:Starship>/.tcc/include/"
-        COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_BINARY_DIR}/_deps/tinycc-src/win32/include/" "$<TARGET_FILE_DIR:Starship>/.tcc/include/"
-        COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE:libtcc1>" "$<TARGET_FILE_DIR:Starship>/.tcc/lib/libtcc1$<TARGET_FILE_SUFFIX:libtcc1>"
-        VERBATIM
-    )
-    add_custom_command(
-        TARGET ${PROJECT_NAME} POST_BUILD
-        COMMENT "Generating .def file..."
-        COMMAND "${CMAKE_BINARY_DIR}/_deps/tinycc-src/win32/tcc.exe" -impdef "$<TARGET_FILE:Starship>" -o "$<TARGET_FILE_DIR:Starship>/.tcc/lib/Starship.def"
-        VERBATIM
-    )
-elseif (CMAKE_SYSTEM_NAME STREQUAL "Linux")
-    add_custom_command(
-        TARGET ${PROJECT_NAME} POST_BUILD
-        COMMENT "Copying libtcc headers and libs..."
-        COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:Starship>/.tcc/"
-        COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:Starship>/.tcc/lib/"
-        COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:Starship>/.tcc/include/"
-        COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_BINARY_DIR}/_deps/tinycc-src/include/" "$<TARGET_FILE_DIR:Starship>/.tcc/include/"
-        COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE:libtcc1>" "$<TARGET_FILE_DIR:Starship>/.tcc/lib/libtcc1.a"
-        VERBATIM
-    )
-elseif (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-    add_custom_command(
-        TARGET ${PROJECT_NAME} POST_BUILD
-        COMMENT "Copying libtcc headers and libs..."
-        COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:Starship>/.tcc/"
-        COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:Starship>/.tcc/lib/"
-        COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:Starship>/.tcc/include/"
-        COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_BINARY_DIR}/_deps/tinycc-src/include/" "$<TARGET_FILE_DIR:Starship>/.tcc/include/"
-        COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE:libtcc1>" "$<TARGET_FILE_DIR:Starship>/.tcc/lib/libtcc1.a"
-        VERBATIM
-    )
+include(${CMAKE_CURRENT_SOURCE_DIR}/libultraship/cmake/SetupTccRuntime.cmake)
+if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
+    lus_setup_tcc_runtime(${PROJECT_NAME} RESOURCES_DIR "../Resources/.tcc")
+else()
+    lus_setup_tcc_runtime(${PROJECT_NAME})
 endif()
 
 if(NOT CMAKE_SYSTEM_NAME STREQUAL "NintendoSwitch")
@@ -773,13 +690,11 @@ if("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux")
   install(FILES "${CMAKE_BINARY_DIR}/starship.o2r" DESTINATION . COMPONENT ${PROJECT_NAME})
   install(DIRECTORY "${CMAKE_SOURCE_DIR}/assets/" DESTINATION ./assets COMPONENT ${PROJECT_NAME})
   install(FILES "${CMAKE_BINARY_DIR}/config.yml" DESTINATION . COMPONENT ${PROJECT_NAME})
-  install(DIRECTORY "$<TARGET_FILE_DIR:Starship>/.tcc/" DESTINATION ./.tcc COMPONENT ${PROJECT_NAME})
 endif()
 
 if ("${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
   install(FILES $<TARGET_PDB_FILE:${PROJECT_NAME}> DESTINATION ./debug COMPONENT ${PROJECT_NAME})
   install(FILES "${CMAKE_BINARY_DIR}/starship.o2r" DESTINATION . COMPONENT ${PROJECT_NAME})
-  install(DIRECTORY "$<TARGET_FILE_DIR:Starship>/.tcc/" DESTINATION ./.tcc COMPONENT ${PROJECT_NAME})
 endif()
 
 if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
@@ -807,8 +722,9 @@ add_custom_target(CreateOSXIcons
     INSTALL(FILES ${CMAKE_BINARY_DIR}/config.yml DESTINATION ../Resources COMPONENT Starship)
     INSTALL(DIRECTORY ${CMAKE_BINARY_DIR}/assets/ DESTINATION ../Resources/assets COMPONENT Starship)
 
-    INSTALL(FILES "$<TARGET_FILE:libtcc>" DESTINATION ../MacOS COMPONENT Starship)
-    INSTALL(DIRECTORY "$<TARGET_FILE_DIR:Starship>/.tcc/" DESTINATION ../Resources/.tcc COMPONENT Starship)
+    if(ENABLE_SCRIPTING)
+        INSTALL(FILES "$<TARGET_FILE:libtcc>" DESTINATION ../MacOS COMPONENT Starship)
+    endif()
 
     # Fix bundle to include and relink all dependencies
     install(CODE "

@@ -35,15 +35,9 @@ jobs:
           cmake ..
           make
           sudo make install
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - name: Install Python dependencies
-        run: pip install -r libultraship/requirements.txt
       - name: Build
         run: |
-          cmake -H. -Bbuild-cmake -GNinja -DCMAKE_BUILD_TYPE=Release -DPython3_EXECUTABLE=$(which python3)
+          cmake -H. -Bbuild-cmake -GNinja -DCMAKE_BUILD_TYPE=Release
           cmake --build build-cmake -j
       - name: Create Package
         run: |

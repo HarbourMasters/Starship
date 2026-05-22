@@ -52,16 +52,10 @@ jobs:
           submodules: recursive
       - name: Setup MSVC
         uses: ilammy/msvc-dev-cmd@v1
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - name: Install Python dependencies
-        run: pip install -r libultraship/requirements.txt
       - name: Build
         run: |
           $env:VCPKG_ROOT=""
-          cmake -S . -B "build/x64" -G "Visual Studio 17 2022" -T v143 -A x64 -DCMAKE_BUILD_TYPE=Release -DPython3_EXECUTABLE="$(python -c 'import sys; print(sys.executable)')"
+          cmake -S . -B "build/x64" -G "Visual Studio 17 2022" -T v143 -A x64 -DCMAKE_BUILD_TYPE=Release
           cmake --build ./build/x64 --config Release --parallel 10
       - name: Download starship.o2r
         uses: actions/download-artifact@v4
@@ -96,15 +90,9 @@ jobs:
       - uses: hendrikmuhs/ccache-action@v1.2
         with:
           key: macos # ccache-macos
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - name: Install Python dependencies
-        run: pip install -r libultraship/requirements.txt
       - name: Build
         run: |
-          cmake -H. -Bbuild-cmake -GNinja -DCMAKE_BUILD_TYPE=Release -D CMAKE_C_COMPILER_LAUNCHER=ccache -D CMAKE_CXX_COMPILER_LAUNCHER=ccache -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64" -DPython3_EXECUTABLE=$(which python3)
+          cmake -H. -Bbuild-cmake -GNinja -DCMAKE_BUILD_TYPE=Release -D CMAKE_C_COMPILER_LAUNCHER=ccache -D CMAKE_CXX_COMPILER_LAUNCHER=ccache -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64"
           cmake --build build-cmake -j
       - name: Download starship.o2r
         uses: actions/download-artifact@v4
@@ -192,12 +180,6 @@ jobs:
           make
           sudo make install
           sudo cp -av /usr/local/lib/libzip* /lib/x86_64-linux-gnu/
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - name: Install Python dependencies
-        run: pip install -r libultraship/requirements.txt
       - name: Download starship.o2r
         uses: actions/download-artifact@v4
         with:
@@ -205,7 +187,7 @@ jobs:
           path: ./build-cmake
       - name: Build
         run: |
-          cmake -H. -Bbuild-cmake -GNinja -DCMAKE_BUILD_TYPE=Release -DPython3_EXECUTABLE=$(which python3)
+          cmake -H. -Bbuild-cmake -GNinja -DCMAKE_BUILD_TYPE=Release
           cmake --build build-cmake --config Release -j3
           (cd build-cmake && cpack -G External)
           wget -O gamecontrollerdb.txt https://raw.githubusercontent.com/mdqinc/SDL_GameControllerDB/master/gamecontrollerdb.txt
