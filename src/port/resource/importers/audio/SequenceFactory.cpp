@@ -2,9 +2,9 @@
 #include "spdlog/spdlog.h"
 #include <tinyxml2.h>
 #include <cstring>
-#include "Context.h"
-#include "resource/ResourceManager.h"
-#include "utils/binarytools/BinaryWriter.h"
+#include <ship/Context.h>
+#include <ship/resource/ResourceManager.h>
+#include <ship/utils/binarytools/BinaryWriter.h>
 #include "port/audio/AudioDebug.h"
 
 namespace SF64 {

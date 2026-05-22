@@ -74,10 +74,9 @@ void SetupGuiElements() {
     mInputEditorWindow = gui->GetGuiWindow("Input Editor");
     if (mInputEditorWindow == nullptr) {
         SPDLOG_ERROR("Could not find input editor window");
-        return;
     }
 
-    mGfxDebuggerWindow = gui->GetGuiWindow("GfxDebuggerWindow");
+    mGfxDebuggerWindow = gui->GetGuiWindow("Gfx Debugger");
     if (mGfxDebuggerWindow == nullptr) {
         SPDLOG_ERROR("Could not find input GfxDebuggerWindow");
     }

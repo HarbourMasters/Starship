@@ -2,17 +2,15 @@
 #include "../ResourceUtil.h"
 #include "port/resource/type/audio/Sample.h"
 #include "port/audio/AudioDebug.h"
-#include "sf64audio_provisional.h"
 #include "spdlog/spdlog.h"
 #define DR_WAV_IMPLEMENTATION
 #include <dr_wav.h>
 #include <tinyxml2.h>
 #define DR_MP3_IMPLEMENTATION
 #include <dr_mp3.h>
-#include "port/resource/type/audio/Sample.h"
-#include "sf64audio_provisional.h"
-
 #include "vorbis/vorbisfile.h"
+
+#include "sf64audio_provisional.h"
 
 namespace SF64 {
 std::shared_ptr<Ship::IResource> ResourceFactoryBinarySampleV1::ReadResource(std::shared_ptr<Ship::File> file,

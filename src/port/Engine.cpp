@@ -32,6 +32,8 @@
 
 #include "port/interpolation/FrameInterpolation.h"
 #include <fast/Fast3dWindow.h>
+#include <libultraship/window/gui/InputEditorWindow.h>
+#include <libultraship/window/gui/GfxDebuggerWindow.h>
 #include <fast/resource/factory/DisplayListFactory.h>
 #include <fast/resource/factory/TextureFactory.h>
 #include <fast/resource/factory/MatrixFactory.h>
@@ -182,7 +184,10 @@ GameEngine::GameEngine() {
     context->InitResourceManager(archiveFiles, {}, 3);
     context->InitConsole();
 
-    auto window = std::make_shared<Fast::Fast3dWindow>(std::vector<std::shared_ptr<Ship::GuiWindow>>({}));
+    auto window = std::make_shared<Fast::Fast3dWindow>(std::vector<std::shared_ptr<Ship::GuiWindow>>({
+        std::make_shared<LUS::InputEditorWindow>("gInputEditorWindow", "Input Editor"),
+        std::make_shared<LUS::GfxDebuggerWindow>("gGfxDebuggerEnabled", "Gfx Debugger"),
+    }));
     context->InitWindow(window);
     context->InitEventSystem();
 
