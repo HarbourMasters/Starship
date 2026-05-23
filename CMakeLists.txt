@@ -320,6 +320,7 @@ FetchContent_Declare(
     GIT_TAG        1.91.9bdock
     GIT_SUBMODULES ""
 )
+cmake_policy(SET CMP0169 OLD)
 FetchContent_Populate(cimgui)
 FetchContent_GetProperties(ImGui)
 file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/_deps")
@@ -648,11 +649,15 @@ add_custom_command(
 )
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/libultraship/cmake/SetupTccRuntime.cmake)
+
+
+set(PROPERTY_READER_GUARD_DISABLED TRUE)
 if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
     lus_setup_tcc_runtime(${PROJECT_NAME} RESOURCES_DIR "../Resources/.tcc")
 else()
     lus_setup_tcc_runtime(${PROJECT_NAME})
 endif()
+unset(PROPERTY_READER_GUARD_DISABLED)
 
 if(NOT CMAKE_SYSTEM_NAME STREQUAL "NintendoSwitch")
 include(ExternalProject)

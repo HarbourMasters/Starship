@@ -218,14 +218,20 @@ GameEngine::GameEngine() {
         { "AVOID_UB", "1" }
     };
 
+#ifdef _WIN32
+    const std::string tccBase = Ship::Context::GetAppBundlePath() + "/.tcc";
+    std::vector<std::string> includePaths = {
+        tccBase + "/include",
+        tccBase + "/include/tcc",
+        tccBase + "/include/winapi",
+        tccBase + "/include/sys",
+        tccBase + "/include/sec_api",
+    };
+    std::vector<std::string> libraryPaths = { tccBase + "/lib" };
+    context->InitScriptLoader(defines, codeVersion, "-g -rdynamic", includePaths, libraryPaths, { "Starship" });
+#else
     std::vector<std::string> includePaths = {
         Ship::Context::GetPathRelativeToAppDirectory(".tcc/include"),
-#ifdef _WIN32
-        Ship::Context::GetPathRelativeToAppDirectory(".tcc/include/tcc"),
-        Ship::Context::GetPathRelativeToAppDirectory(".tcc/include/winapi"),
-        Ship::Context::GetPathRelativeToAppDirectory(".tcc/include/sys"),
-        Ship::Context::GetPathRelativeToAppDirectory(".tcc/include/sec_api"),
-#endif
     };
 
 #ifdef __APPLE__
@@ -248,12 +254,7 @@ GameEngine::GameEngine() {
     std::vector<std::string> libraryPaths = {
         Ship::Context::GetPathRelativeToAppDirectory(".tcc/lib"),
     };
-
-#ifdef _WIN32
-    std::vector<std::string> libraries = { "Starship.def" };
-    context->InitScriptLoader(defines, codeVersion, "-g -Wl", includePaths, libraryPaths, libraries);
-#else
-    context->InitScriptLoader(defines, codeVersion, "-g -Wl", includePaths, libraryPaths, {});
+    context->InitScriptLoader(defines, codeVersion, "-g -rdynamic", includePaths, libraryPaths, {});
 #endif
 
     context->GetResourceManager()->GetArchiveManager()->SetUntrustedArchiveHandler(

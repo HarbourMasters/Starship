@@ -9,7 +9,7 @@
 extern_s s32 gSceneId;
 extern_s s32 gSceneSetup;
 extern_s s32 gClearPlayerInfo;
-extern_s s32 D_ctx_8017782C;
+extern_s bool D_ctx_8017782C;
 extern_s GameState gGameState;
 extern_s s32 gNextGameStateTimer;
 extern_s s32 gVsItemSpawnTimer;
