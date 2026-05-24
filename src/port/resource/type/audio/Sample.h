@@ -17,6 +17,9 @@ struct SampleData {
     AdpcmLoopData* loop;
     AdpcmBookData* book;
     float tuning = 0.0f;
+    uint32_t channels = 1;
+    uint32_t sampleRate = 32000;
+    uint32_t numFrames = 0;
 };
 
 class Sample : public Ship::Resource<SampleData> {

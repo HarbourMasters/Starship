@@ -1,8 +1,10 @@
 #include "sys.h"
+#include "audioseq_cmd.h"
 #include "sf64audio_provisional.h"
 #include <ship/utils/binarytools/endianness.h>
 #include "port/Engine.h"
 #include "port/audio/AudioDebug.h"
+#include "port/events/Events.h"
 
 #define PORTAMENTO_IS_SPECIAL(x) ((x).mode & 0x80)
 #define PORTAMENTO_MODE(x) ((x).mode & ~0x80)
@@ -702,6 +704,8 @@ void AudioSeq_SeqLayerProcessScript(SequenceLayer* layer) {
         }
     }
 
+    CALL_EVENT(SeqLayerPreNoteEvent, layer, channel);
+
     if ((layer->muted == false) && (layer->tunedSample != NULL) && (layer->tunedSample->sample->codec == 2) &&
         (layer->tunedSample->sample->medium != 0)) {
         layer->muted = 1;
@@ -730,6 +734,10 @@ void AudioSeq_SeqLayerProcessScript(SequenceLayer* layer) {
         if ((layer->note != NULL) && (layer == layer->note->playbackState.parentLayer)) {
             Audio_NoteVibratoInit(layer->note);
         }
+    }
+
+    if (layer->note != NULL) {
+        CALL_EVENT(SeqLayerPostNoteEvent, layer);
     }
     if (!channel) {}
 }
@@ -1518,7 +1526,9 @@ void AudioSeq_SequencePlayerProcessSequence(SequencePlayer* seqPlayer) {
         }
     }
     for (i = 0; i < SEQ_NUM_CHANNELS; i++) {
-        if (AudioDebug_IsChannelMuted(i)) continue;
+        if (AudioDebug_IsChannelMuted(i)) {
+            continue;
+        }
         if (IS_SEQUENCE_CHANNEL_VALID(seqPlayer->channels[i]) == 1) {
             AudioSeq_SequenceChannelProcessScript(seqPlayer->channels[i]);
         }

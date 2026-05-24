@@ -244,7 +244,11 @@ typedef struct {
         loop; // Adpcm loop parameters used by the sample. Offset from the start of the sound font / pointer to ram
     /* 0x10 */ AdpcmBook*
         book; // Adpcm book parameters used by the sample. Offset from the start of the sound font / pointer to ram
-} Sample;     // size = 0x18
+    /* 0x14 */ float tuning;
+    /* 0x18 */ u32 channels;
+    /* 0x1C */ u32 sampleRate;
+    /* 0x20 */ u32 numFrames;
+} Sample;     // size = 0x24
 
 typedef struct {
     /* 0x00 */ Sample* sample;

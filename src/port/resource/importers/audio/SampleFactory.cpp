@@ -134,6 +134,9 @@ static void Mp3DecoderWorker(std::shared_ptr<Sample> sample, std::shared_ptr<Shi
     sample->mSample.tuning = (float)(sampleRate * channels) / 32000.0f;
     sample->mSample.size = numFrames * channels * 2;
     sample->mSample.sampleAddr = new uint8_t[sample->mSample.size];
+    sample->mSample.numFrames = numFrames;
+    sample->mSample.channels = channels;
+    sample->mSample.sampleRate = sampleRate;
     drmp3_read_pcm_frames_s16(&mp3, numFrames, (int16_t*)sample->mSample.sampleAddr);
     sample->mSample.codec = CODEC_S16;
     sample->mSample.medium = MEDIUM_RAM;
@@ -161,6 +164,9 @@ static void OggDecoderWorker(std::shared_ptr<Sample> sample, std::shared_ptr<Shi
     int bitStream = 0;
     size_t toRead = numFrames * numChannels * 2;
     sample->mSample.sampleAddr = new uint8_t[toRead];
+    sample->mSample.numFrames = numFrames;
+    sample->mSample.channels = numChannels;
+    sample->mSample.sampleRate = sampleRate;
     sample->mSample.size = toRead;
     sample->mSample.tuning = (float)(sampleRate * numChannels) / 32000.0f;
     do {
@@ -245,6 +251,9 @@ std::shared_ptr<Ship::IResource> ResourceFactoryXMLSampleV0::ReadResource(std::s
             sample->mSample.tuning = (float)(wav.sampleRate * wav.channels) / 32000.0f;
             sample->mSample.size = numFrames * wav.channels * 2;
             sample->mSample.sampleAddr = new uint8_t[sample->mSample.size];
+            sample->mSample.numFrames = numFrames;
+            sample->mSample.channels = wav.channels;
+            sample->mSample.sampleRate = wav.sampleRate;
 
             drwav_read_pcm_frames_s16(&wav, numFrames, (int16_t*)sample->mSample.sampleAddr);
             sample->mSample.isRelocated = 1;

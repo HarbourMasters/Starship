@@ -465,6 +465,15 @@ void PortEnhancements_Register() {
     REGISTER_EVENT(EngineRenderMenubarEvent);
     REGISTER_EVENT(EngineRenderModsEvent);
 
+    // Register audio events
+    REGISTER_EVENT(PlayVoiceEvent);
+    REGISTER_EVENT(UpdateVoiceEvent);
+    REGISTER_EVENT(GetCurrentVoiceEvent);
+    REGISTER_EVENT(GetVoiceStatusEvent);
+    REGISTER_EVENT(ClearVoiceEvent);
+    REGISTER_EVENT(SeqLayerPreNoteEvent);
+    REGISTER_EVENT(SeqLayerPostNoteEvent);
+
     // Register item events
     REGISTER_EVENT(ItemDropEvent);
 

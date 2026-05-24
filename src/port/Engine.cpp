@@ -48,6 +48,7 @@
 #include "port/mods/PortEnhancements.h"
 #include "port/ui/cvar_prefixes.h"
 #include "port/build.h"
+#include "port/ShipInit.h"
 #include <ship/scripting/ScriptLoader.h>
 #include "port/notification/notification.h"
 
@@ -453,6 +454,7 @@ void GameEngine::Create() {
 #endif
     PortEnhancements_Init();
     LoadScripts();
+    ShipInit::InitAll();
 }
 
 void GameEngine::Destroy() {

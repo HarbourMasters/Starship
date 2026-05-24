@@ -31,3 +31,13 @@ DEFINE_EVENT(DrawGlobalHUDPostEvent);
 
 DEFINE_EVENT(EngineRenderMenubarEvent);
 DEFINE_EVENT(EngineRenderModsEvent);
+
+// Audio Related Events
+DEFINE_EVENT(PlayVoiceEvent, s32 msgId;);
+DEFINE_EVENT(UpdateVoiceEvent, bool* finished;);
+DEFINE_EVENT(GetCurrentVoiceEvent, s32* result;);
+DEFINE_EVENT(GetVoiceStatusEvent, s32* result;);
+DEFINE_EVENT(ClearVoiceEvent);
+
+DEFINE_EVENT(SeqLayerPreNoteEvent, SequenceLayer* layer; SequenceChannel* channel;);
+DEFINE_EVENT(SeqLayerPostNoteEvent, SequenceLayer* layer;);
