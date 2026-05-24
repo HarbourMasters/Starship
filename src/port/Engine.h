@@ -11,10 +11,13 @@ typedef enum {
 } SF64Version;
 
 #ifdef __cplusplus
+#pragma push_macro("this")
+#undef this
 #include <vector>
 #include <ship/controller/controldeck/ControlDeck.h>
 #include <ship/Context.h>
 #include <fast/interpreter.h>
+#pragma pop_macro("this")
 
 #ifndef IDYES
 #define IDYES 6
