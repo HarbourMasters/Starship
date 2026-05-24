@@ -211,6 +211,7 @@ GameEngine::GameEngine() {
     context->InitFileDropMgr();
     context->InitCrashHandler();
 
+#ifndef __SWITCH__
     constexpr int codeVersion = 1;
     std::unordered_map<std::string, std::string> defines = {
         { "VERSION_US", "1" },
@@ -304,6 +305,7 @@ GameEngine::GameEngine() {
 
             return buttonid == 1;
         });
+#endif
 
     context->InitAudio({ .SampleRate = 32000, .SampleLength = 1024, .DesiredBuffered = 1680 });
 
