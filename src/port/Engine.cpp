@@ -1,5 +1,7 @@
 #include "Engine.h"
 #include "ui/ImguiUI.h"
+#include <filesystem>
+#include <fstream>
 #include <ship/utils/StringHelper.h>
 #include "audio/AudioDebug.h"
 
@@ -55,9 +57,6 @@
 #include <ship/scripting/ScriptLoader.h>
 #endif
 #include "port/notification/notification.h"
-
-#include <filesystem>
-#include <fstream>
 
 #ifdef __SWITCH__
 #include <ship/port/switch/SwitchImpl.h>
