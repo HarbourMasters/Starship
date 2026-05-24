@@ -4,11 +4,11 @@
 #include <ship/utils/StringHelper.h>
 #include <ship/events/EventSystem.h>
 #include "port/ShipInit.h"
+#include "port/hooks/Events.h"
 #include "port/resource/importers/ResourceUtil.h"
 
 #include "sf64audio_provisional.h"
 #include "audioseq_cmd.h"
-#include "port/hooks/Events.h"
 
 // Pending override request — written by game thread, read by audio thread
 // -1 = no request, -2 = clear request, >=0 = msgId to activate

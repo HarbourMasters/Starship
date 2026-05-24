@@ -2,13 +2,14 @@
 #include <unordered_map>
 
 #include <ship/events/EventSystem.h>
+
 #include "port/ShipInit.h"
+#include "port/hooks/Events.h"
+#include "port/mods/SequenceHooks.h"
 
 #include "sf64audio_provisional.h"
 #include "audioseq_cmd.h"
 #include "bgm.h"
-#include "port/hooks/Events.h"
-#include "port/mods/SequenceHooks.h"
 
 static std::mutex sRemapMtx;
 static std::unordered_map<u16, u16> sSeqRemap;
