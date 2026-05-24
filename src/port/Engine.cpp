@@ -49,7 +49,9 @@
 #include "port/ui/cvar_prefixes.h"
 #include "port/build.h"
 #include "port/ShipInit.h"
+#ifndef __SWITCH__
 #include <ship/scripting/ScriptLoader.h>
+#endif
 #include "port/notification/notification.h"
 
 #include <filesystem>
@@ -429,6 +431,7 @@ bool GameEngine::GenAssetFile(bool exitOnFail) {
 }
 
 void GameEngine::LoadScripts() {
+#ifndef __SWITCH__
     auto scripting = Ship::Context::GetInstance()->GetScriptLoader();
 
     try {
@@ -441,6 +444,7 @@ void GameEngine::LoadScripts() {
                                 .messageColor = ImVec4(1.0f, 0.5f, 0.5f, 1.0f),
                                 .remainingTime = 7.0f });
     }
+#endif
 }
 
 void GameEngine::Create() {

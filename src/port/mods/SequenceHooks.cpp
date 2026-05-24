@@ -4,8 +4,9 @@
 #include <ship/events/EventSystem.h>
 
 #include "port/ShipInit.h"
-#include "port/hooks/Events.h"
 #include "port/mods/SequenceHooks.h"
+
+#include "port/hooks/Events.h"
 
 #include "sf64audio_provisional.h"
 #include "audioseq_cmd.h"
