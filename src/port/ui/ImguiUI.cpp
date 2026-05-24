@@ -17,7 +17,9 @@
 #include "port/hooks/Events.h"
 #include "port/notification/notification.h"
 #include <ship/utils/StringHelper.h>
+#ifndef __SWITCH__
 #include <ship/scripting/ScriptLoader.h>
+#endif
 #include "port/audio/AudioDebug.h"
 #include <SDL2/SDL.h>
 
@@ -807,11 +809,15 @@ static const char* logLevels[] = {
 
 void DrawModsMenu() {
     if (UIWidgets::BeginMenu("Mods")) {
+#ifndef __SWITCH__
         if (UIWidgets::Button(ICON_FA_REFRESH " Reload Scripts", { .color = UIWidgets::Colors::Yellow, .size = ImVec2(0.0f, 0.0f),
                                                                    .tooltip = "Reloads all scripts from disk." })) {
             Ship::Context::GetInstance()->GetScriptLoader()->UnloadAll();
             GameEngine::LoadScripts();
         }
+#else
+        ImGui::TextColored(ImVec4(1.0f, 0.2f, 0.2f, 1.0f), ICON_FA_TIMES " Scripting not supported on Switch");
+#endif
         // Open mods folder button
         if (UIWidgets::Button(ICON_FA_FOLDER_OPEN " Open Mods Folder", { .color = UIWidgets::Colors::Yellow, .size = ImVec2(0.0f, 0.0f),
                                                                         .tooltip = "Opens the mods folder in your file explorer." })) {
@@ -822,8 +828,10 @@ void DrawModsMenu() {
 
         auto archiveManager = Ship::Context::GetInstance()->GetResourceManager()->GetArchiveManager();
         auto mods = archiveManager->GetArchives();
+#ifndef __SWITCH__
         auto keystore = Ship::Context::GetInstance()->GetKeystore();
         auto allKeys = keystore->GetAllKeys();
+#endif
 
         bool hasAnyMod = false;
         for (const auto& entry : *mods) {
@@ -844,6 +852,7 @@ void DrawModsMenu() {
                         continue;
                     }
 
+#ifndef __SWITCH__
                     // Resolve key origin
                     Ship::KeyOrigin origin = Ship::KeyOrigin::User;
                     for (const auto& key : allKeys) {
@@ -852,6 +861,7 @@ void DrawModsMenu() {
                             break;
                         }
                     }
+#endif
 
                     if (!firstMod) {
                         UIWidgets::PaddedSeparator(true, true);
@@ -884,6 +894,7 @@ void DrawModsMenu() {
                         ImGui::PopTextWrapPos();
                     }
 
+#ifndef __SWITCH__
                     // Security status
                     if (entry->IsSigned() && entry->IsChecksumValid()) {
                         ImVec4 originColor = UIWidgets::Colors::Green;
@@ -909,6 +920,7 @@ void DrawModsMenu() {
                     } else {
                         ImGui::TextColored(UIWidgets::Colors::Red, "  " ICON_FA_EXCLAMATION_TRIANGLE " Untrusted");
                     }
+#endif
 
                     // Website
                     if (!info.Website.empty()) {
