@@ -22,8 +22,8 @@
 #include <SDL2/SDL.h>
 
 #ifdef __SWITCH__
-#include <port/switch/SwitchImpl.h>
-#include <port/switch/SwitchPerformanceProfiles.h>
+#include <ship/port/switch/SwitchImpl.h>
+#include <ship/port/switch/SwitchPerformanceProfiles.h>
 #endif
 
 extern "C" {
