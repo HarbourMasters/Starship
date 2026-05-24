@@ -136,7 +136,7 @@ static void VoiceOverride_Finish() {
 static void OnPlayVoice(IEvent* ev) {
     auto* event = reinterpret_cast<PlayVoiceEvent*>(ev);
 
-    const std::string path = StringHelper::Sprintf("ast_radio/gMsg_ID_%04d", (u32) event->msgId);
+    const std::string path = StringHelper::Sprintf("ast_radio/gMsg_ID_%04d_Voice", (u32) event->msgId);
     Sample* sample = LoadChild<Sample*>(path.c_str());
 
     SPDLOG_INFO("[VoiceHook] PlayVoice msgId={}, hasOverride={}, active={}, pending={}, activeMsg={}", event->msgId,
@@ -191,7 +191,7 @@ static void OnUpdateVoice(IEvent* ev) {
         }
 
         // Load and activate override
-        const std::string path = StringHelper::Sprintf("ast_radio/gMsg_ID_%04d", pending);
+        const std::string path = StringHelper::Sprintf("ast_radio/gMsg_ID_%04d_Voice", pending);
         Sample* sample = LoadChild<Sample*>(path.c_str());
 
         if (sample != nullptr) {
