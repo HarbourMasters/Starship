@@ -310,17 +310,17 @@ if(NOT CMAKE_SYSTEM_NAME STREQUAL "NintendoSwitch")
     set(ENABLE_SCRIPTING ON CACHE BOOL "" FORCE)
 else()
     #=================== tinyxml2 ===================
-    find_package(tinyxml2 QUIET)
-    if(NOT tinyxml2_FOUND)
-        set(tinyxml2_BUILD_TESTING OFF)
-        FetchContent_Declare(
-            tinyxml2
-            GIT_REPOSITORY https://github.com/leethomason/tinyxml2.git
-            GIT_TAG 10.0.0
-            OVERRIDE_FIND_PACKAGE
-        )
-        FetchContent_MakeAvailable(tinyxml2)
-    endif()
+    # devkitPro portlibs may have tinyxml2 headers/lib but no CMake config that
+    # exports tinyxml2::tinyxml2. Always fetch from source so both this project
+    # and libultraship's find_package(tinyxml2 REQUIRED) get a proper target.
+    set(tinyxml2_BUILD_TESTING OFF)
+    FetchContent_Declare(
+        tinyxml2
+        GIT_REPOSITORY https://github.com/leethomason/tinyxml2.git
+        GIT_TAG 10.0.0
+        OVERRIDE_FIND_PACKAGE
+    )
+    FetchContent_MakeAvailable(tinyxml2)
 endif()
 add_subdirectory(libultraship ${CMAKE_CURRENT_SOURCE_DIR}/libultraship)
 add_dependencies(${PROJECT_NAME} libultraship)
