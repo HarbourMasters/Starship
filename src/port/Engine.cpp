@@ -57,6 +57,7 @@
 #include "port/notification/notification.h"
 
 #include <filesystem>
+#include <fstream>
 
 #ifdef __SWITCH__
 #include <ship/port/switch/SwitchImpl.h>
