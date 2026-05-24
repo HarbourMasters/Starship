@@ -471,6 +471,14 @@ void PortEnhancements_Register() {
     REGISTER_EVENT(GetCurrentVoiceEvent);
     REGISTER_EVENT(GetVoiceStatusEvent);
     REGISTER_EVENT(ClearVoiceEvent);
+    REGISTER_EVENT(PlaySequenceEvent);
+    REGISTER_EVENT(PlayFanfareEvent);
+    REGISTER_EVENT(StopSequenceEvent);
+    REGISTER_EVENT(SetSequenceFadeEvent);
+    REGISTER_EVENT(PlaySfxEvent);
+    REGISTER_EVENT(SetVolumeEvent);
+    REGISTER_EVENT(SetAudioSpecEvent);
+    REGISTER_EVENT(AudioUpdateEvent);
     REGISTER_EVENT(SeqLayerPreNoteEvent);
     REGISTER_EVENT(SeqLayerPostNoteEvent);
 

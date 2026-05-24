@@ -677,6 +677,7 @@ void Audio_StartSequence(u8 seqPlayId, u8 seqId, u8 seqArgs, u16 fadeInTime) {
 }
 
 void Audio_StopSequence(u8 seqPlayId, u16 fadeOutTime) {
+    CALL_CANCELLABLE_RETURN_EVENT(StopSequenceEvent, seqPlayId, fadeOutTime);
     AUDIOCMD_GLOBAL_DISABLE_SEQPLAYER(seqPlayId, fadeOutTime);
     sActiveSequences[seqPlayId].seqId = SEQ_ID_NONE;
 }
@@ -983,6 +984,7 @@ void Audio_DisableSetupOp(u8 seqPlayId, u8 opcode) {
 }
 
 void Audio_SetSequenceFade(u8 seqPlayId, u8 fadeModId, u8 fadeMod, u8 fadeTime) {
+    CALL_CANCELLABLE_RETURN_EVENT(SetSequenceFadeEvent, seqPlayId, fadeModId, &fadeMod, &fadeTime);
     sActiveSequences[seqPlayId].mainVolume.fadeMod[fadeModId] = fadeMod;
     sActiveSequences[seqPlayId].mainVolume.fadeTimer = fadeTime;
     sActiveSequences[seqPlayId].mainVolume.fadeActive = true;
@@ -1279,6 +1281,7 @@ void Audio_ClearBGMMute(u8 channelIndex) {
 }
 
 void Audio_PlaySfx(u32 sfxId, f32* sfxSource, u8 token, f32* freqMod, f32* volMod, s8* reverbAdd) {
+    CALL_CANCELLABLE_RETURN_EVENT(PlaySfxEvent, &sfxId, sfxSource, token, &freqMod, &volMod, &reverbAdd);
     if (sSfxBankMuted[SFX_BANK_ALT(sfxId)] == 0) {
         SfxRequest* request = &sSfxRequests[sSfxRequestWriteIndex];
 
@@ -2629,11 +2632,13 @@ void Audio_SetBgmParam(s8 bgmParam) {
 
 void Audio_PlaySequence(u8 seqPlayId, u16 seqId, u8 fadeinTime, u8 bgmParam) {
     // seqId &= 0xFF;
+    CALL_CANCELLABLE_RETURN_EVENT(PlaySequenceEvent, seqPlayId, &seqId, fadeinTime, bgmParam);
     SEQCMD_SET_SEQPLAYER_IO(seqPlayId, 0, bgmParam);
     SEQCMD_PLAY_SEQUENCE(seqPlayId, fadeinTime, 0, seqId);
 }
 
 void Audio_PlayFanfare(u16 seqId, u8 bgmVolume, u8 bgmFadeoutTime, u8 bgmFadeinTime) {
+    CALL_CANCELLABLE_RETURN_EVENT(PlayFanfareEvent, &seqId, bgmVolume, bgmFadeoutTime, bgmFadeinTime);
     if (Audio_GetActiveSeqId(SEQ_PLAYER_BGM) != NA_BGM_PLAYER_DOWN) {
         Audio_SetSequenceFade(SEQ_PLAYER_BGM, 1, bgmVolume, bgmFadeoutTime);
         SEQCMD_SETUP_RESTORE_SEQPLAYER_VOLUME(SEQ_PLAYER_FANFARE, SEQ_PLAYER_BGM, bgmFadeinTime);
@@ -2707,6 +2712,7 @@ void Audio_SetVolume(u8 audioType, u8 volume) {
     if (volume > 99) {
         volume = 99;
     }
+    CALL_CANCELLABLE_RETURN_EVENT(SetVolumeEvent, audioType, &volume);
     sVolumeSettings[audioType] = volume;
     Audio_RestoreVolumeSettings(audioType);
 }
@@ -2789,6 +2795,7 @@ void Audio_SetAudioSpec(u8 unused, u16 specParam) {
     u8 sfxChannelLayout = ((specParam & 0xFF00) >> 8);
     u8 specId = specParam & 0xFF;
 
+    CALL_EVENT(SetAudioSpecEvent, &sfxChannelLayout, &specId);
     SEQCMD_RESET_AUDIO_HEAP(sfxChannelLayout, specId);
 }
 
@@ -2877,4 +2884,5 @@ void Audio_Update(void) {
         AudioThread_ScheduleProcessCmds();
     }
     sAudioFrameCounter++;
+    CALL_EVENT(AudioUpdateEvent);
 }
