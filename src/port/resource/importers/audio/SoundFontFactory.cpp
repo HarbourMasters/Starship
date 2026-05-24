@@ -1,6 +1,7 @@
 #include "SoundFontFactory.h"
 #include "../ResourceUtil.h"
-#include "utils/StringHelper.h"
+
+#include <ship/utils/StringHelper.h>
 #include <tinyxml2.h>
 #include <sf64audio_provisional.h>
 #include "port/resource/type/audio/SoundFont.h"
