@@ -13,10 +13,10 @@
 #include "bgm.h"
 
 static std::mutex sRemapMtx;
-static std::unordered_map<u16, u16> sSeqRemap;
-static u16 sCurrentSeqId[SEQ_PLAYER_MAX];
+static std::unordered_map<uint16_t, uint16_t> sSeqRemap;
+static uint16_t sCurrentSeqId[SEQ_PLAYER_MAX];
 
-static u16 ApplyRemap(u16 seqId) {
+static uint16_t ApplyRemap(uint16_t seqId) {
     std::lock_guard<std::mutex> lock(sRemapMtx);
     auto it = sSeqRemap.find(seqId);
     return (it != sSeqRemap.end()) ? it->second : seqId;
@@ -43,24 +43,24 @@ static void OnStopSequence(IEvent* ev) {
     }
 }
 
-void Sequence_AddRemap(u16 from, u16 to) {
+void Sequence_AddRemap(uint16_t from, uint16_t to) {
     std::lock_guard<std::mutex> lock(sRemapMtx);
     sSeqRemap[from] = to;
 }
 
-void Sequence_RemoveRemap(u16 from) {
+void Sequence_RemoveRemap(uint16_t from) {
     std::lock_guard<std::mutex> lock(sRemapMtx);
     sSeqRemap.erase(from);
 }
 
-u16 Sequence_GetCurrentSeqId(u8 seqPlayId) {
+uint16_t Sequence_GetCurrentSeqId(uint8_t seqPlayId) {
     if (seqPlayId >= SEQ_PLAYER_MAX) {
         return SEQ_ID_NONE;
     }
     return sCurrentSeqId[seqPlayId];
 }
 
-bool Sequence_IsMapped(u16 seqId) {
+bool Sequence_IsMapped(uint16_t seqId) {
     std::lock_guard<std::mutex> lock(sRemapMtx);
     return sSeqRemap.find(seqId) != sSeqRemap.end();
 }

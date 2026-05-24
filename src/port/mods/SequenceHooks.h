@@ -1,13 +1,15 @@
 #pragma once
 
+#include <cstdint>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-void Sequence_AddRemap(u16 from, u16 to);
-void Sequence_RemoveRemap(u16 from);
-u16 Sequence_GetCurrentSeqId(u8 seqPlayId);
-bool Sequence_IsMapped(u16 seqId);
+void Sequence_AddRemap(uint16_t from, uint16_t to);
+void Sequence_RemoveRemap(uint16_t from);
+uint16_t Sequence_GetCurrentSeqId(uint8_t seqPlayId);
+bool Sequence_IsMapped(uint16_t seqId);
 
 #ifdef __cplusplus
 }
