@@ -1,5 +1,7 @@
 #pragma once
 
+#ifndef __SWITCH__
+
 #include "Companion.h"
 #include <filesystem>
 #include <vector>
@@ -15,3 +17,5 @@ private:
     fs::path mGamePath;
     std::vector<uint8_t> mGameData;
 };
+
+#endif // __SWITCH__

@@ -1,5 +1,7 @@
 #include "GameExtractor.h"
 
+#ifndef __SWITCH__
+
 #include <fstream>
 
 #include <ship/Context.h>
@@ -68,3 +70,5 @@ bool GameExtractor::GenerateOTR() const {
 
     return true;
 }
+
+#endif // __SWITCH__

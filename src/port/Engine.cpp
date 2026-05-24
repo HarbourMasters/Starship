@@ -3,7 +3,9 @@
 #include <ship/utils/StringHelper.h>
 #include "audio/AudioDebug.h"
 
+#ifndef __SWITCH__
 #include "extractor/GameExtractor.h"
+#endif
 #include "resource/type/ResourceType.h"
 #include "resource/importers/AnimFactory.h"
 #include "resource/importers/ColPolyFactory.h"
@@ -404,6 +406,9 @@ GameEngine::GameEngine() {
 }
 
 bool GameEngine::GenAssetFile(bool exitOnFail) {
+#ifdef __SWITCH__
+    return true;
+#else
     auto extractor = new GameExtractor();
 
     if (!extractor->SelectGameFromUI()) {
@@ -428,6 +433,7 @@ bool GameEngine::GenAssetFile(bool exitOnFail) {
     ShowMessage(("Starship - Extraction - Found " + game.value()).c_str(), "The extraction process will now begin.\n\nThis may take a few minutes.", SDL_MESSAGEBOX_INFORMATION);
 
     return extractor->GenerateOTR();
+#endif
 }
 
 void GameEngine::LoadScripts() {
