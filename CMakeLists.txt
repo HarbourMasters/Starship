@@ -322,7 +322,9 @@ FetchContent_Declare(
     GIT_TAG        1.91.9bdock
     GIT_SUBMODULES ""
 )
-cmake_policy(SET CMP0169 OLD)
+if(POLICY CMP0169)
+    cmake_policy(SET CMP0169 OLD)
+endif()
 FetchContent_Populate(cimgui)
 FetchContent_GetProperties(ImGui)
 file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/_deps")
