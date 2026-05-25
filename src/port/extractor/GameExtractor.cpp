@@ -1,8 +1,10 @@
 #include "GameExtractor.h"
 
+#ifndef __SWITCH__
+
 #include <fstream>
 
-#include "Context.h"
+#include <ship/Context.h>
 #include "spdlog/spdlog.h"
 #include <port/Engine.h>
 #if !defined(__IOS__) && !defined(__ANDROID__) && !defined(__SWITCH__)
@@ -68,3 +70,5 @@ bool GameExtractor::GenerateOTR() const {
 
     return true;
 }
+
+#endif // __SWITCH__

@@ -40,24 +40,24 @@ void Mio0_Decompress(void* header, u8* dst);
 void Game_Initialize(void);
 void Game_Update(void);
 
-extern bool gShowReticles[];
-extern bool D_game_800D2870;
+extern_s bool gShowReticles[];
+extern_s bool D_game_800D2870;
 
-extern f32 gNextVsViewScale;
-extern f32 gVsViewScale;
-extern s32 gPlayerInactive[4];
-extern s32 gVsMenuSelection;
-extern u8 gShowHud;
-extern u16 gNextLevelPhase;
-extern u16 gNextLevel;
-extern u16 gNextGameState;
-extern u16 gLastGameState;
-extern u16 gBgColor;
-extern u8 gBlurAlpha;
-extern u8 gGameStandby;
-extern f32 gFovY;
-extern f32 gProjectNear;
-extern f32 gProjectFar;
+extern_s f32 gNextVsViewScale;
+extern_s f32 gVsViewScale;
+extern_s s32 gPlayerInactive[4];
+extern_s s32 gVsMenuSelection;
+extern_s u8 gShowHud;
+extern_s u16 gNextLevelPhase;
+extern_s u16 gNextLevel;
+extern_s u16 gNextGameState;
+extern_s u16 gLastGameState;
+extern_s u16 gBgColor;
+extern_s u8 gBlurAlpha;
+extern_s u8 gGameStandby;
+extern_s f32 gFovY;
+extern_s f32 gProjectNear;
+extern_s f32 gProjectFar;
 
 typedef enum OptionState {
     OPTION_WAIT,

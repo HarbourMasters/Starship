@@ -78,25 +78,25 @@ typedef enum OptionId {
     /*  401 */ OPTION_MAX
 } OptionId;
 
-extern u8* gBSSMapPlanetTextures[9];
-extern u8* gAssetMapPlanetTextures[9];
+extern_s u8* gBSSMapPlanetTextures[9];
+extern_s u8* gAssetMapPlanetTextures[9];
 
-extern s32 gTotalHitsRanking[];
-extern bool gGoToTitle;   // engine
-extern u8 sLevelStartState;
-extern s32 sWipeHeight;
-extern s32 sTitleRankMaxRecords;
+extern_s s32 gTotalHitsRanking[];
+extern_s bool gGoToTitle;   // engine
+extern_s u8 sLevelStartState;
+extern_s s32 sWipeHeight;
+extern_s s32 sTitleRankMaxRecords;
 
 // Planet textures
-extern u8 gMapVenomCloudTex[96 * 96];
-extern u8 gMapCorneriaTex[96 * 96];
-extern u8 gMapFortunaTex[96 * 96];
-extern u8 gMapAquasTex[96 * 96];
-extern u8 gMapVenomTex[96 * 96];
-extern u8 gMapTitaniaTex[96 * 96];
-extern u8 gMapKatinaTex[96 * 96];
-extern u8 gMapMacbethTex[96 * 96];
-extern u8 gMapZonessTex[96 * 96];
+extern_s u8 gMapVenomCloudTex[96 * 96];
+extern_s u8 gMapCorneriaTex[96 * 96];
+extern_s u8 gMapFortunaTex[96 * 96];
+extern_s u8 gMapAquasTex[96 * 96];
+extern_s u8 gMapVenomTex[96 * 96];
+extern_s u8 gMapTitaniaTex[96 * 96];
+extern_s u8 gMapKatinaTex[96 * 96];
+extern_s u8 gMapMacbethTex[96 * 96];
+extern_s u8 gMapZonessTex[96 * 96];
 
 void Title_UpdateEntry(void);
 s32 Title_CheckControllers(void);

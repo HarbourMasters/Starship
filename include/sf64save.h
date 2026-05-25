@@ -65,6 +65,10 @@ typedef struct {
     /* 0x100 */ Save backup;
 } SaveFile; // size = 0x200
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 s32 Save_Write(void);
 s32 Save_Read(void);
 
@@ -74,9 +78,13 @@ bool Save_WriteData(void);
 s32 Save_WriteEeprom(SaveFile*);
 s32 Save_ReadEeprom(SaveFile*);
 
-extern SaveFile gSaveIOBuffer;
-extern SaveFile sPrevSaveData;
-extern Save gDefaultSave;
-extern SaveFile gSaveFile;
+#ifdef __cplusplus
+}
+#endif
+
+extern_s SaveFile gSaveIOBuffer;
+extern_s SaveFile sPrevSaveData;
+extern_s Save gDefaultSave;
+extern_s SaveFile gSaveFile;
 
 #endif

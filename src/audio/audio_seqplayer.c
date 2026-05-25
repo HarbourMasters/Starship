@@ -1,7 +1,10 @@
 #include "sys.h"
+#include "audioseq_cmd.h"
 #include "sf64audio_provisional.h"
-#include "endianness.h"
+#include <ship/utils/binarytools/endianness.h>
 #include "port/Engine.h"
+#include "port/audio/AudioDebug.h"
+#include "port/hooks/Events.h"
 
 #define PORTAMENTO_IS_SPECIAL(x) ((x).mode & 0x80)
 #define PORTAMENTO_MODE(x) ((x).mode & ~0x80)
@@ -701,6 +704,8 @@ void AudioSeq_SeqLayerProcessScript(SequenceLayer* layer) {
         }
     }
 
+    CALL_EVENT(SeqLayerPreNoteEvent, layer, channel);
+
     if ((layer->muted == false) && (layer->tunedSample != NULL) && (layer->tunedSample->sample->codec == 2) &&
         (layer->tunedSample->sample->medium != 0)) {
         layer->muted = 1;
@@ -729,6 +734,10 @@ void AudioSeq_SeqLayerProcessScript(SequenceLayer* layer) {
         if ((layer->note != NULL) && (layer == layer->note->playbackState.parentLayer)) {
             Audio_NoteVibratoInit(layer->note);
         }
+    }
+
+    if (layer->note != NULL) {
+        CALL_EVENT(SeqLayerPostNoteEvent, layer);
     }
     if (!channel) {}
 }
@@ -1524,12 +1533,23 @@ void AudioSeq_SequencePlayerProcessSequence(SequencePlayer* seqPlayer) {
 }
 
 void AudioSeq_ProcessSequences(s32 arg0) {
-    s32 i;
+    s32 i, j, k;
 
     for (i = 0; i < ARRAY_COUNT(gSeqPlayers); i++) {
         if (gSeqPlayers[i].enabled == true) {
             AudioSeq_SequencePlayerProcessSequence(&gSeqPlayers[i]);
             Audio_SequencePlayerProcessSound(&gSeqPlayers[i]);
+            for (j = 0; j < SEQ_NUM_CHANNELS; j++) {
+                SequenceChannel* ch = gSeqPlayers[i].channels[j];
+                if (IS_SEQUENCE_CHANNEL_VALID(ch) && AudioDebug_IsChannelMuted(j)) {
+                    ch->appliedVolume = 0.0f;
+                    for (k = 0; k < ARRAY_COUNT(ch->layers); k++) {
+                        if (ch->layers[k] != NULL && ch->layers[k]->note != NULL) {
+                            ch->layers[k]->noteVelocity = 0.0f;
+                        }
+                    }
+                }
+            }
         }
     }
     Audio_ProcessNotes();

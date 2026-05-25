@@ -4,8 +4,8 @@
 #include "sf64audio_provisional.h"
 #include "assets/ast_audio.h"
 #include "port/Engine.h"
-#include "endianness.h"
 #include "port/resource/loaders/AudioLoader.h"
+#include <ship/utils/binarytools/endianness.h>
 
 s32 D_80146D80;
 s32 PAD_80146D88[2];
@@ -395,7 +395,8 @@ void AudioLoad_SyncInitSeqPlayerInternal(s32 playerIdx, s32 seqId, s32 arg2) {
     s32 fontId;
     s32 i;
 
-    //    seqId = AudioLoad_GetLoadTableIndex(SEQUENCE_TABLE, seqId);
+    // @port: seqId is looked up via ResourceGetDataByCrc in AudioLoad_SyncLoadSeq below.
+    //        Mod replacement sequences override the same CRC path automatically.
 
     AudioSeq_SequencePlayerDisable(&gSeqPlayers[playerIdx]);
 

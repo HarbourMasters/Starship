@@ -1,8 +1,9 @@
 #include "sys.h"
 #include "sf64audio_provisional.h"
 #include "audio/mixer.h"
-#include "endianness.h"
 #include "port/Engine.h"
+#include <ship/utils/binarytools/endianness.h>
+#include "port/audio/AudioDebug.h"
 
 #define DMEM_WET_SCRATCH 0x470
 #define DMEM_COMPRESSED_ADPCM_DATA 0xD50
@@ -944,6 +945,16 @@ Acmd* AudioSynth_ProcessNote(s32 noteIndex, NoteSubEu* noteSub, NoteSynthesisSta
         synthState->samplePosInt += numSamplesToLoad;
     } else {
         bookSample = *(noteSub->waveSampleAddr);
+        AudioDebug_SetLastPlayed(
+            (void*)bookSample,
+            synthState->samplePosInt,
+            bookSample->loop->end,
+            (int)bookSample->loop->start,
+            (int)bookSample->loop->end,
+            bookSample->loop->count,
+            noteSub->resampleRate,
+            (int)bookSample->codec,
+            bookSample->size);
         loopInfo = bookSample->loop;
 
         endPos = loopInfo->end;
@@ -986,6 +997,14 @@ Acmd* AudioSynth_ProcessNote(s32 noteIndex, NoteSubEu* noteSub, NoteSynthesisSta
             while (numSamplesProcessed != numSamplesToLoadAdj) {
                 sampleFinished = false;
                 loopToPoint = false;
+                size_t s16LoopStartAdvance = 0;
+
+                // Guard against samplePosInt overshooting endPos (e.g. after a loop
+                // reset lands past the end due to rounding, or on the very first call
+                // after a loop reset with a large numSamplesToLoadAdj).
+                if (loopInfo->count != 0 && synthState->samplePosInt >= endPos) {
+                    synthState->samplePosInt = loopInfo->start;
+                }
 
                 samplesRemaining = endPos - synthState->samplePosInt;
                 nSamplesToProcess = numSamplesToLoadAdj - numSamplesProcessed;
@@ -1045,6 +1064,7 @@ Acmd* AudioSynth_ProcessNote(s32 noteIndex, NoteSubEu* noteSub, NoteSynthesisSta
                         goto skip;
 
                     case CODEC_S16:
+                        synthState->restart = 0;
                         aClearBuffer(aList++, DMEM_UNCOMPRESSED_NOTE,
                                      (numSamplesToLoadAdj + SAMPLES_PER_FRAME) * SAMPLE_SIZE);
 
@@ -1054,14 +1074,62 @@ Acmd* AudioSynth_ProcessNote(s32 noteIndex, NoteSubEu* noteSub, NoteSynthesisSta
                         numSamplesProcessed += numSamplesToLoadAdj;
                         dmemUncompressedAddrOffset1 = numSamplesToLoadAdj;
 
-                        if (((synthState->samplePosInt * 2) + (numSamplesToLoadAdj) *SAMPLE_SIZE) < bookSample->size) {
-                            bytesToRead = (numSamplesToLoadAdj + 16) * SAMPLE_SIZE;
-                        } else {
-                            bytesToRead = bookSample->size - (synthState->samplePosInt * 2);
+                        {
+                            // 2S2H [Port] [Custom audio] Handle decoding OPUS data
+                            // Guard against underflow: decoder may not be ready yet (size==0)
+                            // or loop end exceeds actual buffer length.
+                            size_t bytePos = (size_t)synthState->samplePosInt * 2;
+                            if (sampleAddr == 0 || bookSample->size == 0 || bytePos >= bookSample->size) {
+                                // Decoder not ready (sampleAddr/size not yet set) or past end.
+                                // aClearBuffer already zeroed DMEM, so we produce silence.
+                                goto skip;
+                            }
+
+                            if (loopToPoint && loopInfo->count != 0 &&
+                                (u32)synthState->samplePosInt < endPos) {
+                                // Loop boundary crossing: load up to endPos, then stitch in
+                                // samples from loopInfo->start to fill the rest of the DMEM
+                                // buffer.  Without stitching the tail is silence and the loop
+                                // sounds like it ends before restarting.
+                                // Exact byte count — no 16-byte rounding so every sample up to
+                                // loopInfo->end is loaded and the splice happens at the precise
+                                // loop boundary.  aLoadBufferExact is used instead of aLoadBuffer
+                                // because the standard variant internally rounds down to 16 bytes.
+                                size_t bytesBeforeLoop = ((size_t)endPos - (size_t)synthState->samplePosInt) * 2;
+                                s16LoopStartAdvance = (size_t)numSamplesToLoadAdj - (bytesBeforeLoop >> 1);
+                                if (bytesBeforeLoop > 0) {
+                                    aLoadBufferExact(aList++, OS_K0_TO_PHYSICAL(sampleAddr + bytePos),
+                                                     DMEM_UNCOMPRESSED_NOTE, bytesBeforeLoop);
+                                }
+                                // Fill the tail from the loop-start position.
+                                size_t loopStartBytePos = (size_t)loopInfo->start * 2;
+                                if (loopStartBytePos < bookSample->size) {
+                                    size_t tailNeeded = ((size_t)(numSamplesToLoadAdj + 16) * SAMPLE_SIZE)
+                                                        - bytesBeforeLoop;
+                                    size_t tailAvail  = bookSample->size - loopStartBytePos;
+                                    bytesToRead = tailNeeded < tailAvail ? tailNeeded : tailAvail;
+                                    if (bytesToRead > 0) {
+                                        aLoadBufferExact(aList++,
+                                                         OS_K0_TO_PHYSICAL(sampleAddr + loopStartBytePos),
+                                                         DMEM_UNCOMPRESSED_NOTE + bytesBeforeLoop,
+                                                         bytesToRead);
+                                    }
+                                }
+                            } else {
+                                // Normal load (no loop crossing in this frame).
+                                size_t availBytes = bookSample->size - bytePos;
+                                if ((size_t)(numSamplesToLoadAdj * SAMPLE_SIZE) < availBytes) {
+                                    bytesToRead = (numSamplesToLoadAdj + 16) * SAMPLE_SIZE;
+                                    if (bytesToRead > availBytes) {
+                                        bytesToRead = availBytes;
+                                    }
+                                } else {
+                                    bytesToRead = availBytes;
+                                }
+                                aLoadBuffer(aList++, OS_K0_TO_PHYSICAL(sampleAddr + bytePos),
+                                            DMEM_UNCOMPRESSED_NOTE, bytesToRead);
+                            }
                         }
-                        // 2S2H [Port] [Custom audio] Handle decoding OPUS data
-                        aLoadBuffer(cmd++, sampleAddr + (synthState->samplePosInt * 2), DMEM_UNCOMPRESSED_NOTE,
-                                    bytesToRead);
 
                         goto skip;
                 }
@@ -1173,7 +1241,7 @@ Acmd* AudioSynth_ProcessNote(s32 noteIndex, NoteSubEu* noteSub, NoteSynthesisSta
 
                 if (loopToPoint) {
                     synthState->restart = true;
-                    synthState->samplePosInt = loopInfo->start;
+                    synthState->samplePosInt = loopInfo->start + s16LoopStartAdvance;
                 } else {
                     synthState->samplePosInt += nSamplesToProcess;
                 }

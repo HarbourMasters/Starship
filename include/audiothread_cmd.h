@@ -1,9 +1,11 @@
 #ifndef AUDIOTHREAD_CMD_H
 #define AUDIOTHREAD_CMD_H
 
-void AudioThread_QueueCmdF32(u32 opArgs, f32 val);
-void AudioThread_QueueCmdS32(u32 opArgs, u32 val);
-void AudioThread_QueueCmdS8(u32 opArgs, s8 val);
+#include "macros.h"
+
+extern_s void AudioThread_QueueCmdF32(u32 opArgs, f32 val);
+extern_s void AudioThread_QueueCmdS32(u32 opArgs, u32 val);
+extern_s void AudioThread_QueueCmdS8(u32 opArgs, s8 val);
 
 /**
  * Audio thread commands to safely transfer information/requests/data

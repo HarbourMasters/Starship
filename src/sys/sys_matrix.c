@@ -486,7 +486,7 @@ void Matrix_ToMtx(Mtx* dest) {
 // Converts the Mtx src to a Matrix, putting the result in dest
 void Matrix_FromMtx(Mtx* src, Matrix* dest) {
     FrameInterpolation_RecordMatrixMtxFToMtx(src, dest);
-    guMtxF2L(src->mf, dest->m);
+    guMtxF2L(src->m, dest->m);
 }
 
 // Applies the transform matrix mtx to the vector src, putting the result in dest

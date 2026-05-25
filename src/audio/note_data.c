@@ -1,6 +1,6 @@
 #include "sys.h"
-#include "endianness.h"
 #include "sf64audio_provisional.h"
+#include <ship/utils/binarytools/endianness.h>
 
 f32 gBendPitchOneOctaveFrequencies[] = {
     0.5f,      0.5f,      0.502736f, 0.505488f, 0.508254f, 0.511036f, 0.513833f, 0.516645f, 0.519472f, 0.522315f,

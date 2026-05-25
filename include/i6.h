@@ -7,11 +7,11 @@
 #include "sf64player.h"
 #include "sf64mesg.h"
 
-extern f32 D_Andross_801A7F58;
-extern f32 D_Andross_801A7F60;
-extern f32 D_Andross_801A7F68;
-extern f32 D_Andross_801A7F70;
-extern f32 D_Andross_801A7F78;
+extern_s f32 D_Andross_801A7F58;
+extern_s f32 D_Andross_801A7F60;
+extern_s f32 D_Andross_801A7F68;
+extern_s f32 D_Andross_801A7F70;
+extern_s f32 D_Andross_801A7F78;
 
 void Andross_80187530(Actor*);
 void Andross_80193C4C(Player*);

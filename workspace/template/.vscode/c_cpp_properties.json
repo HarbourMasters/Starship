@@ -1,0 +1,56 @@
+{
+    "configurations": [
+        {
+            "name": "Mac",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "${workspaceFolder}/../../",
+                "${workspaceFolder}/../../include",
+                "${workspaceFolder}/../../src",
+                "${workspaceFolder}/../../libultraship/src",
+                "${workspaceFolder}/../../libultraship/include",
+                "${workspaceFolder}/../../libultraship/include/libultraship"
+            ],
+            "defines": [],
+            "compilerPath": "/usr/bin/clang",
+            "cStandard": "c17",
+            "cppStandard": "c++14",
+            "intelliSenseMode": "macos-clang-arm64"
+        },
+        {
+            "name": "Linux",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "${workspaceFolder}/../../",
+                "${workspaceFolder}/../../include",
+                "${workspaceFolder}/../../src",
+                "${workspaceFolder}/../../libultraship/src",
+                "${workspaceFolder}/../../libultraship/include",
+                "${workspaceFolder}/../../libultraship/include/libultraship"
+            ],
+            "defines": [],
+            "compilerPath": "/usr/bin/clang",
+            "cStandard": "c17",
+            "cppStandard": "c++14",
+            "intelliSenseMode": "linux-clang-x64"
+        },
+        {
+            "name": "Windows",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "${workspaceFolder}/../../",
+                "${workspaceFolder}/../../include",
+                "${workspaceFolder}/../../src",
+                "${workspaceFolder}/../../libultraship/src",
+                "${workspaceFolder}/../../libultraship/include",
+                "${workspaceFolder}/../../libultraship/include/libultraship"
+            ],
+            "defines": [],
+            "compilerPath": "C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Tools/MSVC/14.29.30133/bin/Hostx64/x64/cl.exe",
+            "cStandard": "c17",
+            "cppStandard": "c++14",
+            "intelliSenseMode": "windows-msvc-x64"
+        }
+    ],
+    "version": 4
+}

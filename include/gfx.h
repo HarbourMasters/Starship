@@ -332,8 +332,8 @@ typedef enum SetupDL {
     SETUPDL_85_POINT
 } SetupDL;
 
-extern Gfx gRcpSetupDLs[][9]; // 0x800D31B0
-extern u8 D_80178580[];
-extern void* D_80178710;
+extern_s Gfx gRcpSetupDLs[][9]; // 0x800D31B0
+extern_s u8 D_80178580[];
+extern_s void* D_80178710;
 
 #endif

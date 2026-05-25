@@ -1,7 +1,7 @@
 #include "MessageLookupFactory.h"
 #include "../type/Message.h"
 #include "spdlog/spdlog.h"
-#include "resourcebridge.h"
+#include <bridge/resourcebridge.h>
 #include "ResourceUtil.h"
 
 namespace SF64 {

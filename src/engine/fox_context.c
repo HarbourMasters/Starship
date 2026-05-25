@@ -1,8 +1,6 @@
 #include "prevent_context_reordering.h"
-#include "sys.h"
-#include "sf64level.h"
-#include "sf64object.h"
-#include "sf64player.h"
+
+#include "sf64context.h"
 
 s32 gSceneId;
 s32 gSceneSetup;
@@ -146,7 +144,7 @@ f32 gSunViewX;              // something x translate
 f32 gSunViewY;              // something y translate
 s32 gFogNear;               // near
 s32 gFogFar;                // far
-UNK_TYPE F_801783E0;
+UNK_TYPE F_801783E0[12];
 UNK_TYPE F_801783E4;
 UNK_TYPE F_801783E8;
 UNK_TYPE F_801783EC;
@@ -272,7 +270,7 @@ s32 gSavedHitCount;
 s16 gLifeCount[4];
 LaserStrength gLaserStrength[4];
 s32 gCullObjects;
-UNK_TYPE F_80161AC0[4];
+UNK_TYPE F_80161AC0[16];
 UNK_TYPE F_80161AD0[4];
 UNK_TYPE F_80161AE0[4];
 UNK_TYPE F_80161AF0[4];

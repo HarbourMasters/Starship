@@ -14,20 +14,20 @@ typedef struct Record {
     u16 frame;
 } Record;
 
-extern Record gCarrierCutsceneRecord[13];
-extern Record gWarpzoneCsRecord[19];
-extern Record gA6GorgonCsRecord[12];
-extern Record gSyRobotCutsceneRecord[3];
-extern Record gAndrossRobotKillCutscene2[20];
-extern Record gAndrossRobotKillCutscene1[25];
-extern Record gMacbethCutsceneRecord[14];
-extern Record gGrangaCutsceneRecord[13];
-extern Record gMeCrusherCutsceneRecord[3];
-extern Record gEndingCsRecord[37];
-extern Record gSolarIntroCsRecord[16];
+extern_s Record gCarrierCutsceneRecord[13];
+extern_s Record gWarpzoneCsRecord[19];
+extern_s Record gA6GorgonCsRecord[12];
+extern_s Record gSyRobotCutsceneRecord[3];
+extern_s Record gAndrossRobotKillCutscene2[20];
+extern_s Record gAndrossRobotKillCutscene1[25];
+extern_s Record gMacbethCutsceneRecord[14];
+extern_s Record gGrangaCutsceneRecord[13];
+extern_s Record gMeCrusherCutsceneRecord[3];
+extern_s Record gEndingCsRecord[37];
+extern_s Record gSolarIntroCsRecord[16];
 
-extern int gA6GorgonCsFrameCount;
-extern int gWarpzoneCsFrameCount;
+extern_s int gA6GorgonCsFrameCount;
+extern_s int gWarpzoneCsFrameCount;
 
 void UpdateVisPerFrameFromRecording(Record* record, s32 maxFrames, int* frameCounter);
 

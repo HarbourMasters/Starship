@@ -1,6 +1,6 @@
 #include "sys.h"
 #include "sf64audio_provisional.h"
-#include "endianness.h"
+#include <ship/utils/binarytools/endianness.h>
 
 static const char devstr[] = "Audio:Envp: overflow  %f\n";
 

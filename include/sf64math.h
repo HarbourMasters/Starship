@@ -4,6 +4,7 @@
 #include <libultraship.h>
 #include "libc/math.h"
 #include <math.h>
+#include "macros.h"
 
 #define MTXF_NEW 0
 #define MTXF_APPLY 1
@@ -55,19 +56,19 @@ typedef union {
     // u64 force_struct_alignment;
 } Matrix; // size = 0x40
 
+extern_s Mtx gIdentityMtx; // 800C4620
+extern_s Matrix gIdentityMatrix; //800C4660
+
+extern_s Matrix* gGfxMatrix;
+extern_s Matrix sGfxMatrixStack[];
+extern_s Matrix* gCalcMatrix;
+extern_s Matrix sCalcMatrixStack[];
+extern_s Matrix* gInterpolationMatrix;
+extern_s Matrix sInterpolationMatrixStack[];
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-extern Mtx gIdentityMtx; // 800C4620
-extern Matrix gIdentityMatrix; //800C4660
-
-extern Matrix* gGfxMatrix;
-extern Matrix sGfxMatrixStack[];
-extern Matrix* gCalcMatrix;
-extern Matrix sCalcMatrixStack[];
-extern Matrix* gInterpolationMatrix;
-extern Matrix sInterpolationMatrixStack[];
 
 f32 Math_ModF(f32 value, f32 mod);
 void Rand_Init(void);

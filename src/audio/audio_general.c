@@ -4,6 +4,7 @@
 #include "audiothread_cmd.h"
 #include "audioseq_cmd.h"
 #include "port/Engine.h"
+#include "port/hooks/Events.h"
 
 void Audio_SetModulationAndPlaySfx(f32* sfxSource, u32 sfxId, f32 freqMod);
 s32 Audio_GetCurrentVoice(void);
@@ -676,6 +677,7 @@ void Audio_StartSequence(u8 seqPlayId, u8 seqId, u8 seqArgs, u16 fadeInTime) {
 }
 
 void Audio_StopSequence(u8 seqPlayId, u16 fadeOutTime) {
+    CALL_CANCELLABLE_RETURN_EVENT(StopSequenceEvent, seqPlayId, fadeOutTime);
     AUDIOCMD_GLOBAL_DISABLE_SEQPLAYER(seqPlayId, fadeOutTime);
     sActiveSequences[seqPlayId].seqId = SEQ_ID_NONE;
 }
@@ -982,6 +984,7 @@ void Audio_DisableSetupOp(u8 seqPlayId, u8 opcode) {
 }
 
 void Audio_SetSequenceFade(u8 seqPlayId, u8 fadeModId, u8 fadeMod, u8 fadeTime) {
+    CALL_CANCELLABLE_RETURN_EVENT(SetSequenceFadeEvent, seqPlayId, fadeModId, &fadeMod, &fadeTime);
     sActiveSequences[seqPlayId].mainVolume.fadeMod[fadeModId] = fadeMod;
     sActiveSequences[seqPlayId].mainVolume.fadeTimer = fadeTime;
     sActiveSequences[seqPlayId].mainVolume.fadeActive = true;
@@ -1278,6 +1281,7 @@ void Audio_ClearBGMMute(u8 channelIndex) {
 }
 
 void Audio_PlaySfx(u32 sfxId, f32* sfxSource, u8 token, f32* freqMod, f32* volMod, s8* reverbAdd) {
+    CALL_CANCELLABLE_RETURN_EVENT(PlaySfxEvent, &sfxId, sfxSource, token, &freqMod, &volMod, &reverbAdd);
     if (sSfxBankMuted[SFX_BANK_ALT(sfxId)] == 0) {
         SfxRequest* request = &sSfxRequests[sSfxRequestWriteIndex];
 
@@ -1850,6 +1854,8 @@ void Audio_ResetSfx(void) {
 void Audio_PlayVoice(s32 msgId) {
     sCurrentVoiceId = sNextVoiceId = msgId;
     sSetNextVoiceId = true;
+    // [port - voice hook - notifies port layer of new voice playback request]
+    CALL_EVENT(PlayVoiceEvent, msgId);
 }
 
 void Audio_PlayVoiceWithoutBGM(u32 msgId) {
@@ -1863,6 +1869,8 @@ void Audio_UpdateVoice(void) {
     u16 voiceId;
     u8 voiceIdHi;
     u8 voiceIdLo;
+
+    CALL_CANCELLABLE_RETURN_EVENT(UpdateVoiceEvent);
 
     if (sSetNextVoiceId) {
         voiceBank = sNextVoiceId / 1000;
@@ -1882,6 +1890,8 @@ void Audio_UpdateVoice(void) {
 }
 
 void Audio_ClearVoice(void) {
+    // [port - voice hook - resets voice override state on clear]
+    CALL_EVENT(ClearVoiceEvent);
     sCurrentVoiceId = 0;
     sNextVoiceId = 1;
     sSetNextVoiceId = true;
@@ -1890,6 +1900,13 @@ void Audio_ClearVoice(void) {
 s32 Audio_GetCurrentVoice(void) {
     // LAudioTODO: Stub for now
     // return 0;
+
+    // [port - voice hook - allows port layer to report currently playing voice msgId]
+    s32 voiceResult = -1;
+    CALL_EVENT(GetCurrentVoiceEvent, &voiceResult);
+    if (voiceResult != -1) {
+        return voiceResult;
+    }
 
     if (!IS_SEQUENCE_CHANNEL_VALID(gSeqPlayers[SEQ_PLAYER_VOICE].channels[15])) {
         return 0;
@@ -1907,6 +1924,13 @@ s32 Audio_GetCurrentVoice(void) {
 s32 Audio_GetCurrentVoiceStatus(void) {
     // LAudioTODO: Stub for now
     // return 1;
+
+    // [port - voice hook - allows port layer to drive mouth animation from custom audio waveform]
+    s32 statusResult = -1;
+    CALL_EVENT(GetVoiceStatusEvent, &statusResult);
+    if (statusResult != -1) {
+        return statusResult;
+    }
 
     SequenceChannel* channel = gSeqPlayers[SEQ_PLAYER_VOICE].channels[15];
     SequenceLayer* layer = channel->layers[0];
@@ -2600,11 +2624,13 @@ void Audio_SetBgmParam(s8 bgmParam) {
 
 void Audio_PlaySequence(u8 seqPlayId, u16 seqId, u8 fadeinTime, u8 bgmParam) {
     // seqId &= 0xFF;
+    CALL_CANCELLABLE_RETURN_EVENT(PlaySequenceEvent, seqPlayId, &seqId, fadeinTime, bgmParam);
     SEQCMD_SET_SEQPLAYER_IO(seqPlayId, 0, bgmParam);
     SEQCMD_PLAY_SEQUENCE(seqPlayId, fadeinTime, 0, seqId);
 }
 
 void Audio_PlayFanfare(u16 seqId, u8 bgmVolume, u8 bgmFadeoutTime, u8 bgmFadeinTime) {
+    CALL_CANCELLABLE_RETURN_EVENT(PlayFanfareEvent, &seqId, bgmVolume, bgmFadeoutTime, bgmFadeinTime);
     if (Audio_GetActiveSeqId(SEQ_PLAYER_BGM) != NA_BGM_PLAYER_DOWN) {
         Audio_SetSequenceFade(SEQ_PLAYER_BGM, 1, bgmVolume, bgmFadeoutTime);
         SEQCMD_SETUP_RESTORE_SEQPLAYER_VOLUME(SEQ_PLAYER_FANFARE, SEQ_PLAYER_BGM, bgmFadeinTime);
@@ -2678,6 +2704,7 @@ void Audio_SetVolume(u8 audioType, u8 volume) {
     if (volume > 99) {
         volume = 99;
     }
+    CALL_CANCELLABLE_RETURN_EVENT(SetVolumeEvent, audioType, &volume);
     sVolumeSettings[audioType] = volume;
     Audio_RestoreVolumeSettings(audioType);
 }
@@ -2760,6 +2787,7 @@ void Audio_SetAudioSpec(u8 unused, u16 specParam) {
     u8 sfxChannelLayout = ((specParam & 0xFF00) >> 8);
     u8 specId = specParam & 0xFF;
 
+    CALL_EVENT(SetAudioSpecEvent, &sfxChannelLayout, &specId);
     SEQCMD_RESET_AUDIO_HEAP(sfxChannelLayout, specId);
 }
 
@@ -2848,4 +2876,5 @@ void Audio_Update(void) {
         AudioThread_ScheduleProcessCmds();
     }
     sAudioFrameCounter++;
+    CALL_EVENT(AudioUpdateEvent);
 }

@@ -99,92 +99,92 @@ typedef enum {
     /* 16 */ SI_CONT_READ_DONE,
 } SerialMesg;
 
-extern OSContPad gControllerHold[4];
-extern OSContPad gControllerPress[4];
-extern u8 gControllerPlugged[4];
-extern u32 gControllerLock;
-extern u8 gControllerRumbleEnabled[4];
-extern OSContPad sNextController[4];    //
-extern OSContPad sPrevController[4];    //
-extern OSContStatus sControllerStatus[4]; //
-extern OSPfs sControllerMotor[4];        //
+extern_s OSContPad gControllerHold[4];
+extern_s OSContPad gControllerPress[4];
+extern_s u8 gControllerPlugged[4];
+extern_s u32 gControllerLock;
+extern_s u8 gControllerRumbleEnabled[4];
+extern_s OSContPad sNextController[4];    //
+extern_s OSContPad sPrevController[4];    //
+extern_s OSContStatus sControllerStatus[4]; //
+extern_s OSPfs sControllerMotor[4];        //
 
-extern u8 gAudioThreadStack[0x1000];  // 800DDAA0
-extern OSThread gGraphicsThread;        // 800DEAA0
-extern u8 gGraphicsThreadStack[0x1000]; // 800DEC50
-extern OSThread gTimerThread;        // 800DFC50
-extern u8 gTimerThreadStack[0x1000]; // 800DFE00
-extern OSThread gSerialThread;        // 800E0E00
-extern u8 gSerialThreadStack[0x1000]; // 800E0FB0
+extern_s u8 gAudioThreadStack[0x1000];  // 800DDAA0
+extern_s OSThread gGraphicsThread;        // 800DEAA0
+extern_s u8 gGraphicsThreadStack[0x1000]; // 800DEC50
+extern_s OSThread gTimerThread;        // 800DFC50
+extern_s u8 gTimerThreadStack[0x1000]; // 800DFE00
+extern_s OSThread gSerialThread;        // 800E0E00
+extern_s u8 gSerialThreadStack[0x1000]; // 800E0FB0
 
-extern SPTask* gCurrentTask;
-extern SPTask* sAudioTasks[1];
-extern SPTask* sGfxTasks[2];
+extern_s SPTask* gCurrentTask;
+extern_s SPTask* sAudioTasks[1];
+extern_s SPTask* sGfxTasks[2];
 #ifdef AVOID_UB
-extern SPTask* sNewAudioTasks[2];
+extern_s SPTask* sNewAudioTasks[2];
 #else
-extern SPTask* sNewAudioTasks[1];
+extern_s SPTask* sNewAudioTasks[1];
 #endif
-extern SPTask* sNewGfxTasks[2];
-extern u32 gSegments[16]; // 800E1FD0
-extern OSMesgQueue gPiMgrCmdQueue; // 800E2010
-extern OSMesg sPiMgrCmdBuff[50]; // 800E2028
+extern_s SPTask* sNewGfxTasks[2];
+extern_s u32 gSegments[16]; // 800E1FD0
+extern_s OSMesgQueue gPiMgrCmdQueue; // 800E2010
+extern_s OSMesg sPiMgrCmdBuff[50]; // 800E2028
 
-extern OSMesgQueue gDmaMesgQueue;
-extern OSMesg sDmaMsgBuff[1];
-extern OSIoMesg gDmaIOMsg;
-extern OSMesgQueue gSerialEventQueue;
-extern OSMesg sSerialEventBuff[1];
-extern OSMesgQueue gMainThreadMesgQueue;
-extern OSMesg sMainThreadMsgBuff[32];
-extern OSMesgQueue gTaskMesgQueue;
-extern OSMesg sTaskMsgBuff[16];
-extern OSMesgQueue gAudioVImesgQueue;
-extern OSMesg sAudioVImsgBuff[1];
-extern OSMesgQueue gAudioTaskMesgQueue;
-extern OSMesg sAudioTaskMsgBuff[1];
-extern OSMesgQueue gGfxVImesgQueue;
-extern OSMesg sGfxVImsgBuff[4];
-extern OSMesgQueue gGfxTaskMesgQueue;
-extern OSMesg sGfxTaskMsgBuff[2];
-extern OSMesgQueue gSerialThreadMesgQueue;
-extern OSMesg sSerialThreadMsgBuff[8];
-extern OSMesgQueue gControllerMesgQueue;
-extern OSMesg sControllerMsgBuff[1];
-extern OSMesgQueue gSaveMesgQueue;
-extern OSMesg sSaveMsgBuff[1];
-extern OSMesgQueue gTimerTaskMesgQueue;
-extern OSMesg sTimerTaskMsgBuff[16];
-extern OSMesgQueue gTimerWaitMesgQueue;
-extern OSMesg sTimerWaitMsgBuff[1];
+extern_s OSMesgQueue gDmaMesgQueue;
+extern_s OSMesg sDmaMsgBuff[1];
+extern_s OSIoMesg gDmaIOMsg;
+extern_s OSMesgQueue gSerialEventQueue;
+extern_s OSMesg sSerialEventBuff[1];
+extern_s OSMesgQueue gMainThreadMesgQueue;
+extern_s OSMesg sMainThreadMsgBuff[32];
+extern_s OSMesgQueue gTaskMesgQueue;
+extern_s OSMesg sTaskMsgBuff[16];
+extern_s OSMesgQueue gAudioVImesgQueue;
+extern_s OSMesg sAudioVImsgBuff[1];
+extern_s OSMesgQueue gAudioTaskMesgQueue;
+extern_s OSMesg sAudioTaskMsgBuff[1];
+extern_s OSMesgQueue gGfxVImesgQueue;
+extern_s OSMesg sGfxVImsgBuff[4];
+extern_s OSMesgQueue gGfxTaskMesgQueue;
+extern_s OSMesg sGfxTaskMsgBuff[2];
+extern_s OSMesgQueue gSerialThreadMesgQueue;
+extern_s OSMesg sSerialThreadMsgBuff[8];
+extern_s OSMesgQueue gControllerMesgQueue;
+extern_s OSMesg sControllerMsgBuff[1];
+extern_s OSMesgQueue gSaveMesgQueue;
+extern_s OSMesg sSaveMsgBuff[1];
+extern_s OSMesgQueue gTimerTaskMesgQueue;
+extern_s OSMesg sTimerTaskMsgBuff[16];
+extern_s OSMesgQueue gTimerWaitMesgQueue;
+extern_s OSMesg sTimerWaitMsgBuff[1];
 
-extern GfxPool gGfxPools[2]; // 800E23B0
+extern_s GfxPool gGfxPools[2]; // 800E23B0
 
-extern GfxPool* gGfxPool;
-extern SPTask* gGfxTask;
-extern Vp* gViewport;
-extern Mtx* gGfxMtx;
-extern Gfx* gUnkDisp1;
-extern Gfx* gMasterDisp;
-extern Gfx* gUnkDisp2;
-extern Lightsn* gLight;
-extern FrameBuffer* gFrameBuffer;
-extern u16* gTextureRender;
+extern_s GfxPool* gGfxPool;
+extern_s SPTask* gGfxTask;
+extern_s Vp* gViewport;
+extern_s Mtx* gGfxMtx;
+extern_s Gfx* gUnkDisp1;
+extern_s Gfx* gMasterDisp;
+extern_s Gfx* gUnkDisp2;
+extern_s Lightsn* gLight;
+extern_s FrameBuffer* gFrameBuffer;
+extern_s u16* gTextureRender;
 
-extern u8 gVIsPerFrame;
-extern u32 gSysFrameCount;
-extern u8 gStartNMI;
-extern u8 gStopTasks;
-extern u8 gControllerRumbleFlags[4];
-extern u16 gFillScreenColor;
-extern u16 gFillScreen;
+extern_s u8 gVIsPerFrame;
+extern_s u32 gSysFrameCount;
+extern_s u8 gStartNMI;
+extern_s u8 gStopTasks;
+extern_s u8 gControllerRumbleFlags[4];
+extern_s u16 gFillScreenColor;
+extern_s u16 gFillScreen;
 
-extern u8 gUnusedStack[0x1000];
-extern OSThread sIdleThread; // 80138E90
-extern u8 sIdleThreadStack[0x1000]; // 801390A0
-extern OSThread gMainThread; // 8013A040
-extern u8 sMainThreadStack[0x1000]; // 8013A1F0
-extern OSThread gAudioThread; //8013B1F0
+extern_s u8 gUnusedStack[0x1000];
+extern_s OSThread sIdleThread; // 80138E90
+extern_s u8 sIdleThreadStack[0x1000]; // 801390A0
+extern_s OSThread gMainThread; // 8013A040
+extern_s u8 sMainThreadStack[0x1000]; // 8013A1F0
+extern_s OSThread gAudioThread; //8013B1F0
 
 #define MESG_QUEUE_EMPTY -1
 

@@ -11,10 +11,13 @@ typedef enum {
 } SF64Version;
 
 #ifdef __cplusplus
+#pragma push_macro("this")
+#undef this
 #include <vector>
-#include <SDL2/SDL.h>
-#include <Fast3D/interpreter.h>
-#include "libultraship/src/Context.h"
+#include <ship/controller/controldeck/ControlDeck.h>
+#include <ship/Context.h>
+#include <fast/interpreter.h>
+#pragma pop_macro("this")
 
 #ifndef IDYES
 #define IDYES 6
@@ -32,6 +35,7 @@ class GameEngine {
     GameEngine();
     void StartFrame() const;
     static bool GenAssetFile(bool exitOnFail = true);
+    static void LoadScripts();
     static void Create();
     static void HandleAudioThread();
     static void StartAudioFrame();

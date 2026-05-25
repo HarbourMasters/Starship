@@ -1,14 +1,16 @@
 #include "SampleFactory.h"
 #include "../ResourceUtil.h"
 #include "port/resource/type/audio/Sample.h"
-#include "sf64audio_provisional.h"
+#include "port/audio/AudioDebug.h"
+#include "spdlog/spdlog.h"
 #define DR_WAV_IMPLEMENTATION
 #include <dr_wav.h>
 #include <tinyxml2.h>
 #define DR_MP3_IMPLEMENTATION
 #include <dr_mp3.h>
-
 #include "vorbis/vorbisfile.h"
+
+#include "sf64audio_provisional.h"
 
 namespace SF64 {
 std::shared_ptr<Ship::IResource> ResourceFactoryBinarySampleV1::ReadResource(std::shared_ptr<Ship::File> file,
@@ -41,6 +43,28 @@ std::shared_ptr<Ship::IResource> ResourceFactoryBinarySampleV1::ReadResource(std
 
     sample->mSample.isRelocated = 1;
 
+    AudioDebug_RegisterSample(&sample->mSample, initData->Path);
+    return sample;
+}
+
+std::shared_ptr<Ship::IResource> ResourceFactoryBinarySampleV2::ReadResource(std::shared_ptr<Ship::File> file,
+                                                                             std::shared_ptr<Ship::ResourceInitData> initData) {
+    if (!FileHasValidFormatAndReader(file, initData)) {
+        return nullptr;
+    }
+
+    auto reader = std::get<std::shared_ptr<Ship::BinaryReader>>(file->Reader);
+    uint64_t canonical_hash = reader->ReadUInt64();
+
+    SampleData* canonical = LoadChild<SampleData*>(canonical_hash);
+    if (canonical == nullptr) {
+        return nullptr;
+    }
+
+    auto sample = std::make_shared<Sample>(initData);
+    sample->mSample = *canonical;
+    sample->mSample.isRelocated = 1;
+    AudioDebug_RegisterSample(&sample->mSample, initData->Path);
     return sample;
 }
 
@@ -110,7 +134,13 @@ static void Mp3DecoderWorker(std::shared_ptr<Sample> sample, std::shared_ptr<Shi
     sample->mSample.tuning = (float)(sampleRate * channels) / 32000.0f;
     sample->mSample.size = numFrames * channels * 2;
     sample->mSample.sampleAddr = new uint8_t[sample->mSample.size];
+    sample->mSample.numFrames = numFrames;
+    sample->mSample.channels = channels;
+    sample->mSample.sampleRate = sampleRate;
     drmp3_read_pcm_frames_s16(&mp3, numFrames, (int16_t*)sample->mSample.sampleAddr);
+    sample->mSample.codec = CODEC_S16;
+    sample->mSample.medium = MEDIUM_RAM;
+    sample->mSample.isRelocated = 1;
 }
 
 static void OggDecoderWorker(std::shared_ptr<Sample> sample, std::shared_ptr<Ship::File> sampleFile) {
@@ -134,6 +164,10 @@ static void OggDecoderWorker(std::shared_ptr<Sample> sample, std::shared_ptr<Shi
     int bitStream = 0;
     size_t toRead = numFrames * numChannels * 2;
     sample->mSample.sampleAddr = new uint8_t[toRead];
+    sample->mSample.numFrames = numFrames;
+    sample->mSample.channels = numChannels;
+    sample->mSample.sampleRate = sampleRate;
+    sample->mSample.size = toRead;
     sample->mSample.tuning = (float)(sampleRate * numChannels) / 32000.0f;
     do {
         read = ov_read(&vf, dataBuff, 4096, 0, 2, 1, &bitStream);
@@ -141,6 +175,9 @@ static void OggDecoderWorker(std::shared_ptr<Sample> sample, std::shared_ptr<Shi
         pos += read;
     } while (read != 0);
     ov_clear(&vf);
+    sample->mSample.codec = CODEC_S16;
+    sample->mSample.medium = MEDIUM_RAM;
+    sample->mSample.isRelocated = 1;
 }
 
 std::shared_ptr<Ship::IResource> ResourceFactoryXMLSampleV0::ReadResource(std::shared_ptr<Ship::File> file,
@@ -165,6 +202,11 @@ std::shared_ptr<Ship::IResource> ResourceFactoryXMLSampleV0::ReadResource(std::s
         sample->mSample.loop->start = loopRoot->UnsignedAttribute("Start");
         sample->mSample.loop->end = loopRoot->UnsignedAttribute("End");
         sample->mSample.loop->count = loopRoot->UnsignedAttribute("Count");
+        SPDLOG_INFO("[SampleFactory] {} loop start={} end={} count={}",
+                    initData->Path,
+                    sample->mSample.loop->start,
+                    sample->mSample.loop->end,
+                    sample->mSample.loop->count);
         tinyxml2::XMLElement* predictor = loopRoot->FirstChildElement("Predictor");
         while (predictor != nullptr) {
             sample->mSample.loop->predictorState[i++] = predictor->IntAttribute("State");
@@ -195,6 +237,8 @@ std::shared_ptr<Ship::IResource> ResourceFactoryXMLSampleV0::ReadResource(std::s
     if (customFormatStr != nullptr) {
         // Compressed files can take a really long time to decode (~250ms per).
         // This worked when we tested it (09/04/2024) (Works on my machine)
+        sample->mSample.codec = CODEC_S16;
+        sample->mSample.medium = MEDIUM_RAM;
         if (strcmp(customFormatStr, "wav") == 0) {
             drwav wav;
             drwav_uint64 numFrames;
@@ -207,16 +251,42 @@ std::shared_ptr<Ship::IResource> ResourceFactoryXMLSampleV0::ReadResource(std::s
             sample->mSample.tuning = (float)(wav.sampleRate * wav.channels) / 32000.0f;
             sample->mSample.size = numFrames * wav.channels * 2;
             sample->mSample.sampleAddr = new uint8_t[sample->mSample.size];
+            sample->mSample.numFrames = numFrames;
+            sample->mSample.channels = wav.channels;
+            sample->mSample.sampleRate = wav.sampleRate;
 
             drwav_read_pcm_frames_s16(&wav, numFrames, (int16_t*)sample->mSample.sampleAddr);
+            sample->mSample.isRelocated = 1;
+            AudioDebug_RegisterSample(&sample->mSample, initData->Path);
             return sample;
         } else if (strcmp(customFormatStr, "ogg") == 0) {
+            // Read OGG header synchronously so mSample.tuning is set before SoundFontFactory
+            // checks it (async thread sets it too late — tuning stays 0 → wrong pitch).
+            OggFileData headerFileData = {
+                .data = sampleFile->Buffer->data(),
+                .pos  = 0,
+                .size = sampleFile->Buffer->size(),
+            };
+            OggVorbis_File vf_hdr;
+            if (ov_open_callbacks(&headerFileData, &vf_hdr, nullptr, 0, vorbisCallbacks) == 0) {
+                vorbis_info* vi = ov_info(&vf_hdr, -1);
+                sample->mSample.tuning = (float)(vi->rate * vi->channels) / 32000.0f;
+                ov_clear(&vf_hdr);
+            }
             std::thread fileDecoderThread = std::thread(OggDecoderWorker, sample, sampleFile);
             fileDecoderThread.detach();
+            AudioDebug_RegisterSample(&sample->mSample, initData->Path);
             return sample;
         } else if (strcmp(customFormatStr, "mp3") == 0) {
+            // Read MP3 header synchronously for the same reason.
+            drmp3 mp3_hdr;
+            if (drmp3_init_memory(&mp3_hdr, sampleFile->Buffer->data(), sampleFile->Buffer->size(), nullptr)) {
+                sample->mSample.tuning = (float)(mp3_hdr.sampleRate * mp3_hdr.channels) / 32000.0f;
+                drmp3_uninit(&mp3_hdr);
+            }
             std::thread fileDecoderThread = std::thread(Mp3DecoderWorker, sample, sampleFile);
             fileDecoderThread.detach();
+            AudioDebug_RegisterSample(&sample->mSample, initData->Path);
             return sample;
         }
     }
@@ -229,6 +299,7 @@ std::shared_ptr<Ship::IResource> ResourceFactoryXMLSampleV0::ReadResource(std::s
 
     sample->mSample.isRelocated = 1;
 
+    AudioDebug_RegisterSample(&sample->mSample, initData->Path);
     return sample;
 }
 

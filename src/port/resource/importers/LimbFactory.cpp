@@ -1,7 +1,7 @@
 #include "LimbFactory.h"
 
-#include "Context.h"
-#include "resourcebridge.h"
+#include <ship/Context.h>
+#include <bridge/resourcebridge.h>
 #include "../type/Limb.h"
 #include "ResourceUtil.h"
 

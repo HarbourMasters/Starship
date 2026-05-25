@@ -1,10 +1,13 @@
 #include "Engine.h"
 #include "ui/ImguiUI.h"
-#include "StringHelper.h"
+#include <filesystem>
+#include <fstream>
+#include <ship/utils/StringHelper.h>
+#include "audio/AudioDebug.h"
 
+#ifndef __SWITCH__
 #include "extractor/GameExtractor.h"
-#include "libultraship/src/Context.h"
-#include "libultraship/src/controller/controldevice/controller/mapping/ControllerDefaultMappings.h"
+#endif
 #include "resource/type/ResourceType.h"
 #include "resource/importers/AnimFactory.h"
 #include "resource/importers/ColPolyFactory.h"
@@ -28,24 +31,35 @@
 #include "resource/importers/audio/InstrumentFactory.h"
 #include "resource/importers/audio/LoopFactory.h"
 #include "resource/importers/audio/SampleFactory.h"
+#include "resource/importers/audio/SequenceFactory.h"
 #include "resource/importers/audio/SoundFontFactory.h"
 
 #include "port/interpolation/FrameInterpolation.h"
-#include <Fast3D/Fast3dWindow.h>
-#include <DisplayListFactory.h>
-#include <TextureFactory.h>
-#include <MatrixFactory.h>
-#include <BlobFactory.h>
-#include <VertexFactory.h>
+#include <fast/Fast3dWindow.h>
+#include <libultraship/window/gui/InputEditorWindow.h>
+#include <libultraship/window/gui/GfxDebuggerWindow.h>
+#include <fast/resource/factory/DisplayListFactory.h>
+#include <fast/resource/factory/TextureFactory.h>
+#include <fast/resource/factory/MatrixFactory.h>
+#include <fast/resource/factory/VertexFactory.h>
+#include <fast/resource/factory/LightFactory.h>
+#include <ship/resource/factory/BlobFactory.h>
+#include <ship/resource/factory/JsonFactory.h>
 #include "audio/GameAudio.h"
+#include "controller/controldeck/ControlDeck.h"
+#include "fast/resource/ResourceType.h"
 #include "port/patches/DisplayListPatch.h"
 #include "port/mods/PortEnhancements.h"
-
-#include <Fast3D/interpreter.h>
-#include <filesystem>
+#include "port/ui/cvar_prefixes.h"
+#include "port/build.h"
+#include "port/ShipInit.h"
+#ifndef __SWITCH__
+#include <ship/scripting/ScriptLoader.h>
+#endif
+#include "port/notification/notification.h"
 
 #ifdef __SWITCH__
-#include <port/switch/SwitchImpl.h>
+#include <ship/port/switch/SwitchImpl.h>
 #endif
 
 namespace fs = std::filesystem;
@@ -64,7 +78,7 @@ GameEngine* GameEngine::Instance;
 
 GameEngine::GameEngine() {
     // Initialize context properties early to recognize paths properly for non-portable builds
-    this->context = Ship::Context::CreateUninitializedInstance("Starship", "ship", "starship.cfg.json");
+    context = Ship::Context::CreateUninitializedInstance("Starship", "ship", "starship.cfg.json");
 
 #ifdef __SWITCH__
     Ship::Switch::Init(Ship::PreInitPhase);
@@ -104,8 +118,9 @@ GameEngine::GameEngine() {
         archiveFiles.push_back(assets_path);
     }
 
-    if (const std::string patches_path = Ship::Context::GetPathRelativeToAppDirectory("mods");
-        !patches_path.empty()) {
+    const std::string patches_path = Ship::Context::GetPathRelativeToAppDirectory("mods");
+
+    if (!patches_path.empty()) {
         if (!std::filesystem::exists(patches_path)) {
             std::filesystem::create_directories(patches_path);
         }
@@ -122,11 +137,18 @@ GameEngine::GameEngine() {
                     archiveFiles.push_back(p.path().generic_string());
                 }
             }
+
+            for (const auto& p : std::filesystem::directory_iterator(patches_path)) {
+                if (p.is_directory()) {
+                    SPDLOG_INFO("Found mod directory: {}", p.path().generic_string());
+                    archiveFiles.push_back(p.path().generic_string());
+                }
+            }
         }
     }
 
-    this->context->InitConfiguration();    // without this line InitConsoleVariables fails at Config::Reload()
-    this->context->InitConsoleVariables(); // without this line the controldeck constructor failes in
+    context->InitConfiguration();    // without this line InitConsoleVariables fails at Config::Reload()
+    context->InitConsoleVariables(); // without this line the controldeck constructor failes in
                                            // ShipDeviceIndexMappingManager::UpdateControllerNamesFromConfig()
 
     auto defaultMappings = std::make_shared<Ship::ControllerDefaultMappings>(
@@ -160,21 +182,132 @@ GameEngine::GameEngine() {
         // SDLAxisDirectionToAxisDirectionMappings - use built-in LUS defaults
         std::unordered_map<Ship::StickIndex, std::vector<std::pair<Ship::Direction, std::pair<SDL_GameControllerAxis, int32_t>>>>()
     );
-    auto controlDeck = std::make_shared<LUS::ControlDeck>(std::vector<CONTROLLERBUTTONS_T>(), defaultMappings);
+    std::unordered_map<CONTROLLERBUTTONS_T, std::string> names;
+    auto controlDeck = std::make_shared<LUS::ControlDeck>();
 
-    this->context->InitResourceManager(archiveFiles, {}, 3); // without this line InitWindow fails in Gui::Init()
-    this->context->InitConsole(); // without this line the GuiWindow constructor fails in ConsoleWindow::InitElement()
+    context->InitControlDeck(controlDeck);
+    context->InitResourceManager(archiveFiles, {}, 3);
+    context->InitConsole();
 
-    auto window = std::make_shared<Fast::Fast3dWindow>(std::vector<std::shared_ptr<Ship::GuiWindow>>({}));
+    auto window = std::make_shared<Fast::Fast3dWindow>(std::vector<std::shared_ptr<Ship::GuiWindow>>({
+        std::make_shared<LUS::InputEditorWindow>("gInputEditorWindow", "Input Editor"),
+        std::make_shared<LUS::GfxDebuggerWindow>("gGfxDebuggerEnabled", "Gfx Debugger"),
+    }));
+    context->InitWindow(window);
+    context->InitEventSystem();
 
-    auto audioChannelsSetting = Ship::Context::GetInstance()->GetConfig()->GetCurrentAudioChannelsSetting();
-    this->context->Init(archiveFiles, {}, 3, { 32000, 1024, 1680, audioChannelsSetting }, window, controlDeck);
+#if (_DEBUG)
+    auto defaultLogLevel = spdlog::level::debug;
+#else
+    auto defaultLogLevel = spdlog::level::info;
+#endif
+    auto logLevel =
+        static_cast<spdlog::level::level_enum>(CVarGetInteger(CVAR_DEVELOPER_TOOLS("LogLevel"), defaultLogLevel));
+    context->InitLogging(logLevel, logLevel);
+    Ship::Context::GetInstance()->GetLogger()->set_pattern("[%H:%M:%S.%e] [%s:%#] [%l] %v");
+    SPDLOG_INFO("Starting Starship version {} (Branch: {} | Commit: {})", (char*)gBuildVersion, (char*)gGitBranch,
+                (char*)gGitCommitHash);
+
+    context->InitFileDropMgr();
+    context->InitCrashHandler();
 
 #ifndef __SWITCH__
-    Ship::Context::GetInstance()->GetLogger()->set_level(
-        (spdlog::level::level_enum) CVarGetInteger("gDeveloperTools.LogLevel", 1));
-    Ship::Context::GetInstance()->GetLogger()->set_pattern("[%H:%M:%S.%e] [%s:%#] [%l] %v");
+    constexpr int codeVersion = 1;
+    std::unordered_map<std::string, std::string> defines = {
+        { "VERSION_US", "1" },
+        { "ENABLE_RUMBLE", "1" },
+        { "F3DEX_GBI", "1" },
+        { "_LANGUAGE_C", "1" },
+        { "_USE_MATH_DEFINES", "1" },
+        { "NON_MATCHING", "1" },
+        { "NON_EQUIVALENT", "1" },
+        { "AVOID_UB", "1" }
+    };
+
+#ifdef _WIN32
+    const std::string tccBase = Ship::Context::GetAppBundlePath() + "/.tcc";
+    std::vector<std::string> includePaths = {
+        tccBase + "/include",
+        tccBase + "/include/tcc",
+        tccBase + "/include/winapi",
+        tccBase + "/include/sys",
+        tccBase + "/include/sec_api",
+    };
+    std::vector<std::string> libraryPaths = { tccBase + "/lib" };
+    context->InitScriptLoader(defines, codeVersion, "-g -rdynamic", includePaths, libraryPaths, { "Starship" });
+#else
+    std::vector<std::string> includePaths = {
+        Ship::Context::GetPathRelativeToAppDirectory(".tcc/include"),
+    };
+
+#ifdef __APPLE__
+    {
+        FILE* fp = popen("xcrun --show-sdk-path 2>/dev/null", "r");
+        if (fp) {
+            char buf[4096] = {};
+            if (fgets(buf, sizeof(buf), fp)) {
+                std::string sdkPath(buf);
+                sdkPath.erase(sdkPath.find_last_not_of("\n\r \t") + 1);
+                if (!sdkPath.empty()) {
+                    includePaths.push_back(sdkPath + "/usr/include");
+                }
+            }
+            pclose(fp);
+        }
+    }
 #endif
+
+    std::vector<std::string> libraryPaths = {
+        Ship::Context::GetPathRelativeToAppDirectory(".tcc/lib"),
+    };
+    context->InitScriptLoader(defines, codeVersion, "-g -rdynamic", includePaths, libraryPaths, {});
+#endif
+
+    context->GetResourceManager()->GetArchiveManager()->SetUntrustedArchiveHandler(
+        [](Ship::Archive& archive, Ship::KeystoreEntry& key) {
+            const auto info = archive.GetManifest();
+
+            std::string message = "An archive from an unknown author was detected.\n\n";
+            message += "Mod Name: " + info.Name + "\n";
+            message += "Author: " + info.Author + "\n\n";
+            message += "Do you want to trust this author and load the mod?";
+
+            constexpr SDL_MessageBoxButtonData buttons[] = {
+                { SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 1, "Yes" },
+                { SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT, 0, "No" },
+            };
+
+            const SDL_MessageBoxColorScheme colorScheme = { {
+                /* [SDL_MESSAGEBOX_COLOR_BACKGROUND] */
+                { 35, 35, 35 }, // Dark Grey
+                /* [SDL_MESSAGEBOX_COLOR_TEXT] */
+                { 240, 240, 240 }, // Off-White
+                /* [SDL_MESSAGEBOX_COLOR_BUTTON_BORDER] */
+                { 255, 100, 100 }, // Warning Red/Orange
+                /* [SDL_MESSAGEBOX_COLOR_BUTTON_BACKGROUND] */
+                { 60, 60, 60 }, // Lighter Grey
+                /* [SDL_MESSAGEBOX_COLOR_BUTTON_SELECTED] */
+                { 200, 60, 60 } // Dark Red/Orange when hovered/selected
+            } };
+
+            const SDL_MessageBoxData messageboxdata = { SDL_MESSAGEBOX_WARNING,
+                                                        nullptr,
+                                                        "Security Warning: Untrusted Author",
+                                                        message.c_str(),
+                                                        SDL_arraysize(buttons),
+                                                        buttons,
+                                                        &colorScheme };
+
+            int buttonid;
+            if (SDL_ShowMessageBox(&messageboxdata, &buttonid) < 0) {
+                return false;
+            }
+
+            return buttonid == 1;
+        });
+#endif
+
+    context->InitAudio({ .SampleRate = 32000, .SampleLength = 1024, .DesiredBuffered = 1680 });
 
     auto loader = context->GetResourceManager()->GetResourceLoader();
     loader->RegisterResourceFactory(std::make_shared<SF64::ResourceFactoryBinaryAnimV0>(), RESOURCE_FORMAT_BINARY,
@@ -250,7 +383,10 @@ GameEngine::GameEngine() {
 
     loader->RegisterResourceFactory(std::make_shared<SF64::ResourceFactoryBinarySampleV1>(), RESOURCE_FORMAT_BINARY,
                                     "Sample", static_cast<uint32_t>(SF64::ResourceType::Sample), 1);
-    
+
+    loader->RegisterResourceFactory(std::make_shared<SF64::ResourceFactoryBinarySampleV2>(), RESOURCE_FORMAT_BINARY,
+                                    "Sample", static_cast<uint32_t>(SF64::ResourceType::Sample), 2);
+
     loader->RegisterResourceFactory(std::make_shared<SF64::ResourceFactoryXMLSampleV0>(), RESOURCE_FORMAT_XML,
                                     "Sample", static_cast<uint32_t>(SF64::ResourceType::Sample), 0);
 
@@ -260,12 +396,21 @@ GameEngine::GameEngine() {
     loader->RegisterResourceFactory(std::make_shared<SF64::ResourceFactoryXMLSoundFontV0>(), RESOURCE_FORMAT_XML,
                                     "SoundFont", static_cast<uint32_t>(SF64::ResourceType::SoundFont), 0);
 
+    loader->RegisterResourceFactory(std::make_shared<SF64::ResourceFactoryBinarySequenceV2>(), RESOURCE_FORMAT_BINARY,
+                                    "Sequence", static_cast<uint32_t>(SF64::ResourceType::Sequence), 2);
+
+    loader->RegisterResourceFactory(std::make_shared<SF64::ResourceFactoryXMLSequenceV0>(), RESOURCE_FORMAT_XML,
+                                    "Sequence", static_cast<uint32_t>(SF64::ResourceType::Sequence), 0);
+
     prevAltAssets = CVarGetInteger("gEnhancements.Mods.AlternateAssets", 0);
     gEnableGammaBoost = CVarGetInteger("gGraphics.GammaMode", 0) == 0;
     context->GetResourceManager()->SetAltAssetsEnabled(prevAltAssets);
 }
 
 bool GameEngine::GenAssetFile(bool exitOnFail) {
+#ifdef __SWITCH__
+    return true;
+#else
     auto extractor = new GameExtractor();
 
     if (!extractor->SelectGameFromUI()) {
@@ -290,6 +435,24 @@ bool GameEngine::GenAssetFile(bool exitOnFail) {
     ShowMessage(("Starship - Extraction - Found " + game.value()).c_str(), "The extraction process will now begin.\n\nThis may take a few minutes.", SDL_MESSAGEBOX_INFORMATION);
 
     return extractor->GenerateOTR();
+#endif
+}
+
+void GameEngine::LoadScripts() {
+#ifndef __SWITCH__
+    auto scripting = Ship::Context::GetInstance()->GetScriptLoader();
+
+    try {
+        scripting->CompileAll();
+        scripting->LoadAll();
+        Notification::Emit({ .message = "Loaded all scripts", .remainingTime = 7.0f });
+    } catch (std::exception& e) {
+        SPDLOG_ERROR("Failed to load scripts: {}", e.what());
+        Notification::Emit({ .message = "Failed to load scripts, check log for details",
+                                .messageColor = ImVec4(1.0f, 0.5f, 0.5f, 1.0f),
+                                .remainingTime = 7.0f });
+    }
+#endif
 }
 
 void GameEngine::Create() {
@@ -302,6 +465,8 @@ void GameEngine::Create() {
     osSetTime(0);
 #endif
     PortEnhancements_Init();
+    LoadScripts();
+    ShipInit::InitAll();
 }
 
 void GameEngine::Destroy() {
@@ -318,8 +483,8 @@ void GameEngine::Destroy() {
 
 void GameEngine::StartFrame() const {
     using Ship::KbScancode;
-    const int32_t dwScancode = this->context->GetWindow()->GetLastScancode();
-    this->context->GetWindow()->SetLastScancode(-1);
+    const int32_t dwScancode = context->GetWindow()->GetLastScancode();
+    context->GetWindow()->SetLastScancode(-1);
 
     switch (dwScancode) {
         case KbScancode::LUS_KB_TAB: {
@@ -359,10 +524,14 @@ extern "C" int countermin = 0;
 extern "C" unsigned short samples_high = SAMPLES_HIGH;
 extern "C" unsigned short samples_low = SAMPLES_LOW;
 
+#define AUDIO_FRAMES_PER_UPDATE (gVIsPerFrame > 0 ? gVIsPerFrame : 1)
+#define MAX_AUDIO_FRAMES_PER_UPDATE 5 // Compile-time constant with max value of gVIsPerFrame
+
 void GameEngine::HandleAudioThread() {
-#ifdef PIPE_DEBUG
-    std::ofstream outfile("audio.bin", std::ios::binary | std::ios::app);
-#endif
+    // Runtime PCM capture state — lives entirely on the audio thread.
+    std::ofstream recFile;
+    uint64_t      recBytes = 0;
+
     while (audio.running) {
         {
             std::unique_lock<std::mutex> Lock(audio.mutex);
@@ -373,11 +542,6 @@ void GameEngine::HandleAudioThread() {
                 break;
             }
         }
-
-        // gVIsPerFrame = 2;
-
-#define AUDIO_FRAMES_PER_UPDATE (gVIsPerFrame > 0 ? gVIsPerFrame : 1)
-#define MAX_AUDIO_FRAMES_PER_UPDATE 5 // Compile-time constant with max value of gVIsPerFrame
 
         std::unique_lock<std::mutex> Lock(audio.mutex);
         int samples_left = AudioPlayerBuffered();
@@ -392,25 +556,92 @@ void GameEngine::HandleAudioThread() {
         const int32_t num_audio_channels = GetNumAudioChannels();
 
         s16 audio_buffer[SAMPLES_HIGH * MAX_NUM_AUDIO_CHANNELS * MAX_AUDIO_FRAMES_PER_UPDATE] = { 0 };
-        for (int i = 0; i < AUDIO_FRAMES_PER_UPDATE; i++) {
-            AudioThread_CreateNextAudioBuffer(audio_buffer + i * (num_audio_samples * num_audio_channels),
-                                              num_audio_samples);
+
+        // ── Frame-step gate ───────────────────────────────────────────────────
+        // When step mode is active, skip synthesis (buffer stays silent zeros).
+        // gAudioStepOnce fires one frame; gAudioStepN drains across frames.
+        // The main thread is never blocked.
+        bool doSynth = true;
+        if (SF64::gAudioStepMode.load(std::memory_order_acquire)) {
+            doSynth = false;
+            // Check single-step token
+            bool expected = true;
+            if (SF64::gAudioStepOnce.compare_exchange_strong(
+                    expected, false, std::memory_order_acq_rel)) {
+                doSynth = true;
+            }
+            // Check N-step counter (decrement if positive)
+            if (!doSynth) {
+                int n = SF64::gAudioStepN.load(std::memory_order_acquire);
+                while (n > 0) {
+                    if (SF64::gAudioStepN.compare_exchange_weak(
+                            n, n - 1, std::memory_order_acq_rel)) {
+                        doSynth = true;
+                        break;
+                    }
+                }
+            }
+            if (doSynth)
+                SF64::gAudioFrameCount.fetch_add(1, std::memory_order_relaxed);
         }
-#ifdef PIPE_DEBUG
-        if (outfile.is_open()) {
-            outfile.write(reinterpret_cast<char*>(audio_buffer),
-                          num_audio_samples * (sizeof(int16_t) * num_audio_channels * AUDIO_FRAMES_PER_UPDATE));
+        // ─────────────────────────────────────────────────────────────────────
+
+        if (doSynth) {
+            for (int i = 0; i < AUDIO_FRAMES_PER_UPDATE; i++) {
+                AudioThread_CreateNextAudioBuffer(audio_buffer + i * (num_audio_samples * num_audio_channels),
+                                                  num_audio_samples);
+            }
         }
-#endif
+
+        // ── Runtime PCM capture ───────────────────────────────────────────────
+        const size_t frameBytes = num_audio_samples *
+                                  (sizeof(int16_t) * num_audio_channels * AUDIO_FRAMES_PER_UPDATE);
+
+        // Open file on first recording frame
+        if (SF64::gAudioRecording.load(std::memory_order_acquire) && !recFile.is_open()) {
+            std::string path;
+            { std::lock_guard<std::mutex> lk(SF64::gAudioRecordMutex); path = SF64::gAudioRecordPath; }
+            recFile.open(path, std::ios::binary | std::ios::trunc);
+            recBytes = 0;
+            SF64::gAudioRecordBytes.store(0, std::memory_order_relaxed);
+        }
+
+        // Write this frame if recording and not paused
+        if (recFile.is_open() &&
+            SF64::gAudioRecording.load(std::memory_order_acquire) &&
+            !SF64::gAudioRecordPaused.load(std::memory_order_acquire)) {
+            recFile.write(reinterpret_cast<char*>(audio_buffer), frameBytes);
+            recBytes += frameBytes;
+            SF64::gAudioRecordBytes.store(recBytes, std::memory_order_relaxed);
+        }
+
+        // Save-and-stop: flush, close, clear flags
+        if (SF64::gAudioSaveAndStop.load(std::memory_order_acquire)) {
+            if (recFile.is_open()) { recFile.flush(); recFile.close(); }
+            recBytes = 0;
+            SF64::gAudioRecordBytes.store(0, std::memory_order_relaxed);
+            SF64::gAudioRecording.store(false, std::memory_order_release);
+            SF64::gAudioRecordPaused.store(false, std::memory_order_release);
+            SF64::gAudioSaveAndStop.store(false, std::memory_order_release);
+        }
+
+        // Also close if recording was stopped without save
+        if (!SF64::gAudioRecording.load(std::memory_order_acquire) && recFile.is_open()) {
+            recFile.close();
+            recBytes = 0;
+            SF64::gAudioRecordBytes.store(0, std::memory_order_relaxed);
+        }
+        // ─────────────────────────────────────────────────────────────────────
+
         AudioPlayerPlayFrame((u8*) audio_buffer,
                              num_audio_samples * (sizeof(int16_t) * num_audio_channels * AUDIO_FRAMES_PER_UPDATE));
-        
+
         audio.processing = false;
         audio.cv_from_thread.notify_one();
     }
-#ifdef PIPE_DEBUG
-    outfile.close();
-#endif
+
+    // Ensure file is closed if thread exits while recording
+    if (recFile.is_open()) { recFile.flush(); recFile.close(); }
 }
 
 void GameEngine::StartAudioFrame() {
