@@ -9,6 +9,7 @@
 
 #include "sf64audio_provisional.h"
 #include "audioseq_cmd.h"
+#include "audiothread_cmd.h"
 
 // Pending override request — written by game thread, read by audio thread
 // -1 = no request, -2 = clear request, >=0 = msgId to activate
@@ -49,6 +50,8 @@ static bool sSilentSampleInitialized = false;
 
 extern "C" uint8_t sSetNextVoiceId;
 extern "C" uint32_t sNextVoiceId;
+extern "C" uint8_t sMuteBgmForVoice;
+extern "C" void Audio_SetSequenceFade(uint8_t seqPlayId, uint8_t fadeModId, uint8_t fadeMod, uint8_t fadeTime);
 
 static void InitSilentSample() {
     if (sSilentSampleInitialized)
@@ -166,17 +169,11 @@ static void OnPlayVoice(IEvent* ev) {
 
 // Called from AUDIO THREAD — all state mutations happen here
 static void OnUpdateVoice(IEvent* ev) {
-    int8_t voiceBank;
-    uint16_t voiceId;
-    uint8_t voiceIdHi;
-    uint8_t voiceIdLo;
-    bool finished = false;
-
     if (sSetNextVoiceId) {
-        voiceBank = sNextVoiceId / 1000;
-        voiceId = sNextVoiceId % 1000;
-        voiceIdHi = voiceId / 256;
-        voiceIdLo = voiceId % 256;
+        int8_t voiceBank = sNextVoiceId / 1000;
+        uint16_t voiceId = sNextVoiceId % 1000;
+        uint8_t voiceIdHi = voiceId / 256;
+        uint8_t voiceIdLo = voiceId % 256;
 
         AUDIOCMD_CHANNEL_SET_IO(SEQ_PLAYER_VOICE, 15, 0, 1);
         AUDIOCMD_CHANNEL_SET_IO(SEQ_PLAYER_VOICE, 15, 4, voiceBank);
@@ -185,149 +182,154 @@ static void OnUpdateVoice(IEvent* ev) {
         sSetNextVoiceId = false;
     }
 
-    // Process pending request from game thread
-    s32 pending = sPendingVoiceMsgId;
-    if (pending >= 0) {
-        sPendingVoiceMsgId = -1;
-        SPDLOG_INFO("[VoiceHook] Processing pending msgId={}", pending);
+    bool finished = false;
 
-        // Unfreeze channel for new message
-        {
-            SequenceChannel* ch = Voice_GetChannel15();
-            if (ch != nullptr) {
-                SPDLOG_INFO("[VoiceHook] Before unfreeze: stopScript={}, delay={}, layerNote={}", (int) ch->stopScript,
-                            (ch->layers[0] != nullptr ? (int) ch->layers[0]->delay : -1),
-                            (ch->layers[0] != nullptr && ch->layers[0]->note != nullptr ? 1 : 0));
-                ch->stopScript = false;
-                if (ch->layers[0] != nullptr) {
-                    ch->layers[0]->delay = 1;
+    [&]() {
+        // Process pending request from game thread
+        s32 pending = sPendingVoiceMsgId;
+        if (pending >= 0) {
+            sPendingVoiceMsgId = -1;
+            SPDLOG_INFO("[VoiceHook] Processing pending msgId={}", pending);
+
+            // Unfreeze channel for new message
+            {
+                SequenceChannel* ch = Voice_GetChannel15();
+                if (ch != nullptr) {
+                    SPDLOG_INFO("[VoiceHook] Before unfreeze: stopScript={}, delay={}, layerNote={}", (int) ch->stopScript,
+                                (ch->layers[0] != nullptr ? (int) ch->layers[0]->delay : -1),
+                                (ch->layers[0] != nullptr && ch->layers[0]->note != nullptr ? 1 : 0));
+                    ch->stopScript = false;
+                    if (ch->layers[0] != nullptr) {
+                        ch->layers[0]->delay = 1;
+                    }
+                } else {
+                    SPDLOG_INFO("[VoiceHook] Channel15 is NULL during unfreeze!");
                 }
-            } else {
-                SPDLOG_INFO("[VoiceHook] Channel15 is NULL during unfreeze!");
             }
-        }
-        if (sDirectVoiceActive) {
-            VoiceOverride_Finish();
-        }
+            if (sDirectVoiceActive) {
+                VoiceOverride_Finish();
+            }
 
-        // Load and activate override
-        const std::string path = StringHelper::Sprintf("ast_radio/gMsg_ID_%d_Voice", pending);
-        Sample* sample = LoadChild<Sample*>(path.c_str());
+            // Load and activate override
+            const std::string path = StringHelper::Sprintf("ast_radio/gMsg_ID_%d_Voice", pending);
+            Sample* sample = LoadChild<Sample*>(path.c_str());
 
-        if (sample != nullptr) {
-            sDirectVoiceMsgId = (u32) pending;
-            sDirectVoiceNumSamples = sample->numFrames;
-            sDirectVoiceSampleRate = sample->sampleRate;
-            sDirectVoiceChannels = sample->channels;
-            sDirectVoiceData = sample;
-            SetupDirectVoiceInstrument(sample);
+            if (sample != nullptr) {
+                sDirectVoiceMsgId = (u32) pending;
+                sDirectVoiceNumSamples = sample->numFrames;
+                sDirectVoiceSampleRate = sample->sampleRate;
+                sDirectVoiceChannels = sample->channels;
+                sDirectVoiceData = sample;
+                SetupDirectVoiceInstrument(sample);
 
-            gVoiceOverrideFreqMod = (float) (sample->sampleRate * sample->channels) / 32000.0f;
-            gVoiceOverrideTunedSample = &sDirectVoiceTunedSample;
-            gVoiceOverrideArmed = 1;
-            gVoiceOverrideCommSample = nullptr;
+                gVoiceOverrideFreqMod = (float) (sample->sampleRate * sample->channels) / 32000.0f;
+                gVoiceOverrideTunedSample = &sDirectVoiceTunedSample;
+                gVoiceOverrideArmed = 1;
+                gVoiceOverrideCommSample = nullptr;
+                gVoiceOverrideSilencing = 0;
+                gVoiceOverrideNotesToSkip = (pending >= 2000) ? 1 : 0;
+                gVoiceOverrideStarted = 0;
+                sDirectVoiceActive = true;
+                sVoiceStartTime = std::chrono::steady_clock::now();
+
+                SequenceChannel* ch = Voice_GetChannel15();
+                SequenceLayer* layer = (ch != nullptr && ch->layers[0] != nullptr) ? ch->layers[0] : nullptr;
+                SPDLOG_INFO("[VoiceHook] Activated msgId={}, ch={}, stopScript={}, delay={}, layer={}, note={}", pending,
+                            (void*) ch, (ch ? (int) ch->stopScript : -1), (layer ? (int) layer->delay : -1), (void*) layer,
+                            (layer && layer->note ? (void*) layer->note : nullptr));
+            }
+        } else if (pending == -2) {
+            sPendingVoiceMsgId = -1;
             gVoiceOverrideSilencing = 0;
-            gVoiceOverrideNotesToSkip = (pending >= 2000) ? 1 : 0;
-            gVoiceOverrideStarted = 0;
-            sDirectVoiceActive = true;
-            sVoiceStartTime = std::chrono::steady_clock::now();
-
-            SequenceChannel* ch = Voice_GetChannel15();
-            SequenceLayer* layer = (ch != nullptr && ch->layers[0] != nullptr) ? ch->layers[0] : nullptr;
-            SPDLOG_INFO("[VoiceHook] Activated msgId={}, ch={}, stopScript={}, delay={}, layer={}, note={}", pending,
-                        (void*) ch, (ch ? (int) ch->stopScript : -1), (layer ? (int) layer->delay : -1), (void*) layer,
-                        (layer && layer->note ? (void*) layer->note : nullptr));
-        }
-    } else if (pending == -2) {
-        sPendingVoiceMsgId = -1;
-        gVoiceOverrideSilencing = 0;
-        gVoiceOverrideTunedSample = nullptr;
-        gVoiceOverrideCommSample = nullptr;
-        if (sDirectVoiceActive) {
-            SequenceChannel* ch = Voice_GetChannel15();
-            if (ch != nullptr) {
-                ch->stopScript = false;
-                if (ch->layers[0] != nullptr) {
-                    ch->layers[0]->delay = 1;
+            gVoiceOverrideTunedSample = nullptr;
+            gVoiceOverrideCommSample = nullptr;
+            if (sDirectVoiceActive) {
+                SequenceChannel* ch = Voice_GetChannel15();
+                if (ch != nullptr) {
+                    ch->stopScript = false;
+                    if (ch->layers[0] != nullptr) {
+                        ch->layers[0]->delay = 1;
+                    }
                 }
+                VoiceOverride_Finish();
+                SPDLOG_INFO("[VoiceHook] Cleared override (no override for new message)");
             }
-            VoiceOverride_Finish();
-            SPDLOG_INFO("[VoiceHook] Cleared override (no override for new message)");
+            return;
         }
-        goto continue_og;
-    }
 
-    if (!sDirectVoiceActive) {
-        goto continue_og;
-    }
+        if (!sDirectVoiceActive) {
+            return;
+        }
 
-    SequenceChannel* ch = Voice_GetChannel15();
-    if (ch == nullptr) {
-        SPDLOG_INFO("[VoiceHook] UpdateVoice: channel15 is null, finishing");
-        VoiceOverride_Finish();
-        finished = true;
-        goto continue_og;
-    }
+        SequenceChannel* ch = Voice_GetChannel15();
+        if (ch == nullptr) {
+            SPDLOG_INFO("[VoiceHook] UpdateVoice: channel15 is null, finishing");
+            VoiceOverride_Finish();
+            gVoiceOverrideSilencing = 0;
+            finished = true;
+            return;
+        }
 
-    // Safety net: if gVoiceOverrideStarted never set within 2x expected duration, force finish
-    auto elapsed = std::chrono::steady_clock::now() - sVoiceStartTime;
-    float elapsedSec = std::chrono::duration<float>(elapsed).count();
-    float expectedDuration =
-        sDirectVoiceSampleRate > 0 ? (float) sDirectVoiceNumSamples / (float) sDirectVoiceSampleRate : 0.0f;
+        // Safety net: if gVoiceOverrideStarted never set within 2x expected duration, force finish
+        auto elapsed = std::chrono::steady_clock::now() - sVoiceStartTime;
+        float elapsedSec = std::chrono::duration<float>(elapsed).count();
+        float expectedDuration =
+            sDirectVoiceSampleRate > 0 ? (float) sDirectVoiceNumSamples / (float) sDirectVoiceSampleRate : 0.0f;
 
-    if (gVoiceOverrideStarted == 0) {
-        if (expectedDuration > 0 && elapsedSec > expectedDuration * 2.0f) {
-            SPDLOG_INFO("[VoiceHook] Safety net: override never started for msgId={} ({:.3f}s > {:.3f}s)",
-                        sDirectVoiceMsgId, elapsedSec, expectedDuration * 2.0f);
+        if (gVoiceOverrideStarted == 0) {
+            if (expectedDuration > 0 && elapsedSec > expectedDuration * 2.0f) {
+                SPDLOG_INFO("[VoiceHook] Safety net: override never started for msgId={} ({:.3f}s > {:.3f}s)",
+                            sDirectVoiceMsgId, elapsedSec, expectedDuration * 2.0f);
+                ch->seqScriptIO[1] = 0;
+                ch->stopScript = false;
+                SequenceLayer* layer = ch->layers[0];
+                if (layer != nullptr) {
+                    layer->delay = 1;
+                }
+                VoiceOverride_Finish();
+                gVoiceOverrideSilencing = 0;
+                finished = true;
+            }
+            return;
+        }
+
+        // Only check noteFinished/timer after gVoiceOverrideStarted == 1
+        SequenceLayer* layer = ch->layers[0];
+
+        bool noteFinished = false;
+        if (layer != nullptr && layer->note != nullptr) {
+            noteFinished = (layer->note->noteSubEu.bitField0.finished != 0);
+            if (!sLoggedNoteCreated) {
+                sVoiceStartTime = std::chrono::steady_clock::now();
+                SPDLOG_INFO("[VoiceHook] Note detected for msgId={}, noteFinished={}, delay={}, elapsed={:.3f}s",
+                            sDirectVoiceMsgId, (int) noteFinished, (int) layer->delay, elapsedSec);
+                sLoggedNoteCreated = true;
+            }
+        } else if (elapsedSec > 0.5f && !sLoggedNoteCreated) {
+            sLoggedNoteCreated = true;
+            SPDLOG_INFO("[VoiceHook] WARNING: No note for msgId={} after {:.3f}s, layer={}, delay={}", sDirectVoiceMsgId,
+                        elapsedSec, (layer ? "exists" : "NULL"), (layer ? (int) layer->delay : -1));
+        }
+
+        if (!noteFinished && expectedDuration > 0 && elapsedSec > expectedDuration * 1.5f) {
+            SPDLOG_INFO("[VoiceHook] Timer backup finish for msgId={} ({:.3f}s > {:.3f}s)", sDirectVoiceMsgId, elapsedSec,
+                        expectedDuration);
+            noteFinished = true;
+        }
+
+        if (noteFinished) {
+            SPDLOG_INFO("[VoiceHook] Finish msgId={}, stopScript={}, delay={}", sDirectVoiceMsgId, (int) ch->stopScript,
+                        (layer ? (int) layer->delay : -1));
             ch->seqScriptIO[1] = 0;
             ch->stopScript = false;
-            SequenceLayer* layer = ch->layers[0];
             if (layer != nullptr) {
                 layer->delay = 1;
             }
             VoiceOverride_Finish();
             finished = true;
         }
-        goto continue_og;
-    }
+    }();
 
-    // Only check noteFinished/timer after gVoiceOverrideStarted == 1
-    SequenceLayer* layer = ch->layers[0];
-
-    bool noteFinished = false;
-    if (layer != nullptr && layer->note != nullptr) {
-        noteFinished = (layer->note->noteSubEu.bitField0.finished != 0);
-        if (!sLoggedNoteCreated) {
-            sVoiceStartTime = std::chrono::steady_clock::now();
-            SPDLOG_INFO("[VoiceHook] Note detected for msgId={}, noteFinished={}, delay={}, elapsed={:.3f}s",
-                        sDirectVoiceMsgId, (int) noteFinished, (int) layer->delay, elapsedSec);
-            sLoggedNoteCreated = true;
-        }
-    } else if (elapsedSec > 0.5f && !sLoggedNoteCreated) {
-        sLoggedNoteCreated = true;
-        SPDLOG_INFO("[VoiceHook] WARNING: No note for msgId={} after {:.3f}s, layer={}, delay={}", sDirectVoiceMsgId,
-                    elapsedSec, (layer ? "exists" : "NULL"), (layer ? (int) layer->delay : -1));
-    }
-
-    if (!noteFinished && expectedDuration > 0 && elapsedSec > expectedDuration * 1.5f) {
-        SPDLOG_INFO("[VoiceHook] Timer backup finish for msgId={} ({:.3f}s > {:.3f}s)", sDirectVoiceMsgId, elapsedSec,
-                    expectedDuration);
-        noteFinished = true;
-    }
-
-    if (noteFinished) {
-        SPDLOG_INFO("[VoiceHook] Finish msgId={}, stopScript={}, delay={}", sDirectVoiceMsgId, (int) ch->stopScript,
-                    (layer ? (int) layer->delay : -1));
-        ch->seqScriptIO[1] = 0;
-        ch->stopScript = false;
-        if (layer != nullptr) {
-            layer->delay = 1;
-        }
-        VoiceOverride_Finish();
-        finished = true;
-    }
-
-continue_og:
     if (finished && sMuteBgmForVoice) {
         Audio_SetSequenceFade(SEQ_PLAYER_BGM, 2, 127, 15);
         sMuteBgmForVoice = false;
@@ -446,7 +448,11 @@ static void OnPreNote(IEvent* ev) {
 
     if (gVoiceOverrideSilencing && layer->channel == gSeqPlayers[SEQ_PLAYER_VOICE].channels[15] &&
         layer->tunedSample != gVoiceOverrideCommSample) {
-        layer->tunedSample = gVoiceOverrideTunedSample;
+        if (channel->instOrWave == 126) {
+            gVoiceOverrideSilencing = 0;
+        } else {
+            layer->tunedSample = gVoiceOverrideTunedSample;
+        } 
     }
 }
 
