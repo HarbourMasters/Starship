@@ -47,6 +47,9 @@ static AdpcmLoop sSilentLoop;
 static TunedSample sSilentTunedSample;
 static bool sSilentSampleInitialized = false;
 
+extern "C" uint8_t sSetNextVoiceId;
+extern "C" uint32_t sNextVoiceId;
+
 static void InitSilentSample() {
     if (sSilentSampleInitialized)
         return;
@@ -163,7 +166,24 @@ static void OnPlayVoice(IEvent* ev) {
 
 // Called from AUDIO THREAD — all state mutations happen here
 static void OnUpdateVoice(IEvent* ev) {
-    auto* event = reinterpret_cast<UpdateVoiceEvent*>(ev);
+    int8_t voiceBank;
+    uint16_t voiceId;
+    uint8_t voiceIdHi;
+    uint8_t voiceIdLo;
+    bool finished = false;
+
+    if (sSetNextVoiceId) {
+        voiceBank = sNextVoiceId / 1000;
+        voiceId = sNextVoiceId % 1000;
+        voiceIdHi = voiceId / 256;
+        voiceIdLo = voiceId % 256;
+
+        AUDIOCMD_CHANNEL_SET_IO(SEQ_PLAYER_VOICE, 15, 0, 1);
+        AUDIOCMD_CHANNEL_SET_IO(SEQ_PLAYER_VOICE, 15, 4, voiceBank);
+        AUDIOCMD_CHANNEL_SET_IO(SEQ_PLAYER_VOICE, 15, 5, voiceIdHi);
+        AUDIOCMD_CHANNEL_SET_IO(SEQ_PLAYER_VOICE, 15, 6, voiceIdLo);
+        sSetNextVoiceId = false;
+    }
 
     // Process pending request from game thread
     s32 pending = sPendingVoiceMsgId;
@@ -234,19 +254,19 @@ static void OnUpdateVoice(IEvent* ev) {
             VoiceOverride_Finish();
             SPDLOG_INFO("[VoiceHook] Cleared override (no override for new message)");
         }
-        return;
+        goto continue_og;
     }
 
     if (!sDirectVoiceActive) {
-        return;
+        goto continue_og;
     }
 
     SequenceChannel* ch = Voice_GetChannel15();
     if (ch == nullptr) {
         SPDLOG_INFO("[VoiceHook] UpdateVoice: channel15 is null, finishing");
         VoiceOverride_Finish();
-        *event->finished = true;
-        return;
+        finished = true;
+        goto continue_og;
     }
 
     // Safety net: if gVoiceOverrideStarted never set within 2x expected duration, force finish
@@ -266,9 +286,9 @@ static void OnUpdateVoice(IEvent* ev) {
                 layer->delay = 1;
             }
             VoiceOverride_Finish();
-            *event->finished = true;
+            finished = true;
         }
-        return;
+        goto continue_og;
     }
 
     // Only check noteFinished/timer after gVoiceOverrideStarted == 1
@@ -304,7 +324,18 @@ static void OnUpdateVoice(IEvent* ev) {
             layer->delay = 1;
         }
         VoiceOverride_Finish();
-        *event->finished = true;
+        finished = true;
+    }
+
+continue_og:
+    if (finished && sMuteBgmForVoice) {
+        Audio_SetSequenceFade(SEQ_PLAYER_BGM, 2, 127, 15);
+        sMuteBgmForVoice = false;
+    }
+
+    if (!sSetNextVoiceId && !finished && (sMuteBgmForVoice) && (Audio_GetCurrentVoice() == 0)) {
+        Audio_SetSequenceFade(SEQ_PLAYER_BGM, 2, 127, 15);
+        sMuteBgmForVoice = false;
     }
 }
 

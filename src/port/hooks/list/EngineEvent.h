@@ -122,9 +122,7 @@ DEFINE_EVENT(PlayVoiceEvent,
 // Set *finished = true to signal that custom playback has completed so the
 // engine restores BGM volume and clears the voice state.
 //   finished — write true to mark the override as done
-DEFINE_EVENT(UpdateVoiceEvent,
-    bool* finished;
-);
+DEFINE_EVENT(UpdateVoiceEvent);
 
 // Fires when the engine queries the currently playing voice ID. AUDIO THREAD.
 // Write the current msgId into *result to override the default channel-scan

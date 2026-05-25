@@ -1870,6 +1870,8 @@ void Audio_UpdateVoice(void) {
     u8 voiceIdHi;
     u8 voiceIdLo;
 
+    CALL_CANCELLABLE_RETURN_EVENT(UpdateVoiceEvent);
+
     if (sSetNextVoiceId) {
         voiceBank = sNextVoiceId / 1000;
         voiceId = sNextVoiceId % 1000;
@@ -1881,17 +1883,7 @@ void Audio_UpdateVoice(void) {
         AUDIOCMD_CHANNEL_SET_IO(SEQ_PLAYER_VOICE, 15, 5, voiceIdHi);
         AUDIOCMD_CHANNEL_SET_IO(SEQ_PLAYER_VOICE, 15, 6, voiceIdLo);
         sSetNextVoiceId = false;
-    }
-
-    // [port - voice hook - per-frame voice override processing, port layer sets finished=true when done]
-    bool finished = false;
-    CALL_EVENT(UpdateVoiceEvent, &finished);
-    if (finished && sMuteBgmForVoice) {
-        Audio_SetSequenceFade(SEQ_PLAYER_BGM, 2, 127, 15);
-        sMuteBgmForVoice = false;
-    }
-
-    if (!sSetNextVoiceId && !finished && (sMuteBgmForVoice) && (Audio_GetCurrentVoice() == 0)) {
+    } else if ((sMuteBgmForVoice) && (Audio_GetCurrentVoice() == 0)) {
         Audio_SetSequenceFade(SEQ_PLAYER_BGM, 2, 127, 15);
         sMuteBgmForVoice = false;
     }
