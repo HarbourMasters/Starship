@@ -130,36 +130,61 @@ void Radio_PlayMessage(u16* msg, RadioCharacterId character) {
 }
 
 void Radio_CalculatePositions() {
-    switch (gGameState) {
-        case GSTATE_TITLE:
-            gRadioPrintPosY = 176;
-            gRadioPrintPosX = OTRGetRectDimensionFromLeftEdgeOverride(85.0f);
-            gRadioTextBoxPosX = OTRGetRectDimensionFromLeftEdgeOverride(80.0f);
-            gRadioTextBoxPosY = 174.0f;
-            gRadioTextBoxScaleX = 4.63f;
-            gRadioPortraitPosX = OTRGetRectDimensionFromLeftEdgeOverride(32.0f);
-            gRadioPortraitPosY = 174.0f;
-            break;
+    if (CVarGetInteger("gRadioCommBox.expand", 0) == 1) {
+        switch (gGameState) {
+            case GSTATE_TITLE:
+                gRadioPrintPosY = 176;
+                gRadioPrintPosX = OTRGetRectDimensionFromLeftEdgeOverride(85.0f);
+                gRadioTextBoxPosX = OTRGetRectDimensionFromLeftEdgeOverride(80.0f);
+                gRadioTextBoxPosY = 174.0f;
+                gRadioTextBoxScaleX = 4.63f;
+                gRadioPortraitPosX = OTRGetRectDimensionFromLeftEdgeOverride(32.0f);
+                gRadioPortraitPosY = 174.0f;
+                break;
 
-        case GSTATE_ENDING:
-            gRadioPrintPosY = 176;
-            gRadioPrintPosX = 85.0f;
-            gRadioTextBoxPosX = 80.0f;
-            gRadioTextBoxPosY = 174.0f;
-            gRadioTextBoxScaleX = 4.63f;
-            gRadioPortraitPosX = 32.0f;
-            gRadioPortraitPosY = 174.0f;
-            break;
+            case GSTATE_ENDING:
+                gRadioPrintPosY = 176;
+                gRadioPrintPosX = 85.0f;
+                gRadioTextBoxPosX = 80.0f;
+                gRadioTextBoxPosY = 174.0f;
+                gRadioTextBoxScaleX = 4.63f;
+                gRadioPortraitPosX = 32.0f;
+                gRadioPortraitPosY = 174.0f;
+                break;
 
-        case GSTATE_PLAY:
-            gRadioPrintPosY = 180;
-            gRadioPrintPosX = OTRGetRectDimensionFromLeftEdgeOverride(79.0f);
-            gRadioTextBoxPosX = OTRGetRectDimensionFromLeftEdgeOverride(74.0f);
-            gRadioTextBoxPosY = 178.0f;
-            gRadioTextBoxScaleX = 4.53f;
-            gRadioPortraitPosX = OTRGetRectDimensionFromLeftEdgeOverride(26.0f);
-            gRadioPortraitPosY = 178.0f;
-            break;
+            case GSTATE_PLAY:
+                gRadioPrintPosY = 180;
+                gRadioPrintPosX = OTRGetRectDimensionFromLeftEdgeOverride(79.0f);
+                gRadioTextBoxPosX = OTRGetRectDimensionFromLeftEdgeOverride(74.0f);
+                gRadioTextBoxPosY = 178.0f;
+                gRadioTextBoxScaleX = 4.53f;
+                gRadioPortraitPosX = OTRGetRectDimensionFromLeftEdgeOverride(26.0f);
+                gRadioPortraitPosY = 178.0f;
+                break;
+        }
+    } else {
+        switch (gGameState) {
+            case GSTATE_TITLE:
+            case GSTATE_ENDING:
+                gRadioPrintPosY = 176;
+                gRadioPrintPosX = 85;
+                gRadioTextBoxPosX = 80.0f;
+                gRadioTextBoxPosY = 174.0f;
+                gRadioTextBoxScaleX = 4.63f;
+                gRadioPortraitPosX = 32.0f;
+                gRadioPortraitPosY = 174.0f;
+                break;
+
+            case GSTATE_PLAY:
+                gRadioPrintPosY = 180;
+                gRadioPrintPosX = 79;
+                gRadioTextBoxPosX = 74.0f;
+                gRadioTextBoxPosY = 178.0f;
+                gRadioTextBoxScaleX = 4.53f;
+                gRadioPortraitPosX = 26.0f;
+                gRadioPortraitPosY = 178.0f;
+                break;
+        }
     }
 }
 
@@ -718,12 +743,20 @@ void Radio_Draw(void) {
                 (gCurrentRadioPortrait != RCID_1000)) {
                 RCP_SetupDL(&gMasterDisp, SETUPDL_76_OPTIONAL);
                 gDPSetPrimColor(gMasterDisp++, 0x00, 0x00, 255, 255, 0, 255);
-                Graphics_DisplaySmallText(OTRGetRectDimensionFromLeftEdgeOverride(31.0f), 167, 1.0f, 1.0f, "DOWN");
+                if (CVarGetInteger("gRadioCommBox.expand", 0) == 1) {
+                    Graphics_DisplaySmallText(OTRGetRectDimensionFromLeftEdgeOverride(31.0f), 167, 1.0f, 1.0f, "DOWN");
+                } else {
+                    Graphics_DisplaySmallText(31, 167, 1.0f, 1.0f, "DOWN");
+                }
                 HUD_TeamDownWrench_Draw(1);
             }
             if (((gCurrentRadioPortrait != RCID_STATIC) && (gCurrentRadioPortrait != RCID_STATIC + 1)) &&
                 (gCurrentRadioPortrait != RCID_1000)) {
-                HUD_TeamShields_Draw(OTRGetRectDimensionFromLeftEdgeOverride(22.0f), 165.0f, gTeamShields[idx]);
+                if (CVarGetInteger("gRadioCommBox.expand", 0) == 1) {
+                    HUD_TeamShields_Draw(OTRGetRectDimensionFromLeftEdgeOverride(22.0f), 165.0f, gTeamShields[idx]);
+                } else {
+                    HUD_TeamShields_Draw(22.0f, 165.0f, gTeamShields[idx]);
+                }
             }
         }
 
@@ -767,12 +800,20 @@ void Radio_Draw(void) {
                 (gCurrentRadioPortrait != RCID_STATIC + 1) && (gCurrentRadioPortrait != RCID_1000)) {
                 RCP_SetupDL(&gMasterDisp, SETUPDL_76_OPTIONAL);
                 gDPSetPrimColor(gMasterDisp++, 0x00, 0x00, 255, 255, 0, 255);
-                Graphics_DisplaySmallText(OTRGetRectDimensionFromLeftEdgeOverride(31.0f), 167, 1.0f, 1.0f, "DOWN");
+                if (CVarGetInteger("gRadioCommBox.expand", 0) == 1) {
+                    Graphics_DisplaySmallText(OTRGetRectDimensionFromLeftEdgeOverride(31.0f), 167, 1.0f, 1.0f, "DOWN");
+                } else {
+                    Graphics_DisplaySmallText(31.0f, 167, 1.0f, 1.0f, "DOWN");
+                }
             }
             if (((gCurrentRadioPortrait != RCID_STATIC) && (gCurrentRadioPortrait != RCID_STATIC + 1)) &&
                 (gCurrentRadioPortrait != RCID_1000)) {
-                HUD_TeamShields_Draw(OTRGetRectDimensionFromLeftEdgeOverride(22.0f), 165.0f,
-                                     gActors[idx].health * 2.55f);
+                if (CVarGetInteger("gRadioCommBox.expand", 0) == 1) {
+                    HUD_TeamShields_Draw(OTRGetRectDimensionFromLeftEdgeOverride(22.0f), 165.0f,
+                                         gActors[idx].health * 2.55f);
+                } else {
+                    HUD_TeamShields_Draw(22.0f, 165.0f, gActors[idx].health * 2.55f);
+                }
             }
         }
         if (((gCurrentRadioPortrait != RCID_STATIC) && (gCurrentRadioPortrait != RCID_STATIC + 1)) &&

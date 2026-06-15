@@ -49,7 +49,7 @@ void Macbeth_MaProximityLight_Init(Scenery *);
 void Macbeth_Actor207_Init(Actor *);
 void Macbeth_801ACFBC(void);
 void Macbeth_801AD080(void);
-void Ground_801B5110(f32, f32, f32);
+void Ground_Init(f32, f32, f32);
 void Ground_801B58AC(Gfx **, f32);
 bool Ground_801B6AEC(f32, f32, f32);
 s32 Ground_801B6E20(f32, f32, f32 *, f32 *, f32 *);

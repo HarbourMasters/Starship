@@ -6,24 +6,18 @@ on:
 
 jobs:
   build:
-    runs-on: macOS-latest
+    runs-on: macos-14
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           submodules: recursive
-      - name: Install dependencies
-        run: brew install sdl2 libpng glew ninja cmake libzip nlohmann-json tinyxml2 spdlog vorbis-tools
+      - uses: melusina-org/setup-macports@v1
+        with:
+          parameters: '.github/macports.yml'
+      - uses: hendrikmuhs/ccache-action@v1.2
+        with:
+          key: macos # ccache-macos
       - name: Build
         run: |
-          cmake -H. -Bbuild-cmake -GNinja -DCMAKE_BUILD_TYPE=Release
+          cmake -H. -Bbuild-cmake -GNinja -DCMAKE_BUILD_TYPE=Release -D CMAKE_C_COMPILER_LAUNCHER=ccache -D CMAKE_CXX_COMPILER_LAUNCHER=ccache -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64"
           cmake --build build-cmake -j
-      - name: Create Package
-        run: |
-          mkdir starship-release
-          mv build-cmake/Starship starship-release/
-      - name: Publish packaged artifacts
-        uses: actions/upload-artifact@v4
-        with:
-            name: starship-mac-x64
-            path: starship-release
-            retention-days: 1

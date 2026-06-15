@@ -9,15 +9,15 @@ void Ground_801B68A8(Gfx** dlist, s32 arg1, s32 arg2);
 
 typedef struct {
     /* 0x00 */ s32 unk_00;
-    /* 0x04 */ s32 unk_04;
-    /* 0x08 */ f32 unk_08;
-    /* 0x0C */ f32 unk_0C;
-    /* 0x10 */ f32 unk_10;
-    /* 0x14 */ f32 unk_14;
-    /* 0x18 */ f32 unk_18;
+    /* 0x04 */ s32 type;
+    /* 0x08 */ f32 xPos;
+    /* 0x0C */ f32 zPos;
+    /* 0x10 */ f32 xRot;
+    /* 0x14 */ f32 yRot;
+    /* 0x18 */ f32 zRot;
     /* 0x1C */ s16 unk_1C;
     /* 0x20 */ f32 unk_20;
-} UnkStruct_801C62E8; // size = 0x24
+} GroundObj; // size = 0x24
 
 typedef union {
     f32 a[3];
@@ -64,79 +64,80 @@ s32 D_i5_801C5C04;
 s32 D_i5_801C5C08;
 s32 D_i5_801C5C0C;
 f32 D_i5_801C5C10;
-s32 D_i5_801C5C14;
-Mtx D_i5_801C5C18[27];
+s32 sGroundMode;
+Mtx sGroundMtx[27];
 Vec3f D_i5_801C62D8;
-UnkStruct_801C62E8 D_i5_801C62E8[20];
+GroundObj sGroundList[20];
 Vec3fa D_i5_801C65B8[3][15][4];
 s32 D_i5_801C6E28[4][3];
 
-bool Ground_801B49D0(Actor* actor) {
+bool Ground_List_Setup(TiTerrain* actor) {
     s32 i;
     bool found = false;
-    UnkStruct_801C62E8* var_v0 = D_i5_801C62E8;
+    GroundObj* ground = sGroundList;
 
-    for (i = 0; i < ARRAY_COUNT(D_i5_801C62E8); i++, var_v0++) {
-        if (var_v0->unk_00 == 0) {
+    for (i = 0; i < ARRAY_COUNT(sGroundList); i++, ground++) {
+        if (ground->unk_00 == 0) {
             found = true;
-            var_v0->unk_00 = 1;
-            var_v0->unk_04 = actor->obj.pos.y;
-            var_v0->unk_08 = actor->obj.pos.x;
-            var_v0->unk_0C = actor->obj.pos.z;
-            var_v0->unk_10 = actor->obj.rot.x;
-            var_v0->unk_14 = actor->obj.rot.y;
-            var_v0->unk_18 = actor->obj.rot.z;
+            ground->unk_00 = 1;
+            ground->type = actor->obj.pos.y; // ???
+            ground->xPos = actor->obj.pos.x;
+            ground->zPos = actor->obj.pos.z;
+            ground->xRot = actor->obj.rot.x;
+            ground->yRot = actor->obj.rot.y;
+            ground->zRot = actor->obj.rot.z;
             break;
         }
     }
-    actor->obj.status = 0;
+    actor->obj.status = OBJ_FREE;
+
     return found;
 }
 
-void Ground_801B4A54(UnkStruct_801C62E8* arg0) {
+void Ground_GroundObj_Clear(GroundObj* arg0) {
     // Lots of conversions between floats, and ints unnecessarily here because of this chain assignment.
-    arg0->unk_00 = arg0->unk_04 = arg0->unk_08 = arg0->unk_0C = arg0->unk_10 = arg0->unk_14 = arg0->unk_18 =
-        arg0->unk_1C = arg0->unk_20 = 0;
+    arg0->unk_00 = arg0->type = arg0->xPos = arg0->zPos = arg0->xRot = arg0->yRot = arg0->zRot = arg0->unk_1C =
+        arg0->unk_20 = 0;
 }
 
 void Ground_801B4AA8(s32* arg0, s32* arg1) {
     Actor actor;
-    UnkStruct_801C62E8* var_s2 = D_i5_801C62E8;
+    GroundObj* ground = sGroundList;
     s32* var_s1;
     f32 temp_fa0;
     f32 temp_fs0;
     f32 temp_fs1;
     f32 var_fv0;
     f32 var_fv1;
-    s32 unk_04;
-    f32 unk_08;
-    f32 unk_10;
-    f32 unk_14;
-    f32 unk_18;
+    s32 type;
+    f32 xPos;
+    f32 xRot;
+    f32 yRot;
+    f32 zRot;
     s32 i;
     s32 j;
 
-    for (i = 0; i < ARRAY_COUNT(D_i5_801C62E8); i++, var_s2++) {
-        if (var_s2->unk_00 != 0) {
-            unk_04 = var_s2->unk_04;
-            unk_08 = var_s2->unk_08;
-            unk_10 = var_s2->unk_10;
-            unk_14 = var_s2->unk_14;
-            unk_18 = var_s2->unk_18;
+    for (i = 0; i < ARRAY_COUNT(sGroundList); i++, ground++) {
+        if (ground->unk_00 != 0) {
+            type = ground->type;
+            xPos = ground->xPos;
+            xRot = ground->xRot;
+            yRot = ground->yRot;
+            zRot = ground->zRot;
             var_s1 = arg0;
 
             if (arg0 == NULL) {
-                unk_04 = D_i5_801BA970[unk_04];
+                type = D_i5_801BA970[type];
             }
 
-            if (var_s2->unk_00 == 1) {
-                switch (unk_04) {
+            if (ground->unk_00 == 1) {
+                switch (type) {
                     case 0:
                         break;
 
                     case 1:
                     case 3:
-                        var_s2->unk_20 = var_s2->unk_18;
+                        ground->unk_20 = ground->zRot;
                         break;
 
                     case 4:
@@ -161,109 +162,107 @@ void Ground_801B4AA8(s32* arg0, s32* arg1) {
 
                     case 8:
                         PRINTF("RANDAMU YAMA\n"); // RANDOM MOUNTAIN
-                        var_s2->unk_20 = 5000.0f;
+                        ground->unk_20 = 5000.0f;
                         break;
                 }
-                var_s2->unk_00 = 2;
+                ground->unk_00 = 2;
             }
 
-            switch (unk_04) {
+            switch (type) {
                 case 0:
                     break;
 
                 case 1:
                     for (j = 0; j < 16; j++, var_s1++) {
-                        temp_fs0 = (j * 220.0f * D_i5_801BE740) - 1760.0f - unk_08;
-                        if (fabsf(temp_fs0) <= unk_10) {
-                            temp_fs1 = __sinf((var_s2->unk_20 / unk_18) * (M_DTOR * 180.0f));
-                            var_fv0 = __cosf((temp_fs0 / unk_10) * (M_DTOR * 90.0f));
-                            *var_s1 += var_fv0 * unk_14 * temp_fs1;
+                        temp_fs0 = (j * 220.0f * D_i5_801BE740) - 1760.0f - xPos;
+                        if (fabsf(temp_fs0) <= xRot) {
+                            temp_fs1 = __sinf((ground->unk_20 / zRot) * (M_DTOR * 180.0f));
+                            var_fv0 = __cosf((temp_fs0 / xRot) * (M_DTOR * 90.0f));
+                            *var_s1 += var_fv0 * yRot * temp_fs1;
                         }
                     }
 
-                    var_s2->unk_20 -= 220.0f;
-                    if (var_s2->unk_20 <= 0.0f) {
-                        Ground_801B4A54(var_s2);
+                    ground->unk_20 -= 220.0f;
+                    if (ground->unk_20 <= 0.0f) {
+                        Ground_GroundObj_Clear(ground);
                     }
                     break;
 
                 case 2:
-                    unk_08 += (1760.0f - (unk_10 * 0.5f));
-                    var_fv1 = unk_14;
+                    xPos += (1760.0f - (xRot * 0.5f));
+                    var_fv1 = yRot;
 
-                    if (var_s2->unk_20 <= var_fv1 / (70.0f * M_DTOR)) {
-                        var_fv1 = var_s2->unk_20 * (70.0f * M_DTOR);
-                    } else if (var_fv1 / (70.0f * M_DTOR) >= (unk_18 - var_s2->unk_20)) {
-                        var_fv1 = (unk_18 - var_s2->unk_20) * (70.0f * M_DTOR);
+                    if (ground->unk_20 <= var_fv1 / (70.0f * M_DTOR)) {
+                        var_fv1 = ground->unk_20 * (70.0f * M_DTOR);
+                    } else if (var_fv1 / (70.0f * M_DTOR) >= (zRot - ground->unk_20)) {
+                        var_fv1 = (zRot - ground->unk_20) * (70.0f * M_DTOR);
                     }
 
                     for (j = 0, var_fv0 = 0.0f; j < 16; j++, var_fv0 += 220.0f, var_s1++) {
-                        if (unk_08 <= var_fv0 && var_fv0 <= (unk_08 + unk_10) && *var_s1 < var_fv1) {
+                        if (xPos <= var_fv0 && var_fv0 <= (xPos + xRot) && *var_s1 < var_fv1) {
                             *var_s1 = var_fv1;
                         }
                     }
 
-                    var_s2->unk_20 += 220.0f;
-                    if (unk_18 <= var_s2->unk_20) {
-                        Ground_801B4A54(var_s2);
+                    ground->unk_20 += 220.0f;
+                    if (zRot <= ground->unk_20) {
+                        Ground_GroundObj_Clear(ground);
                     }
                     break;
 
                 case 3:
                     for (j = 0; j < 16; j++, var_s1++) {
-                        temp_fs0 =
-                            (j * 220.0f * D_i5_801BE740) - 1760.0f - var_s2->unk_08 +
-                            (__sinf(((var_s2->unk_20 * 8.0f) / var_s2->unk_18) * 2 * (M_DTOR * 180.0f)) * 500.0f);
-                        if (fabsf(temp_fs0) <= var_s2->unk_10) {
-                            temp_fa0 = __cosf((temp_fs0 / var_s2->unk_10) * (M_DTOR * 90.0f));
+                        temp_fs0 = (j * 220.0f * D_i5_801BE740) - 1760.0f - ground->xPos +
+                                   (__sinf(((ground->unk_20 * 8.0f) / ground->zRot) * 2 * (M_DTOR * 180.0f)) * 500.0f);
+                        if (fabsf(temp_fs0) <= ground->xRot) {
+                            temp_fa0 = __cosf((temp_fs0 / ground->xRot) * (M_DTOR * 90.0f));
                             if (temp_fa0 >= 0.7) {
                                 temp_fa0 = 0.7f;
                             }
                             *var_s1 -=
-                                temp_fa0 * var_s2->unk_14 * 4.0f * ((var_s2->unk_18 - var_s2->unk_20) / var_s2->unk_18);
+                                temp_fa0 * ground->yRot * 4.0f * ((ground->zRot - ground->unk_20) / ground->zRot);
                         }
-                        *var_s1 +=
-                            (var_s2->unk_14 - ((var_s2->unk_20 / var_s2->unk_18) * var_s2->unk_14)) * 4.0f * 0.7f;
+                        *var_s1 += (ground->yRot - ((ground->unk_20 / ground->zRot) * ground->yRot)) * 4.0f * 0.7f;
                     }
 
-                    var_s2->unk_20 -= 220.0f;
-                    if (var_s2->unk_20 <= 0.0f) {
-                        Ground_801B4A54(var_s2);
+                    ground->unk_20 -= 220.0f;
+                    if (ground->unk_20 <= 0.0f) {
+                        Ground_GroundObj_Clear(ground);
                     }
                     break;
 
                 case 8:
-                    if (var_s2->unk_1C <= 0) {
-                        for (j = 0; j < (s32) var_s2->unk_18; j++) {
-                            var_s2->unk_1C = 1;
+                    if (ground->unk_1C <= 0) {
+                        for (j = 0; j < (s32) ground->zRot; j++) {
+                            ground->unk_1C = 1;
                             actor.obj.pos.x = RAND_FLOAT(3300.0f) - 1650.0f;
                             actor.obj.pos.z = 0.0f;
                             actor.obj.pos.y = 1.0f;
-                            actor.obj.rot.x = var_s2->unk_10 + RAND_FLOAT(var_s2->unk_10) * 0.25f;
+                            actor.obj.rot.x = ground->xRot + RAND_FLOAT(ground->xRot) * 0.25f;
                             actor.obj.rot.z = 2.0f * actor.obj.rot.x; // Should this have been obj.rot.y?
-                            actor.obj.rot.z = var_s2->unk_14 + RAND_FLOAT(var_s2->unk_14) * 0.25f;
-                            Ground_801B49D0(&actor);
+                            actor.obj.rot.z = ground->yRot + RAND_FLOAT(ground->yRot) * 0.25f;
+                            Ground_List_Setup(&actor);
                         }
 
-                        var_s2->unk_20 -= 220.0f;
-                        if (var_s2->unk_20 <= 0.0f) {
-                            Ground_801B4A54(var_s2);
+                        ground->unk_20 -= 220.0f;
+                        if (ground->unk_20 <= 0.0f) {
+                            Ground_GroundObj_Clear(ground);
                         }
                     } else {
-                        var_s2->unk_1C--;
+                        ground->unk_1C--;
                     }
                     break;
 
                 default:
-                    Ground_801B4A54(var_s2);
+                    Ground_GroundObj_Clear(ground);
                     break;
             }
         }
     }
 }
 
-void Ground_801B5110(f32 x, f32 y, f32 z) {
-    UnkStruct_801C62E8* ptr;
+void Ground_Init(f32 x, f32 y, f32 z) {
+    GroundObj* ptr;
     s32 i;
     s32 k;
 
@@ -277,10 +276,10 @@ void Ground_801B5110(f32 x, f32 y, f32 z) {
     D_i5_801C62D8.x = x;
     D_i5_801C62D8.y = y;
     D_i5_801C62D8.z = z;
-    D_i5_801C5C14 = 1;
+    sGroundMode = 1;
 
-    for (i = 0, ptr = D_i5_801C62E8; i < ARRAY_COUNT(D_i5_801C62E8); i++, ptr++) {
-        Ground_801B4A54(ptr);
+    for (i = 0, ptr = sGroundList; i < ARRAY_COUNT(sGroundList); i++, ptr++) {
+        Ground_GroundObj_Clear(ptr);
     }
 
     for (i = 0; i < ARRAY_COUNT(D_i5_801C1D48); i++) {
@@ -350,8 +349,8 @@ void Ground_801B5244(s32 arg0, s32 arg1) {
             }
         }
         Matrix_Translate(gGfxMatrix, 0.0f, 0.0f, D_i5_801C24B8[sp5C] * -220.0f, MTXF_NEW);
-        Matrix_ToMtx(&D_i5_801C5C18[sp60]);
-        gSPMatrix(D_i5_801C5C00++, &D_i5_801C5C18[sp60], G_MTX_NOPUSH | G_MTX_MUL | G_MTX_MODELVIEW);
+        Matrix_ToMtx(&sGroundMtx[sp60]);
+        gSPMatrix(D_i5_801C5C00++, &sGroundMtx[sp60], G_MTX_NOPUSH | G_MTX_MUL | G_MTX_MODELVIEW);
         gSPEndDisplayList(D_i5_801C5C00++);
         sp5C = (sp5C + 1) % 28;
         sp60 = (sp60 + 1) % 27;
@@ -369,10 +368,13 @@ void Ground_801B58AC(Gfx** dList, f32 arg1) {
     RCP_SetupDL(dList, 0x1D);
     RCP_SetFog(dList, gFogRed, gFogGreen, gFogBlue, gFogAlpha, gFogNear, gFogFar);
 
-    spC4 = D_i5_801C5C14;
+    spC4 = sGroundMode;
 
-    if (D_i5_801C5C14 & 2) {
-        FrameInterpolation_RecordOpenChild(dList, D_i5_801C5C10);
+    // ONE PLANE POLYGON
+    if (sGroundMode & 2) {
+        // @port Skip interpolation
+        FrameInterpolation_ShouldInterpolateFrame(false);
+
         gDPSetupTile((*dList)++, G_IM_FMT_RGBA, G_IM_SIZ_16b, 32, 32, 0, 0, G_TX_MIRROR | G_TX_WRAP,
                      G_TX_NOMIRROR | G_TX_WRAP, 5, 5, G_TX_NOLOD, G_TX_NOLOD);
         gDPLoadTileTexture((*dList)++, D_TI_6001BA8, G_IM_FMT_RGBA, G_IM_SIZ_16b, 32, 32);
@@ -383,10 +385,16 @@ void Ground_801B58AC(Gfx** dList, f32 arg1) {
         gSPDisplayList((*dList)++, D_i5_801BA950);
         gSPPopMatrix((*dList)++, G_MTX_MODELVIEW);
         Ground_801B4AA8(NULL, &spC4);
-        FrameInterpolation_RecordCloseChild();
+
+        // @port renable interpolation
+        FrameInterpolation_ShouldInterpolateFrame(true);
     }
 
-    if (D_i5_801C5C14 & 1) {
+    // TERRAIN POLYGON
+    if (sGroundMode & 1) {
+        // @port Skip interpolation
+        FrameInterpolation_ShouldInterpolateFrame(false);
+
         if (D_i5_801C5C0C == 1) {
             D_i5_801C5C0C = 0;
             temp_hi = (D_i5_801C5C08 + 27) % 28;
@@ -421,29 +429,33 @@ void Ground_801B58AC(Gfx** dList, f32 arg1) {
                 D_i5_801BE748[(D_i5_801C5C04 + 27) % 27][i][1].v.ob[2] = 0;
 
                 Matrix_Translate(gGfxMatrix, 0.0f, 0.0f, D_i5_801C24B8[D_i5_801C5C08] * -220.0f, MTXF_NEW);
-                Matrix_ToMtx(&D_i5_801C5C18[D_i5_801C5C04]);
+                Matrix_ToMtx(&sGroundMtx[D_i5_801C5C04]);
             }
             Ground_801B5FE0(D_i5_801C5C08, D_i5_801C5C04, 1);
         }
+
         gSPMatrix((*dList)++, &gIdentityMtx, G_MTX_PUSH | G_MTX_MUL | G_MTX_MODELVIEW);
         Ground_801B68A8(dList, D_i5_801C5C04, 1);
         gSPPopMatrix((*dList)++, G_MTX_MODELVIEW);
+
+        // @port renable interpolation
+        FrameInterpolation_ShouldInterpolateFrame(true);
     }
 
     D_i5_801C5C10 += arg1;
 
-    if ((D_i5_801C5C14 & 1) && (D_i5_801C24B8[(D_i5_801C5C08 + 25) % 28] * 220.0f <= D_i5_801C5C10)) {
+    if ((sGroundMode & 1) && (D_i5_801C24B8[(D_i5_801C5C08 + 25) % 28] * 220.0f <= D_i5_801C5C10)) {
         D_i5_801C5C0C = 1;
         D_i5_801C5C10 = Math_ModF(D_i5_801C5C10, D_i5_801C24B8[(D_i5_801C5C08 + 25) % 28] * 220.0f);
         D_i5_801C5C04 = (D_i5_801C5C04 + 26) % 27;
         D_i5_801C5C08 = (D_i5_801C5C08 + 27) % 28;
     }
 
-    if (D_i5_801C5C14 & 2) {
+    if (sGroundMode & 2) {
         D_i5_801C5C10 = Math_ModF(D_i5_801C5C10, 220.0f * D_i5_801BE744);
     }
 
-    D_i5_801C5C14 = spC4;
+    sGroundMode = spC4;
 }
 
 void Ground_801B5FE0(s32 arg0, s32 arg1, s32 arg2) {
@@ -565,10 +577,12 @@ void Ground_801B68A8(Gfx** dlist, s32 arg1, s32 arg2) {
     s32 j;
     s32 var;
 
+    // @port Skip interpolation
+    FrameInterpolation_ShouldInterpolateFrame(false);
+
     gDPSetupTile((*dlist)++, G_IM_FMT_RGBA, G_IM_SIZ_16b, 32, 32, 0, 0, G_TX_MIRROR | G_TX_WRAP,
                  G_TX_MIRROR | G_TX_WRAP, 5, 5, G_TX_NOLOD, G_TX_NOLOD);
     gDPLoadTileTexture((*dlist)++, D_TI_6001BA8, G_IM_FMT_RGBA, G_IM_SIZ_16b, 32, 32);
-    FrameInterpolation_RecordOpenChild(dlist, D_i5_801C5C10);
     Matrix_Translate(gGfxMatrix, D_i5_801C62D8.x, D_i5_801C62D8.y, D_i5_801C62D8.z + D_i5_801C5C10, MTXF_NEW);
     Matrix_ToMtx(gGfxMtx);
     gSPMatrix((*dlist)++, gGfxMtx++, G_MTX_NOPUSH | G_MTX_MUL | G_MTX_MODELVIEW);
@@ -579,7 +593,9 @@ void Ground_801B68A8(Gfx** dlist, s32 arg1, s32 arg2) {
         gSPDisplayList((*dlist)++, &D_i5_801C2528[j]);
         j = (j + 26) % 27;
     }
-    FrameInterpolation_RecordCloseChild();
+
+    // @port renable interpolation
+    FrameInterpolation_ShouldInterpolateFrame(true);
 }
 
 bool Ground_801B6AEC(f32 arg0, f32 arg1, f32 arg2) {
@@ -694,7 +710,7 @@ s32 Ground_801B6E20(f32 arg0, f32 arg1, f32* arg2, f32* arg3, f32* arg4) {
     *arg4 = 0.0f;
     *arg2 = 0.0f;
 
-    if (D_i5_801C5C14 & 1) {
+    if (sGroundMode & 1) {
         temp_fs2 = arg1 - D_i5_801C5C10 - D_i5_801C62D8.z;
         var_v1 = 0;
         var_s6 = (D_i5_801C5C04 + 25) % 27;

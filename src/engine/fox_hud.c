@@ -210,22 +210,35 @@ void HUD_TeamDownWrench_Draw(s32 arg0) {
             }
         }
     } else {
-        f32 x = 48.0f;
-        f32 y = 0.0f;
-        HUD_MatrixTranslateCoordLeft(&x, &y);
-        y = -81.0f;
-        Lib_InitOrtho(&gMasterDisp);
-        Matrix_Push(&gGfxMatrix);
-        Matrix_Translate(gGfxMatrix, x, y, -600.0f, MTXF_APPLY);
-        Matrix_RotateZ(gGfxMatrix, M_PI / 4, MTXF_APPLY);
-        Matrix_Scale(gGfxMatrix, 0.31f, 0.31f, 1.0f, MTXF_APPLY);
-        Matrix_SetGfxMtx(&gMasterDisp);
-        gSPDisplayList(gMasterDisp++, aDownWrenchDL);
-        Matrix_RotateZ(gGfxMatrix, 3 * M_PI / 2, MTXF_APPLY);
-        Matrix_SetGfxMtx(&gMasterDisp);
-        gSPDisplayList(gMasterDisp++, aDownWrenchDL);
-        Matrix_Pop(&gGfxMatrix);
-        Lib_InitPerspective(&gMasterDisp);
+        if (CVarGetInteger("gRadioCommBox.expand", 0) == 1) {
+            f32 x = 48.0f;
+            f32 y = 0.0f;
+            HUD_MatrixTranslateCoordLeft(&x, &y);
+            y = -81.0f;
+            Lib_InitOrtho(&gMasterDisp);
+            Matrix_Push(&gGfxMatrix);
+            Matrix_Translate(gGfxMatrix, x, y, -600.0f, MTXF_APPLY);
+            Matrix_RotateZ(gGfxMatrix, M_PI / 4, MTXF_APPLY);
+            Matrix_Scale(gGfxMatrix, 0.31f, 0.31f, 1.0f, MTXF_APPLY);
+            Matrix_SetGfxMtx(&gMasterDisp);
+            gSPDisplayList(gMasterDisp++, aDownWrenchDL);
+            Matrix_RotateZ(gGfxMatrix, 3 * M_PI / 2, MTXF_APPLY);
+            Matrix_SetGfxMtx(&gMasterDisp);
+            gSPDisplayList(gMasterDisp++, aDownWrenchDL);
+            Matrix_Pop(&gGfxMatrix);
+            Lib_InitPerspective(&gMasterDisp);
+        } else {
+            Matrix_Push(&gGfxMatrix);
+            Matrix_Translate(gGfxMatrix, -234.0f, -167.0f, -600.0f, MTXF_APPLY);
+            Matrix_RotateZ(gGfxMatrix, M_PI / 4, MTXF_APPLY);
+            Matrix_Scale(gGfxMatrix, 0.68f, 0.68f, 1.0f, MTXF_APPLY);
+            Matrix_SetGfxMtx(&gMasterDisp);
+            gSPDisplayList(gMasterDisp++, aDownWrenchDL);
+            Matrix_RotateZ(gGfxMatrix, 3 * M_PI / 2, MTXF_APPLY);
+            Matrix_SetGfxMtx(&gMasterDisp);
+            gSPDisplayList(gMasterDisp++, aDownWrenchDL);
+            Matrix_Pop(&gGfxMatrix);
+        }
     }
 }
 
@@ -2262,7 +2275,12 @@ void HUD_RadioCharacterName_Draw(void) {
         RCP_SetupDL(&gMasterDisp, SETUPDL_76_OPTIONAL);
         gDPSetPrimColor(gMasterDisp++, 0, 0, 255, 255, 0, 255);
 
-        f32 xPos = OTRGetRectDimensionFromLeftEdgeOverride(73.0f);
+        f32 xPos;
+        if (CVarGetInteger("gRadioCommBox.expand", 0) == 1) {
+            xPos = OTRGetRectDimensionFromLeftEdgeOverride(73.0f);
+        } else {
+            xPos = 73.0f;
+        }
 
         switch ((s32) gRadioMsgRadioId) {
             case RCID_FOX:
@@ -2635,20 +2653,31 @@ void HUD_RadioDamage_Draw(void) {
     }
 
     if ((D_80161788 != 0) || (D_8016178C != 0)) {
-        RCP_SetupDL(&gMasterDisp, SETUPDL_12);
-        gDPSetPrimColor(gMasterDisp++, 0, 0, r, g, b, alpha);
-        f32 x = 48.0f;
-        f32 y = 0.0f;
-        HUD_MatrixTranslateCoordLeft(&x, &y);
-        y = -81.0f;
-        Lib_InitOrtho(&gMasterDisp);
-        Matrix_Push(&gGfxMatrix);
-        Matrix_Translate(gGfxMatrix, x, y, -139.4f, MTXF_APPLY);
-        Matrix_Scale(gGfxMatrix, 2.25f, 2.25f, 2.25f, MTXF_APPLY);
-        Matrix_SetGfxMtx(&gMasterDisp);
-        gSPDisplayList(gMasterDisp++, sRadioDamageDL);
-        Matrix_Pop(&gGfxMatrix);
-        Lib_InitPerspective(&gMasterDisp);
+        if (CVarGetInteger("gRadioCommBox.expand", 0) == 1) {
+            RCP_SetupDL(&gMasterDisp, SETUPDL_12);
+            gDPSetPrimColor(gMasterDisp++, 0, 0, r, g, b, alpha);
+            f32 x = 48.0f;
+            f32 y = 0.0f;
+            HUD_MatrixTranslateCoordLeft(&x, &y);
+            y = -81.0f;
+            Lib_InitOrtho(&gMasterDisp);
+            Matrix_Push(&gGfxMatrix);
+            Matrix_Translate(gGfxMatrix, x, y, -139.4f, MTXF_APPLY);
+            Matrix_Scale(gGfxMatrix, 2.25f, 2.25f, 2.25f, MTXF_APPLY);
+            Matrix_SetGfxMtx(&gMasterDisp);
+            gSPDisplayList(gMasterDisp++, sRadioDamageDL);
+            Matrix_Pop(&gGfxMatrix);
+            Lib_InitPerspective(&gMasterDisp);
+        } else {
+            RCP_SetupDL(&gMasterDisp, SETUPDL_12);
+            gDPSetPrimColor(gMasterDisp++, 0, 0, r, g, b, alpha);
+            Matrix_Push(&gGfxMatrix);
+            Matrix_Translate(gGfxMatrix, -53.9f, -38.5f, -139.4f, MTXF_APPLY);
+            Matrix_Scale(gGfxMatrix, 1.0f, 1.0f, 1.0f, MTXF_APPLY);
+            Matrix_SetGfxMtx(&gMasterDisp);
+            gSPDisplayList(gMasterDisp++, sRadioDamageDL);
+            Matrix_Pop(&gGfxMatrix);
+        }
     }
 }
 

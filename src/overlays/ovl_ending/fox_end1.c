@@ -9,14 +9,6 @@
 #include "port/mods/PortEnhancements.h"
 #include "fox_record.h"
 
-Record gEndingCsRecord[] = {
-    { 2, 0 },    { 5, 1 },    { 2, 2 },    { 3, 277 },  { 2, 278 },  { 3, 340 },  { 2, 397 },  { 3, 537 },
-    { 2, 538 },  { 3, 548 },  { 2, 549 },  { 3, 568 },  { 2, 569 },  { 3, 620 },  { 2, 623 },  { 3, 803 },
-    { 2, 806 },  { 3, 814 },  { 2, 823 },  { 3, 1282 }, { 2, 1284 }, { 5, 3703 }, { 2, 3704 }, { 4, 3904 },
-    { 2, 3905 }, { 3, 4782 }, { 2, 4783 }, { 3, 4785 }, { 2, 4820 }, { 3, 4986 }, { 2, 6779 }, { 5, 6780 },
-    { 2, 6781 }, { 3, 6785 }, { 4, 6786 }, { 3, 6793 }, { 2, 6799 },
-};
-
 void Ending_8018CE20(s32);
 void Ending_801926D4(void);
 extern u32 D_ending_80192E70;
@@ -1116,7 +1108,8 @@ void Ending_Main(void) {
     Ending_8018B3D8();
     Ending_8018ABE8();
 
-    UpdateVisPerFrameFromRecording_Ending(gEndingCsRecord, ARRAY_COUNT(gEndingCsRecord));
+    // @Port: Vi recording
+    UpdateVisPerFrameFromRecording(gEndingCsRecord, ARRAY_COUNT(gEndingCsRecord), &gGameFrameCount);
 }
 
 void DrawBorders(void) {

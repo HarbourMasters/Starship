@@ -25,7 +25,7 @@ jobs:
           sudo sh /tmp/cmake.sh --prefix=/usr/local/ --exclude-subdir
           cmake -H. -Bbuild-switch -GNinja -DCMAKE_TOOLCHAIN_FILE=/opt/devkitpro/cmake/Switch.cmake
           cmake --build build-switch --config Release -j3
-          wget -O gamecontrollerdb.txt https://github.com/mdqinc/SDL_GameControllerDB/blob/master/gamecontrollerdb.txt
+          wget -O gamecontrollerdb.txt https://raw.githubusercontent.com/mdqinc/SDL_GameControllerDB/master/gamecontrollerdb.txt
           mv README.md readme.txt
           mv build-switch/*.nro Starship.nro
       - name: Upload build

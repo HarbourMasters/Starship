@@ -121,7 +121,7 @@ void Titania_Effect368_Spawn(f32 xPos, f32 yPos, f32 zPos, f32 yRot, f32 scale2)
 }
 
 void Titania_TiTerrain_Update(TiTerrain* this) {
-    Ground_801B49D0(this);
+    Ground_List_Setup(this);
 }
 
 Vec3f D_i5_801B7520 = { -150.0f, 0.0f, 0.0f };

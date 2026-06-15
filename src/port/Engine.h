@@ -6,6 +6,7 @@
 typedef enum {
     SF64_VER_US = 0x94F1D5A7,
     SF64_VER_EU = 0x6EE9ADE7,
+    SF64_VER_EU_SPA = 0x3964945f,
     SF64_VER_JP = 0x3728D3E1
 } SF64Version;
 

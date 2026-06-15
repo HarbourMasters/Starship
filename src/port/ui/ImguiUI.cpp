@@ -115,6 +115,9 @@ static const char* filters[3] = {
 static const char* voiceLangs[] = {
     "Original", /*"Japanese",*/ "Lylat"
 };
+static const char* voiceLangsSPA[] = {
+    "Español", /*"Japanese",*/ "Lylat"
+};
 
 void DrawSpeakerPositionEditor() {
     static ImVec2 lastCanvasPos;
@@ -309,15 +312,26 @@ void DrawSettingsMenu(){
             UIWidgets::Spacer(0);
             if (UIWidgets::BeginMenu("Language")) {
                 ImGui::Dummy(ImVec2(150, 0.0f));
-                if (!GameEngine::HasVersion(SF64_VER_JP) && GameEngine::HasVersion(SF64_VER_EU)){
-                    //UIWidgets::Spacer(0);
-                    if (UIWidgets::CVarCombobox("Voices", "gVoiceLanguage", voiceLangs, 
-                    {
-                        .tooltip = "Changes the language of the voice acting in the game",
-                        .defaultIndex = 0,
-                    })) {
-                        Audio_SetVoiceLanguage(CVarGetInteger("gVoiceLanguage", 0));
-                    };
+                if (!GameEngine::HasVersion(SF64_VER_JP) && (GameEngine::HasVersion(SF64_VER_EU) || GameEngine::HasVersion(SF64_VER_EU_SPA))) {
+                    if (GameEngine::HasVersion(SF64_VER_EU_SPA)) {
+                        //UIWidgets::Spacer(0);
+                        if (UIWidgets::CVarCombobox("Voices", "gVoiceLanguage", voiceLangsSPA, 
+                            {
+                                .tooltip = "Changes the language of the voice acting in the game",
+                                .defaultIndex = 0,
+                            })) {
+                                Audio_SetVoiceLanguage(CVarGetInteger("gVoiceLanguage", 0));
+                            };
+                    } else {
+                        //UIWidgets::Spacer(0);
+                        if (UIWidgets::CVarCombobox("Voices", "gVoiceLanguage", voiceLangs, 
+                            {
+                                .tooltip = "Changes the language of the voice acting in the game",
+                                .defaultIndex = 0,
+                            })) {
+                                Audio_SetVoiceLanguage(CVarGetInteger("gVoiceLanguage", 0));
+                            };
+                    }
                 } else {
                     if (UIWidgets::Button("Install JP/EU Audio")) {
                         if (GameEngine::GenAssetFile(false)){
@@ -570,6 +584,10 @@ static const char* hudAspects[] = {
     "Expand", "Custom", "Original (4:3)", "Widescreen (16:9)", "Nintendo 3DS (5:3)", "16:10 (8:5)", "Ultrawide (21:9)"
 };
 
+static const char* radioCommBox[] = {
+    "Original", "Expand"
+};
+
 void DrawEnhancementsMenu() {
     if (UIWidgets::BeginMenu("Enhancements")) {
 
@@ -622,6 +640,21 @@ void DrawEnhancementsMenu() {
         }
 
         if (UIWidgets::BeginMenu("HUD")) {
+            if (UIWidgets::CVarCombobox("Radio Communication Box", "gRadioCommBox.Selection", radioCommBox, 
+            {
+                .tooltip = "Which Aspect Ratio to use when drawing the Radio Communication Box",
+                .defaultIndex = 0,
+            })) {
+                switch (CVarGetInteger("gRadioCommBox.Selection", 0)) {
+                    case 0:
+                        CVarSetInteger("gRadioCommBox.expand", 0);
+                        break;
+                    case 1:
+                        CVarSetInteger("gRadioCommBox.expand", 1);
+                        break;
+                }
+            }
+
             if (UIWidgets::CVarCombobox("HUD Aspect Ratio", "gHUDAspectRatio.Selection", hudAspects, 
             {
                 .tooltip = "Which Aspect Ratio to use when drawing the HUD (Radar, gauges and radio messages)",
