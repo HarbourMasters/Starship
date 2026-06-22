@@ -118,6 +118,32 @@ float random(in float3 value) {
     return frac(sin(random) * 143758.5453);
 }
 
+// N64 RDP ordered-dither matrices (values 0..7); see applyRdpDither.
+static const int kDitherMagic[16] = { 0, 6, 1, 7, 4, 2, 5, 3, 3, 5, 2, 4, 7, 1, 6, 0 };
+static const int kDitherBayer[16] = { 0, 4, 1, 5, 6, 2, 7, 3, 1, 5, 0, 4, 7, 3, 6, 2 };
+
+// RDP RGB dither + RGBA5551 quantization. mode: 0=magic square, 1=bayer,
+// 2=noise (temporal), 3=disable (truncate only), >=4 = off (full precision).
+float3 applyRdpDither(float3 color, float modeF, float2 fragCoord, float noiseScale, float frameCount) {
+    int mode = int(modeF + 0.5);
+    if (mode >= 4) {
+        return color;
+    }
+    float2 nativeCoord = floor(fragCoord * noiseScale);
+    float d = 0.0;
+    if (mode == 0) {
+        int2 cell = int2(nativeCoord) & 3;
+        d = float(kDitherMagic[cell.y * 4 + cell.x]);
+    } else if (mode == 1) {
+        int2 cell = int2(nativeCoord) & 3;
+        d = float(kDitherBayer[cell.y * 4 + cell.x]);
+    } else if (mode == 2) {
+        d = floor(random(float3(nativeCoord, frameCount)) * 8.0);
+    }
+    float3 q = min(floor(clamp(color * 255.0 + d, 0.0, 255.0) / 8.0), 31.0);
+    return (q * 8.0 + floor(q / 4.0)) / 255.0;
+}
+
 // Per-draw constants: texture metadata for 3-point filtering plus the combiner
 // constant operands (prim, env, keys, K4/K5, fog/grayscale colors).
 // Layout must mirror struct PerDrawCB in gfx_direct3d_common.h.
@@ -518,6 +544,13 @@ PSOutput PSMain(PSInput input, float4 screenSpace : SV_Position) {
     @if(o_alpha && o_noise)
         float2 coords = screenSpace.xy * noise_scale;
         texel.a *= round(saturate(random(float3(floor(coords), noise_frame)) + texel.a - 0.5));
+    @end
+
+    // N64 RGB framebuffer dither (per-primitive G_CD_* mode in lod_params.w)
+    @if(o_alpha)
+        texel.rgb = applyRdpDither(texel.rgb, lod_params.w, screenSpace.xy, noise_scale, noise_frame);
+    @else
+        texel = applyRdpDither(texel, lod_params.w, screenSpace.xy, noise_scale, noise_frame);
     @end
 
     @if(o_alpha)

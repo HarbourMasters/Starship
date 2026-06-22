@@ -711,6 +711,43 @@ void GameEngine::RunCommands(Gfx* Commands, const std::vector<std::unordered_map
     }
 }
 
+const char* PostPassBackendDir() {
+    switch (Ship::Context::GetInstance()->GetWindow()->GetWindowBackend()) {
+        case Fast::WindowBackend::FAST3D_SDL_VULKAN:
+            return "vulkan";
+        case Fast::WindowBackend::FAST3D_SDL_OPENGL:
+            return "opengl";
+        case Fast::WindowBackend::FAST3D_SDL_METAL:
+            return "metal";
+        case Fast::WindowBackend::FAST3D_DXGI_DX11:
+            return "directx";
+        default:
+            return nullptr;
+    }
+}
+
+void UpdatePostPasses(Fast::Interpreter* interp) {
+    static bool sRegistered = false;
+    static int sSrgbPassId = -1;
+
+    if (!sRegistered) {
+        const char* dir = PostPassBackendDir();
+        if (dir == nullptr) {
+            return; // backend not initialized yet; retry next frame
+        }
+        const std::string base = std::string("shaders/") + dir + "/";
+        sSrgbPassId = gfx_register_post_pass((base + "srgb.shader").c_str());
+        sRegistered = true;
+    }
+
+    if (interp == nullptr) {
+        return;
+    }
+    if (sSrgbPassId >= 0) {
+        interp->SetPostPassEnabled(sSrgbPassId, gEnableGammaBoost);
+    }
+}
+
 void GameEngine::ProcessGfxCommands(Gfx* commands) {
     auto wnd = std::dynamic_pointer_cast<Fast::Fast3dWindow>(Ship::Context::GetInstance()->GetWindow());
 
@@ -718,9 +755,8 @@ void GameEngine::ProcessGfxCommands(Gfx* commands) {
         return;
     }
 
-    if(gEnableGammaBoost) {
-        wnd->EnableSRGBMode();
-    }
+    UpdatePostPasses(wnd->GetInterpreterWeak().lock().get());
+
     wnd->SetRendererUCode(UcodeHandlers::ucode_f3dex);
 
     std::vector<std::unordered_map<Mtx*, MtxF>> mtx_replacements;

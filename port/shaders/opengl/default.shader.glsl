@@ -62,8 +62,9 @@
 
     @if(o_uses_lod)
     uniform float lod_max;
-    uniform vec4 uLodParams; // x = res scale, y = prim_lod_min, z = G_TD mode
     @end
+    // Declared unconditionally: .w carries the RGB dither mode used by every draw.
+    uniform vec4 uLodParams; // x=res scale, y=prim_lod_min, z=G_TD mode, w=RGB dither mode
 
     uniform int texture_width[2];
     uniform int texture_height[2];
@@ -72,6 +73,34 @@
     @include("shaders/opengl/include/filter.glsli")
 
     @include("shaders/opengl/include/palette.glsli")
+
+    // N64 RDP ordered-dither matrices (values 0..7); see applyRdpDither.
+    const int kDitherMagic[16] = int[16](0, 6, 1, 7, 4, 2, 5, 3, 3, 5, 2, 4, 7, 1, 6, 0);
+    const int kDitherBayer[16] = int[16](0, 4, 1, 5, 6, 2, 7, 3, 1, 5, 0, 4, 7, 3, 6, 2);
+
+    // RDP RGB dither + RGBA5551 quantization. mode: 0=magic square, 1=bayer,
+    // 2=noise (temporal), 3=disable (truncate only), >=4 = off (full precision).
+    // Hash inlined (this shader doesn't pull in noise.glsli's random()).
+    vec3 applyRdpDither(vec3 color, float modeF, vec2 fragCoord, float noiseScaleV, int frameCountV) {
+        int mode = int(modeF + 0.5);
+        if (mode >= 4) {
+            return color;
+        }
+        vec2 nativeCoord = floor(fragCoord * noiseScaleV);
+        float d = 0.0;
+        if (mode == 0) {
+            ivec2 cell = ivec2(nativeCoord) & 3;
+            d = float(kDitherMagic[cell.y * 4 + cell.x]);
+        } else if (mode == 1) {
+            ivec2 cell = ivec2(nativeCoord) & 3;
+            d = float(kDitherBayer[cell.y * 4 + cell.x]);
+        } else if (mode == 2) {
+            float h = dot(sin(vec3(nativeCoord, float(frameCountV))), vec3(12.9898, 78.233, 37.719));
+            d = floor(fract(sin(h) * 143758.5453) * 8.0);
+        }
+        vec3 q = min(floor(clamp(color * 255.0 + d, 0.0, 255.0) / 8.0), 31.0);
+        return (q * 8.0 + floor(q / 4.0)) / 255.0;
+    }
 
     #define TEX_SIZE(tex) vec2(texture_width[tex], texture_height[tex])
 
@@ -254,6 +283,13 @@
             float intensity = (texel.r + texel.g + texel.b) / 3.0;
             vec3 new_texel = uGrayscaleColor.rgb * intensity;
             texel.rgb = mix(texel.rgb, new_texel, uGrayscaleColor.a);
+        @end
+
+        // N64 RGB framebuffer dither (per-primitive G_CD_* mode in uLodParams.w)
+        @if(o_alpha)
+            texel.rgb = applyRdpDither(texel.rgb, uLodParams.w, gl_FragCoord.xy, noise_scale, frame_count);
+        @else
+            texel = applyRdpDither(texel, uLodParams.w, gl_FragCoord.xy, noise_scale, frame_count);
         @end
 
         @if(o_alpha)

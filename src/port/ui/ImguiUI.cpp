@@ -407,6 +407,14 @@ void DrawSettingsMenu() {
 
         UIWidgets::Spacer(0);
 
+        UIWidgets::CVarCheckbox(
+            "Dither Noise", "gEnhancements.Graphics.DitherNoise",
+            { .tooltip = "Recreates the N64's magic-square dithering, adding the original grainy look and "
+                         "reducing color banding.",
+              .defaultValue = true });
+
+        UIWidgets::Spacer(0);
+
         // Previously was running every frame, and nothing was setting it? Maybe a bad copy/paste?
         // Ship::Context::GetInstance()->GetWindow()->SetResolutionMultiplier(CVarGetFloat("gInternalResolution", 1));
         // UIWidgets::Tooltip("Multiplies your output resolution by the value inputted, as a more intensive but
