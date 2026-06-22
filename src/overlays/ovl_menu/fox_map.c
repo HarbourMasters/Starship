@@ -2075,10 +2075,10 @@ void Map_Texture_Sphere(u8* textureDest, u8* textureSrc, f32* offset) {
     if (*offset > 95.0f) {
         *offset = 0.0f;
     }
-
-#ifndef __SWITCH__
-    gSPInvalidateTexCache(gMasterDisp++, NULL);
-#endif
+    
+    for (s32 band = 0; band < 12; band++) {
+        gSPInvalidateTexCache(gMasterDisp++, (textureDest + (96 * 8 * band)));
+    }
 }
 
 void Map_Prologue_Update(void) {
