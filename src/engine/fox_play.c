@@ -6881,7 +6881,10 @@ void Play_UpdateLevel(void) {
             /* fallthrough */
         case LEVEL_SECTOR_X:
             if (gLevelPhase == 1) {
-                gBlurAlpha = 128;
+                // @port: warp-zone trail. The original pins this at 128, which reads much
+                // milder than the boost warp (which ramps down to 64). Match the boost so the
+                // warp zone is as lush as the rest of the warp effect.
+                gBlurAlpha = 64;
                 if (gPlayer[0].state == PLAYERSTATE_LEVEL_COMPLETE) {
                     Math_SmoothStepToF(&gWarpZoneBgAlpha, 0.0f, 1.0f, 1.0f, 0.0f);
                 } else {

@@ -7,6 +7,10 @@
 #include "port/hooks/list/EngineEvent.h"
 #include "port/mods/PortEnhancements.h"
 
+// @port: motion-blur trail compensation (see Game_InitMasterDL)
+extern u32 GameEngine_GetInterpolationFrameCount(void);
+extern float powf(float base, float exponent);
+
 f32 gNextVsViewScale;
 f32 gVsViewScale;
 s32 gPlayerInactive[4];
@@ -171,12 +175,31 @@ void Game_InitMasterDL(Gfx** dList) {
     gDPSetColorImage((*dList)++, G_IM_FMT_RGBA, G_IM_SIZ_16b, RIGHT_MARGIN, gFrameBuffer);
 
     if (gBlurAlpha < 255) {
+        // @port: Motion-blur trail. On N64 this translucent fill was applied once per displayed
+        // frame to a triple-buffered target (each of the 3 buffers revisited every 3 frames),
+        // producing a long trail.
+        //   (1 - aEff)^(3 * N) == (1 - a)   =>   aEff = 1 - (1 - a)^(1 / (3 * N))
+        s32 interpFrames = GameEngine_GetInterpolationFrameCount();
+        u8 blurAlpha;
+
+        if (interpFrames < 1) {
+            interpFrames = 1;
+        }
+
+        f32 a = gBlurAlpha / 255.0f;
+        f32 aEff = 1.0f - powf(1.0f - a, 1.0f / (3.0f * (f32) interpFrames));
+
+        blurAlpha = (u8) (aEff * 255.0f + 0.5f);
+        if (blurAlpha < 1) {
+            blurAlpha = 1; // keep some erase, otherwise the trail would never fade out
+        }
+
         gDPPipeSync((*dList)++);
         gDPSetCycleType((*dList)++, G_CYC_1CYCLE);
         gDPSetCombineMode((*dList)++, G_CC_PRIMITIVE, G_CC_PRIMITIVE);
         gDPSetRenderMode((*dList)++, G_RM_XLU_SURF, G_RM_XLU_SURF2);
         gDPSetPrimColor((*dList)++, 0x00, 0x00, RGBA16_RED(gBgColor) * 8, RGBA16_GRN(gBgColor) * 8,
-                        RGBA16_BLU(gBgColor) * 8, gBlurAlpha);
+                        RGBA16_BLU(gBgColor) * 8, blurAlpha);
     } else {
         gDPSetFillColor((*dList)++, FILL_COLOR(gBgColor | 1));
     }

@@ -467,7 +467,9 @@ void Cutscene_EnterWarpZone(Player* player) {
             }
             player->unk_190 = 2.0f;
             player->camDist -= 2.0f;
-            gBlurAlpha = 128;
+            // @port: match the boost warp's trail strength (original pins this at 128, which
+            // reads much milder than the rest of the warp effect). See fox_play.c warp-zone case.
+            gBlurAlpha = 64;
             break;
 
         case 2:
