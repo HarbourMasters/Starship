@@ -190,6 +190,76 @@ void Radio_CalculatePositions() {
 
 s32 sRadioUseRedBox;
 
+// @port: The radio box/portrait originally draw as 2D texture rectangles, whose
+// coordinates are baked on the CPU -- the frame-interpolation system only
+// interpolates matrices, so those texrects can't be smoothed and the slide/scale
+// animation runs at the native (20fps) tick rate. Drawing them as matrix-transformed
+// quads instead lets the matrix interpolation smooth them (the Matrix_* calls below
+// self-record into the interpolation tree, like the 3D character heads already do).
+#define RADIO_MAX_QUADS 4
+static Vtx sRadioVtx[2][RADIO_MAX_QUADS * 4];
+static void* sRadioVtxLastPool = NULL;
+static s32 sRadioVtxBank = 0;
+static s32 sRadioVtxCount = 0;
+
+static Vtx* Radio_AllocQuad(void) {
+    // Double-buffered in lockstep with the gfx pool so the previous frame's verts
+    // are never overwritten while still being rendered/replayed for interpolation.
+    if ((void*) gGfxPool != sRadioVtxLastPool) {
+        sRadioVtxLastPool = (void*) gGfxPool;
+        sRadioVtxBank = (gGfxPool == &gGfxPools[1]) ? 1 : 0;
+        sRadioVtxCount = 0;
+    }
+    if (sRadioVtxCount >= RADIO_MAX_QUADS) {
+        return NULL;
+    }
+    return &sRadioVtx[sRadioVtxBank][sRadioVtxCount++ * 4];
+}
+
+// Draws a w x h-texel quad (texture/tile already loaded) at screen-space top-left
+// (xPos, yPos), sized (w*xScale, h*yScale), through an ortho matrix so the slide/scale
+// animation is interpolated. The Matrix_* transform records itself for interpolation.
+static void Radio_DrawInterpTexQuad(f32 xPos, f32 yPos, u32 w, u32 h, f32 xScale, f32 yScale) {
+    Vtx* q = Radio_AllocQuad();
+    s16 uMax;
+    s16 vMax;
+    s32 k;
+
+    if (q == NULL) {
+        return;
+    }
+
+    uMax = (s16) (w << 5);
+    vMax = (s16) (h << 5);
+
+    q[0].v.ob[0] = 0;        q[0].v.ob[1] = 0;            q[0].v.tc[0] = 0;    q[0].v.tc[1] = 0;    // top-left
+    q[1].v.ob[0] = (s16) w;  q[1].v.ob[1] = 0;            q[1].v.tc[0] = uMax; q[1].v.tc[1] = 0;    // top-right
+    q[2].v.ob[0] = 0;        q[2].v.ob[1] = -(s16) h;     q[2].v.tc[0] = 0;    q[2].v.tc[1] = vMax; // bottom-left
+    q[3].v.ob[0] = (s16) w;  q[3].v.ob[1] = -(s16) h;     q[3].v.tc[0] = uMax; q[3].v.tc[1] = vMax; // bottom-right
+    for (k = 0; k < 4; k++) {
+        q[k].v.ob[2] = 0;
+        q[k].v.flag = 0;
+        q[k].v.cn[0] = 255;
+        q[k].v.cn[1] = 255;
+        q[k].v.cn[2] = 255;
+        q[k].v.cn[3] = 255;
+    }
+
+    // Ortho maps [-SCREEN_WIDTH/2, SCREEN_WIDTH/2] x [-SCREEN_HEIGHT/2, SCREEN_HEIGHT/2]
+    // (Y up) to the screen; convert the screen top-left accordingly.
+    Lib_InitOrtho(&gMasterDisp);
+    // Unlike a texture rectangle, a real triangle quad is subject to back-face culling.
+    gSPClearGeometryMode(gMasterDisp++, G_CULL_BACK);
+    Matrix_Push(&gGfxMatrix);
+    Matrix_Translate(gGfxMatrix, xPos - (SCREEN_WIDTH / 2.0f), (SCREEN_HEIGHT / 2.0f) - yPos, 0.0f, MTXF_NEW);
+    Matrix_Scale(gGfxMatrix, xScale, yScale, 1.0f, MTXF_APPLY);
+    Matrix_SetGfxMtx(&gMasterDisp);
+    gSPVertex(gMasterDisp++, q, 4, 0);
+    gSP2Triangles(gMasterDisp++, 0, 1, 2, 0, 1, 2, 3, 0);
+    Matrix_Pop(&gGfxMatrix);
+    Lib_InitPerspective(&gMasterDisp);
+}
+
 void func_radio_800BAAE8(void) {
     static f32 D_800D4A74 = -1.0f;
     u16* radioPortraitTex = NULL;
@@ -517,8 +587,12 @@ void func_radio_800BB388(void) {
             gDPSetPrimColor(gMasterDisp++, 0x00, 0x00, 60, 60, 255, 170);
         }
 
-        Lib_TextureRect_CI8(&gMasterDisp, texture, palette, 32, 32, gRadioTextBoxPosX, gRadioTextBoxPosY + 16.0f + sp30,
-                            gRadioTextBoxScaleX, gRadioTextBoxScaleY);
+        // @port: matrix-quad instead of Lib_TextureRect_CI8 so the slide/scale interpolates.
+        gDPLoadTLUT_pal256(gMasterDisp++, palette);
+        gDPLoadTextureBlock(gMasterDisp++, texture, G_IM_FMT_CI, G_IM_SIZ_8b, 32, 32, 0, G_TX_NOMIRROR | G_TX_WRAP,
+                            G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
+        Radio_DrawInterpTexQuad(gRadioTextBoxPosX, gRadioTextBoxPosY + 16.0f + sp30, 32, 32, gRadioTextBoxScaleX,
+                                gRadioTextBoxScaleY);
     }
 
     if (gRadioTextBoxScaleY == 1.3f) {
