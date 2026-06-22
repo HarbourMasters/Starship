@@ -1,0 +1,44 @@
+@prism(type='fragment', name='Fast3D Vulkan Common', version='1.0.0', description='Shared descriptor-set uniform blocks (frameU/drawU/lightU/xformU); lockstep with gfx_vulkan.h', author='Fast3D')
+
+// Uniform layout mirrors the structs in gfx_vulkan.h (std140; everything is
+// vec4-aligned on the C++ side). Set 0 = ring-buffer UBOs with dynamic
+// offsets, set 1 = the 7 fast3d texture slots.
+layout(std140, set = 0, binding = 0) uniform FrameUniforms {
+    int frame_count;
+    float noise_scale;
+} frameU;
+
+layout(std140, set = 0, binding = 1) uniform DrawUniforms {
+    ivec4 tex_filter[2]; // slots 0..6, [0].xyzw = 0..3, [1].xyz = 4..6
+    vec4 misc;           // x = prim_depth, y = lod_max
+    vec4 inputs[6];
+    vec4 fog_color;
+    vec4 grayscale_color;
+    vec4 uv_transform[2];
+    vec4 tex_clamp[2];
+    vec4 fog_params;
+    vec4 palette_params[2];
+    vec4 lod_params;     // x = res scale, y = prim_lod_min, z = G_TD mode
+    // Game-bindable register file; lockstep with VulkanDrawUniforms (gfx_vulkan.h)
+    vec4 uCustomRegs[32];
+} drawU;
+
+// Loose-uniform-style alias so shader code matches the GL dialect
+#define uCustom drawU.uCustomRegs
+
+layout(std140, set = 0, binding = 2) uniform LightUniforms {
+    vec4 lights[96]; // 32 lights x [color+kind, model dir+kc, world pos+kq]
+    vec4 ambient;
+    vec4 lookat_x;
+    vec4 lookat_y;
+    vec4 texgen[2];
+    vec4 mv_rows[3];
+    vec4 mv_cols[3];
+    ivec4 num_lights;
+} lightU;
+
+layout(std140, set = 0, binding = 3) uniform TransformUniforms {
+    vec4 mtx_palette[32]; // 8 slots x 4 vec4 rows
+    vec4 y_scale;
+} xformU;
+

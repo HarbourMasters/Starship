@@ -25,13 +25,28 @@ extern "C" void gSPDisplayList(Gfx* pkt, Gfx* dl) {
     __gSPDisplayList(pkt, dl);
 }
 
-extern "C" void gDPSetTileSizeInterp(Gfx* pkt, int t, float uls, float ult, float lrs, float lrt) 
+extern "C" void gDPSetTileSizeInterp(Gfx* pkt, int t, float uls, float ult, float lrs, float lrt)
 {
 	__gDPSetTileSizeInterp(pkt++, t, 0, 0, 0, 0);
 	memcpy(&pkt[0].words.w0, &uls, sizeof(float));
 	memcpy(&pkt[0].words.w1, &ult, sizeof(float));
 	memcpy(&pkt[1].words.w0, &lrs, sizeof(float));
 	memcpy(&pkt[1].words.w1, &lrt, sizeof(float));
+}
+
+// Single-command GPU-side tile scroll interpolation.
+// Writes 4 Gfx words; caller must advance gMasterDisp by 4.
+// The interpreter computes per-sub-frame UV offset from (uls,ult) and (delta_uls,delta_ult).
+extern "C" void gDPSetTileScrollInterp(Gfx* pkt, int t, float uls, float ult, float lrs, float lrt, float delta_uls, float delta_ult)
+{
+    pkt[0].words.w0 = (uint32_t)(G_SETTILESCROLL_INTERP) << 24;
+    pkt[0].words.w1 = (uint32_t)(t & 0x7) << 24;
+    memcpy(&pkt[1].words.w0, &uls, sizeof(float));
+    memcpy(&pkt[1].words.w1, &ult, sizeof(float));
+    memcpy(&pkt[2].words.w0, &lrs, sizeof(float));
+    memcpy(&pkt[2].words.w1, &lrt, sizeof(float));
+    memcpy(&pkt[3].words.w0, &delta_uls, sizeof(float));
+    memcpy(&pkt[3].words.w1, &delta_ult, sizeof(float));
 }
 
 extern "C" void gSPVertex(Gfx* pkt, uintptr_t v, int n, int v0) {

@@ -1,0 +1,5 @@
+@prism(type='fragment', name='Fast3D Noise', version='1.0.0', description='Hash-based random() used for N64 noise; expects frame_count/noise_scale uniforms', author='Fast3D')
+    float random(in vec3 value) {
+        float random = dot(sin(value), vec3(12.9898, 78.233, 37.719));
+        return fract(sin(random) * 143758.5453);
+    }

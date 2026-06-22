@@ -1,0 +1,37 @@
+@prism(type='fragment', name='Fast3D Vulkan CI Palettes', version='1.0.0', description='Palette tap/sample helpers for color-index textures (Vulkan dialect)', author='Fast3D')
+    @if(o_palette[0] || o_palette[1])
+        layout(set = 1, binding = 6) uniform sampler2D uTexPal;
+
+        // One CI tap: fetch the index (nearest sampler) and look it up in the
+        // 256-entry palette texture. params.x is the CI4 bank entry offset.
+        vec4 paletteTap(in sampler2D tex, in vec2 uv, in float bank) {
+            float idx = texture(tex, uv).r;
+            return texture(uTexPal, vec2((idx * 255.0 + bank + 0.5) / 256.0, 0.5));
+        }
+
+        // Filtering must happen after the palette lookup, like real hardware:
+        // params.y selects nearest (0), bilinear (1) or N64 three-point (2).
+        vec4 paletteSample(in sampler2D tex, in vec2 uv, in vec2 texSize, in vec4 params) {
+            if (params.y > 1.5) {
+                vec2 offset = fract(uv * texSize - vec2(0.5));
+                offset -= step(1.0, offset.x + offset.y);
+                vec4 c0 = paletteTap(tex, uv - offset / texSize, params.x);
+                vec4 c1 = paletteTap(tex, uv - vec2(offset.x - sign(offset.x), offset.y) / texSize, params.x);
+                vec4 c2 = paletteTap(tex, uv - vec2(offset.x, offset.y - sign(offset.y)) / texSize, params.x);
+                return c0 + abs(offset.x) * (c1 - c0) + abs(offset.y) * (c2 - c0);
+            } else if (params.y > 0.5) {
+                vec2 t = uv * texSize - 0.5;
+                vec2 f = fract(t);
+                vec2 base = (floor(t) + 0.5) / texSize;
+                vec2 px = vec2(1.0, 0.0) / texSize;
+                vec2 py = vec2(0.0, 1.0) / texSize;
+                vec4 c00 = paletteTap(tex, base, params.x);
+                vec4 c10 = paletteTap(tex, base + px, params.x);
+                vec4 c01 = paletteTap(tex, base + py, params.x);
+                vec4 c11 = paletteTap(tex, base + px + py, params.x);
+                return mix(mix(c00, c10, f.x), mix(c01, c11, f.x), f.y);
+            } else {
+                return paletteTap(tex, uv, params.x);
+            }
+        }
+    @end

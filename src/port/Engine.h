@@ -42,7 +42,8 @@ class GameEngine {
     static void EndAudioFrame();
     static void AudioInit();
     static void AudioExit();
-    static void RunCommands(Gfx* Commands, const std::vector<std::unordered_map<Mtx*, MtxF>>& mtx_replacements);
+    static void RunCommands(Gfx* Commands, const std::vector<std::unordered_map<Mtx*, MtxF>>& mtx_replacements,
+                            const std::vector<float>& interpolation_fracs = {});
     static void Destroy();
 	static uint32_t GetInterpolationFPS();
 	static uint32_t GetInterpolationFrameCount();
@@ -89,6 +90,7 @@ uint32_t OTRGetGameRenderHeight();
 void* GameEngine_Malloc(size_t size);
 void GameEngine_GetTextureInfo(const char* path, int32_t* width, int32_t* height, float* scale, bool* custom);
 void gDPSetTileSizeInterp(Gfx* pkt, int t, float uls, float ult, float lrs, float lrt);
+void gDPSetTileScrollInterp(Gfx* pkt, int t, float uls, float ult, float lrs, float lrt, float delta_uls, float delta_ult);
 uint32_t GameEngine_GetInterpolationFrameCount();
 
 #ifdef __cplusplus

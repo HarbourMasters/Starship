@@ -1,0 +1,30 @@
+@prism(type='fragment', name='Fast3D Filtering', version='1.0.0', description='WRAP/TEX_OFFSET macros - sRGB conversion - N64 three-point filtering and the hookTexture2D dispatcher', author='Fast3D')
+    #define TEX_OFFSET(off) @{texture}(tex, texCoord - off / texSize)
+    #define WRAP(x, low, high) mod((x)-(low), (high)-(low)) + (low)
+
+    @include("shaders/opengl/include/noise.glsli")
+
+    vec4 fromLinear(vec4 linearRGB){
+        bvec3 cutoff = lessThan(linearRGB.rgb, vec3(0.0031308));
+        vec3 higher = vec3(1.055)*pow(linearRGB.rgb, vec3(1.0/2.4)) - vec3(0.055);
+        vec3 lower = linearRGB.rgb * vec3(12.92);
+        return vec4(mix(higher, lower, cutoff), linearRGB.a);
+    }
+
+    vec4 filter3point(in sampler2D tex, in vec2 texCoord, in vec2 texSize) {
+        vec2 offset = fract(texCoord*texSize - vec2(0.5));
+        offset -= step(1.0, offset.x + offset.y);
+        vec4 c0 = TEX_OFFSET(offset);
+        vec4 c1 = TEX_OFFSET(vec2(offset.x - sign(offset.x), offset.y));
+        vec4 c2 = TEX_OFFSET(vec2(offset.x, offset.y - sign(offset.y)));
+        return c0 + abs(offset.x)*(c1-c0) + abs(offset.y)*(c2-c0);
+    }
+
+    vec4 hookTexture2D(in int id, sampler2D tex, in vec2 uv, in vec2 texSize) {
+    @if(o_three_point_filtering)
+        if(texture_filtering[id] == @{FILTER_THREE_POINT}) {
+            return filter3point(tex, uv, texSize);
+        }
+    @end
+        return @{texture}(tex, uv);
+    }

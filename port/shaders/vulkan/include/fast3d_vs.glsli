@@ -1,0 +1,141 @@
+@prism(type='fragment', name='Fast3D Vulkan Vertex Stage', version='1.0.0', description='Complete default vertex shader body for the Vulkan dialect', author='Fast3D')
+    layout(location = 0) in vec4 aVtxPos;
+    layout(location = 1) in float aMtxSlot;
+
+    @for(i in 0..2)
+        @if(o_textures[i])
+            @if(i == 0)
+                layout(location = 2) in vec2 aTexCoord0;
+            @else
+                layout(location = 3) in vec2 aTexCoord1;
+            @end
+            layout(location = @{i}) out vec2 vTexCoord@{i};
+        @end
+    @end
+
+    @if(o_fog)
+        layout(location = 2) out float vFogFactor;
+    @end
+
+    @if(o_shade || o_lighting)
+        @if(o_alpha)
+            layout(location = 4) in vec4 aShade;
+        @else
+            layout(location = 4) in vec3 aShade;
+        @end
+    @end
+    @if(o_shade)
+        @if(o_alpha)
+            layout(location = 3) out vec4 vShade;
+        @else
+            layout(location = 3) out vec3 vShade;
+        @end
+    @end
+
+    void main() {
+        // RSP position transform: matrix palette entry selected per vertex
+        int mtxBase = int(aMtxSlot + 0.5) * 4;
+        vec4 clipPos = aVtxPos.x * xformU.mtx_palette[mtxBase] + aVtxPos.y * xformU.mtx_palette[mtxBase + 1] +
+                       aVtxPos.z * xformU.mtx_palette[mtxBase + 2] + aVtxPos.w * xformU.mtx_palette[mtxBase + 3];
+
+        @for(i in 0..2)
+            @if(o_textures[i])
+                // Tile shift/origin/bilerp/size pipeline folded into one transform
+                vTexCoord@{i} = vec2(aTexCoord@{i}.x * drawU.uv_transform[@{i}].x + drawU.uv_transform[@{i}].y,
+                                     aTexCoord@{i}.y * drawU.uv_transform[@{i}].z + drawU.uv_transform[@{i}].w);
+            @end
+        @end
+        @if(o_fog)
+            // N64 RSP fog from clip-space z/w; fog_params.w selects the source
+            // (0: computed, 1: constant register, 2: legacy vertex-alpha fallback)
+            float fogW = abs(clipPos.w) < 0.001 ? 0.001 : clipPos.w;
+            float fogWinv = 1.0 / fogW;
+            if (fogWinv < 0.0) {
+                fogWinv = 32767.0;
+            }
+            float fogCalc = clamp(clipPos.z * fogWinv * drawU.fog_params.x + drawU.fog_params.y, 0.0, 255.0) / 255.0;
+            @if(o_shade && o_alpha)
+                vFogFactor = drawU.fog_params.w > 1.5 ? aShade.a : (drawU.fog_params.w > 0.5 ? drawU.fog_params.z : fogCalc);
+            @else
+                vFogFactor = drawU.fog_params.w > 0.5 ? drawU.fog_params.z : fogCalc;
+            @end
+        @end
+        @if(o_texgen)
+            // N64 texgen: project the vertex normal onto the lookat vectors, then
+            // run the result through the standard tile/scale UV pipeline (folded
+            // into the per-draw texgen linear transforms).
+            float texgenDotX = clamp(dot(aShade.xyz, lightU.lookat_x.xyz) / 127.0, -1.0, 1.0);
+            float texgenDotY = clamp(dot(aShade.xyz, lightU.lookat_y.xyz) / 127.0, -1.0, 1.0);
+            @if(o_texgen_linear)
+                texgenDotX = acos(-texgenDotX) * 0.159155;
+                texgenDotY = acos(-texgenDotY) * 0.159155;
+            @else
+                texgenDotX = (texgenDotX + 1.0) / 4.0;
+                texgenDotY = (texgenDotY + 1.0) / 4.0;
+            @end
+            @if(o_textures[0])
+                vTexCoord0 = vec2(texgenDotX * lightU.texgen[0].x + lightU.texgen[0].y, texgenDotY * lightU.texgen[0].z + lightU.texgen[0].w);
+            @end
+            @if(o_textures[1])
+                vTexCoord1 = vec2(texgenDotX * lightU.texgen[1].x + lightU.texgen[1].y, texgenDotY * lightU.texgen[1].z + lightU.texgen[1].w);
+            @end
+        @end
+        @if(o_shade && o_alpha)
+            // Standard fog forces shade alpha to 1.0 (the factor rides vFogFactor);
+            // blend-color mode (fog mode 1) preserves the vertex alpha.
+            float shadeAlpha = aShade.a;
+            @if(o_fog)
+                if (drawU.fog_params.w < 0.5 || drawU.fog_params.w > 1.5) {
+                    shadeAlpha = 1.0;
+                }
+            @end
+        @end
+        @if(o_point_lighting)
+            // World-space position derived from the object-space vertex position
+            vec3 worldPos = vec3(dot(aVtxPos, lightU.mv_cols[0]), dot(aVtxPos, lightU.mv_cols[1]), dot(aVtxPos, lightU.mv_cols[2]));
+        @end
+        @if(o_shade)
+            @if(o_lighting)
+                // N64 RSP lighting: aShade carries the raw signed vertex normal
+                vec3 litColor = lightU.ambient.rgb;
+                for (int i = 0; i < lightU.num_lights.x; i++) {
+                    float intensity = 0.0;
+                    @if(o_point_lighting)
+                    if (lightU.lights[i * 3].w > 0.5) {
+                        vec3 distVec = lightU.lights[i * 3 + 2].xyz - worldPos;
+                        float distSq = distVec.x * distVec.x + distVec.y * distVec.y + distVec.z * distVec.z * 2.0;
+                        float dist = sqrt(distSq);
+                        vec3 lightModel = vec3(dot(distVec, lightU.mv_rows[0].xyz), dot(distVec, lightU.mv_rows[1].xyz), dot(distVec, lightU.mv_rows[2].xyz));
+                        vec3 lightIntensity = clamp(4.0 * lightModel / distSq, -1.0, 1.0);
+                        float totalIntensity = clamp(dot(lightIntensity, aShade.xyz), -1.0, 1.0);
+                        float distF = floor(dist);
+                        float attenuation = (distF * lightU.lights[i * 3 + 1].w * 2.0 + distF * distF * lightU.lights[i * 3 + 2].w / 8.0) / 65535.0 + 1.0;
+                        intensity = totalIntensity / attenuation;
+                    } else {
+                        intensity = dot(aShade.xyz, lightU.lights[i * 3 + 1].xyz) / 127.0;
+                    }
+                    @else
+                        intensity = dot(aShade.xyz, lightU.lights[i * 3 + 1].xyz) / 127.0;
+                    @end
+                    if (intensity > 0.0) {
+                        litColor += intensity * lightU.lights[i * 3].rgb;
+                    }
+                }
+                litColor = min(litColor, vec3(1.0));
+                @if(o_alpha)
+                    vShade = vec4(litColor, shadeAlpha);
+                @else
+                    vShade = litColor;
+                @end
+            @else
+                @if(o_alpha)
+                    vShade = vec4(aShade.rgb, shadeAlpha);
+                @else
+                    vShade = aShade;
+                @end
+            @end
+        @end
+        // Same clip conventions as Metal: z mapped to 0..w; y flip handled by
+        // y_scale plus the negative viewport set by the backend.
+        gl_Position = vec4(clipPos.x, clipPos.y * xformU.y_scale.x, (clipPos.z + clipPos.w) / 2.0, clipPos.w);
+    }

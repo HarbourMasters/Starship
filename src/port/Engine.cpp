@@ -678,7 +678,8 @@ void GameEngine::AudioExit() {
     audio.thread.join();
 }
 
-void GameEngine::RunCommands(Gfx* Commands, const std::vector<std::unordered_map<Mtx*, MtxF>>& mtx_replacements) {
+void GameEngine::RunCommands(Gfx* Commands, const std::vector<std::unordered_map<Mtx*, MtxF>>& mtx_replacements,
+                            const std::vector<float>& interpolation_fracs) {
     auto wnd = std::dynamic_pointer_cast<Fast::Fast3dWindow>(Ship::Context::GetInstance()->GetWindow());
 
     if (wnd == nullptr) {
@@ -691,9 +692,14 @@ void GameEngine::RunCommands(Gfx* Commands, const std::vector<std::unordered_map
     wnd->HandleEvents();
 
     interpreter->mInterpolationIndex = 0;
+    interpreter->mInterpolationTotal = (int)mtx_replacements.size();
 
-    for (const auto& m : mtx_replacements) {
-        wnd->DrawAndRunGraphicsCommands(Commands, m);
+    for (size_t i = 0; i < mtx_replacements.size(); i++) {
+        // Feed the texture-scroll interpolation the exact same fraction the matrix
+        // interpolation uses for this sub-frame, so UVs stay in lockstep with vertices.
+        interpreter->mInterpolationFrac =
+            i < interpolation_fracs.size() ? interpolation_fracs[i] : (float)(i + 1) / (float)mtx_replacements.size();
+        wnd->DrawAndRunGraphicsCommands(Commands, mtx_replacements[i], {});
         interpreter->mInterpolationIndex++;
     }
 
@@ -718,6 +724,7 @@ void GameEngine::ProcessGfxCommands(Gfx* commands) {
     wnd->SetRendererUCode(UcodeHandlers::ucode_f3dex);
 
     std::vector<std::unordered_map<Mtx*, MtxF>> mtx_replacements;
+    std::vector<float> interpolation_fracs;
     int target_fps = GameEngine::Instance->GetInterpolationFPS();
     static int last_fps;
     static int last_update_rate;
@@ -739,9 +746,12 @@ void GameEngine::ProcessGfxCommands(Gfx* commands) {
     while (time + original_fps <= next_original_frame) {
         time += original_fps;
         if (time != next_original_frame) {
-            mtx_replacements.push_back(FrameInterpolation_Interpolate((float) time / next_original_frame));
+            float frac = (float) time / next_original_frame;
+            mtx_replacements.push_back(FrameInterpolation_Interpolate(frac));
+            interpolation_fracs.push_back(frac);
         } else {
             mtx_replacements.emplace_back();
+            interpolation_fracs.push_back(1.0f);
         }
     }
 
@@ -756,9 +766,11 @@ void GameEngine::ProcessGfxCommands(Gfx* commands) {
     if (GfxDebuggerIsDebugging()) {
         mtx_replacements.clear();
         mtx_replacements.emplace_back();
+        interpolation_fracs.clear();
+        interpolation_fracs.push_back(1.0f);
     }
 
-    RunCommands(commands, mtx_replacements);
+    RunCommands(commands, mtx_replacements, interpolation_fracs);
 
     last_fps = fps;
     last_update_rate = gVIsPerFrame;

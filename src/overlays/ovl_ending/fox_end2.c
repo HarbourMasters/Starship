@@ -459,23 +459,13 @@ void Ending_8018EDB8(u32 arg0, AssetInfo* asset) {
 
     gDPLoadTextureBlock(gMasterDisp++, D_END_700EA38, G_IM_FMT_RGBA, G_IM_SIZ_16b, 32, 32, 0, G_TX_WRAP | G_TX_NOMIRROR,
                         G_TX_WRAP | G_TX_NOMIRROR, 5, 5, G_TX_NOLOD, G_TX_NOLOD);
-    int interpolatedFrames = GameEngine_GetInterpolationFrameCount();
 
     float scrollArg = arg0 * 14;
-    float inc = 14 / (float) interpolatedFrames;
 
-    for (int i = 0; i < interpolatedFrames; i++) {
-        gDPSetInterpolation(gMasterDisp++, i);
-
-        gDPSetupTile2(gMasterDisp++, G_IM_FMT_RGBA, G_IM_SIZ_16b, 32, 32, scrollArg, 0, G_TX_NOMIRROR | G_TX_WRAP,
-                      G_TX_NOMIRROR | G_TX_WRAP, 5, 5, G_TX_NOLOD, G_TX_NOLOD);
-
-        gDPSetTileSizeInterp(gMasterDisp, G_TX_RENDERTILE, scrollArg, 0, 32 << 2, 0);
-
-        gMasterDisp += 3;
-
-        scrollArg += inc;
-    }
+    gDPSetupTile2(gMasterDisp++, G_IM_FMT_RGBA, G_IM_SIZ_16b, 32, 32, scrollArg, 0, G_TX_NOMIRROR | G_TX_WRAP,
+                  G_TX_NOMIRROR | G_TX_WRAP, 5, 5, G_TX_NOLOD, G_TX_NOLOD);
+    gDPSetTileScrollInterp(gMasterDisp, G_TX_RENDERTILE, scrollArg, 0, 32 << 2, 0, 14.0f, 0.0f);
+    gMasterDisp += 4;
 
     gSPDisplayList(gMasterDisp++, D_END_700E9E0);
 }

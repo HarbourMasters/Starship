@@ -1,79 +1,68 @@
-@prism(type='fragment', name='Fast3D Fragment Shader', version='1.0.0', description='Ported shader to prism', author='Emill & Prism Team')
+@prism(type='fragment', name='Fast3D Vulkan Shader', version='1.0.0', description='Fast3D combiner shader for Vulkan', author='Ghostship')
 
-@{GLSL_VERSION}
+#version 450
+@include("shaders/vulkan/include/common.glsli")
 
 @if(VERTEX_SHADER)
-    @include("shaders/opengl/include/fast3d_vs.glsli")
+    @include("shaders/vulkan/include/fast3d_vs.glsli")
 
 @else
-    @if(core_opengl || opengles)
-    out vec4 vOutColor;
-    @end
+    layout(location = 0) out vec4 vOutColor;
 
     @for(i in 0..2)
         @if(o_textures[i])
-            @{attr} vec2 vTexCoord@{i};
+            layout(location = @{i}) in vec2 vTexCoord@{i};
         @end
     @end
 
-    @if(o_textures[0] || o_textures[1])
-        uniform vec4 uTexClamp[2];
+    @if(o_fog)
+        layout(location = 2) in float vFogFactor;
     @end
-
-    @if(o_fog) @{attr} float vFogFactor;
 
     @if(o_shade)
         @if(o_alpha)
-            @{attr} vec4 vShade;
+            layout(location = 3) in vec4 vShade;
         @else
-            @{attr} vec3 vShade;
+            layout(location = 3) in vec3 vShade;
         @end
     @end
 
-    @if(o_has_inputs)
-        uniform vec4 uInputs[@{o_inputs}];
+    @if(o_textures[0]) layout(set = 1, binding = 0) uniform sampler2D uTex0;
+    @if(o_textures[1]) layout(set = 1, binding = 1) uniform sampler2D uTex1;
+
+    @if(o_masks[0]) layout(set = 1, binding = 2) uniform sampler2D uTexMask0;
+    @if(o_masks[1]) layout(set = 1, binding = 3) uniform sampler2D uTexMask1;
+
+    @if(o_blend[0]) layout(set = 1, binding = 4) uniform sampler2D uTexBlend0;
+    @if(o_blend[1]) layout(set = 1, binding = 5) uniform sampler2D uTexBlend1;
+
+    #define TEX_OFFSET(off) texture(tex, texCoord - off / texSize)
+    #define WRAP(x, low, high) mod((x)-(low), (high)-(low)) + (low)
+
+    float random(in vec3 value) {
+        float random = dot(sin(value), vec3(12.9898, 78.233, 37.719));
+        return fract(sin(random) * 143758.5453);
+    }
+
+    vec4 filter3point(in sampler2D tex, in vec2 texCoord, in vec2 texSize) {
+        vec2 offset = fract(texCoord*texSize - vec2(0.5));
+        offset -= step(1.0, offset.x + offset.y);
+        vec4 c0 = TEX_OFFSET(offset);
+        vec4 c1 = TEX_OFFSET(vec2(offset.x - sign(offset.x), offset.y));
+        vec4 c2 = TEX_OFFSET(vec2(offset.x, offset.y - sign(offset.y)));
+        return c0 + abs(offset.x)*(c1-c0) + abs(offset.y)*(c2-c0);
+    }
+
+    vec4 hookTexture2D(in int id, sampler2D tex, in vec2 uv, in vec2 texSize) {
+    @if(o_three_point_filtering)
+        if(drawU.tex_filter[0][id] == @{FILTER_THREE_POINT}) {
+            return filter3point(tex, uv, texSize);
+        }
     @end
-    @if(o_fog)
-        uniform vec4 uFogColor;
-    @end
-    @if(o_grayscale)
-        uniform vec4 uGrayscaleColor;
-    @end
+        return texture(tex, uv);
+    }
 
-    @if(o_textures[0]) uniform sampler2D uTex0;
-    @if(o_textures[1]) uniform sampler2D uTex1;
-
-    @if(o_masks[0]) uniform sampler2D uTexMask0;
-    @if(o_masks[1]) uniform sampler2D uTexMask1;
-
-    @if(o_blend[0]) uniform sampler2D uTexBlend0;
-    @if(o_blend[1]) uniform sampler2D uTexBlend1;
-
-    uniform int frame_count;
-    uniform float noise_scale;
-
-    // Game-bindable custom uniform registers; [0]-[1] are engine built-ins
-    // (frame/time/delta, resolution). See CustomUniforms in gfx_rendering_api.h.
-    uniform vec4 uCustom[32];
-
-    @if(o_prim_depth)
-    uniform float prim_depth;
-    @end
-
-    @if(o_uses_lod)
-    uniform float lod_max;
-    uniform vec4 uLodParams; // x = res scale, y = prim_lod_min, z = G_TD mode
-    @end
-
-    uniform int texture_width[2];
-    uniform int texture_height[2];
-    uniform int texture_filtering[2];
-
-    @include("shaders/opengl/include/filter.glsli")
-
-    @include("shaders/opengl/include/palette.glsli")
-
-    #define TEX_SIZE(tex) vec2(texture_width[tex], texture_height[tex])
+    @include("shaders/vulkan/include/palette.glsli")
 
     void main() {
         @if(o_uses_lod)
@@ -84,17 +73,17 @@
                 @{s = o_clamp[i][0]}
                 @{t = o_clamp[i][1]}
 
-                vec2 texSize@{i} = TEX_SIZE(@{i});
+                vec2 texSize@{i} = vec2(textureSize(uTex@{i}, 0));
 
                 @if(!s && !t)
                     vec2 vTexCoordAdj@{i} = vTexCoord@{i};
                 @else
                     @if(s && t)
-                        vec2 vTexCoordAdj@{i} = clamp(vTexCoord@{i}, 0.5 / texSize@{i}, uTexClamp[@{i}].xy);
+                        vec2 vTexCoordAdj@{i} = clamp(vTexCoord@{i}, 0.5 / texSize@{i}, drawU.tex_clamp[@{i}].xy);
                     @elseif(s)
-                        vec2 vTexCoordAdj@{i} = vec2(clamp(vTexCoord@{i}.s, 0.5 / texSize@{i}.s, uTexClamp[@{i}].x), vTexCoord@{i}.t);
+                        vec2 vTexCoordAdj@{i} = vec2(clamp(vTexCoord@{i}.s, 0.5 / texSize@{i}.s, drawU.tex_clamp[@{i}].x), vTexCoord@{i}.t);
                     @else
-                        vec2 vTexCoordAdj@{i} = vec2(vTexCoord@{i}.s, clamp(vTexCoord@{i}.t, 0.5 / texSize@{i}.t, uTexClamp[@{i}].y));
+                        vec2 vTexCoordAdj@{i} = vec2(vTexCoord@{i}.s, clamp(vTexCoord@{i}.t, 0.5 / texSize@{i}.t, drawU.tex_clamp[@{i}].y));
                     @end
                 @end
 
@@ -104,36 +93,36 @@
                         // linear fraction between tiles, sharpen/detail handling
                         vec2 lodScaled = vTexCoordAdj0 * texSize0;
                         vec2 lodMaxD = max(abs(dFdx(lodScaled)), abs(dFdy(lodScaled)));
-                        float lodMaxDst = max(max(lodMaxD.x, lodMaxD.y) * uLodParams.x, 0.000001);
-                        if (uLodParams.z > 0.5) { // sharpen or detail
-                            lodMaxDst = max(lodMaxDst, uLodParams.y);
+                        float lodMaxDst = max(max(lodMaxD.x, lodMaxD.y) * drawU.lod_params.x, 0.000001);
+                        if (drawU.lod_params.z > 0.5) { // sharpen or detail
+                            lodMaxDst = max(lodMaxDst, drawU.lod_params.y);
                         }
                         float lodTileBase = floor(log2(lodMaxDst));
                         lodFrac = lodMaxDst / exp2(max(lodTileBase, 0.0)) - 1.0;
-                        if (uLodParams.z > 0.5 && uLodParams.z < 1.5 && lodMaxDst < 1.0) { // sharpen
+                        if (drawU.lod_params.z > 0.5 && drawU.lod_params.z < 1.5 && lodMaxDst < 1.0) { // sharpen
                             lodFrac = lodMaxDst - 1.0;
                         }
-                        if (uLodParams.z > 1.5) { // detail: tile 0 is the detail texture
+                        if (drawU.lod_params.z > 1.5) { // detail: tile 0 is the detail texture
                             if (lodFrac < 0.0) {
                                 lodFrac = lodMaxDst;
                             }
                             lodTileBase += 1.0;
-                        } else if (lodTileBase >= lod_max) {
+                        } else if (lodTileBase >= drawU.misc.y) {
                             lodFrac = 1.0;
                         }
-                        if (uLodParams.z > 0.5) {
+                        if (drawU.lod_params.z > 0.5) {
                             lodTileBase = max(lodTileBase, 0.0);
                         } else {
                             lodFrac = max(lodFrac, 0.0);
                         }
-                        float lodTile0 = clamp(lodTileBase, 0.0, lod_max);
-                        float lodTile1 = clamp(lodTileBase + 1.0, 0.0, lod_max);
+                        float lodTile0 = clamp(lodTileBase, 0.0, drawU.misc.y);
+                        float lodTile1 = clamp(lodTileBase + 1.0, 0.0, drawU.misc.y);
                         // No real LOD level beyond the base (max level 0): the N64
-                        // never blends a second tile, so kill the LOD fraction.
-                        // Small EXTRA_TILE_MIPMAPS textures degenerate to one
-                        // level yet still emit G_TL_LOD+TRILERP; without this the
-                        // combiner blends a stale TEXEL1 by distance.
-                        if (lod_max < 0.5) {
+                        // never blends a second tile. Small EXTRA_TILE_MIPMAPS
+                        // textures degenerate to one level yet still emit
+                        // G_TL_LOD+TRILERP; without this the combiner blends a stale
+                        // TEXEL1 by distance.
+                        if (drawU.misc.y < 0.5) {
                             lodFrac = 0.0;
                         }
                     @end
@@ -143,24 +132,20 @@
                     @if(o_mip_lod)
                         vec4 texVal0 = textureLod(uTex0, vTexCoordAdj0, lodTile0);
                     @elseif(o_palette[0])
-                        vec4 texVal0 = paletteSample(uTex0, vTexCoordAdj0, texSize0, uPaletteParams[0]);
+                        vec4 texVal0 = paletteSample(uTex0, vTexCoordAdj0, texSize0, drawU.palette_params[0]);
                     @else
                         vec4 texVal@{i} = hookTexture2D(@{i}, uTex@{i}, vTexCoordAdj@{i}, texSize@{i});
                     @end
                 @else
                     @if(o_palette[1])
-                        vec4 texVal1 = paletteSample(uTex1, vTexCoordAdj1, texSize1, uPaletteParams[1]);
+                        vec4 texVal1 = paletteSample(uTex1, vTexCoordAdj1, texSize1, drawU.palette_params[1]);
                     @else
                         vec4 texVal@{i} = hookTexture2D(@{i}, uTex@{i}, vTexCoordAdj@{i}, texSize@{i});
                     @end
                 @end
 
                 @if(o_masks[i])
-                    @if(opengles) 
-                        vec2 maskSize@{i} = vec2(textureSize(uTexMask@{i}, 0));
-                    @else 
-                        vec2 maskSize@{i} = textureSize(uTexMask@{i}, 0);
-                    @end
+                    vec2 maskSize@{i} = vec2(textureSize(uTexMask@{i}, 0));
 
                     vec4 maskVal@{i} = hookTexture2D(@{i}, uTexMask@{i}, vTexCoordAdj@{i}, maskSize@{i});
 
@@ -233,12 +218,11 @@
 
         texel = WRAP(texel, -0.51, 1.51);
         texel = clamp(texel, 0.0, 1.0);
-        // TODO discard if alpha is 0?
         @if(o_fog)
             @if(o_alpha)
-                texel = vec4(mix(texel.rgb, uFogColor.rgb, vFogFactor), texel.a);
+                texel = vec4(mix(texel.rgb, drawU.fog_color.rgb, vFogFactor), texel.a);
             @else
-                texel = mix(texel, uFogColor.rgb, vFogFactor);
+                texel = mix(texel, drawU.fog_color.rgb, vFogFactor);
             @end
         @end
 
@@ -247,13 +231,13 @@
         @end
 
         @if(o_alpha && o_noise)
-            texel.a *= floor(clamp(random(vec3(floor(gl_FragCoord.xy * noise_scale), float(frame_count))) + texel.a, 0.0, 1.0));
+            texel.a *= floor(clamp(random(vec3(floor(gl_FragCoord.xy * frameU.noise_scale), float(frameU.frame_count))) + texel.a, 0.0, 1.0));
         @end
 
         @if(o_grayscale)
             float intensity = (texel.r + texel.g + texel.b) / 3.0;
-            vec3 new_texel = uGrayscaleColor.rgb * intensity;
-            texel.rgb = mix(texel.rgb, new_texel, uGrayscaleColor.a);
+            vec3 new_texel = drawU.grayscale_color.rgb * intensity;
+            texel.rgb = mix(texel.rgb, new_texel, drawU.grayscale_color.a);
         @end
 
         @if(o_alpha)
@@ -263,13 +247,13 @@
             @if(o_invisible)
                 texel.a = 0.0;
             @end
-            @{vOutColor} = texel;
+            vOutColor = texel;
         @else
-            @{vOutColor} = vec4(texel, 1.0);
+            vOutColor = vec4(texel, 1.0);
         @end
 
         @if(o_prim_depth)
-            gl_FragDepth = prim_depth;
+            gl_FragDepth = drawU.misc.x;
         @end
     }
 @end
