@@ -149,44 +149,63 @@ float FloatMod(float a, float b) {
     return result;
 }
 
-// Define a single 1x1 star as two triangles
-static Vtx starVerts[4] = {
-    // Format: VTX(x, y, z, s, t, r, g, b, a)
-    VTX(0, 0, 0, 0, 0, 255, 255, 255, 255), // Bottom-left
-    VTX(0, 1, 0, 0, 0, 255, 255, 255, 255), // Top-left
-    VTX(1, 0, 0, 0, 0, 255, 255, 255, 255), // Bottom-right
-    VTX(1, 1, 0, 0, 0, 255, 255, 255, 255), // Top-right
-};
-
-// Display list to render the two triangles forming the star quad
-static Gfx starDL[] = {
-    gsSPVertex(starVerts, ARRAY_COUNT(starVerts), 0),
-    gsSP2Triangles(0, 1, 2, 0, 1, 2, 3, 0),
-    gsSPEndDisplayList(),
-};
-
-// Display list to render the two triangles forming the partial star quad
-static Gfx starDLPartial[] = {
-    gsSPVertex(starVerts, ARRAY_COUNT(starVerts), 0),
-    gsSP2Triangles(0, 1, 2, 0, 1, 2, 3, 0),
-    gsSPEndDisplayList(),
-};
-
-// Setup render state for stars
 static Gfx starSetupDL[] = {
     gsSPTexture(0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_OFF), // Disable texturing
-    gsSPClearGeometryMode(G_ZBUFFER | G_SHADE | G_LIGHTING | G_TEXTURE_GEN | G_TEXTURE_GEN_LINEAR | G_CULL_BACK |
-                          G_SHADING_SMOOTH),
-    gsDPSetCombineMode(G_CC_PRIMITIVE, G_CC_PRIMITIVE), // Use primitive color
+    gsSPClearGeometryMode(G_ZBUFFER | G_LIGHTING | G_TEXTURE_GEN | G_TEXTURE_GEN_LINEAR | G_CULL_BACK),
+    gsSPSetGeometryMode(G_SHADE | G_SHADING_SMOOTH), // Vertex colors flow through as shade
+    gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE),      // Output the shade (vertex) color
     gsDPSetOtherMode(G_AD_NOTPATTERN | G_CD_MAGICSQ | G_CK_NONE | G_TC_FILT | G_TF_BILERP | G_TT_NONE | G_TL_TILE |
                          G_TD_CLAMP | G_TP_PERSP | G_CYC_1CYCLE | G_PM_NPRIMITIVE,
                      G_AC_NONE | G_ZS_PIXEL | G_RM_OPA_SURF | G_RM_OPA_SURF2),
     gsSPEndDisplayList(),
 };
 
-// New global variables for storing the previoous positions
 f32 gStarPrevX[3000];
 f32 gStarPrevY[3000];
+
+#define STARFIELD_MAX_STARS 3100
+static Vtx sStarVtx[2][STARFIELD_MAX_STARS * 4];
+static void* sStarVtxLastPool = NULL;
+static s32 sStarVtxBank = 0;
+static s32 sStarVtxCount = 0;
+
+static Vtx* Starfield_AllocQuad(void) {
+    if ((void*) gGfxPool != sStarVtxLastPool) {
+        sStarVtxLastPool = (void*) gGfxPool;
+        sStarVtxBank = (gGfxPool == &gGfxPools[1]) ? 1 : 0;
+        sStarVtxCount = 0;
+    }
+    if (sStarVtxCount >= STARFIELD_MAX_STARS) {
+        return NULL;
+    }
+    return &sStarVtx[sStarVtxBank][sStarVtxCount++ * 4];
+}
+
+// Emit a 1x1 colored star quad transformed by the currently-set matrix.
+static void Starfield_EmitStar(u8 r, u8 g, u8 b, u8 a) {
+    static const s16 corner[4][2] = { { 0, 0 }, { 0, 1 }, { 1, 0 }, { 1, 1 } };
+    Vtx* q = Starfield_AllocQuad();
+
+    if (q == NULL) {
+        return;
+    }
+
+    for (s32 k = 0; k < 4; k++) {
+        q[k].v.ob[0] = corner[k][0];
+        q[k].v.ob[1] = corner[k][1];
+        q[k].v.ob[2] = 0;
+        q[k].v.flag = 0;
+        q[k].v.tc[0] = 0;
+        q[k].v.tc[1] = 0;
+        q[k].v.cn[0] = r;
+        q[k].v.cn[1] = g;
+        q[k].v.cn[2] = b;
+        q[k].v.cn[3] = a;
+    }
+
+    gSPVertex(gMasterDisp++, q, 4, 0);
+    gSP2Triangles(gMasterDisp++, 0, 1, 2, 0, 1, 2, 3, 0);
+}
 
 // @port: Starfield drawn with triangles, re-engineered by @Tharo & @TheBoy181
 void Background_DrawStarfield(void) {
@@ -325,10 +344,8 @@ void Background_DrawStarfield(void) {
                 b = (b << 3) | (b >> 2); // Convert 5-bit to 8-bit
                 u8 a = 255;              // Fully opaque
 
-                gDPSetPrimColor(gMasterDisp++, 0, 0, r, g, b, a);
-
-                // Draw the star using the predefined display list
-                gSPDisplayList(gMasterDisp++, starDL);
+                // Draw the star as a colored quad (color carried in the verts)
+                Starfield_EmitStar(r, g, b, a);
                 Matrix_Pop(&gGfxMatrix);
 
                 if (skipInterpolation) {
@@ -459,10 +476,8 @@ void Background_DrawPartialStarfield(s32 yMin, s32 yMax) { // Stars that are in 
             b = (b << 3) | (b >> 2); // Convert 5-bit to 8-bit
             u8 a = 255;              // Fully opaque
 
-            gDPSetPrimColor(gMasterDisp++, 0, 0, r, g, b, a);
-
-            // Draw the star using the predefined display list
-            gSPDisplayList(gMasterDisp++, starDLPartial);
+            // Draw the star as a colored quad (color carried in the verts)
+            Starfield_EmitStar(r, g, b, a);
 
             // Pop the transform id
             FrameInterpolation_RecordCloseChild();
