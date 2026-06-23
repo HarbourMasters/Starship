@@ -19,5 +19,8 @@ jobs:
           key: macos # ccache-macos
       - name: Build
         run: |
+          # MacPorts installs the (universal) Vulkan SDK under /opt/local; point the build
+          # at it so the Vulkan backend is compiled in.
+          export VULKAN_SDK=/opt/local
           cmake -H. -Bbuild-cmake -GNinja -DCMAKE_BUILD_TYPE=Release -D CMAKE_C_COMPILER_LAUNCHER=ccache -D CMAKE_CXX_COMPILER_LAUNCHER=ccache -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64"
           cmake --build build-cmake -j

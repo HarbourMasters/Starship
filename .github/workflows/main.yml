@@ -52,6 +52,12 @@ jobs:
           submodules: recursive
       - name: Setup MSVC
         uses: ilammy/msvc-dev-cmd@v1
+      - name: Install Vulkan SDK
+        uses: humbletim/setup-vulkan-sdk@v1.2.0
+        with:
+          vulkan-query-version: 1.3.275.0
+          vulkan-components: Vulkan-Headers, Vulkan-Loader, Glslang, SPIRV-Tools, shaderc
+          vulkan-use-cache: true
       - name: Build
         run: |
           $env:VCPKG_ROOT=""
@@ -92,6 +98,10 @@ jobs:
           key: macos # ccache-macos
       - name: Build
         run: |
+          # MacPorts installs the (universal) Vulkan SDK under /opt/local; point the
+          # build at it so find_package(Vulkan) + shaderc resolve and the Vulkan backend
+          # is compiled into the universal binary.
+          export VULKAN_SDK=/opt/local
           cmake -H. -Bbuild-cmake -GNinja -DCMAKE_BUILD_TYPE=Release -D CMAKE_C_COMPILER_LAUNCHER=ccache -D CMAKE_CXX_COMPILER_LAUNCHER=ccache -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64"
           cmake --build build-cmake -j
       - name: Download starship.o2r
@@ -124,7 +134,7 @@ jobs:
       - name: Update machine
         run: sudo apt update
       - name: Install dependencies
-        run: sudo apt-get install gcc g++ git cmake ninja-build lsb-release libsdl2-dev libpng-dev libsdl2-net-dev libzip-dev zipcmp zipmerge ziptool nlohmann-json3-dev libtinyxml2-dev libspdlog-dev libboost-dev libopengl-dev libogg-dev libvorbis-dev libtcc-dev
+        run: sudo apt-get install gcc g++ git cmake ninja-build lsb-release libsdl2-dev libpng-dev libsdl2-net-dev libzip-dev zipcmp zipmerge ziptool nlohmann-json3-dev libtinyxml2-dev libspdlog-dev libboost-dev libopengl-dev libogg-dev libvorbis-dev libtcc-dev libvulkan-dev libshaderc-dev
       - name: ccache
         uses: hendrikmuhs/ccache-action@v1.2.14
         with:
