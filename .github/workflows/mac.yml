@@ -15,7 +15,7 @@ jobs:
       - uses: melusina-org/setup-macports@v1
         with:
           parameters: '.github/macports.yml'
-      - uses: hendrikmuhs/ccache-action@v1.2
+      - uses: hendrikmuhs/ccache-action@v1.2.14
         with:
           key: macos # ccache-macos
       - name: Build
