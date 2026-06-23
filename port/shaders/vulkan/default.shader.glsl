@@ -48,6 +48,16 @@
     const int kDitherMagic[16] = int[16](0, 6, 1, 7, 4, 2, 5, 3, 3, 5, 2, 4, 7, 1, 6, 0);
     const int kDitherBayer[16] = int[16](0, 4, 1, 5, 6, 2, 7, 3, 1, 5, 0, 4, 7, 3, 6, 2);
 
+    // Integer hash for the G_CD_NOISE dither: robust per-pixel + per-frame value 0..7
+    // (a sin-based hash aliases to near-constant on some GPUs, washing the noise out).
+    int ditherNoise(ivec2 p, int frame) {
+        uint h = uint(p.x) * 1597334677u ^ uint(p.y) * 3812015801u ^ uint(frame) * 2654435761u;
+        h ^= h >> 16u; h *= 2246822519u;
+        h ^= h >> 13u; h *= 3266489917u;
+        h ^= h >> 16u;
+        return int(h & 7u);
+    }
+
     // RDP RGB dither + RGBA5551 quantization. mode: 0=magic square, 1=bayer,
     // 2=noise (temporal), 3=disable (truncate only), >=4 = off (full precision).
     vec3 applyRdpDither(vec3 color, float modeF, vec2 fragCoord, float noiseScale, int frameCount) {
@@ -64,7 +74,7 @@
             ivec2 cell = ivec2(nativeCoord) & 3;
             d = float(kDitherBayer[cell.y * 4 + cell.x]);
         } else if (mode == 2) {
-            d = floor(random(vec3(nativeCoord, float(frameCount))) * 8.0);
+            d = float(ditherNoise(ivec2(nativeCoord), frameCount));
         }
         vec3 q = min(floor(clamp(color * 255.0 + d, 0.0, 255.0) / 8.0), 31.0);
         return (q * 8.0 + floor(q / 4.0)) / 255.0;

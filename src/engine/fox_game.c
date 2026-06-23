@@ -11,6 +11,8 @@
 extern u32 GameEngine_GetInterpolationFrameCount(void);
 extern float powf(float base, float exponent);
 
+#define BLUR_MAX_PERSISTENCE_PCT_DEFAULT 30
+
 f32 gNextVsViewScale;
 f32 gVsViewScale;
 s32 gPlayerInactive[4];
@@ -177,17 +179,27 @@ void Game_InitMasterDL(Gfx** dList) {
     if (gBlurAlpha < 255) {
         // @port: Motion-blur trail. On N64 this translucent fill was applied once per displayed
         // frame to a triple-buffered target (each of the 3 buffers revisited every 3 frames),
-        // producing a long trail.
-        //   (1 - aEff)^(3 * N) == (1 - a)   =>   aEff = 1 - (1 - a)^(1 / (3 * N))
+        // so a pixel decays by (1 - a) every 3 frames => (1 - a)^(1/3) per frame.
         s32 interpFrames = GameEngine_GetInterpolationFrameCount();
         u8 blurAlpha;
+        f32 perFrame;
+        f32 aEff;
 
         if (interpFrames < 1) {
             interpFrames = 1;
         }
 
         f32 a = gBlurAlpha / 255.0f;
-        f32 aEff = 1.0f - powf(1.0f - a, 1.0f / (3.0f * (f32) interpFrames));
+
+        perFrame = powf(1.0f - a, 1.0f / 3.0f);
+
+        f32 maxPersistence = CVarGetInteger("gEnhancements.Graphics.BlurTrailCap", BLUR_MAX_PERSISTENCE_PCT_DEFAULT) /
+                             100.0f;
+        if (perFrame > maxPersistence) {
+            perFrame = maxPersistence;
+        }
+
+        aEff = 1.0f - powf(perFrame, 1.0f / (f32) interpFrames);
 
         blurAlpha = (u8) (aEff * 255.0f + 0.5f);
         if (blurAlpha < 1) {

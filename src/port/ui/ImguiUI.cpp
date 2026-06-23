@@ -413,6 +413,11 @@ void DrawSettingsMenu() {
                          "reducing color banding.",
               .defaultValue = true });
 
+        UIWidgets::CVarSliderInt(
+            "Motion Blur Trail: %d%%", "gEnhancements.Graphics.BlurTrailCap", 0, 100, 80,
+            { .tooltip = "Caps how long the motion-blur trail persists (lower = shorter). Tames the menu smear; "
+                         "values below ~91 also shorten the warp/boost trail." });
+
         UIWidgets::Spacer(0);
 
         // Previously was running every frame, and nothing was setting it? Maybe a bad copy/paste?
