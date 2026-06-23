@@ -11,7 +11,7 @@ jobs:
   generate-port-o2r:
     runs-on: ubuntu-22.04
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
       with:
         submodules: true
         fetch-depth: 0 # full history so the libultraship submodule gitlink (on a non-default branch of the fork) resolves
@@ -25,7 +25,7 @@ jobs:
           ${{ runner.os }}-o2r-ccache-${{ github.ref }}
           ${{ runner.os }}-o2r-ccache-
     - name: Cache build folders
-      uses: actions/cache@v4
+      uses: actions/cache@v6
       with:
         key: ${{ runner.os }}-o2r-build-${{ github.ref }}-${{ github.sha }}
         restore-keys: |
@@ -51,14 +51,14 @@ jobs:
     needs: generate-port-o2r
     runs-on: windows-2022
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           submodules: recursive
           fetch-depth: 0 # full history so the libultraship submodule gitlink (on a non-default branch of the fork) resolves
       - name: Setup MSVC
         uses: ilammy/msvc-dev-cmd@v1
       - name: Cache Vulkan SDK
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           key: windows-vulkan-sdk-v1
           path: C:\VulkanSDK
@@ -74,7 +74,7 @@ jobs:
           }
           "VULKAN_SDK=C:\VulkanSDK" | Out-File -FilePath $env:GITHUB_ENV -Append
       - name: Cache vcpkg binaries
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           key: windows-vcpkg-${{ github.ref }}-${{ github.sha }}
           restore-keys: |
@@ -166,7 +166,7 @@ jobs:
     needs: generate-port-o2r
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           submodules: recursive
           fetch-depth: 0 # full history so the libultraship submodule gitlink (on a non-default branch of the fork) resolves
@@ -182,7 +182,7 @@ jobs:
             linux-ccache-${{ github.ref }}
             linux-ccache-
       - name: Cache build folders
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           key: linux-build-${{ github.ref }}-${{ github.sha }}
           restore-keys: |
@@ -263,14 +263,14 @@ jobs:
     container:
       image: devkitpro/devkita64:20241023
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           submodules: recursive
           fetch-depth: 0 # full history so the libultraship submodule gitlink (on a non-default branch of the fork) resolves
       # ccache-action doesn't run cleanly inside the devkitpro container, so cache the
       # ccache dir directly (workspace-relative so host and container share it).
       - name: Cache ccache
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           key: switch-ccache-${{ github.ref }}-${{ github.sha }}
           restore-keys: |

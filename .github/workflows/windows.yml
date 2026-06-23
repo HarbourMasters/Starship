@@ -8,14 +8,14 @@ jobs:
   build:
     runs-on: windows-2022
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           submodules: recursive
           fetch-depth: 0 # full history so the libultraship submodule gitlink resolves
       - name: Setup MSVC
         uses: ilammy/msvc-dev-cmd@v1
       - name: Cache Vulkan SDK
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           key: windows-vulkan-sdk-v1
           path: C:\VulkanSDK
@@ -31,7 +31,7 @@ jobs:
           }
           "VULKAN_SDK=C:\VulkanSDK" | Out-File -FilePath $env:GITHUB_ENV -Append
       - name: Cache vcpkg binaries
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           key: windows-validation-vcpkg-${{ github.ref }}-${{ github.sha }}
           restore-keys: |

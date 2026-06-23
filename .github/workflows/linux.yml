@@ -8,7 +8,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           submodules: recursive
           fetch-depth: 0 # full history so the libultraship submodule gitlink resolves
@@ -24,7 +24,7 @@ jobs:
             linux-validation-ccache-${{ github.ref }}
             linux-validation-ccache-
       - name: Cache build folders
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           key: linux-validation-build-${{ github.ref }}-${{ github.sha }}
           restore-keys: |
