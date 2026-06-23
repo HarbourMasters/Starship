@@ -11,6 +11,7 @@ jobs:
       - uses: actions/checkout@v6
         with:
           submodules: recursive
+          fetch-depth: 0 # full history so the libultraship submodule gitlink resolves
       - uses: melusina-org/setup-macports@v1
         with:
           parameters: '.github/macports.yml'

@@ -11,6 +11,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
+          fetch-depth: 0 # full history so the libultraship submodule gitlink resolves
       - name: Update machine
         run: sudo apt update
       - name: Install dependencies

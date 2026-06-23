@@ -14,6 +14,7 @@ jobs:
     - uses: actions/checkout@v4
       with:
         submodules: true
+        fetch-depth: 0 # full history so the libultraship submodule gitlink (on a non-default branch of the fork) resolves
     - name: Install dependencies
       run: sudo apt-get install gcc g++ git cmake ninja-build lsb-release
     - name: ccache
@@ -50,6 +51,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
+          fetch-depth: 0 # full history so the libultraship submodule gitlink (on a non-default branch of the fork) resolves
       - name: Setup MSVC
         uses: ilammy/msvc-dev-cmd@v1
       - name: Install Vulkan SDK
@@ -90,6 +92,7 @@ jobs:
       - uses: actions/checkout@v6
         with:
           submodules: recursive
+          fetch-depth: 0 # full history so the libultraship submodule gitlink (on a non-default branch of the fork) resolves
       - uses: melusina-org/setup-macports@v1
         with:
           parameters: '.github/macports.yml'
@@ -131,6 +134,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
+          fetch-depth: 0 # full history so the libultraship submodule gitlink (on a non-default branch of the fork) resolves
       - name: Update machine
         run: sudo apt update
       - name: Install dependencies
@@ -224,6 +228,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
+          fetch-depth: 0 # full history so the libultraship submodule gitlink (on a non-default branch of the fork) resolves
       - name: Install dependencies
         run: |
           sudo apt-get update

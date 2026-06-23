@@ -11,6 +11,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
+          fetch-depth: 0 # full history so the libultraship submodule gitlink resolves
       - name: Setup MSVC
         uses: ilammy/msvc-dev-cmd@v1
       - name: Install Vulkan SDK
