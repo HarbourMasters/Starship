@@ -18,7 +18,7 @@ jobs:
     - name: Install dependencies
       run: sudo apt-get install gcc g++ git cmake ninja-build lsb-release
     - name: ccache
-      uses: hendrikmuhs/ccache-action@v1.2.13
+      uses: hendrikmuhs/ccache-action@v1.2.14
       with:
         key: ${{ runner.os }}-o2r-ccache-${{ github.ref }}-${{ github.sha }}
         restore-keys: |
@@ -35,6 +35,9 @@ jobs:
           tools/Torch/cmake-build-release
     - name: Generate starship.o2r
       run: |
+        # Route the CMake-wrapped Torch build through ccache via env-var launchers
+        # (honored by Ninja/Makefile generators regardless of /usr/lib/ccache symlinks).
+        export CMAKE_C_COMPILER_LAUNCHER=ccache CMAKE_CXX_COMPILER_LAUNCHER=ccache
         export PATH="/usr/lib/ccache:/usr/local/opt/ccache/libexec:$PATH"
         make -C tools/Torch type=release -j3
         tools/Torch/cmake-build-release/torch pack port starship.o2r o2r
@@ -54,31 +57,60 @@ jobs:
           fetch-depth: 0 # full history so the libultraship submodule gitlink (on a non-default branch of the fork) resolves
       - name: Setup MSVC
         uses: ilammy/msvc-dev-cmd@v1
+      - name: Cache Vulkan SDK
+        uses: actions/cache@v4
+        with:
+          key: windows-vulkan-sdk-v1
+          path: C:\VulkanSDK
       - name: Install Vulkan SDK
         shell: pwsh
         run: |
-          $url = "https://sdk.lunarg.com/sdk/download/latest/windows/vulkan_sdk.exe"
-          Invoke-WebRequest -Uri $url -OutFile "$env:RUNNER_TEMP\vulkan_sdk.exe"
-          Start-Process -FilePath "$env:RUNNER_TEMP\vulkan_sdk.exe" -ArgumentList "--root","C:\VulkanSDK","--accept-licenses","--default-answer","--confirm-command","install" -Wait
+          # Skip the (large) download+install when the cache already restored the SDK.
+          if (-not (Test-Path "C:\VulkanSDK\Lib")) {
+            $url = "https://sdk.lunarg.com/sdk/download/latest/windows/vulkan_sdk.exe"
+            Invoke-WebRequest -Uri $url -OutFile "$env:RUNNER_TEMP\vulkan_sdk.exe"
+            $p = Start-Process -FilePath "$env:RUNNER_TEMP\vulkan_sdk.exe" -ArgumentList "--root","C:\VulkanSDK","--accept-licenses","--default-answer","--confirm-command","install" -Wait -PassThru
+            if ($p.ExitCode -ne 0) { throw "Vulkan SDK install failed with exit code $($p.ExitCode)" }
+          }
           "VULKAN_SDK=C:\VulkanSDK" | Out-File -FilePath $env:GITHUB_ENV -Append
+      - name: Cache vcpkg binaries
+        uses: actions/cache@v4
+        with:
+          key: windows-vcpkg-${{ github.ref }}-${{ github.sha }}
+          restore-keys: |
+            windows-vcpkg-${{ github.ref }}
+            windows-vcpkg-
+          path: |
+            ~\AppData\Local\vcpkg\archives
+      - name: sccache
+        uses: hendrikmuhs/ccache-action@v1.2.14
+        with:
+          variant: sccache
+          key: windows-sccache-${{ github.ref }}-${{ github.sha }}
+          restore-keys: |
+            windows-sccache-${{ github.ref }}
+            windows-sccache-
       - name: Build
         run: |
           # Use the runner's preinstalled vcpkg (blanking VCPKG_ROOT made automate-vcpkg
           # try to clone into an empty path and fail).
           $env:VCPKG_ROOT=$env:VCPKG_INSTALLATION_ROOT
-          cmake -S . -B "build/x64" -G "Visual Studio 17 2022" -T v143 -A x64 -DCMAKE_BUILD_TYPE=Release
-          cmake --build ./build/x64 --config Release --parallel 10
+          # Ninja (single-config) so the compiler launcher works; sccache caches MSVC objects.
+          # msvc-dev-cmd (arch x64) puts cl.exe on PATH; the x64-windows-static triplet is
+          # set unconditionally in CMakeLists, so dropping -A x64 doesn't change it.
+          cmake -S . -B "build/x64" -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER_LAUNCHER=sccache -DCMAKE_CXX_COMPILER_LAUNCHER=sccache
+          cmake --build ./build/x64 --parallel 10
       - name: Download starship.o2r
         uses: actions/download-artifact@v4
         with:
           name: starship.o2r
-          path: ./build/x64/Release
+          path: ./build/x64
       - name: Create Package
         run: |
           mkdir starship-release
-          mv build/x64/Release/Starship.exe starship-release/
-          mv build/x64/Release/starship.o2r starship-release/
-          mv build/x64/Release/.tcc starship-release/.tcc
+          mv build/x64/Starship.exe starship-release/
+          mv build/x64/starship.o2r starship-release/
+          mv build/x64/.tcc starship-release/.tcc
           mv config.yml starship-release/
           mv assets starship-release/
           Invoke-WebRequest -Uri "https://raw.githubusercontent.com/mdqinc/SDL_GameControllerDB/master/gamecontrollerdb.txt" -OutFile "starship-release/gamecontrollerdb.txt"
@@ -141,7 +173,7 @@ jobs:
       - name: Update machine
         run: sudo apt update
       - name: Install dependencies
-        run: sudo apt-get install gcc g++ git cmake ninja-build lsb-release libsdl2-dev libpng-dev libsdl2-net-dev libzip-dev zipcmp zipmerge ziptool nlohmann-json3-dev libtinyxml2-dev libspdlog-dev libboost-dev libopengl-dev libogg-dev libvorbis-dev libtcc-dev libvulkan-dev libshaderc-dev
+        run: sudo apt-get install gcc g++ git cmake ninja-build lsb-release libsdl2-dev libpng-dev libsdl2-net-dev libzip-dev zipcmp zipmerge ziptool nlohmann-json3-dev libtinyxml2-dev libspdlog-dev libboost-dev libopengl-dev libogg-dev libvorbis-dev libtcc-dev libvulkan-dev libshaderc-dev glslang-dev spirv-tools
       - name: ccache
         uses: hendrikmuhs/ccache-action@v1.2.14
         with:
@@ -175,8 +207,10 @@ jobs:
       - name: Install latest tinyxml2
         run: |
           export PATH="/usr/lib/ccache:/usr/local/opt/ccache/libexec:$PATH"
-          wget https://github.com/leethomason/tinyxml2/archive/refs/tags/10.0.0.tar.gz
-          tar -xzf 10.0.0.tar.gz
+          if [ ! -d "tinyxml2-10.0.0" ]; then
+            wget https://github.com/leethomason/tinyxml2/archive/refs/tags/10.0.0.tar.gz
+            tar -xzf 10.0.0.tar.gz
+          fi
           cd tinyxml2-10.0.0
           mkdir -p build
           cd build
@@ -204,7 +238,8 @@ jobs:
           path: ./build-cmake
       - name: Build
         run: |
-          cmake -H. -Bbuild-cmake -GNinja -DCMAKE_BUILD_TYPE=Release
+          # Route the compiler through ccache so the linux-ccache cache is actually used.
+          cmake -H. -Bbuild-cmake -GNinja -DCMAKE_BUILD_TYPE=Release -D CMAKE_C_COMPILER_LAUNCHER=ccache -D CMAKE_CXX_COMPILER_LAUNCHER=ccache
           cmake --build build-cmake --config Release -j3
           (cd build-cmake && cpack -G External)
           wget -O gamecontrollerdb.txt https://raw.githubusercontent.com/mdqinc/SDL_GameControllerDB/master/gamecontrollerdb.txt
@@ -232,17 +267,31 @@ jobs:
         with:
           submodules: recursive
           fetch-depth: 0 # full history so the libultraship submodule gitlink (on a non-default branch of the fork) resolves
+      # ccache-action doesn't run cleanly inside the devkitpro container, so cache the
+      # ccache dir directly (workspace-relative so host and container share it).
+      - name: Cache ccache
+        uses: actions/cache@v4
+        with:
+          key: switch-ccache-${{ github.ref }}-${{ github.sha }}
+          restore-keys: |
+            switch-ccache-${{ github.ref }}
+            switch-ccache-
+          path: |
+            .ccache
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y ninja-build
+          sudo apt-get install -y ninja-build ccache
           sudo apt-get remove -y cmake
           git -C libultraship remote add nx https://github.com/Net64DD/libultraship.git
           git -C libultraship fetch nx
           git -C libultraship checkout nx/main-nx-nightly
           wget https://github.com/Kitware/CMake/releases/download/v3.28.3/cmake-3.28.3-linux-x86_64.sh -O /tmp/cmake.sh
           sudo sh /tmp/cmake.sh --prefix=/usr/local/ --exclude-subdir
-          cmake -H. -Bbuild-switch -GNinja -DCMAKE_TOOLCHAIN_FILE=/opt/devkitpro/cmake/Switch.cmake
+          # Route the devkitA64 cross-compiler through ccache; CCACHE_DIR is workspace-relative
+          # so the cached dir restored on the host is visible inside the container.
+          export CCACHE_DIR="$GITHUB_WORKSPACE/.ccache"
+          cmake -H. -Bbuild-switch -GNinja -DCMAKE_TOOLCHAIN_FILE=/opt/devkitpro/cmake/Switch.cmake -D CMAKE_C_COMPILER_LAUNCHER=ccache -D CMAKE_CXX_COMPILER_LAUNCHER=ccache
           cmake --build build-switch --config Release -j3
           wget -O gamecontrollerdb.txt https://raw.githubusercontent.com/mdqinc/SDL_GameControllerDB/master/gamecontrollerdb.txt
           mv README.md readme.txt

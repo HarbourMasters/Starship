@@ -14,23 +14,50 @@ jobs:
           fetch-depth: 0 # full history so the libultraship submodule gitlink resolves
       - name: Setup MSVC
         uses: ilammy/msvc-dev-cmd@v1
+      - name: Cache Vulkan SDK
+        uses: actions/cache@v4
+        with:
+          key: windows-vulkan-sdk-v1
+          path: C:\VulkanSDK
       - name: Install Vulkan SDK
         shell: pwsh
         run: |
-          $url = "https://sdk.lunarg.com/sdk/download/latest/windows/vulkan_sdk.exe"
-          Invoke-WebRequest -Uri $url -OutFile "$env:RUNNER_TEMP\vulkan_sdk.exe"
-          Start-Process -FilePath "$env:RUNNER_TEMP\vulkan_sdk.exe" -ArgumentList "--root","C:\VulkanSDK","--accept-licenses","--default-answer","--confirm-command","install" -Wait
+          # Skip the (large) download+install when the cache already restored the SDK.
+          if (-not (Test-Path "C:\VulkanSDK\Lib")) {
+            $url = "https://sdk.lunarg.com/sdk/download/latest/windows/vulkan_sdk.exe"
+            Invoke-WebRequest -Uri $url -OutFile "$env:RUNNER_TEMP\vulkan_sdk.exe"
+            $p = Start-Process -FilePath "$env:RUNNER_TEMP\vulkan_sdk.exe" -ArgumentList "--root","C:\VulkanSDK","--accept-licenses","--default-answer","--confirm-command","install" -Wait -PassThru
+            if ($p.ExitCode -ne 0) { throw "Vulkan SDK install failed with exit code $($p.ExitCode)" }
+          }
           "VULKAN_SDK=C:\VulkanSDK" | Out-File -FilePath $env:GITHUB_ENV -Append
+      - name: Cache vcpkg binaries
+        uses: actions/cache@v4
+        with:
+          key: windows-validation-vcpkg-${{ github.ref }}-${{ github.sha }}
+          restore-keys: |
+            windows-validation-vcpkg-${{ github.ref }}
+            windows-validation-vcpkg-
+          path: |
+            ~\AppData\Local\vcpkg\archives
+      - name: sccache
+        uses: hendrikmuhs/ccache-action@v1.2.14
+        with:
+          variant: sccache
+          key: windows-validation-sccache-${{ github.ref }}-${{ github.sha }}
+          restore-keys: |
+            windows-validation-sccache-${{ github.ref }}
+            windows-validation-sccache-
       - name: Build
         run: |
           # Use the runner's preinstalled vcpkg (blanking VCPKG_ROOT made automate-vcpkg
           # try to clone into an empty path and fail).
           $env:VCPKG_ROOT=$env:VCPKG_INSTALLATION_ROOT
-          cmake -S . -B "build/x64" -G "Visual Studio 17 2022" -T v143 -A x64 -DCMAKE_BUILD_TYPE=Release
-          cmake --build ./build/x64
+          # Ninja (single-config) so the compiler launcher works; sccache caches MSVC objects.
+          cmake -S . -B "build/x64" -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER_LAUNCHER=sccache -DCMAKE_CXX_COMPILER_LAUNCHER=sccache
+          cmake --build ./build/x64 --parallel 10
       - name: Upload build
         uses: actions/upload-artifact@v4
         with:
           name: starship-windows
-          path: ./build/x64/Debug
+          path: ./build/x64
           retention-days: 1

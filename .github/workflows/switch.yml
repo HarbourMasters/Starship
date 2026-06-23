@@ -14,17 +14,31 @@ jobs:
         with:
           submodules: recursive
           fetch-depth: 0 # full history so the libultraship submodule gitlink resolves
+      # ccache-action doesn't run cleanly inside the devkitpro container, so cache the
+      # ccache dir directly (workspace-relative so host and container share it).
+      - name: Cache ccache
+        uses: actions/cache@v4
+        with:
+          key: switch-validation-ccache-${{ github.ref }}-${{ github.sha }}
+          restore-keys: |
+            switch-validation-ccache-${{ github.ref }}
+            switch-validation-ccache-
+          path: |
+            .ccache
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y ninja-build
+          sudo apt-get install -y ninja-build ccache
           sudo apt-get remove -y cmake
           git -C libultraship remote add nx https://github.com/sonicdcer/libultraship.git
           git -C libultraship fetch nx
           git -C libultraship checkout nx/main-nx_backup
           wget https://github.com/Kitware/CMake/releases/download/v3.28.3/cmake-3.28.3-linux-x86_64.sh -O /tmp/cmake.sh
           sudo sh /tmp/cmake.sh --prefix=/usr/local/ --exclude-subdir
-          cmake -H. -Bbuild-switch -GNinja -DCMAKE_TOOLCHAIN_FILE=/opt/devkitpro/cmake/Switch.cmake
+          # Route the devkitA64 cross-compiler through ccache; CCACHE_DIR is workspace-relative
+          # so the cached dir restored on the host is visible inside the container.
+          export CCACHE_DIR="$GITHUB_WORKSPACE/.ccache"
+          cmake -H. -Bbuild-switch -GNinja -DCMAKE_TOOLCHAIN_FILE=/opt/devkitpro/cmake/Switch.cmake -D CMAKE_C_COMPILER_LAUNCHER=ccache -D CMAKE_CXX_COMPILER_LAUNCHER=ccache
           cmake --build build-switch --config Release -j3
           wget -O gamecontrollerdb.txt https://raw.githubusercontent.com/mdqinc/SDL_GameControllerDB/master/gamecontrollerdb.txt
           mv README.md readme.txt
