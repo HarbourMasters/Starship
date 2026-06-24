@@ -418,6 +418,25 @@ void DrawSettingsMenu() {
             { .tooltip = "Caps how long the motion-blur trail persists (lower = shorter). Tames the menu smear; "
                          "values below ~91 also shorten the warp/boost trail." });
 
+        UIWidgets::CVarSliderInt(
+            "HD Texture Upload Budget: %d/frame", "gEnhancements.Graphics.TextureUploadBudget", 0, 8, 1,
+            { .tooltip = "Max new HD-pack texture uploads per frame (0 = unlimited). Lower values spread big "
+                         "4K uploads across frames so loading a new area doesn't hitch; the base texture shows "
+                         "until each HD replacement is ready." });
+
+        UIWidgets::CVarCheckbox(
+            "Async Texture Loading", "gEnhancements.Graphics.AsyncTextureLoad",
+            { .tooltip = "Decodes HD/replacement textures on a background thread instead of blocking the render "
+                         "thread, so loading a level doesn't hitch. The vanilla texture shows until its HD "
+                         "version finishes loading, then swaps in. Only active with Alternative Assets enabled.",
+              .defaultValue = false });
+
+        UIWidgets::CVarCheckbox(
+            "Debug HD Replacement", "gEnhancements.Graphics.TextureReplacementDebug",
+            { .tooltip = "Tints draws by HD-replacement state: blue = HD active, green flash = just uploaded, "
+                         "red = base shown while the HD upload is still pending.",
+              .defaultValue = false });
+
         UIWidgets::Spacer(0);
 
         // Previously was running every frame, and nothing was setting it? Maybe a bad copy/paste?

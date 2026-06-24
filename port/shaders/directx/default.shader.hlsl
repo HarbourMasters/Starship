@@ -173,6 +173,7 @@ cbuffer PerDrawCB : register(b1) {
     float4 lod_params; // x = res scale, y = prim_lod_min, z = G_TD mode
     // Game-bindable register file; lockstep with PerDrawCB in gfx_direct3d_common.h
     float4 uCustom[16];
+    float4 debug_tint;
 }
 
 // 3 point texture filtering
@@ -561,6 +562,13 @@ PSOutput PSMain(PSInput input, float4 screenSpace : SV_Position) {
         texel.rgb = applyRdpDither(texel.rgb, lod_params.w, screenSpace.xy, noise_scale, noise_frame);
     @else
         texel = applyRdpDither(texel, lod_params.w, screenSpace.xy, noise_scale, noise_frame);
+    @end
+
+    // HD-replacement debug tint (no-op when debug_tint.a == 0)
+    @if(o_alpha)
+        texel.rgb = lerp(texel.rgb, debug_tint.rgb, debug_tint.a);
+    @else
+        texel = lerp(texel, debug_tint.rgb, debug_tint.a);
     @end
 
     @if(o_alpha)

@@ -23,6 +23,7 @@ struct DrawUniforms {
     float4 lod_params;
     // Game-bindable register file; lockstep with DrawUniforms in gfx_metal.h
     float4 uCustom[32];
+    float4 debug_tint;
 };
 
 @if(o_lighting || o_texgen)
@@ -540,6 +541,13 @@ fragment FragOut fragmentShader(
         texel.xyz = applyRdpDither(texel.xyz, drawUniforms.lod_params.w, in.position.xy, frameUniforms.noiseScale, frameUniforms.frameCount);
     @else
         texel = applyRdpDither(texel, drawUniforms.lod_params.w, in.position.xy, frameUniforms.noiseScale, frameUniforms.frameCount);
+    @end
+
+    // HD-replacement debug tint (no-op when debug_tint.w == 0)
+    @if(o_alpha)
+        texel.xyz = mix(texel.xyz, drawUniforms.debug_tint.xyz, drawUniforms.debug_tint.w);
+    @else
+        texel = mix(texel, drawUniforms.debug_tint.xyz, drawUniforms.debug_tint.w);
     @end
 
     FragOut out;

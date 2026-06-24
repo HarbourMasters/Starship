@@ -65,6 +65,7 @@
     @end
     // Declared unconditionally: .w carries the RGB dither mode used by every draw.
     uniform vec4 uLodParams; // x=res scale, y=prim_lod_min, z=G_TD mode, w=RGB dither mode
+    uniform vec4 uDebugTint;
 
     uniform int texture_width[2];
     uniform int texture_height[2];
@@ -299,6 +300,13 @@
             texel.rgb = applyRdpDither(texel.rgb, uLodParams.w, gl_FragCoord.xy, noise_scale, frame_count);
         @else
             texel = applyRdpDither(texel, uLodParams.w, gl_FragCoord.xy, noise_scale, frame_count);
+        @end
+
+        // HD-replacement debug tint (no-op when uDebugTint.a == 0)
+        @if(o_alpha)
+            texel.rgb = mix(texel.rgb, uDebugTint.rgb, uDebugTint.a);
+        @else
+            texel = mix(texel, uDebugTint.rgb, uDebugTint.a);
         @end
 
         @if(o_alpha)

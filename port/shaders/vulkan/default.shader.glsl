@@ -284,6 +284,12 @@
         @end
 
         @if(o_alpha)
+            texel.rgb = mix(texel.rgb, drawU.debug_tint.rgb, drawU.debug_tint.a);
+        @else
+            texel = mix(texel, drawU.debug_tint.rgb, drawU.debug_tint.a);
+        @end
+
+        @if(o_alpha)
             @if(o_alpha_threshold)
                 if (texel.a < 8.0 / 256.0) discard;
             @end
