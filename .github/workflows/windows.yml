@@ -7,6 +7,8 @@ on:
 jobs:
   build:
     runs-on: windows-2022
+    env:
+      WINDOWS_CERT_PFX_BASE64: ${{ secrets.WINDOWS_CERT_PFX_BASE64 }}
     steps:
       - uses: actions/checkout@v7
         with:
@@ -55,9 +57,25 @@ jobs:
           # Ninja (single-config) so the compiler launcher works; sccache caches MSVC objects.
           cmake -S . -B "build/x64" -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER_LAUNCHER=sccache -DCMAKE_CXX_COMPILER_LAUNCHER=sccache
           cmake --build ./build/x64 --parallel 10
+      - name: Sign binaries
+        if: ${{ env.WINDOWS_CERT_PFX_BASE64 != '' }}
+        env:
+          WINDOWS_CERT_PASSWORD: ${{ secrets.WINDOWS_CERT_PASSWORD }}
+        shell: pwsh
+        run: |
+          $pfx = "$env:RUNNER_TEMP\codesign.pfx"
+          [IO.File]::WriteAllBytes($pfx, [Convert]::FromBase64String($env:WINDOWS_CERT_PFX_BASE64))
+          $signtool = (Get-ChildItem "C:\Program Files (x86)\Windows Kits\10\bin\*\x64\signtool.exe" | Sort-Object FullName -Descending | Select-Object -First 1).FullName
+          # Sign the exe and the bundled DLLs we ship (tcc.dll is the usual AV trigger).
+          Get-ChildItem "build/x64" -Include Starship.exe,tcc.dll,shaderc_shared.dll -Recurse | ForEach-Object {
+            & $signtool sign /f $pfx /p $env:WINDOWS_CERT_PASSWORD /fd SHA256 /tr http://timestamp.digicert.com /td SHA256 $_.FullName
+            if ($LASTEXITCODE -ne 0) { throw "signtool failed for $($_.FullName)" }
+          }
+          Remove-Item $pfx -Force
       - name: Upload build
         uses: actions/upload-artifact@v4
         with:
           name: starship-windows
           path: ./build/x64
           retention-days: 1
+          include-hidden-files: true

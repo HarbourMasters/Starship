@@ -684,6 +684,16 @@ else()
 endif()
 unset(PROPERTY_READER_GUARD_DISABLED)
 
+if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
+  add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "$<TARGET_RUNTIME_DLLS:${PROJECT_NAME}>"
+            "$<TARGET_FILE_DIR:${PROJECT_NAME}>"
+    COMMAND_EXPAND_LISTS
+    COMMENT "Copying runtime DLL dependencies next to ${PROJECT_NAME}.exe..."
+  )
+endif()
+
 if(NOT CMAKE_SYSTEM_NAME STREQUAL "NintendoSwitch")
 include(ExternalProject)
 ExternalProject_Add(TorchExternal
@@ -725,6 +735,9 @@ endif()
 if ("${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
   install(FILES $<TARGET_PDB_FILE:${PROJECT_NAME}> DESTINATION ./debug COMPONENT ${PROJECT_NAME})
   install(FILES "${CMAKE_BINARY_DIR}/starship.o2r" DESTINATION . COMPONENT ${PROJECT_NAME})
+  # Ship the resolved runtime DLLs (shaderc_shared.dll, tcc.dll, SDL2.dll, ...)
+  # so the install/zip package runs standalone, matching the build-tree copy above.
+  install(FILES "$<TARGET_RUNTIME_DLLS:${PROJECT_NAME}>" DESTINATION . COMPONENT ${PROJECT_NAME})
 endif()
 
 if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
