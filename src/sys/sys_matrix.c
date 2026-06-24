@@ -44,10 +44,6 @@ void Matrix_Copy(Matrix* dst, Matrix* src) {
 void Matrix_Push(Matrix** mtxStack) {
     FrameInterpolation_RecordMatrixPush(mtxStack);
 
-    if (mtxStack == NULL || *mtxStack == NULL) {
-        int bp = 0;
-    }
-
     Matrix_Copy(*mtxStack + 1, *mtxStack);
     (*mtxStack)++;
 }

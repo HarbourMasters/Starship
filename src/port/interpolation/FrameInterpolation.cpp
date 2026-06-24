@@ -2,6 +2,8 @@
 
 #include <vector>
 #include <map>
+#include <array>
+#include <deque>
 #include <unordered_map>
 #include <math.h>
 #include "port/Engine.h"
@@ -42,6 +44,9 @@ given a specific interpolation factor (0=old frame, 0.5=average of frames,
 
 static bool invert_matrix(const float m[16], float invOut[16]);
 
+extern "C" Matrix sInterpolationMatrixStack[0x1000];
+static constexpr size_t kInterpolationMatrixStackSize = 0x1000;
+
 using namespace std;
 
 namespace {
@@ -65,6 +70,9 @@ enum class Op {
     MatrixRotateAxis,
     SkinMatrixMtxFToMtx
 };
+
+constexpr size_t kOpCount = (size_t)Op::SkinMatrixMtxFToMtx + 1;
+constexpr int kMaxInterpolationDepth = 1024;
 
 typedef pair<const void*, int> label;
 
@@ -154,19 +162,47 @@ union Data {
 };
 
 struct Path {
-    map<label, vector<Path>> children;
-    map<Op, vector<Data>> ops;
+    map<label, vector<Path*>> children;
+    array<vector<Data>, kOpCount> ops;
     vector<pair<Op, size_t>> items;
+
+    void reset() {
+        items.clear();
+        for (auto& v : ops) {
+            v.clear();
+        }
+        children.clear();
+    }
+};
+
+struct NodePool {
+    deque<Path> nodes;
+    size_t used = 0;
+
+    Path* alloc() {
+        if (used == nodes.size()) {
+            nodes.emplace_back();
+        }
+        Path* p = &nodes[used++];
+        p->reset();
+        return p;
+    }
+
+    void rewind() {
+        used = 0;
+    }
 };
 
 struct Recording {
-    Path root_path;
+    Path* root_path = nullptr;
 };
 
 bool is_recording;
 vector<Path*> current_path;
 uint32_t camera_epoch;
 uint32_t previous_camera_epoch;
+NodePool node_pools[2];
+int current_pool = 0;
 Recording current_recording;
 Recording previous_recording;
 
@@ -176,13 +212,9 @@ MtxF inv_actor_mtx;
 size_t inv_actor_mtx_path_index;
 
 Data& append(Op op) {
-    auto& m = current_path.back()->ops[op];
+    auto& m = current_path.back()->ops[(size_t)op];
     current_path.back()->items.emplace_back(op, m.size());
     return m.emplace_back();
-}
-
-MtxF* Matrix_GetCurrent(){
-    return (MtxF*) gInterpolationMatrix;
 }
 
 struct InterpolateCtx {
@@ -264,9 +296,6 @@ struct InterpolateCtx {
             }
             res = (u16)(w * o + step * n);
         }
-        if (os / 327 == ns / 327 && (s16)res / 327 != os / 327) {
-            int bp = 0;
-        }
         return res;
     }
 
@@ -282,25 +311,32 @@ struct InterpolateCtx {
         res->z = interpolate_angle(o->z, n->z);
     }
 
-    void interpolate_branch(Path* old_path, Path* new_path) {
+    void interpolate_branch(Path* old_path, Path* new_path, int depth = 0) {
+        if (depth > kMaxInterpolationDepth) {
+            return;
+        }
         for (auto& item : new_path->items) {
-            Data& new_op = new_path->ops[item.first][item.second];
+            Data& new_op = new_path->ops[(size_t)item.first][item.second];
 
             if (item.first == Op::OpenChild) {
+                auto new_it = new_path->children.find(new_op.open_child.key);
+                if (new_it == new_path->children.end() || new_op.open_child.idx >= new_it->second.size()) {
+                    continue;
+                }
+                Path* new_child = new_it->second[new_op.open_child.idx];
+                Path* old_child = new_child;
                 if (auto it = old_path->children.find(new_op.open_child.key);
                     it != old_path->children.end() && new_op.open_child.idx < it->second.size()) {
-                    interpolate_branch(&it->second[new_op.open_child.idx],
-                                       &new_path->children.find(new_op.open_child.key)->second[new_op.open_child.idx]);
-                } else {
-                    interpolate_branch(&new_path->children.find(new_op.open_child.key)->second[new_op.open_child.idx],
-                                       &new_path->children.find(new_op.open_child.key)->second[new_op.open_child.idx]);
+                    old_child = it->second[new_op.open_child.idx];
                 }
+                interpolate_branch(old_child, new_child, depth + 1);
                 continue;
             }
 
-            if (auto it = old_path->ops.find(item.first); it != old_path->ops.end()) {
-                if (item.second < it->second.size()) {
-                    Data& old_op = it->second[item.second];
+            {
+                auto& old_vec = old_path->ops[(size_t)item.first];
+                if (item.second < old_vec.size()) {
+                    Data& old_op = old_vec[item.second];
                     switch (item.first) {
                         case Op::OpenChild:
                         case Op::CloseChild:
@@ -308,11 +344,15 @@ struct InterpolateCtx {
                             break;
 
                         case Op::MatrixPush:
-                            Matrix_Push(&gInterpolationMatrix);
+                            if (gInterpolationMatrix < &sInterpolationMatrixStack[kInterpolationMatrixStackSize - 1]) {
+                                Matrix_Push(&gInterpolationMatrix);
+                            }
                             break;
 
                         case Op::MatrixPop:
-                            Matrix_Pop(&gInterpolationMatrix);
+                            if (gInterpolationMatrix > &sInterpolationMatrixStack[0]) {
+                                Matrix_Pop(&gInterpolationMatrix);
+                            }
                             break;
 
                      // Unused on SF64
@@ -408,7 +448,11 @@ unordered_map<Mtx*, MtxF> FrameInterpolation_Interpolate(float step) {
     InterpolateCtx ctx;
     ctx.step = step;
     ctx.w = 1.0f - step;
-    ctx.interpolate_branch(&previous_recording.root_path, &current_recording.root_path);
+    if (previous_recording.root_path == nullptr || current_recording.root_path == nullptr) {
+        return ctx.mtx_replacements;
+    }
+    gInterpolationMatrix = &sInterpolationMatrixStack[0];
+    ctx.interpolate_branch(previous_recording.root_path, current_recording.root_path);
     return ctx.mtx_replacements;
 }
 
@@ -420,10 +464,12 @@ void FrameInterpolation_ShouldInterpolateFrame(bool shouldInterpolate) {
 }
 
 void FrameInterpolation_StartRecord(void) {
-    previous_recording = move(current_recording);
-    current_recording = {};
+    previous_recording = current_recording;
+    current_pool ^= 1;
+    node_pools[current_pool].rewind();
+    current_recording.root_path = node_pools[current_pool].alloc();
     current_path.clear();
-    current_path.push_back(&current_recording.root_path);
+    current_path.push_back(current_recording.root_path);
     if (!camera_interpolation) {
         // default to interpolating
         camera_interpolation = true;
@@ -446,7 +492,9 @@ void FrameInterpolation_RecordOpenChild(const void* a, int b) {
     label key = { a, b };
     auto& m = current_path.back()->children[key];
     append(Op::OpenChild).open_child = { key, m.size() };
-    current_path.push_back(&m.emplace_back());
+    Path* child = node_pools[current_pool].alloc();
+    m.push_back(child);
+    current_path.push_back(child);
 }
 
 void FrameInterpolation_RecordCloseChild(void) {
@@ -539,18 +587,6 @@ void FrameInterpolation_RecordMatrixMtxFToMtx(MtxF* src, Mtx* dest) {
     if (!is_recording)
         return;
     append(Op::MatrixMtxFToMtx).matrix_mtxf_to_mtx = { *src, dest };
-}
-
-void FrameInterpolation_RecordMatrixToMtx(Mtx* dest, char* file, s32 line) {
-    if (!is_recording)
-        return;
-    auto& d = append(Op::MatrixToMtx).matrix_to_mtx = { dest };
-    if (has_inv_actor_mtx) {
-        d.has_adjusted = true;
-        Matrix_MtxFMtxFMult(&inv_actor_mtx, Matrix_GetCurrent(), &d.src);
-    } else {
-        d.src = *Matrix_GetCurrent();
-    }
 }
 
 void FrameInterpolation_RecordMatrixRotateAxis(f32 angle, Vec3f* axis, u8 mode) {

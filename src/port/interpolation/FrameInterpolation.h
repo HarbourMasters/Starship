@@ -45,8 +45,6 @@ void FrameInterpolation_RecordMatrixRotate1Coord(Matrix* matrix, u32 coord, f32 
 
 void FrameInterpolation_RecordMatrixMtxFToMtx(MtxF* src, Mtx* dest);
 
-void FrameInterpolation_RecordMatrixToMtx(Mtx* dest, char* file, s32 line);
-
 void FrameInterpolation_RecordMatrixReplaceRotation(MtxF* mf);
 
 void FrameInterpolation_RecordMatrixRotateAxis(f32 angle, Vec3f* axis, u8 mode);
