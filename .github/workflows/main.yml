@@ -108,19 +108,32 @@ jobs:
           name: starship.o2r
           path: ./build/x64
       - name: Create Package
+        shell: pwsh
         run: |
-          mkdir starship-release
-          mv build/x64/Starship.exe starship-release/
-          mv build/x64/starship.o2r starship-release/
-          mv build/x64/.tcc starship-release/.tcc
-          # Runtime DLL dependencies the POST_BUILD step copied next to the exe
-          # (tcc.dll, shaderc_shared.dll, ...). Without these the package won't
-          # launch on a clean machine.
-          mv build/x64/*.dll starship-release/
-          mv config.yml starship-release/
-          mv assets starship-release/
+          Write-Host "=== build/x64 contents ==="
+          Get-ChildItem build/x64 -Force | Format-Table Name, Length, Mode
+          New-Item -ItemType Directory -Force -Path starship-release | Out-Null
+          Move-Item build/x64/Starship.exe starship-release/
+          Move-Item build/x64/starship.o2r starship-release/
+          # Runtime DLLs the CMake POST_BUILD staged next to the exe (tcc.dll, shaderc_shared.dll, ...).
+          # Tolerant: moves whatever .dll files are present without erroring if there are none.
+          Get-ChildItem build/x64 -Filter *.dll | Move-Item -Destination starship-release/
+          # Belt-and-suspenders: shaderc ships straight from the SDK even if it wasn't staged.
+          if (Test-Path "$env:VULKAN_SDK/Bin/shaderc_shared.dll") {
+            Copy-Item "$env:VULKAN_SDK/Bin/shaderc_shared.dll" starship-release/ -Force
+          }
+          # TCC runtime tree (hidden dir). Locate it under build/x64 wherever it landed.
+          $tcc = Get-ChildItem build/x64 -Filter .tcc -Directory -Force -Recurse | Select-Object -First 1
+          if ($tcc) {
+            Move-Item $tcc.FullName starship-release/.tcc
+          } else {
+            Write-Warning ".tcc was not produced in build/x64 - scripting runtime will be missing!"
+          }
+          Move-Item config.yml starship-release/
+          Move-Item assets starship-release/
           Invoke-WebRequest -Uri "https://raw.githubusercontent.com/mdqinc/SDL_GameControllerDB/master/gamecontrollerdb.txt" -OutFile "starship-release/gamecontrollerdb.txt"
-   
+          Write-Host "=== starship-release contents ==="
+          Get-ChildItem starship-release -Force -Recurse | Select-Object FullName
       - name: Sign binaries
         if: ${{ env.WINDOWS_CERT_PFX_BASE64 != '' }}
         env:

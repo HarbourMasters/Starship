@@ -692,6 +692,17 @@ if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
     COMMAND_EXPAND_LISTS
     COMMENT "Copying runtime DLL dependencies next to ${PROJECT_NAME}.exe..."
   )
+  # TARGET_RUNTIME_DLLS can miss shaderc depending on how the Vulkan SDK exports it,
+  # so also copy it explicitly from the SDK when present.
+  find_file(STARSHIP_SHADERC_DLL NAMES shaderc_shared.dll
+            HINTS "$ENV{VULKAN_SDK}/Bin" "$ENV{VULKAN_SDK}/bin")
+  if (STARSHIP_SHADERC_DLL)
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different
+              "${STARSHIP_SHADERC_DLL}" "$<TARGET_FILE_DIR:${PROJECT_NAME}>"
+      COMMENT "Copying shaderc_shared.dll next to ${PROJECT_NAME}.exe..."
+    )
+  endif()
 endif()
 
 if(NOT CMAKE_SYSTEM_NAME STREQUAL "NintendoSwitch")

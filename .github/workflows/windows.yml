@@ -57,6 +57,19 @@ jobs:
           # Ninja (single-config) so the compiler launcher works; sccache caches MSVC objects.
           cmake -S . -B "build/x64" -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER_LAUNCHER=sccache -DCMAKE_CXX_COMPILER_LAUNCHER=sccache
           cmake --build ./build/x64 --parallel 10
+      - name: Stage runtime deps
+        shell: pwsh
+        run: |
+          Write-Host "=== build/x64 contents (top level) ==="
+          Get-ChildItem build/x64 -Force | Format-Table Name, Length, Mode
+          # Ensure shaderc ships even if the CMake POST_BUILD didn't stage it.
+          if ((Test-Path "$env:VULKAN_SDK/Bin/shaderc_shared.dll") -and -not (Test-Path "build/x64/shaderc_shared.dll")) {
+            Copy-Item "$env:VULKAN_SDK/Bin/shaderc_shared.dll" build/x64/ -Force
+            Write-Host "Copied shaderc_shared.dll from the Vulkan SDK."
+          }
+          Write-Host "=== .tcc present? ==="
+          if (Test-Path build/x64/.tcc) { Get-ChildItem build/x64/.tcc -Recurse -Force | Select-Object FullName }
+          else { Write-Warning ".tcc was not produced in build/x64!" }
       - name: Sign binaries
         if: ${{ env.WINDOWS_CERT_PFX_BASE64 != '' }}
         env:
