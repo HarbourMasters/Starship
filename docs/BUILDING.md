@@ -166,7 +166,7 @@ cmake --build build-cmake --target clean
 ```
 
 ## macOS
-Requires Xcode (or xcode-tools) && `sdl2, libpng, glew, ninja, cmake, nlohmann-json, tinyxml2, libzip, vorbis-tools` (can be installed via homebrew, macports, etc)
+Requires Xcode (or xcode-tools) && `sdl2, sdl3, libpng, glew, ninja, cmake, nlohmann-json, tinyxml2, libzip, vorbis-tools` (can be installed via homebrew, macports, etc). `sdl3` is needed because modern Homebrew's `sdl2` is sdl2-compat, which loads SDL3 at runtime.
 
 **Important: For maximum performance make sure you have ninja build tools installed!**
 
