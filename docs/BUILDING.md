@@ -94,10 +94,10 @@ apt-get install clang git cmake ninja-build lsb-release libsdl2-dev libpng-dev l
 #### Arch
 ```sh
 # using gcc
-pacman -S gcc git cmake ninja lsb-release sdl2 libpng libzip nlohmann-json tinyxml2 spdlog sdl2_net boost libogg libvorbis
+pacman -S gcc git cmake ninja lsb-release sdl2-compat libpng libzip nlohmann-json tinyxml2 spdlog libogg libvorbis
 
 # or using clang
-pacman -S clang git cmake ninja lsb-release sdl2 libpng libzip nlohmann-json tinyxml2 spdlog sdl2_net boost libogg libvorbis
+pacman -S clang git cmake ninja lsb-release sdl2-compat libpng libzip nlohmann-json tinyxml2 spdlog libogg libvorbis
 ```
 #### Fedora
 ```sh
@@ -140,10 +140,10 @@ cmake --build build-cmake --target ExtractAssets
 cmake --build build-cmake --target GeneratePortO2R
 
 # Compile the project
-# Add `--config Release` if you're packaging
 cmake --build build-cmake
 
-# Now you can run the executable in ./build-cmake/mm/2s2h.elf
+# Now you can run the executable file:
+./build-cmake/Starship
 # To develop the project open the repository in VSCode (or your preferred editor)
 ```
 
