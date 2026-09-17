@@ -219,10 +219,15 @@ if (MSVC)
 endif()
 
 #=================== SSE2NEON ===================
-set(SSE2NEON_DIR ${CMAKE_BINARY_DIR}/_deps/sse2neon)
-file(DOWNLOAD "https://raw.githubusercontent.com/DLTcollab/sse2neon/refs/heads/master/sse2neon.h" "${SSE2NEON_DIR}/sse2neon.h")
-
-include_directories(${SSE2NEON_DIR})
+# sse2neon is only used on ARM (see src/audio/mixer.c), so skip the download on x86 targets.
+# Apple is always included because universal builds contain an arm64 slice.
+if(APPLE OR NOT CMAKE_SYSTEM_PROCESSOR MATCHES "^(x86_64|AMD64|amd64|x86|X86|i[3-6]86)$")
+    set(SSE2NEON_DIR ${CMAKE_BINARY_DIR}/_deps/sse2neon)
+    file(DOWNLOAD "https://raw.githubusercontent.com/DLTcollab/sse2neon/refs/tags/v1.9.1/sse2neon.h" "${SSE2NEON_DIR}/sse2neon.h"
+        EXPECTED_HASH SHA256=78632498a57bf7e080e84cb8d74c47ce93b204cece77eab79de2908eb8bc92ed
+    )
+    include_directories(${SSE2NEON_DIR})
+endif()
 
 FetchContent_Declare(
     dr_libs
