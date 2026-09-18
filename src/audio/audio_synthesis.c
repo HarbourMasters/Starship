@@ -1069,19 +1069,20 @@ Acmd* AudioSynth_ProcessNote(s32 noteIndex, NoteSubEu* noteSub, NoteSynthesisSta
                 aligned = ALIGN16((nFramesToDecode * frameSize) + 0x10);
                 addr = DMEM_COMPRESSED_ADPCM_DATA - aligned;
 
-#if __SANITIZE_ADDRESS__
-                uintptr_t actualAddrLoaded = samplesToLoadAddr - sampleDataChunkAlignPad;
-                uintptr_t offset = actualAddrLoaded - (uintptr_t) sampleAddr;
-                if (offset + aligned > bookSample->size) {
-                    aligned -= (offset + aligned - bookSample->size);
-                }
-#endif
                 if (nFramesToDecode != 0) {
                     if (1) {}
                     frameIndex = (synthState->samplePosInt + skipInitialSamples - nFirstFrameSamplesToIgnore) / 16;
                     sampleDataOffset = frameIndex * frameSize;
                     samplesToLoadAddr = (u8*) (sampleDmaStart + sampleDataOffset + sampleAddr);
                     sampleDataChunkAlignPad = ((uintptr_t) samplesToLoadAddr) % SAMPLES_PER_FRAME;
+
+#if __SANITIZE_ADDRESS__ || defined(__OpenBSD__)
+                    uintptr_t actualAddrLoaded = samplesToLoadAddr - sampleDataChunkAlignPad;
+                    uintptr_t offset = actualAddrLoaded - (uintptr_t) sampleAddr;
+                    if (offset + aligned > bookSample->size) {
+                        aligned -= (offset + aligned - bookSample->size);
+                    }
+#endif
 
                     aLoadBuffer(aList++, OS_K0_TO_PHYSICAL(samplesToLoadAddr - sampleDataChunkAlignPad), addr, aligned);
                 } else {
