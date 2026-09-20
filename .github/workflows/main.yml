@@ -201,7 +201,7 @@ jobs:
     needs: generate-port-o2r
     runs-on: ubuntu-latest
     container:
-      image: devkitpro/devkita64:20241023
+      image: devkitpro/devkita64:20260219
     steps:
       - uses: actions/checkout@v4
         with:
