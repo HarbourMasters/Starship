@@ -2,6 +2,9 @@
 
 #include <Fast3D/interpreter.h>
 #include "Engine.h"
+#ifdef _WIN32
+#include <locale.h>
+#endif
 
 extern "C" {
 #include <sf64mesg.h>
@@ -36,6 +39,10 @@ int SDL_main(int argc, char **argv) {
 extern "C"
 #endif
 int main(int argc, char *argv[]) {
+#endif
+#ifdef _WIN32
+    // Allow non-ascii characters in paths on Windows.
+    setlocale(LC_CTYPE, ".UTF8");
 #endif
     GameEngine::Create();
     Main_SetVIMode();
