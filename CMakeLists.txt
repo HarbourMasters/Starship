@@ -566,8 +566,6 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang|AppleClang")
       if(NOT DEFINED CPU_OPTION)
         if(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64")
           set(CPU_OPTION -msse2 -mfpmath=sse)
-        elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64")
-          set(CPU_OPTION -mcpu=native)
         endif()
       endif()
 

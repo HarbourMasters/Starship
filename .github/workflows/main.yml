@@ -110,7 +110,15 @@ jobs:
 
   build-linux:
     needs: generate-port-o2r
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: ubuntu-22.04
+            arch: x86_64
+          - runner: ubuntu-22.04-arm
+            arch: aarch64
+    runs-on: ${{ matrix.runner }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -122,17 +130,17 @@ jobs:
       - name: ccache
         uses: hendrikmuhs/ccache-action@v1.2.14
         with:
-          key: linux-ccache-${{ github.ref }}-${{ github.sha }}
+          key: linux-${{ matrix.arch }}-ccache-${{ github.ref }}-${{ github.sha }}
           restore-keys: |
-            linux-ccache-${{ github.ref }}
-            linux-ccache-
+            linux-${{ matrix.arch }}-ccache-${{ github.ref }}
+            linux-${{ matrix.arch }}-ccache-
       - name: Cache build folders
         uses: actions/cache@v4
         with:
-          key: linux-build-${{ github.ref }}-${{ github.sha }}
+          key: linux-${{ matrix.arch }}-build-${{ github.ref }}-${{ github.sha }}
           restore-keys: |
-            linux-build-${{ github.ref }}
-            linux-build-
+            linux-${{ matrix.arch }}-build-${{ github.ref }}
+            linux-${{ matrix.arch }}-build-
           path: |
             SDL2-2.30.3
             tinyxml2-10.0.0
@@ -148,7 +156,7 @@ jobs:
           ./configure --enable-hidapi-libusb
           make -j 10
           sudo make install
-          sudo cp -av /usr/local/lib/libSDL* /lib/x86_64-linux-gnu/
+          sudo cp -av /usr/local/lib/libSDL* /lib/${{ matrix.arch }}-linux-gnu/
       - name: Install latest tinyxml2
         run: |
           export PATH="/usr/lib/ccache:/usr/local/opt/ccache/libexec:$PATH"
@@ -173,7 +181,7 @@ jobs:
           cmake .. -DENABLE_COMMONCRYPTO=OFF -DENABLE_GNUTLS=OFF -DENABLE_MBEDTLS=OFF -DENABLE_OPENSSL=OFF
           make
           sudo make install
-          sudo cp -av /usr/local/lib/libzip* /lib/x86_64-linux-gnu/
+          sudo cp -av /usr/local/lib/libzip* /lib/${{ matrix.arch }}-linux-gnu/
       - name: Download starship.o2r
         uses: actions/download-artifact@v4
         with:
@@ -190,7 +198,7 @@ jobs:
       - name: Upload build
         uses: actions/upload-artifact@v4
         with:
-          name: Starship-linux
+          name: Starship-linux-${{ matrix.arch }}
           path: |
             starship.appimage
             config.yml
