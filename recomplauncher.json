@@ -1,0 +1,185 @@
+{
+    "$schema": "https://recomplauncher.com/schema/recomplauncher.json",
+    "format": 1,
+    "name": "Starship",
+    "repo": "HarbourMasters/Starship",
+    "start": {
+        "program": [
+            "Starship.exe"
+        ]
+    },
+    "config": [
+        {
+            "id": "main",
+            "format": "json",
+            "file": [
+                {
+                    "path": "{install}/starship.cfg.json"
+                }
+            ]
+        }
+    ],
+    "settings": [
+        {
+            "id": "window",
+            "label": "Full screen",
+            "choices": [
+                {
+                    "label": "Off",
+                    "set": {
+                        "Window/Fullscreen/Enabled": "false"
+                    }
+                },
+                {
+                    "label": "On",
+                    "set": {
+                        "Window/Fullscreen/Enabled": "true"
+                    }
+                }
+            ],
+            "defaults": {
+                "Window/Fullscreen/Enabled": "false"
+            }
+        },
+        {
+            "id": "resolution",
+            "label": "Resolution",
+            "help": "Draws above the window size for a sharper picture.",
+            "choices": [
+                {
+                    "label": "100% (window size)",
+                    "set": {
+                        "CVars/gInternalResolution": "1.0"
+                    }
+                },
+                {
+                    "label": "150%",
+                    "set": {
+                        "CVars/gInternalResolution": "1.5"
+                    }
+                },
+                {
+                    "label": "200%",
+                    "set": {
+                        "CVars/gInternalResolution": "2.0"
+                    }
+                }
+            ],
+            "defaults": {
+                "CVars/gInternalResolution": "1.0"
+            }
+        },
+        {
+            "id": "msaa",
+            "label": "Anti-aliasing",
+            "help": "Smoother edges.",
+            "choices": [
+                {
+                    "label": "Off",
+                    "set": {
+                        "CVars/gMSAAValue": "1"
+                    }
+                },
+                {
+                    "label": "2x",
+                    "set": {
+                        "CVars/gMSAAValue": "2"
+                    }
+                },
+                {
+                    "label": "4x",
+                    "set": {
+                        "CVars/gMSAAValue": "4"
+                    }
+                },
+                {
+                    "label": "8x",
+                    "set": {
+                        "CVars/gMSAAValue": "8"
+                    }
+                }
+            ],
+            "defaults": {
+                "CVars/gMSAAValue": "1"
+            }
+        },
+        {
+            "id": "vsync",
+            "label": "V-Sync",
+            "help": "Stops tearing, but caps the frame rate at your screen's refresh rate.",
+            "choices": [
+                {
+                    "label": "On",
+                    "set": {
+                        "CVars/gVsyncEnabled": "1"
+                    }
+                },
+                {
+                    "label": "Off",
+                    "set": {
+                        "CVars/gVsyncEnabled": "0"
+                    }
+                }
+            ],
+            "defaults": {
+                "CVars/gVsyncEnabled": "1"
+            }
+        },
+        {
+            "id": "fps",
+            "label": "Frame rate",
+            "help": "Higher rates add in-between frames for smoother motion.",
+            "choices": [
+                {
+                    "label": "30 fps (original)",
+                    "set": {
+                        "CVars/gInterpolationFPS": "30"
+                    }
+                },
+                {
+                    "label": "60 fps",
+                    "set": {
+                        "CVars/gInterpolationFPS": "60"
+                    }
+                },
+                {
+                    "label": "120 fps",
+                    "set": {
+                        "CVars/gInterpolationFPS": "120"
+                    }
+                }
+            ],
+            "defaults": {
+                "CVars/gInterpolationFPS": "60"
+            }
+        },
+        {
+            "id": "texfilter",
+            "label": "Texture filtering",
+            "help": "How textures are smoothed.",
+            "choices": [
+                {
+                    "label": "Three-point (original)",
+                    "set": {
+                        "CVars/gTextureFilter": "0"
+                    }
+                },
+                {
+                    "label": "Linear",
+                    "set": {
+                        "CVars/gTextureFilter": "1"
+                    }
+                },
+                {
+                    "label": "None",
+                    "set": {
+                        "CVars/gTextureFilter": "2"
+                    }
+                }
+            ],
+            "defaults": {
+                "CVars/gTextureFilter": "0"
+            }
+        }
+    ]
+}
